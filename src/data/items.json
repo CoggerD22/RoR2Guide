@@ -752,5 +752,406 @@
     "icon": "/icons/eclipse-lite.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Eclipse_Lite",
     "verified": false
+  },
+  {
+    "id": "atg-missile-mk-1",
+    "name": "AtG Missile Mk. 1",
+    "tier": "uncommon",
+    "dlc": "base",
+    "pickupText": "Chance to fire a missile.",
+    "description": "10% chance to fire a missile that deals 300% (+300% per stack) TOTAL damage.",
+    "stacking": [
+      {
+        "stat": "Missile damage (% TOTAL)",
+        "base": 300,
+        "perStack": 300,
+        "type": "linear"
+      }
+    ],
+    "tags": ["damage", "on-hit"],
+    "icon": "/icons/atg-missile-mk-1.png",
+    "wiki": "https://riskofrain2.wiki.gg/wiki/AtG_Missile_Mk._1",
+    "verified": true
+  },
+  {
+    "id": "will-o-the-wisp",
+    "name": "Will-o'-the-wisp",
+    "tier": "uncommon",
+    "dlc": "base",
+    "pickupText": "Detonate enemies on kill.",
+    "description": "On killing an enemy, spawn a lava pillar in a 12m (+2.4m per stack) radius for 350% (+280% per stack) base damage.",
+    "stacking": [
+      {
+        "stat": "Explosion radius (m)",
+        "base": 12,
+        "perStack": 2.4,
+        "type": "linear"
+      },
+      {
+        "stat": "Explosion damage (% base)",
+        "base": 350,
+        "perStack": 280,
+        "type": "linear"
+      }
+    ],
+    "tags": ["damage", "on-kill", "aoe"],
+    "icon": "/icons/will-o-the-wisp.png",
+    "wiki": "https://riskofrain2.wiki.gg/wiki/Will-o%27-the-wisp",
+    "verified": true
+  },
+  {
+    "id": "hopoo-feather",
+    "name": "Hopoo Feather",
+    "tier": "uncommon",
+    "dlc": "base",
+    "pickupText": "Gain an extra jump.",
+    "description": "Gain +1 (+1 per stack) maximum jump count.",
+    "stacking": [
+      {
+        "stat": "Extra jumps",
+        "base": 1,
+        "perStack": 1,
+        "type": "linear"
+      }
+    ],
+    "tags": ["utility", "mobility"],
+    "icon": "/icons/hopoo-feather.png",
+    "wiki": "https://riskofrain2.wiki.gg/wiki/Hopoo_Feather",
+    "verified": true
+  },
+  {
+    "id": "ukulele",
+    "name": "Ukulele",
+    "tier": "uncommon",
+    "dlc": "base",
+    "pickupText": "...and his music was electric.",
+    "description": "25% chance to fire chain lightning for 80% TOTAL damage on up to 3 (+2 per stack) targets within 20m (+2m per stack).",
+    "stacking": [
+      {
+        "stat": "Chain targets",
+        "base": 3,
+        "perStack": 2,
+        "type": "linear"
+      },
+      {
+        "stat": "Chain range (m)",
+        "base": 20,
+        "perStack": 2,
+        "type": "linear"
+      }
+    ],
+    "tags": ["damage", "on-hit", "aoe"],
+    "icon": "/icons/ukulele.png",
+    "wiki": "https://riskofrain2.wiki.gg/wiki/Ukulele",
+    "verified": true
+  },
+  {
+    "id": "leeching-seed",
+    "name": "Leeching Seed",
+    "tier": "uncommon",
+    "dlc": "base",
+    "pickupText": "Dealing damage heals you.",
+    "description": "Dealing damage heals you for 1 (+1 per stack) health.",
+    "stacking": [
+      {
+        "stat": "Heal on hit (health)",
+        "base": 1,
+        "perStack": 1,
+        "type": "linear"
+      }
+    ],
+    "tags": ["healing", "on-hit"],
+    "icon": "/icons/leeching-seed.png",
+    "wiki": "https://riskofrain2.wiki.gg/wiki/Leeching_Seed",
+    "verified": true
+  },
+  {
+    "id": "predatory-instincts",
+    "name": "Predatory Instincts",
+    "tier": "uncommon",
+    "dlc": "base",
+    "pickupText": "'Critical Strikes' increase attack speed. Stacks 3 times.",
+    "description": "Gain 5% critical chance. Critical strikes increase attack speed by 12%. Maximum cap of 36% (+24% per stack) attack speed.",
+    "stacking": [
+      {
+        "stat": "Max attack speed from critical strikes (%)",
+        "base": 36,
+        "perStack": 24,
+        "type": "linear"
+      }
+    ],
+    "tags": ["damage", "attack-speed", "critical-strike"],
+    "unlock": "Rapidfire",
+    "icon": "/icons/predatory-instincts.png",
+    "wiki": "https://riskofrain2.wiki.gg/wiki/Predatory_Instincts",
+    "verified": true
+  },
+  {
+    "id": "red-whip",
+    "name": "Red Whip",
+    "tier": "uncommon",
+    "dlc": "base",
+    "pickupText": "Move fast out of combat.",
+    "description": "Leaving combat boosts your movement speed by 30% (+30% per stack).",
+    "stacking": [
+      {
+        "stat": "Movement speed out of combat",
+        "base": 30,
+        "perStack": 30,
+        "type": "linear"
+      }
+    ],
+    "tags": ["utility", "movement-speed"],
+    "icon": "/icons/red-whip.png",
+    "wiki": "https://riskofrain2.wiki.gg/wiki/Red_Whip",
+    "verified": true
+  },
+  {
+    "id": "old-war-stealthkit",
+    "name": "Old War Stealthkit",
+    "tier": "uncommon",
+    "dlc": "base",
+    "pickupText": "Turn invisible at low health.",
+    "description": "Falling below 25% health causes you to gain 40% movement speed and invisibility for 5s. Recharges every 30 seconds (-50% per stack).",
+    "stacking": [
+      {
+        "stat": "Recharge cooldown (s)",
+        "base": 30,
+        "perStack": -50,
+        "type": "exponential",
+        "formula": "cooldown multiplied by 0.5 per stack (30s, 15s, 7.5s, ...)"
+      }
+    ],
+    "tags": ["utility", "survivability"],
+    "icon": "/icons/old-war-stealthkit.png",
+    "wiki": "https://riskofrain2.wiki.gg/wiki/Old_War_Stealthkit",
+    "verified": true
+  },
+  {
+    "id": "harvesters-scythe",
+    "name": "Harvester's Scythe",
+    "tier": "uncommon",
+    "dlc": "base",
+    "pickupText": "'Critical Strikes' heal you.",
+    "description": "Gain 5% critical chance. Critical strikes heal for 8 (+4 per stack) health.",
+    "stacking": [
+      {
+        "stat": "Heal on critical strike (health)",
+        "base": 8,
+        "perStack": 4,
+        "type": "linear"
+      }
+    ],
+    "tags": ["healing", "critical-strike", "on-hit"],
+    "unlock": "Prismatically Aligned",
+    "icon": "/icons/harvesters-scythe.png",
+    "wiki": "https://riskofrain2.wiki.gg/wiki/Harvester%27s_Scythe",
+    "verified": true
+  },
+  {
+    "id": "fuel-cell",
+    "name": "Fuel Cell",
+    "tier": "uncommon",
+    "dlc": "base",
+    "pickupText": "Hold an additional equipment charge. Reduce equipment cooldown.",
+    "description": "Hold an additional equipment charge (+1 per stack). Reduce equipment cooldown by 15% (+15% per stack).",
+    "stacking": [
+      {
+        "stat": "Equipment charges",
+        "base": 1,
+        "perStack": 1,
+        "type": "linear"
+      },
+      {
+        "stat": "Equipment cooldown reduction (%)",
+        "base": 15,
+        "perStack": 15,
+        "type": "exponential",
+        "formula": "cooldown multiplied by 0.85 per stack (multiplicative, so reduction never reaches 100%)"
+      }
+    ],
+    "tags": ["utility", "equipment"],
+    "unlock": "Experimenting",
+    "icon": "/icons/fuel-cell.png",
+    "wiki": "https://riskofrain2.wiki.gg/wiki/Fuel_Cell",
+    "verified": true
+  },
+  {
+    "id": "infusion",
+    "name": "Infusion",
+    "tier": "uncommon",
+    "dlc": "base",
+    "pickupText": "Killing an enemy permanently increases your maximum health, up to 100.",
+    "description": "Killing an enemy increases your health permanently by 1 (+1 per stack), up to a maximum of 100 (+100 per stack) health.",
+    "stacking": [
+      {
+        "stat": "Max health per kill",
+        "base": 1,
+        "perStack": 1,
+        "type": "linear"
+      },
+      {
+        "stat": "Max health cap",
+        "base": 100,
+        "perStack": 100,
+        "type": "linear"
+      }
+    ],
+    "tags": ["survivability", "on-kill", "health"],
+    "unlock": "Slaughter",
+    "icon": "/icons/infusion.png",
+    "wiki": "https://riskofrain2.wiki.gg/wiki/Infusion",
+    "verified": true
+  },
+  {
+    "id": "bandolier",
+    "name": "Bandolier",
+    "tier": "uncommon",
+    "dlc": "base",
+    "pickupText": "Chance on kill to drop an ammo pack that resets all skill cooldowns.",
+    "description": "18% (+10% per stack) chance on kill to drop an ammo pack that resets all skill cooldowns.",
+    "stacking": [
+      {
+        "stat": "Chance on kill to drop ammo pack (%)",
+        "base": 18,
+        "perStack": 10,
+        "type": "special",
+        "formula": "chance = 1 - 1/(1 + n)^0.33 (n = stacks); ~18% at 1 stack, diminishing per stack"
+      }
+    ],
+    "tags": ["utility", "on-kill"],
+    "icon": "/icons/bandolier.png",
+    "wiki": "https://riskofrain2.wiki.gg/wiki/Bandolier",
+    "verified": true
+  },
+  {
+    "id": "berzerkers-pauldron",
+    "name": "Berzerker's Pauldron",
+    "tier": "uncommon",
+    "dlc": "base",
+    "pickupText": "Enter a frenzy after killing 4 enemies in quick succession.",
+    "description": "Killing 4 enemies within 1 second sends you into a frenzy for 6s (+4s per stack). Increases movement speed by 50% and attack speed by 100%.",
+    "stacking": [
+      {
+        "stat": "Frenzy duration (s)",
+        "base": 6,
+        "perStack": 4,
+        "type": "linear"
+      }
+    ],
+    "tags": ["damage", "attack-speed", "movement-speed", "on-kill"],
+    "unlock": "Glorious Battle",
+    "icon": "/icons/berzerkers-pauldron.png",
+    "wiki": "https://riskofrain2.wiki.gg/wiki/Berzerker%27s_Pauldron",
+    "verified": true
+  },
+  {
+    "id": "rose-buckler",
+    "name": "Rose Buckler",
+    "tier": "uncommon",
+    "dlc": "base",
+    "pickupText": "Reduce incoming damage while sprinting.",
+    "description": "Increase armor by 30 (+30 per stack) while sprinting.",
+    "stacking": [
+      {
+        "stat": "Armor while sprinting",
+        "base": 30,
+        "perStack": 30,
+        "type": "linear"
+      }
+    ],
+    "tags": ["survivability", "armor"],
+    "icon": "/icons/rose-buckler.png",
+    "wiki": "https://riskofrain2.wiki.gg/wiki/Rose_Buckler",
+    "verified": true
+  },
+  {
+    "id": "runalds-band",
+    "name": "Runald's Band",
+    "tier": "uncommon",
+    "dlc": "base",
+    "pickupText": "High damage hits also blasts enemies with runic ice. Recharges over time.",
+    "description": "Hits dealing more than 400% damage blast enemies with a runic ice explosion, inflicting 80% slow for 3s (+3s per stack) and dealing 250% (+250% per stack) total damage. 10-second cooldown.",
+    "stacking": [
+      {
+        "stat": "Slow duration (s)",
+        "base": 3,
+        "perStack": 3,
+        "type": "linear"
+      },
+      {
+        "stat": "Ice blast damage (% TOTAL)",
+        "base": 250,
+        "perStack": 250,
+        "type": "linear"
+      }
+    ],
+    "tags": ["damage", "on-hit", "crowd-control"],
+    "unlock": "Death Do Us Part",
+    "icon": "/icons/runalds-band.png",
+    "wiki": "https://riskofrain2.wiki.gg/wiki/Runald%27s_Band",
+    "verified": true
+  },
+  {
+    "id": "kjaros-band",
+    "name": "Kjaro's Band",
+    "tier": "uncommon",
+    "dlc": "base",
+    "pickupText": "High damage hits also blasts enemies with a runic flame tornado. Recharges over time.",
+    "description": "Hits that deal more than 400% damage also blasts enemies with a runic flame tornado, dealing 300% (+300% per stack) TOTAL damage over time. Recharges every 10 seconds.",
+    "stacking": [
+      {
+        "stat": "Flame tornado damage (% TOTAL)",
+        "base": 300,
+        "perStack": 300,
+        "type": "linear"
+      }
+    ],
+    "tags": ["damage", "on-hit"],
+    "unlock": "Death Do Us Part",
+    "icon": "/icons/kjaros-band.png",
+    "wiki": "https://riskofrain2.wiki.gg/wiki/Kjaro%27s_Band",
+    "verified": true
+  },
+  {
+    "id": "chronobauble",
+    "name": "Chronobauble",
+    "tier": "uncommon",
+    "dlc": "base",
+    "pickupText": "Slow enemies on hit.",
+    "description": "Slow enemies on hit for -60% movement speed for 2s (+2s per stack).",
+    "stacking": [
+      {
+        "stat": "Slow duration (s)",
+        "base": 2,
+        "perStack": 2,
+        "type": "linear"
+      }
+    ],
+    "tags": ["utility", "on-hit", "crowd-control"],
+    "icon": "/icons/chronobauble.png",
+    "wiki": "https://riskofrain2.wiki.gg/wiki/Chronobauble",
+    "verified": true
+  },
+  {
+    "id": "wax-quail",
+    "name": "Wax Quail",
+    "tier": "uncommon",
+    "dlc": "base",
+    "pickupText": "Jumping while sprinting boosts you forward.",
+    "description": "Jumping while sprinting boosts you forward by 10m (+10m per stack).",
+    "stacking": [
+      {
+        "stat": "Forward boost (m)",
+        "base": 10,
+        "perStack": 10,
+        "type": "linear"
+      }
+    ],
+    "tags": ["utility", "mobility"],
+    "unlock": "Going Fast Recommended",
+    "icon": "/icons/wax-quail.png",
+    "wiki": "https://riskofrain2.wiki.gg/wiki/Wax_Quail",
+    "verified": true
   }
 ]
