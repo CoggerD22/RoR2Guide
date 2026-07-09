@@ -1,0 +1,756 @@
+[
+  {
+    "id": "crowbar",
+    "name": "Crowbar",
+    "tier": "common",
+    "dlc": "base",
+    "pickupText": "Deal bonus damage to enemies above 90% health.",
+    "description": "Deal +75% (+75% per stack) damage to enemies above 90% health.",
+    "stacking": [
+      {
+        "stat": "Bonus damage vs. enemies above 90% health",
+        "base": 75,
+        "perStack": 75,
+        "type": "linear"
+      }
+    ],
+    "tags": ["damage", "on-hit"],
+    "icon": "/icons/crowbar.png",
+    "wiki": "https://riskofrain2.wiki.gg/wiki/Crowbar",
+    "verified": true
+  },
+  {
+    "id": "soldiers-syringe",
+    "name": "Soldier's Syringe",
+    "tier": "common",
+    "dlc": "base",
+    "pickupText": "Increase attack speed.",
+    "description": "Increases attack speed by 15% (+15% per stack).",
+    "stacking": [
+      {
+        "stat": "Attack speed",
+        "base": 15,
+        "perStack": 15,
+        "type": "linear"
+      }
+    ],
+    "tags": ["damage", "attack-speed"],
+    "icon": "/icons/soldiers-syringe.png",
+    "wiki": "https://riskofrain2.wiki.gg/wiki/Soldier%27s_Syringe",
+    "verified": true
+  },
+  {
+    "id": "lens-makers-glasses",
+    "name": "Lens-Maker's Glasses",
+    "tier": "common",
+    "dlc": "base",
+    "pickupText": "Gain a chance to 'Critically Strike', dealing double damage.",
+    "description": "Your attacks have a 10% (+10% per stack) chance to 'Critically Strike', dealing double damage.",
+    "stacking": [
+      {
+        "stat": "Critical strike chance",
+        "base": 10,
+        "perStack": 10,
+        "type": "linear",
+        "cap": "Reaches 100% (guaranteed crit) at 10 stacks; further stacks add nothing."
+      }
+    ],
+    "tags": ["damage", "critical-strike", "on-hit"],
+    "icon": "/icons/lens-makers-glasses.png",
+    "wiki": "https://riskofrain2.wiki.gg/wiki/Lens-Maker%27s_Glasses",
+    "verified": true
+  },
+  {
+    "id": "tougher-times",
+    "name": "Tougher Times",
+    "tier": "common",
+    "dlc": "base",
+    "pickupText": "Chance to block incoming damage.",
+    "description": "15% (+15% per stack) chance to block incoming damage. Unaffected by luck.",
+    "stacking": [
+      {
+        "stat": "Block chance",
+        "base": 15,
+        "perStack": 15,
+        "type": "hyperbolic",
+        "formula": "block chance = 0.15n / (0.15n + 1) — e.g. 13% at 1 stack, ~60% at 10 stacks, approaches but never reaches 100%"
+      }
+    ],
+    "tags": ["utility", "block", "survivability"],
+    "icon": "/icons/tougher-times.png",
+    "wiki": "https://riskofrain2.wiki.gg/wiki/Tougher_Times",
+    "verified": true
+  },
+  {
+    "id": "tri-tip-dagger",
+    "name": "Tri-Tip Dagger",
+    "tier": "common",
+    "dlc": "base",
+    "pickupText": "Chance to bleed enemies on hit.",
+    "description": "10% (+10% per stack) chance to bleed an enemy for 240% base damage.",
+    "stacking": [
+      {
+        "stat": "Bleed chance on hit",
+        "base": 10,
+        "perStack": 10,
+        "type": "linear"
+      }
+    ],
+    "tags": ["damage", "on-hit", "bleed"],
+    "icon": "/icons/tri-tip-dagger.png",
+    "wiki": "https://riskofrain2.wiki.gg/wiki/Tri-Tip_Dagger",
+    "verified": true
+  },
+  {
+    "id": "pauls-goat-hoof",
+    "name": "Paul's Goat Hoof",
+    "tier": "common",
+    "dlc": "base",
+    "pickupText": "Increase movement speed.",
+    "description": "Increases movement speed by 14% (+14% per stack).",
+    "stacking": [
+      {
+        "stat": "Movement speed",
+        "base": 14,
+        "perStack": 14,
+        "type": "linear"
+      }
+    ],
+    "tags": ["utility", "movement-speed"],
+    "icon": "/icons/pauls-goat-hoof.png",
+    "wiki": "https://riskofrain2.wiki.gg/wiki/Paul%27s_Goat_Hoof",
+    "verified": true
+  },
+  {
+    "id": "armor-piercing-rounds",
+    "name": "Armor-Piercing Rounds",
+    "tier": "common",
+    "dlc": "base",
+    "pickupText": "Deal extra damage to bosses.",
+    "description": "Deal an additional 20% damage (+20% per stack) to bosses.",
+    "stacking": [
+      {
+        "stat": "Bonus damage vs. bosses",
+        "base": 20,
+        "perStack": 20,
+        "type": "linear"
+      }
+    ],
+    "tags": ["damage"],
+    "icon": "/icons/armor-piercing-rounds.png",
+    "wiki": "https://riskofrain2.wiki.gg/wiki/Armor-Piercing_Rounds",
+    "verified": true
+  },
+  {
+    "id": "backup-magazine",
+    "name": "Backup Magazine",
+    "tier": "common",
+    "dlc": "base",
+    "pickupText": "Add an extra charge of your Secondary skill.",
+    "description": "Add +1 (+1 per stack) charge of your Secondary skill.",
+    "stacking": [
+      {
+        "stat": "Secondary skill charges",
+        "base": 1,
+        "perStack": 1,
+        "type": "linear"
+      }
+    ],
+    "tags": ["utility"],
+    "icon": "/icons/backup-magazine.png",
+    "wiki": "https://riskofrain2.wiki.gg/wiki/Backup_Magazine",
+    "verified": true
+  },
+  {
+    "id": "bison-steak",
+    "name": "Bison Steak",
+    "tier": "common",
+    "dlc": "base",
+    "pickupText": "Gain 25 max health.",
+    "description": "Increases maximum health by 25 (+25 per stack).",
+    "stacking": [
+      {
+        "stat": "Maximum health",
+        "base": 25,
+        "perStack": 25,
+        "type": "linear"
+      }
+    ],
+    "tags": ["survivability", "health"],
+    "icon": "/icons/bison-steak.png",
+    "wiki": "https://riskofrain2.wiki.gg/wiki/Bison_Steak",
+    "verified": true
+  },
+  {
+    "id": "bustling-fungus",
+    "name": "Bustling Fungus",
+    "tier": "common",
+    "dlc": "base",
+    "pickupText": "Heal all nearby allies after standing still for 1 second.",
+    "description": "After standing still for 1 second, create a zone that heals for 4.5% (+2.25% per stack) of your health every second to all allies within 3m (+1.5m per stack).",
+    "stacking": [
+      {
+        "stat": "Heal per second (% of health)",
+        "base": 4.5,
+        "perStack": 2.25,
+        "type": "linear"
+      },
+      {
+        "stat": "Zone radius (m)",
+        "base": 3,
+        "perStack": 1.5,
+        "type": "linear"
+      }
+    ],
+    "tags": ["healing"],
+    "icon": "/icons/bustling-fungus.png",
+    "wiki": "https://riskofrain2.wiki.gg/wiki/Bustling_Fungus",
+    "verified": true
+  },
+  {
+    "id": "cautious-slug",
+    "name": "Cautious Slug",
+    "tier": "common",
+    "dlc": "base",
+    "pickupText": "Rapidly heal outside of danger.",
+    "description": "Increases base health regeneration by +3 hp/s (+3 hp/s per stack) while outside of combat.",
+    "stacking": [
+      {
+        "stat": "Health regen out of combat (hp/s)",
+        "base": 3,
+        "perStack": 3,
+        "type": "linear"
+      }
+    ],
+    "tags": ["healing"],
+    "icon": "/icons/cautious-slug.png",
+    "wiki": "https://riskofrain2.wiki.gg/wiki/Cautious_Slug",
+    "verified": true
+  },
+  {
+    "id": "monster-tooth",
+    "name": "Monster Tooth",
+    "tier": "common",
+    "dlc": "base",
+    "pickupText": "Drop a healing orb on kill.",
+    "description": "Killing an enemy spawns a healing orb that heals for 8 plus an additional 2% (+2% per stack) of maximum health.",
+    "stacking": [
+      {
+        "stat": "Heal per orb (% of max health)",
+        "base": 2,
+        "perStack": 2,
+        "type": "linear"
+      }
+    ],
+    "tags": ["healing", "on-kill"],
+    "icon": "/icons/monster-tooth.png",
+    "wiki": "https://riskofrain2.wiki.gg/wiki/Monster_Tooth",
+    "verified": true
+  },
+  {
+    "id": "bundle-of-fireworks",
+    "name": "Bundle of Fireworks",
+    "tier": "common",
+    "dlc": "base",
+    "pickupText": "Activating an interactable launches fireworks at nearby enemies.",
+    "description": "Activating an interactable launches 8 (+4 per stack) fireworks that deal 300% base damage.",
+    "stacking": [
+      {
+        "stat": "Fireworks launched",
+        "base": 8,
+        "perStack": 4,
+        "type": "linear"
+      }
+    ],
+    "tags": ["damage"],
+    "icon": "/icons/bundle-of-fireworks.png",
+    "wiki": "https://riskofrain2.wiki.gg/wiki/Bundle_of_Fireworks",
+    "verified": true
+  },
+  {
+    "id": "delicate-watch",
+    "name": "Delicate Watch",
+    "tier": "common",
+    "dlc": "base",
+    "pickupText": "Deal bonus damage. Breaks at low health.",
+    "description": "Increase damage by 20% (+20% per stack). Taking damage to below 25% health breaks this item.",
+    "stacking": [
+      {
+        "stat": "Damage bonus",
+        "base": 20,
+        "perStack": 20,
+        "type": "linear"
+      }
+    ],
+    "tags": ["damage"],
+    "icon": "/icons/delicate-watch.png",
+    "wiki": "https://riskofrain2.wiki.gg/wiki/Delicate_Watch",
+    "verified": true
+  },
+  {
+    "id": "energy-drink",
+    "name": "Energy Drink",
+    "tier": "common",
+    "dlc": "base",
+    "pickupText": "Increase sprint speed by +25%.",
+    "description": "Sprint speed is improved by 25% (+25% per stack).",
+    "stacking": [
+      {
+        "stat": "Sprint speed",
+        "base": 25,
+        "perStack": 25,
+        "type": "linear"
+      }
+    ],
+    "tags": ["utility", "movement-speed"],
+    "icon": "/icons/energy-drink.png",
+    "wiki": "https://riskofrain2.wiki.gg/wiki/Energy_Drink",
+    "verified": true
+  },
+  {
+    "id": "focus-crystal",
+    "name": "Focus Crystal",
+    "tier": "common",
+    "dlc": "base",
+    "pickupText": "Deal bonus damage to nearby enemies.",
+    "description": "Increase damage to enemies within 13m by 20% (+20% per stack).",
+    "stacking": [
+      {
+        "stat": "Bonus damage to enemies within 13m",
+        "base": 20,
+        "perStack": 20,
+        "type": "linear"
+      }
+    ],
+    "tags": ["damage"],
+    "icon": "/icons/focus-crystal.png",
+    "wiki": "https://riskofrain2.wiki.gg/wiki/Focus_Crystal",
+    "verified": true
+  },
+  {
+    "id": "gasoline",
+    "name": "Gasoline",
+    "tier": "common",
+    "dlc": "base",
+    "pickupText": "Killing an enemy ignites other nearby enemies.",
+    "description": "Killing an enemy ignites all enemies within 12m (+4m per stack) for 150% base damage. Additionally, enemies burn for 150% (+75% per stack) base damage.",
+    "stacking": [
+      {
+        "stat": "Ignite radius (m)",
+        "base": 12,
+        "perStack": 4,
+        "type": "linear"
+      },
+      {
+        "stat": "Burn damage (% base)",
+        "base": 150,
+        "perStack": 75,
+        "type": "linear"
+      }
+    ],
+    "tags": ["damage", "on-kill", "aoe"],
+    "icon": "/icons/gasoline.png",
+    "wiki": "https://riskofrain2.wiki.gg/wiki/Gasoline",
+    "verified": true
+  },
+  {
+    "id": "medkit",
+    "name": "Medkit",
+    "tier": "common",
+    "dlc": "base",
+    "pickupText": "Receive a delayed heal after taking damage.",
+    "description": "2 seconds after getting hurt, heal for 20 plus an additional 5% (+5% per stack) of maximum health.",
+    "stacking": [
+      {
+        "stat": "Delayed heal (% of max health)",
+        "base": 5,
+        "perStack": 5,
+        "type": "linear"
+      }
+    ],
+    "tags": ["healing"],
+    "icon": "/icons/medkit.png",
+    "wiki": "https://riskofrain2.wiki.gg/wiki/Medkit",
+    "verified": true
+  },
+  {
+    "id": "personal-shield-generator",
+    "name": "Personal Shield Generator",
+    "tier": "common",
+    "dlc": "base",
+    "pickupText": "Gain a recharging shield.",
+    "description": "Gain a shield equal to 8% (+8% per stack) of your maximum health. Recharges outside of danger.",
+    "stacking": [
+      {
+        "stat": "Shield (% of max health)",
+        "base": 8,
+        "perStack": 8,
+        "type": "linear"
+      }
+    ],
+    "tags": ["survivability", "shield"],
+    "icon": "/icons/personal-shield-generator.png",
+    "wiki": "https://riskofrain2.wiki.gg/wiki/Personal_Shield_Generator",
+    "verified": true
+  },
+  {
+    "id": "power-elixir",
+    "name": "Power Elixir",
+    "tier": "common",
+    "dlc": "base",
+    "pickupText": "Receive an instant heal at low health. Consumed on use.",
+    "description": "Taking damage to below 25% health consumes this item, healing you for 75% of maximum health.",
+    "stacking": [],
+    "tags": ["healing"],
+    "icon": "/icons/power-elixir.png",
+    "wiki": "https://riskofrain2.wiki.gg/wiki/Power_Elixir",
+    "verified": true
+  },
+  {
+    "id": "repulsion-armor-plate",
+    "name": "Repulsion Armor Plate",
+    "tier": "common",
+    "dlc": "base",
+    "pickupText": "Receive flat damage reduction from all attacks.",
+    "description": "Reduce all incoming damage by 5 (+5 per stack). Cannot be reduced below 1.",
+    "stacking": [
+      {
+        "stat": "Flat damage reduction",
+        "base": 5,
+        "perStack": 5,
+        "type": "linear"
+      }
+    ],
+    "tags": ["survivability"],
+    "icon": "/icons/repulsion-armor-plate.png",
+    "wiki": "https://riskofrain2.wiki.gg/wiki/Repulsion_Armor_Plate",
+    "verified": true
+  },
+  {
+    "id": "roll-of-pennies",
+    "name": "Roll of Pennies",
+    "tier": "common",
+    "dlc": "base",
+    "pickupText": "Gain gold on taking damage.",
+    "description": "Gain 3 (+3 per stack) gold on taking damage from an enemy. Scales over time.",
+    "stacking": [
+      {
+        "stat": "Gold on taking damage",
+        "base": 3,
+        "perStack": 3,
+        "type": "linear"
+      }
+    ],
+    "tags": ["utility", "gold"],
+    "icon": "/icons/roll-of-pennies.png",
+    "wiki": "https://riskofrain2.wiki.gg/wiki/Roll_of_Pennies",
+    "verified": true
+  },
+  {
+    "id": "sticky-bomb",
+    "name": "Sticky Bomb",
+    "tier": "common",
+    "dlc": "base",
+    "pickupText": "Chance on hit to attach a bomb to enemies.",
+    "description": "5% (+5% per stack) chance on hit to attach a bomb to an enemy, detonating for 180% TOTAL damage.",
+    "stacking": [
+      {
+        "stat": "Chance on hit to attach a bomb",
+        "base": 5,
+        "perStack": 5,
+        "type": "linear"
+      }
+    ],
+    "tags": ["damage", "on-hit"],
+    "icon": "/icons/sticky-bomb.png",
+    "wiki": "https://riskofrain2.wiki.gg/wiki/Sticky_Bomb",
+    "verified": true
+  },
+  {
+    "id": "topaz-brooch",
+    "name": "Topaz Brooch",
+    "tier": "common",
+    "dlc": "base",
+    "pickupText": "Gain a temporary barrier on kill.",
+    "description": "Gain a temporary barrier on kill for 15 health (+15 per stack).",
+    "stacking": [
+      {
+        "stat": "Barrier on kill (health)",
+        "base": 15,
+        "perStack": 15,
+        "type": "linear"
+      }
+    ],
+    "tags": ["survivability", "on-kill"],
+    "icon": "/icons/topaz-brooch.png",
+    "wiki": "https://riskofrain2.wiki.gg/wiki/Topaz_Brooch",
+    "verified": true
+  },
+  {
+    "id": "stun-grenade",
+    "name": "Stun Grenade",
+    "tier": "common",
+    "dlc": "base",
+    "pickupText": "Chance to stun on hit.",
+    "description": "5% (+5% per stack) chance on hit to stun enemies for 2 seconds.",
+    "stacking": [
+      {
+        "stat": "Chance on hit to stun",
+        "base": 5,
+        "perStack": 5,
+        "type": "linear"
+      }
+    ],
+    "tags": ["utility", "on-hit", "crowd-control"],
+    "icon": "/icons/stun-grenade.png",
+    "wiki": "https://riskofrain2.wiki.gg/wiki/Stun_Grenade",
+    "verified": true
+  },
+  {
+    "id": "warbanner",
+    "name": "Warbanner",
+    "tier": "common",
+    "dlc": "base",
+    "pickupText": "Drop a Warbanner on level up or starting the Teleporter event.",
+    "description": "On level up or starting the Teleporter event, drop a banner that strengthens all allies within 16m (+8m per stack). Raise attack and movement speed by 30%.",
+    "stacking": [
+      {
+        "stat": "Banner radius (m)",
+        "base": 16,
+        "perStack": 8,
+        "type": "linear"
+      }
+    ],
+    "tags": ["utility", "attack-speed", "movement-speed"],
+    "icon": "/icons/warbanner.png",
+    "wiki": "https://riskofrain2.wiki.gg/wiki/Warbanner",
+    "verified": true
+  },
+  {
+    "id": "mocha",
+    "name": "Mocha",
+    "tier": "common",
+    "dlc": "sotv",
+    "pickupText": "Slightly increase attack speed and movement speed.",
+    "description": "Increases attack speed by 7.5% (+7.5% per stack) and movement speed by 7% (+7% per stack).",
+    "stacking": [
+      {
+        "stat": "Attack speed",
+        "base": 7.5,
+        "perStack": 7.5,
+        "type": "linear"
+      },
+      {
+        "stat": "Movement speed",
+        "base": 7,
+        "perStack": 7,
+        "type": "linear"
+      }
+    ],
+    "tags": ["damage", "attack-speed", "movement-speed"],
+    "icon": "/icons/mocha.png",
+    "wiki": "https://riskofrain2.wiki.gg/wiki/Mocha",
+    "verified": true
+  },
+  {
+    "id": "oddly-shaped-opal",
+    "name": "Oddly-shaped Opal",
+    "tier": "common",
+    "dlc": "sotv",
+    "pickupText": "Reduce damage the first time you are hit.",
+    "description": "Increase armor by 100 (+100 per stack) while out of danger.",
+    "stacking": [
+      {
+        "stat": "Armor while out of danger",
+        "base": 100,
+        "perStack": 100,
+        "type": "linear"
+      }
+    ],
+    "tags": ["survivability", "armor"],
+    "icon": "/icons/oddly-shaped-opal.png",
+    "wiki": "https://riskofrain2.wiki.gg/wiki/Oddly-shaped_Opal",
+    "verified": true
+  },
+  {
+    "id": "elusive-antlers",
+    "name": "Elusive Antlers",
+    "tier": "common",
+    "dlc": "sots",
+    "pickupText": "Spawns orbs of energy that give bonus movement speed.",
+    "description": "Spawns orbs of energy nearby every 10s (-10% per stack), giving +12% movement speed up to 3 (+3 per stack) times for 12s.",
+    "stacking": [
+      {
+        "stat": "Max movement-speed orbs",
+        "base": 3,
+        "perStack": 3,
+        "type": "linear"
+      },
+      {
+        "stat": "Movement speed per orb (%)",
+        "base": 12,
+        "perStack": 0,
+        "type": "none"
+      },
+      {
+        "stat": "Orb spawn interval (s)",
+        "base": 10,
+        "perStack": -10,
+        "type": "special",
+        "formula": "interval reduced 10% per stack (multiplicative), minimum 2s"
+      }
+    ],
+    "tags": ["utility", "movement-speed"],
+    "icon": "/icons/elusive-antlers.png",
+    "wiki": "https://riskofrain2.wiki.gg/wiki/Elusive_Antlers",
+    "verified": true
+  },
+  {
+    "id": "chronic-expansion",
+    "name": "Chronic Expansion",
+    "tier": "common",
+    "dlc": "sots",
+    "pickupText": "Deal bonus damage for each enemy killed.",
+    "description": "Killing an enemy increases your damage by 3.5% (+1% per stack), up to 10 (+5 per stack), for 7s. Dealing damage refreshes the timer.",
+    "stacking": [
+      {
+        "stat": "Damage per kill (%)",
+        "base": 3.5,
+        "perStack": 1,
+        "type": "linear"
+      },
+      {
+        "stat": "Max damage stacks",
+        "base": 10,
+        "perStack": 5,
+        "type": "linear"
+      }
+    ],
+    "tags": ["damage", "on-kill"],
+    "icon": "/icons/chronic-expansion.png",
+    "wiki": "https://riskofrain2.wiki.gg/wiki/Chronic_Expansion",
+    "verified": true
+  },
+  {
+    "id": "warped-echo",
+    "name": "Warped Echo",
+    "tier": "common",
+    "dlc": "sots",
+    "pickupText": "Incoming damage is reduced and dealt over time.",
+    "description": "The next source of damage is reduced by 10% and spread into 3 (+1 per stack) hits. All echoed damage is non-lethal except for the final hit. Recharges every 15s.",
+    "stacking": [
+      {
+        "stat": "Echoed hits",
+        "base": 3,
+        "perStack": 1,
+        "type": "linear"
+      }
+    ],
+    "tags": ["survivability", "utility"],
+    "icon": "/icons/warped-echo.png",
+    "wiki": "https://riskofrain2.wiki.gg/wiki/Warped_Echo",
+    "verified": true
+  },
+  {
+    "id": "item-scrap-white",
+    "name": "Item Scrap, White",
+    "tier": "common",
+    "subtype": "untiered",
+    "dlc": "base",
+    "pickupText": "Does nothing. Prioritized when used with 3D Printers.",
+    "description": "A Common-rarity scrap with no effect. Consumed first by 3D Printers and Cauldrons, letting you preserve real items.",
+    "stacking": [],
+    "tags": ["utility", "scrap"],
+    "icon": "/icons/item-scrap-white.png",
+    "wiki": "https://riskofrain2.wiki.gg/wiki/Item_Scrap",
+    "verified": true
+  },
+  {
+    "id": "rusted-key",
+    "name": "Rusted Key",
+    "tier": "common",
+    "dlc": "base",
+    "pickupText": "Gain access to a Rusty Lockbox that contains a powerful item.",
+    "description": "A hidden cache containing an item (80% Uncommon / 20% Legendary) will appear in a random location on each stage.",
+    "stacking": [
+      {
+        "stat": "Lockbox behavior",
+        "base": 1,
+        "perStack": 1,
+        "type": "special",
+        "formula": "One lockbox per stage per key-holder; additional keys' effect on rarity vs. count needs logbook confirmation"
+      }
+    ],
+    "tags": ["utility"],
+    "icon": "/icons/rusted-key.png",
+    "wiki": "https://riskofrain2.wiki.gg/wiki/Rusted_Key",
+    "verified": false
+  },
+  {
+    "id": "hikers-boots",
+    "name": "Hiker's Boots",
+    "tier": "common",
+    "dlc": "ac",
+    "pickupText": "Striking enemies from a higher elevation grants critical strike chance and damage.",
+    "description": "Striking enemies from a higher elevation grants +1% (+1% per stack) critical strike chance and critical strike damage, up to 10 times. Lasts 10 seconds.",
+    "stacking": [
+      {
+        "stat": "Crit chance & crit damage per elevated hit (%)",
+        "base": 1,
+        "perStack": 1,
+        "type": "linear",
+        "cap": "Buff stacks up to 10 times."
+      }
+    ],
+    "tags": ["damage", "critical-strike"],
+    "icon": "/icons/hikers-boots.png",
+    "wiki": "https://riskofrain2.wiki.gg/wiki/Hiker%27s_Boots",
+    "verified": false
+  },
+  {
+    "id": "bolstering-lantern",
+    "name": "Bolstering Lantern",
+    "tier": "common",
+    "dlc": "sots",
+    "pickupText": "Increases your attack speed for every nearby enemy and ally.",
+    "description": "Increase your attack speed by 10% (+3.5% per stack) for up to 3 (+1 per stack) enemies and allies within 20 meters.",
+    "stacking": [
+      {
+        "stat": "Attack speed per nearby unit (%)",
+        "base": 10,
+        "perStack": 3.5,
+        "type": "linear"
+      },
+      {
+        "stat": "Max nearby units counted",
+        "base": 3,
+        "perStack": 1,
+        "type": "linear"
+      }
+    ],
+    "tags": ["damage", "attack-speed"],
+    "icon": "/icons/bolstering-lantern.png",
+    "wiki": "https://riskofrain2.wiki.gg/wiki/Bolstering_Lantern",
+    "verified": false
+  },
+  {
+    "id": "eclipse-lite",
+    "name": "Eclipse Lite",
+    "tier": "common",
+    "dlc": "ac",
+    "pickupText": "Gain a small temporary barrier when a skill comes off cooldown.",
+    "description": "When a skill comes off cooldown, gain a temporary barrier for 1% (+0.25% per stack) of your maximum health per second of the skill's base cooldown.",
+    "stacking": [
+      {
+        "stat": "Barrier per second of base cooldown (% max health)",
+        "base": 1,
+        "perStack": 0.25,
+        "type": "linear"
+      }
+    ],
+    "tags": ["survivability"],
+    "icon": "/icons/eclipse-lite.png",
+    "wiki": "https://riskofrain2.wiki.gg/wiki/Eclipse_Lite",
+    "verified": false
+  }
+]
