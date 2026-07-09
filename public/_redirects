@@ -1,0 +1,4 @@
+# SPA fallback so client-side routes (/planner, /stats, /reference…) resolve on
+# refresh/deep-link. Honored by Netlify and Cloudflare Pages. Vercel uses a
+# framework preset; add a rewrite in vercel.json if deploying there.
+/*    /index.html   200

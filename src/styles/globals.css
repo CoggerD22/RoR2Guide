@@ -1,0 +1,154 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+
+/*
+ * RoR2 Companion — theme tokens (M0).
+ *
+ * Dark space-blue theme (PLAN §4 "Design direction", CLAUDE.md "Design tokens").
+ * Tier colors are RESERVED for item identity only and are provisional here —
+ * CLAUDE.md requires confirming exact hex against the in-game UI during M2.
+ * The shadcn-style semantic tokens below let `shadcn add` drop primitives in
+ * cleanly during M2/M3.
+ */
+
+:root {
+  --radius: 0.625rem;
+
+  /* Base surfaces — deep space-blue (#0b1220–#101826 range) */
+  --background: #0b1220;
+  --surface: #0e1626;
+  --surface-2: #101826;
+  --foreground: #e6edf7;
+
+  --card: #0e1626;
+  --card-foreground: #e6edf7;
+  --popover: #0e1626;
+  --popover-foreground: #e6edf7;
+
+  --muted: #16203010;
+  --muted-solid: #16233a;
+  --muted-foreground: #8a97ad;
+
+  --border: #1e2a3f;
+  --input: #223049;
+  --ring: #38bdf8;
+
+  /* Luminous cyan-blue accent (the game's teleporter/UI blue) */
+  --primary: #38bdf8;
+  --primary-foreground: #05202e;
+  --secondary: #16233a;
+  --secondary-foreground: #e6edf7;
+  --accent: #22d3ee;
+  --accent-foreground: #05202e;
+
+  --destructive: #ff5c5c;
+  --destructive-foreground: #1a0505;
+
+  /* Item tier identity colors — PROVISIONAL, confirm exact hex in M2 */
+  --tier-common: #e8e8e8;
+  --tier-uncommon: #77ff8b;
+  --tier-legendary: #ff5c5c;
+  --tier-boss: #ffd93d;
+  --tier-lunar: #66ccff;
+  --tier-void: #c974ff;
+  --tier-equipment: #ff9c3f;
+
+  /* Typography — squarish techno display + humanist sans (PLAN §4).
+     Real webfonts land later; system fallbacks for now, swap the stacks here. */
+  --font-display-stack: "Rajdhani", "Segoe UI", ui-sans-serif, system-ui, sans-serif;
+  --font-sans-stack: ui-sans-serif, system-ui, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-surface: var(--surface);
+  --color-surface-2: var(--surface-2);
+  --color-foreground: var(--foreground);
+
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+
+  --color-muted: var(--muted-solid);
+  --color-muted-foreground: var(--muted-foreground);
+
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+
+  /* Tier tokens — usable as bg-tier-legendary, text-tier-void, border-tier-boss… */
+  --color-tier-common: var(--tier-common);
+  --color-tier-uncommon: var(--tier-uncommon);
+  --color-tier-legendary: var(--tier-legendary);
+  --color-tier-boss: var(--tier-boss);
+  --color-tier-lunar: var(--tier-lunar);
+  --color-tier-void: var(--tier-void);
+  --color-tier-equipment: var(--tier-equipment);
+
+  --font-display: var(--font-display-stack);
+  --font-sans: var(--font-sans-stack);
+
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+}
+
+@layer base {
+  * {
+    border-color: var(--color-border);
+  }
+
+  html {
+    color-scheme: dark;
+  }
+
+  body {
+    margin: 0;
+    min-height: 100dvh;
+    background-color: var(--color-background);
+    color: var(--color-foreground);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4 {
+    font-family: var(--font-display);
+    letter-spacing: 0.01em;
+    text-wrap: balance;
+  }
+
+  /* Keyboard-navigation baseline (quality floor, PLAN §4). */
+  :focus-visible {
+    outline: 2px solid var(--color-ring);
+    outline-offset: 2px;
+    border-radius: 2px;
+  }
+}
+
+/* Respect reduced-motion (PLAN §4 quality floor). */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

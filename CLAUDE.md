@@ -1,0 +1,68 @@
+# CLAUDE.md — RoR2 Companion
+
+Fan-made Risk of Rain 2 companion site. Read `PLAN.md` in full before doing anything;
+it is the source of truth for scope, schema, and milestones. Work milestone by
+milestone (M0 → M6) and do not pull in future-phase features early.
+
+## Non-negotiable rules
+
+1. **Never invent game data.** Every stat, formula, and description in `/src/data`
+   must come from riskofrain2.wiki.gg or the game's own language files
+   (`Risk of Rain 2_Data/StreamingAssets/Language/en/*.txt` — these are JSON). If a
+   value can't be verified, set `"verified": false` and surface it in the audit
+   script; never fill in a plausible-sounding number.
+2. **The game has 3 DLCs as of 2026**: Survivors of the Void, Seekers of the Storm,
+   Alloyed Collective (Nov 2025). Training-data knowledge of item counts, survivors,
+   and balance is stale — verify against the wiki when touching data.
+3. **Stacking is an array, not an enum.** Items can have multiple stats with
+   different stacking types (see Fuel Cell). Don't flatten the schema.
+4. **Void corruption pairs must be bidirectional** and validated (audit script fails
+   on dangling references).
+5. **No backend.** Static JSON + client state only. Don't add servers, databases, or
+   auth. Planner state lives in localStorage via Zustand persist.
+6. Keep the non-affiliation disclaimer in the footer; this is a non-commercial fan
+   project and all game assets belong to Gearbox Publishing.
+7. **Facts and opinions never mix.** Mechanical data (numbers, formulas, unlocks,
+   survivor-specific item behavior) is fact and lives in the JSON datasets.
+   Recommendations, build guides, and tier content are opinion: they live in
+   `/content/guides/*.md`, are always badged "Opinion" in the UI, and carry
+   author + date + game patch version so they visibly go stale. Never write
+   ranking or "best item" language into `items.json` or codex UI copy.
+
+## Stack & conventions
+
+- Vite + React + TypeScript (strict), Tailwind v4, shadcn/ui, Zustand, Fuse.js,
+  TanStack Router, Zod for data validation.
+- Package manager: pnpm.
+- Commands (once scaffolded): `pnpm dev`, `pnpm build`, `pnpm typecheck`,
+  `pnpm data:audit` (schema + integrity checks over /src/data), `pnpm test`.
+- Data files: `/src/data/items.json`, `/src/data/survivors.json`, schemas in
+  `/src/data/schema.ts`. Icons in `/public/icons/<id>.png`.
+- Commit data work tier-by-tier (one tier per PR/commit) so it can be spot-checked
+  against the in-game logbook.
+
+## Design tokens
+
+Dark space-blue theme. Base surfaces `#0b1220`–`#101826`, luminous cyan-blue accent
+for interactive elements, tier colors reserved for item identity only:
+common `#e8e8e8`, uncommon `#77ff8b`-family green, legendary `#ff5c5c`-family red,
+boss `#ffd93d`, lunar `#66ccff`, void `#c974ff`, equipment `#ff9c3f`.
+(Confirm exact tier hex values against in-game UI during M2 and record final tokens
+here.) Tooltips replicate the in-game item tooltip: dark panel, subtle border, icon
+left, bold white name, gray body with highlighted numeric values.
+
+## Working style
+
+- When fetching wiki pages for data entry, transcribe numbers exactly; paraphrase any
+  wiki prose that isn't verbatim in-game text.
+- After each milestone, update the "Status" section below.
+
+## Status
+
+- [x] M0 skeleton
+- [ ] M1 data: whites + greens
+- [ ] M2 codex UI
+- [ ] M3 run planner
+- [ ] M4 data complete
+- [ ] M5 stat lab
+- [ ] M6 reference pages
