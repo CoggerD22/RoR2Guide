@@ -1153,5 +1153,134 @@
     "icon": "/icons/wax-quail.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Wax_Quail",
     "verified": true
+  },
+  {
+    "id": "old-guillotine",
+    "name": "Old Guillotine",
+    "tier": "uncommon",
+    "dlc": "base",
+    "pickupText": "Instantly kill low health Elite monsters.",
+    "description": "Instantly kill Elite monsters below 13% (+13% per stack) health.",
+    "stacking": [
+      {
+        "stat": "Elite execute threshold (% health)",
+        "base": 13,
+        "perStack": 13,
+        "type": "hyperbolic",
+        "formula": "execute threshold stacks hyperbolically (13% at 1 stack), diminishing per stack and approaching but never reaching 100%"
+      }
+    ],
+    "tags": ["damage", "execute", "on-hit"],
+    "unlock": "Cut Down",
+    "icon": "/icons/old-guillotine.png",
+    "wiki": "https://riskofrain2.wiki.gg/wiki/Old_Guillotine",
+    "verified": true
+  },
+  {
+    "id": "war-horn",
+    "name": "War Horn",
+    "tier": "uncommon",
+    "dlc": "base",
+    "pickupText": "Activating your Equipment gives you a burst of attack speed.",
+    "description": "Activating your Equipment gives you +70% attack speed for 8s (+4s per stack).",
+    "stacking": [
+      {
+        "stat": "Attack speed buff duration (s)",
+        "base": 8,
+        "perStack": 4,
+        "type": "linear"
+      }
+    ],
+    "tags": ["damage", "attack-speed", "equipment"],
+    "unlock": "Warmonger",
+    "icon": "/icons/war-horn.png",
+    "wiki": "https://riskofrain2.wiki.gg/wiki/War_Horn",
+    "verified": true
+  },
+  {
+    "id": "lepton-daisy",
+    "name": "Lepton Daisy",
+    "tier": "uncommon",
+    "dlc": "base",
+    "pickupText": "Periodically release a healing nova during the Teleporter event and 'Holdout Zones' such as the Void Fields.",
+    "description": "Release a healing nova during the Teleporter event, healing all nearby allies for 50% of their maximum health. Occurs 1 (+1 per stack) times.",
+    "stacking": [
+      {
+        "stat": "Healing nova charges",
+        "base": 1,
+        "perStack": 1,
+        "type": "linear"
+      }
+    ],
+    "tags": ["healing", "utility"],
+    "icon": "/icons/lepton-daisy.png",
+    "wiki": "https://riskofrain2.wiki.gg/wiki/Lepton_Daisy",
+    "verified": true
+  },
+  {
+    "id": "razorwire",
+    "name": "Razorwire",
+    "tier": "uncommon",
+    "dlc": "base",
+    "pickupText": "Retaliate in a burst of razors on taking damage.",
+    "description": "Getting hit causes you to explode in a burst of razors, dealing 160% damage. Hits up to 5 (+2 per stack) targets in a 25m (+10m per stack) radius.",
+    "stacking": [
+      {
+        "stat": "Targets hit",
+        "base": 5,
+        "perStack": 2,
+        "type": "linear"
+      },
+      {
+        "stat": "Burst radius (m)",
+        "base": 25,
+        "perStack": 10,
+        "type": "linear"
+      }
+    ],
+    "tags": ["damage", "aoe"],
+    "icon": "/icons/razorwire.png",
+    "wiki": "https://riskofrain2.wiki.gg/wiki/Razorwire",
+    "verified": true
+  },
+  {
+    "id": "ghors-tome",
+    "name": "Ghor's Tome",
+    "tier": "uncommon",
+    "dlc": "base",
+    "pickupText": "Chance on kill to drop a treasure.",
+    "description": "4% (+4% per stack) chance on kill to drop a treasure worth $25. Scales over time.",
+    "stacking": [
+      {
+        "stat": "Chance on kill to drop treasure (%)",
+        "base": 4,
+        "perStack": 4,
+        "type": "linear"
+      }
+    ],
+    "tags": ["utility", "gold", "on-kill"],
+    "icon": "/icons/ghors-tome.png",
+    "wiki": "https://riskofrain2.wiki.gg/wiki/Ghor%27s_Tome",
+    "verified": true
+  },
+  {
+    "id": "squid-polyp",
+    "name": "Squid Polyp",
+    "tier": "uncommon",
+    "dlc": "base",
+    "pickupText": "Activating an interactable summons a Squid Turret nearby.",
+    "description": "Activating an interactable summons a Squid Turret that attacks nearby enemies at 100% (+100% per stack) attack speed. Lasts 30 seconds.",
+    "stacking": [
+      {
+        "stat": "Turret attack speed (%)",
+        "base": 100,
+        "perStack": 100,
+        "type": "linear"
+      }
+    ],
+    "tags": ["damage", "utility"],
+    "icon": "/icons/squid-polyp.png",
+    "wiki": "https://riskofrain2.wiki.gg/wiki/Squid_Polyp",
+    "verified": true
   }
 ]
