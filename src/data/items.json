@@ -2853,5 +2853,500 @@
     "icon": "/icons/item-scrap-yellow.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Item_Scrap",
     "verified": true
+  },
+  {
+    "id": "shaped-glass",
+    "name": "Shaped Glass",
+    "tier": "lunar",
+    "dlc": "base",
+    "pickupText": "Double your damage... BUT halve your health.",
+    "description": "Increase base damage by 100% (+100% per stack). Reduce maximum health by 50% (+50% per stack).",
+    "stacking": [
+      {
+        "stat": "Base damage bonus (%)",
+        "base": 100,
+        "perStack": 100,
+        "type": "exponential",
+        "formula": "base damage multiplied by 2 per stack (×2, ×4, ×8, …)"
+      },
+      {
+        "stat": "Maximum health reduction (%)",
+        "base": 50,
+        "perStack": 50,
+        "type": "exponential",
+        "formula": "maximum health multiplied by 0.5 per stack (half, quarter, …)"
+      }
+    ],
+    "tags": ["damage"],
+    "icon": "/icons/shaped-glass.png",
+    "wiki": "https://riskofrain2.wiki.gg/wiki/Shaped_Glass",
+    "verified": true
+  },
+  {
+    "id": "brittle-crown",
+    "name": "Brittle Crown",
+    "tier": "lunar",
+    "dlc": "base",
+    "pickupText": "Gain gold on hit... BUT surrender gold on getting hit.",
+    "description": "30% chance on hit to gain 2 (+2 per stack) gold. Lose gold on taking damage equal to 100% (+100% per stack) of the maximum health percentage lost.",
+    "stacking": [
+      {
+        "stat": "Gold on hit",
+        "base": 2,
+        "perStack": 2,
+        "type": "linear"
+      }
+    ],
+    "tags": ["gold", "utility"],
+    "icon": "/icons/brittle-crown.png",
+    "wiki": "https://riskofrain2.wiki.gg/wiki/Brittle_Crown",
+    "verified": true
+  },
+  {
+    "id": "transcendence",
+    "name": "Transcendence",
+    "tier": "lunar",
+    "dlc": "base",
+    "pickupText": "Convert all your health into shield. Increase maximum health.",
+    "description": "Convert all but 1 health into regenerating shields. Gain 50% (+25% per stack) maximum health.",
+    "stacking": [
+      {
+        "stat": "Maximum health (%)",
+        "base": 50,
+        "perStack": 25,
+        "type": "linear"
+      }
+    ],
+    "tags": ["survivability", "shield", "health"],
+    "icon": "/icons/transcendence.png",
+    "wiki": "https://riskofrain2.wiki.gg/wiki/Transcendence",
+    "verified": true
+  },
+  {
+    "id": "corpsebloom",
+    "name": "Corpsebloom",
+    "tier": "lunar",
+    "dlc": "base",
+    "pickupText": "Double your healing... BUT it's applied over time.",
+    "description": "Heal +100% (+100% per stack) more. All healing is applied over time, capped at a maximum of 10% (-50% per stack) of your health per second.",
+    "stacking": [
+      {
+        "stat": "Healing bonus (%)",
+        "base": 100,
+        "perStack": 100,
+        "type": "linear"
+      },
+      {
+        "stat": "Max heal per second (% of health)",
+        "base": 10,
+        "perStack": -50,
+        "type": "special",
+        "formula": "heal-per-second cap divides reciprocally: 10% at 1 stack, ~6.7% at 2, 5% at 3, …"
+      }
+    ],
+    "tags": ["healing"],
+    "icon": "/icons/corpsebloom.png",
+    "wiki": "https://riskofrain2.wiki.gg/wiki/Corpsebloom",
+    "verified": true
+  },
+  {
+    "id": "gesture-of-the-drowned",
+    "name": "Gesture of the Drowned",
+    "tier": "lunar",
+    "dlc": "base",
+    "pickupText": "Dramatically reduce Equipment cooldown... BUT it automatically activates.",
+    "description": "Reduce Equipment cooldown by 50% (+15% per stack). Forces your Equipment to activate whenever it is off cooldown.",
+    "stacking": [
+      {
+        "stat": "Equipment cooldown reduction (%)",
+        "base": 50,
+        "perStack": 15,
+        "type": "exponential",
+        "formula": "cooldown = base x 0.5 x 0.85^(stacks-1) (multiplicative)"
+      }
+    ],
+    "tags": ["utility", "equipment"],
+    "unlock": "The Demons And The Crabs",
+    "icon": "/icons/gesture-of-the-drowned.png",
+    "wiki": "https://riskofrain2.wiki.gg/wiki/Gesture_of_the_Drowned",
+    "verified": true
+  },
+  {
+    "id": "purity",
+    "name": "Purity",
+    "tier": "lunar",
+    "dlc": "base",
+    "pickupText": "Reduce your skill cooldowns by 2 seconds. You are unlucky.",
+    "description": "All skill cooldowns are reduced by 2 (+1 per stack) seconds. All random effects are rolled +1 (+1 per stack) times for an unfavorable outcome.",
+    "stacking": [
+      {
+        "stat": "Skill cooldown reduction (s)",
+        "base": 2,
+        "perStack": 1,
+        "type": "linear"
+      }
+    ],
+    "tags": ["utility"],
+    "unlock": "The Calm",
+    "icon": "/icons/purity.png",
+    "wiki": "https://riskofrain2.wiki.gg/wiki/Purity",
+    "verified": true
+  },
+  {
+    "id": "visions-of-heresy",
+    "name": "Visions of Heresy",
+    "tier": "lunar",
+    "dlc": "base",
+    "pickupText": "Replace your Primary Skill with 'Hungering Gaze'.",
+    "description": "Fire a flurry of tracking shards that detonate after a delay for 120% base damage. Hold up to 12 charges (+12 per stack) that reload after 2 seconds (+2 per stack).",
+    "stacking": [
+      {
+        "stat": "Max charges",
+        "base": 12,
+        "perStack": 12,
+        "type": "linear"
+      },
+      {
+        "stat": "Reload time (s)",
+        "base": 2,
+        "perStack": 2,
+        "type": "linear"
+      }
+    ],
+    "tags": ["damage", "utility"],
+    "unlock": "Blockade Breaker",
+    "icon": "/icons/visions-of-heresy.png",
+    "wiki": "https://riskofrain2.wiki.gg/wiki/Visions_of_Heresy",
+    "verified": true
+  },
+  {
+    "id": "strides-of-heresy",
+    "name": "Strides of Heresy",
+    "tier": "lunar",
+    "dlc": "base",
+    "pickupText": "Replace your Utility Skill with 'Shadowfade'.",
+    "description": "Fade away, becoming intangible and gaining +30% movement speed. Heal for 18.2% (+18.2% per stack) of your maximum health. Lasts 3 (+3 per stack) seconds.",
+    "stacking": [
+      {
+        "stat": "Heal (% of max health)",
+        "base": 18.2,
+        "perStack": 18.2,
+        "type": "linear"
+      },
+      {
+        "stat": "Duration (s)",
+        "base": 3,
+        "perStack": 3,
+        "type": "linear"
+      }
+    ],
+    "tags": ["healing", "mobility", "utility"],
+    "unlock": "Blockade Breaker",
+    "icon": "/icons/strides-of-heresy.png",
+    "wiki": "https://riskofrain2.wiki.gg/wiki/Strides_of_Heresy",
+    "verified": true
+  },
+  {
+    "id": "hooks-of-heresy",
+    "name": "Hooks of Heresy",
+    "tier": "lunar",
+    "dlc": "base",
+    "pickupText": "Replace your Secondary Skill with 'Slicing Maelstrom'.",
+    "description": "Charge a projectile dealing 875% damage per second to nearby enemies, exploding after 3 seconds for 700% damage and rooting enemies for 3 (+3 per stack) seconds. Recharges after 5 (+5 per stack) seconds.",
+    "stacking": [
+      {
+        "stat": "Root duration (s)",
+        "base": 3,
+        "perStack": 3,
+        "type": "linear"
+      },
+      {
+        "stat": "Recharge time (s)",
+        "base": 5,
+        "perStack": 5,
+        "type": "linear"
+      }
+    ],
+    "tags": ["damage", "crowd-control", "utility"],
+    "unlock": "Blockade Breaker",
+    "icon": "/icons/hooks-of-heresy.png",
+    "wiki": "https://riskofrain2.wiki.gg/wiki/Hooks_of_Heresy",
+    "verified": true
+  },
+  {
+    "id": "essence-of-heresy",
+    "name": "Essence of Heresy",
+    "tier": "lunar",
+    "dlc": "base",
+    "pickupText": "Replace your Special Skill with 'Ruin'.",
+    "description": "Dealing damage adds a stack of Ruin for 10 (+10 per stack) seconds. Activating the skill detonates all Ruin stacks at unlimited range for 300% damage plus 120% per stack of Ruin. Recharges after 8 (+8 per stack) seconds.",
+    "stacking": [
+      {
+        "stat": "Ruin duration (s)",
+        "base": 10,
+        "perStack": 10,
+        "type": "linear"
+      },
+      {
+        "stat": "Recharge time (s)",
+        "base": 8,
+        "perStack": 8,
+        "type": "linear"
+      }
+    ],
+    "tags": ["damage", "utility"],
+    "unlock": "Blockade Breaker",
+    "icon": "/icons/essence-of-heresy.png",
+    "wiki": "https://riskofrain2.wiki.gg/wiki/Essence_of_Heresy",
+    "verified": true
+  },
+  {
+    "id": "beads-of-fealty",
+    "name": "Beads of Fealty",
+    "tier": "lunar",
+    "dlc": "base",
+    "pickupText": "Seems to do nothing... but...",
+    "description": "Has no direct effect. Obliterating yourself at the Obelisk in A Moment, Fractured instead transports you to A Moment, Whole — a hidden realm containing a Twisted Scavenger.",
+    "stacking": [],
+    "tags": ["utility"],
+    "icon": "/icons/beads-of-fealty.png",
+    "wiki": "https://riskofrain2.wiki.gg/wiki/Beads_of_Fealty",
+    "verified": true
+  },
+  {
+    "id": "focused-convergence",
+    "name": "Focused Convergence",
+    "tier": "lunar",
+    "dlc": "base",
+    "pickupText": "Increase the speed of Teleporter charging... BUT reduce the size of the zone.",
+    "description": "Teleporters charge 30% (+30% per stack) faster, but the size of the Teleporter zone is 50% (-50% per stack) smaller.",
+    "stacking": [
+      {
+        "stat": "Teleporter charge speed (%)",
+        "base": 30,
+        "perStack": 30,
+        "type": "linear"
+      },
+      {
+        "stat": "Teleporter zone size reduction (%)",
+        "base": 50,
+        "perStack": -50,
+        "type": "special",
+        "formula": "zone shrinks reciprocally per stack (50% at 1 stack, then diminishing)"
+      }
+    ],
+    "tags": ["utility"],
+    "unlock": "Never Back Down",
+    "icon": "/icons/focused-convergence.png",
+    "wiki": "https://riskofrain2.wiki.gg/wiki/Focused_Convergence",
+    "verified": true
+  },
+  {
+    "id": "defiant-gouge",
+    "name": "Defiant Gouge",
+    "tier": "lunar",
+    "dlc": "base",
+    "pickupText": "Using a Shrine summons enemies nearby.",
+    "description": "Using a Shrine summons enemies nearby, stronger per stack (+40% per stack). Scales over time.",
+    "stacking": [
+      {
+        "stat": "Summoned enemy strength (%)",
+        "base": 40,
+        "perStack": 40,
+        "type": "linear"
+      }
+    ],
+    "tags": ["utility"],
+    "icon": "/icons/defiant-gouge.png",
+    "wiki": "https://riskofrain2.wiki.gg/wiki/Defiant_Gouge",
+    "verified": true
+  },
+  {
+    "id": "mercurial-rachis",
+    "name": "Mercurial Rachis",
+    "tier": "lunar",
+    "dlc": "base",
+    "pickupText": "Randomly create a Ward of Power. ALL characters deal bonus damage while in the Ward.",
+    "description": "Creates a Ward of Power in a random nearby location, 16m (+50% per stack) in radius, that causes both enemies and allies inside to deal +50% damage.",
+    "stacking": [
+      {
+        "stat": "Ward radius (m)",
+        "base": 16,
+        "perStack": 50,
+        "type": "exponential",
+        "formula": "radius increased 50% per stack (multiplicative)"
+      }
+    ],
+    "tags": ["damage", "utility"],
+    "icon": "/icons/mercurial-rachis.png",
+    "wiki": "https://riskofrain2.wiki.gg/wiki/Mercurial_Rachis",
+    "verified": true
+  },
+  {
+    "id": "stone-flux-pauldron",
+    "name": "Stone Flux Pauldron",
+    "tier": "lunar",
+    "dlc": "sotv",
+    "pickupText": "Double your health... BUT halve your speed.",
+    "description": "Increase max health by 100% (+100% per stack). Reduce movement speed by 50% (+50% per stack).",
+    "stacking": [
+      {
+        "stat": "Maximum health (%)",
+        "base": 100,
+        "perStack": 100,
+        "type": "linear"
+      },
+      {
+        "stat": "Movement speed reduction (%)",
+        "base": 50,
+        "perStack": -50,
+        "type": "special",
+        "formula": "speed penalty stacks reciprocally, approaching but never reaching a full stop"
+      }
+    ],
+    "tags": ["survivability", "health"],
+    "icon": "/icons/stone-flux-pauldron.png",
+    "wiki": "https://riskofrain2.wiki.gg/wiki/Stone_Flux_Pauldron",
+    "verified": true
+  },
+  {
+    "id": "light-flux-pauldron",
+    "name": "Light Flux Pauldron",
+    "tier": "lunar",
+    "dlc": "sotv",
+    "pickupText": "Halve your cooldowns... BUT halve your attack speed.",
+    "description": "Decrease skill cooldowns by 50% (+50% per stack). Decrease attack speed by 50% (+50% per stack).",
+    "stacking": [
+      {
+        "stat": "Skill cooldown reduction (%)",
+        "base": 50,
+        "perStack": 50,
+        "type": "exponential",
+        "formula": "cooldown multiplied by 0.5 per stack (multiplicative)"
+      },
+      {
+        "stat": "Attack speed reduction (%)",
+        "base": 50,
+        "perStack": -50,
+        "type": "special",
+        "formula": "attack speed penalty stacks reciprocally, approaching but never reaching zero"
+      }
+    ],
+    "tags": ["utility"],
+    "icon": "/icons/light-flux-pauldron.png",
+    "wiki": "https://riskofrain2.wiki.gg/wiki/Light_Flux_Pauldron",
+    "verified": true
+  },
+  {
+    "id": "longstanding-solitude",
+    "name": "Longstanding Solitude",
+    "tier": "lunar",
+    "dlc": "sots",
+    "pickupText": "Free purchases on level up... BUT gold converts to experience.",
+    "description": "On level up, gain a free unlock for the next purchase (+1 per stack), but all gold is converted to experience. Anything that costs gold costs 50% (+50% per stack) more.",
+    "stacking": [
+      {
+        "stat": "Free purchases per level",
+        "base": 1,
+        "perStack": 1,
+        "type": "linear"
+      },
+      {
+        "stat": "Gold cost increase (%)",
+        "base": 50,
+        "perStack": 50,
+        "type": "linear"
+      }
+    ],
+    "tags": ["utility", "gold"],
+    "icon": "/icons/longstanding-solitude.png",
+    "wiki": "https://riskofrain2.wiki.gg/wiki/Longstanding_Solitude",
+    "verified": true
+  },
+  {
+    "id": "egocentrism",
+    "name": "Egocentrism",
+    "tier": "lunar",
+    "dlc": "sotv",
+    "pickupText": "Gain multiple orbiting bombs. Every minute, assimilate another item into Egocentrism.",
+    "description": "Every 3 (-50% per stack) seconds, gain an orbiting bomb that detonates on impact for 360% damage, up to a maximum of 3 bombs (+1 per stack). Every 60 seconds, a random item is converted into this item.",
+    "stacking": [
+      {
+        "stat": "Bomb spawn interval (s)",
+        "base": 3,
+        "perStack": -50,
+        "type": "special",
+        "formula": "spawn interval divides reciprocally per stack (3s, ~2s, 1.5s, …)"
+      },
+      {
+        "stat": "Max orbiting bombs",
+        "base": 3,
+        "perStack": 1,
+        "type": "linear"
+      }
+    ],
+    "tags": ["damage", "aoe"],
+    "icon": "/icons/egocentrism.png",
+    "wiki": "https://riskofrain2.wiki.gg/wiki/Egocentrism",
+    "verified": true
+  },
+  {
+    "id": "neutronium-weight",
+    "name": "Neutronium Weight",
+    "tier": "lunar",
+    "dlc": "ac",
+    "pickupText": "Reduces your stats while in combat, but send this item to an enemy on hit.",
+    "description": "Reduces damage by 30% (+10% per stack), attack speed by 30% (+10% per stack), movement speed by 30% (+10% per stack), and armor by 35 (+15 per stack).",
+    "stacking": [
+      {
+        "stat": "Damage reduction (%)",
+        "base": 30,
+        "perStack": 10,
+        "type": "exponential",
+        "formula": "each stat penalty stacks multiplicatively (-10% per stack)"
+      },
+      {
+        "stat": "Attack speed reduction (%)",
+        "base": 30,
+        "perStack": 10,
+        "type": "exponential"
+      },
+      {
+        "stat": "Movement speed reduction (%)",
+        "base": 30,
+        "perStack": 10,
+        "type": "exponential"
+      },
+      {
+        "stat": "Armor reduction",
+        "base": 35,
+        "perStack": 15,
+        "type": "linear"
+      }
+    ],
+    "tags": ["utility"],
+    "icon": "/icons/neutronium-weight.png",
+    "wiki": "https://riskofrain2.wiki.gg/wiki/Neutronium_Weight",
+    "verified": true
+  },
+  {
+    "id": "eulogy-zero",
+    "name": "Eulogy Zero",
+    "tier": "lunar",
+    "dlc": "sotv",
+    "pickupText": "Items and equipment have a small chance to transform into a Lunar item instead.",
+    "description": "Items have a 5% (+5% per stack) chance to become a Lunar item instead.",
+    "stacking": [
+      {
+        "stat": "Chance to become a Lunar item (%)",
+        "base": 5,
+        "perStack": 5,
+        "type": "linear"
+      }
+    ],
+    "tags": ["utility"],
+    "icon": "/icons/eulogy-zero.png",
+    "wiki": "https://riskofrain2.wiki.gg/wiki/Eulogy_Zero",
+    "verified": true
   }
 ]
