@@ -2417,5 +2417,441 @@
     "icon": "/icons/item-scrap-red.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Item_Scrap",
     "verified": true
+  },
+  {
+    "id": "titanic-knurl",
+    "name": "Titanic Knurl",
+    "tier": "boss",
+    "dlc": "base",
+    "pickupText": "Boosts health and regeneration.",
+    "description": "Increase maximum health by 40 (+40 per stack) and base health regeneration by +1.6 hp/s (+1.6 hp/s per stack).",
+    "stacking": [
+      {
+        "stat": "Maximum health",
+        "base": 40,
+        "perStack": 40,
+        "type": "linear"
+      },
+      {
+        "stat": "Base health regen (hp/s)",
+        "base": 1.6,
+        "perStack": 1.6,
+        "type": "linear"
+      }
+    ],
+    "tags": ["survivability", "healing", "health"],
+    "icon": "/icons/titanic-knurl.png",
+    "wiki": "https://riskofrain2.wiki.gg/wiki/Titanic_Knurl",
+    "verified": true
+  },
+  {
+    "id": "queens-gland",
+    "name": "Queen's Gland",
+    "tier": "boss",
+    "dlc": "base",
+    "pickupText": "Recruit a Beetle Guard.",
+    "description": "Every 30 seconds, summon a Beetle Guard with bonus 300% damage and 100% health. Can have up to 1 (+1 per stack) Guards at a time.",
+    "stacking": [
+      {
+        "stat": "Max Beetle Guards",
+        "base": 1,
+        "perStack": 1,
+        "type": "linear"
+      }
+    ],
+    "tags": ["damage", "utility"],
+    "icon": "/icons/queens-gland.png",
+    "wiki": "https://riskofrain2.wiki.gg/wiki/Queen%27s_Gland",
+    "verified": true
+  },
+  {
+    "id": "shatterspleen",
+    "name": "Shatterspleen",
+    "tier": "boss",
+    "dlc": "base",
+    "pickupText": "Critical strikes always bleed enemies. Bleeding enemies now explode.",
+    "description": "Gain 5% critical chance. Critical Strikes bleed enemies for 240% base damage. Bleeding enemies explode on death for 400% (+400% per stack) damage, plus an additional 15% (+15% per stack) of their maximum health.",
+    "stacking": [
+      {
+        "stat": "Explosion damage (% base)",
+        "base": 400,
+        "perStack": 400,
+        "type": "linear"
+      },
+      {
+        "stat": "Explosion bonus (% of enemy max HP)",
+        "base": 15,
+        "perStack": 15,
+        "type": "linear"
+      }
+    ],
+    "tags": ["damage", "critical-strike", "bleed", "aoe"],
+    "icon": "/icons/shatterspleen.png",
+    "wiki": "https://riskofrain2.wiki.gg/wiki/Shatterspleen",
+    "verified": true
+  },
+  {
+    "id": "halcyon-seed",
+    "name": "Halcyon Seed",
+    "tier": "boss",
+    "dlc": "base",
+    "pickupText": "Summon Aurelionite during the Teleporter event.",
+    "description": "Summon Aurelionite during the teleporter event. It has 100% (+50% per stack) damage and 100% (+100% per stack) health.",
+    "stacking": [
+      {
+        "stat": "Aurelionite damage (%)",
+        "base": 100,
+        "perStack": 50,
+        "type": "linear"
+      },
+      {
+        "stat": "Aurelionite health (%)",
+        "base": 100,
+        "perStack": 100,
+        "type": "linear"
+      }
+    ],
+    "tags": ["damage", "utility"],
+    "icon": "/icons/halcyon-seed.png",
+    "wiki": "https://riskofrain2.wiki.gg/wiki/Halcyon_Seed",
+    "verified": true
+  },
+  {
+    "id": "little-disciple",
+    "name": "Little Disciple",
+    "tier": "boss",
+    "dlc": "base",
+    "pickupText": "Fire a tracking wisp for damage while sprinting.",
+    "description": "Fire tracking wisps while sprinting at 300% (+300% per stack) damage, firing every 1.6 seconds (fire rate scales with movement speed).",
+    "stacking": [
+      {
+        "stat": "Wisp damage (%)",
+        "base": 300,
+        "perStack": 300,
+        "type": "linear"
+      }
+    ],
+    "tags": ["damage", "mobility"],
+    "icon": "/icons/little-disciple.png",
+    "wiki": "https://riskofrain2.wiki.gg/wiki/Little_Disciple",
+    "verified": true
+  },
+  {
+    "id": "genesis-loop",
+    "name": "Genesis Loop",
+    "tier": "boss",
+    "dlc": "base",
+    "pickupText": "Fire an electric nova at low health.",
+    "description": "Falling below 25% health causes you to explode for 6000% base damage. Recharges every 30 / (1 + stacks) seconds.",
+    "stacking": [
+      {
+        "stat": "Recharge time (s)",
+        "base": 15,
+        "perStack": 0,
+        "type": "special",
+        "formula": "recharge = 30 / (1 + n) seconds — 15s at 1 stack, 10s at 2, 7.5s at 3, …"
+      }
+    ],
+    "tags": ["damage", "survivability", "aoe"],
+    "icon": "/icons/genesis-loop.png",
+    "wiki": "https://riskofrain2.wiki.gg/wiki/Genesis_Loop",
+    "verified": true
+  },
+  {
+    "id": "pearl",
+    "name": "Pearl",
+    "tier": "boss",
+    "dlc": "base",
+    "pickupText": "Increase your maximum health.",
+    "description": "Increases maximum health by 10% (+10% per stack).",
+    "stacking": [
+      {
+        "stat": "Maximum health (%)",
+        "base": 10,
+        "perStack": 10,
+        "type": "linear"
+      }
+    ],
+    "tags": ["survivability", "health"],
+    "icon": "/icons/pearl.png",
+    "wiki": "https://riskofrain2.wiki.gg/wiki/Pearl",
+    "verified": true
+  },
+  {
+    "id": "irradiant-pearl",
+    "name": "Irradiant Pearl",
+    "tier": "boss",
+    "dlc": "base",
+    "pickupText": "Increase ALL of your stats.",
+    "description": "Increases ALL stats by 10% (+10% per stack).",
+    "stacking": [
+      {
+        "stat": "All stats (%)",
+        "base": 10,
+        "perStack": 10,
+        "type": "linear"
+      }
+    ],
+    "tags": ["utility"],
+    "icon": "/icons/irradiant-pearl.png",
+    "wiki": "https://riskofrain2.wiki.gg/wiki/Irradiant_Pearl",
+    "verified": true
+  },
+  {
+    "id": "artifact-key",
+    "name": "Artifact Key",
+    "tier": "boss",
+    "subtype": "untiered",
+    "dlc": "base",
+    "pickupText": "A stone shard with immense power.",
+    "description": "Used during Artifact Trials in Bulwark's Ambry to damage the Artifact Reliquary. All Artifact Keys are consumed together when used.",
+    "stacking": [],
+    "tags": ["utility"],
+    "icon": "/icons/artifact-key.png",
+    "wiki": "https://riskofrain2.wiki.gg/wiki/Artifact_Key",
+    "verified": true
+  },
+  {
+    "id": "molten-perforator",
+    "name": "Molten Perforator",
+    "tier": "boss",
+    "dlc": "base",
+    "pickupText": "Chance on hit to fire magma balls.",
+    "description": "10% chance on hit to call forth 3 magma balls from an enemy, dealing 300% (+300% per stack) damage each.",
+    "stacking": [
+      {
+        "stat": "Magma ball damage (%)",
+        "base": 300,
+        "perStack": 300,
+        "type": "linear"
+      }
+    ],
+    "tags": ["damage", "on-hit", "aoe"],
+    "icon": "/icons/molten-perforator.png",
+    "wiki": "https://riskofrain2.wiki.gg/wiki/Molten_Perforator",
+    "verified": true
+  },
+  {
+    "id": "charged-perforator",
+    "name": "Charged Perforator",
+    "tier": "boss",
+    "dlc": "base",
+    "pickupText": "Chance on hit to call down a lightning strike.",
+    "description": "10% chance on hit to call down a lightning strike, dealing 500% (+500% per stack) damage.",
+    "stacking": [
+      {
+        "stat": "Lightning strike damage (%)",
+        "base": 500,
+        "perStack": 500,
+        "type": "linear"
+      }
+    ],
+    "tags": ["damage", "on-hit"],
+    "icon": "/icons/charged-perforator.png",
+    "wiki": "https://riskofrain2.wiki.gg/wiki/Charged_Perforator",
+    "verified": true
+  },
+  {
+    "id": "mired-urn",
+    "name": "Mired Urn",
+    "tier": "boss",
+    "dlc": "base",
+    "pickupText": "Siphon health from nearby enemies while in combat.",
+    "description": "While in combat, the nearest 1 (+1 per stack) enemies within 13m are tethered to you, dealing 100% damage per second, applying tar, and healing you for 100% of the damage dealt.",
+    "stacking": [
+      {
+        "stat": "Max tethered enemies",
+        "base": 1,
+        "perStack": 1,
+        "type": "linear"
+      }
+    ],
+    "tags": ["damage", "healing", "on-hit"],
+    "icon": "/icons/mired-urn.png",
+    "wiki": "https://riskofrain2.wiki.gg/wiki/Mired_Urn",
+    "verified": true
+  },
+  {
+    "id": "empathy-cores",
+    "name": "Empathy Cores",
+    "tier": "boss",
+    "dlc": "base",
+    "pickupText": "Recruit a pair of Solus Probes that gain power with more allies.",
+    "description": "Every 30 seconds, summon two Solus Probes that gain +100% (+100% per stack) damage per ally on your team.",
+    "stacking": [
+      {
+        "stat": "Probe damage per ally (%)",
+        "base": 100,
+        "perStack": 100,
+        "type": "linear"
+      }
+    ],
+    "tags": ["damage", "utility"],
+    "icon": "/icons/empathy-cores.png",
+    "wiki": "https://riskofrain2.wiki.gg/wiki/Empathy_Cores",
+    "verified": true
+  },
+  {
+    "id": "planula",
+    "name": "Planula",
+    "tier": "boss",
+    "dlc": "sotv",
+    "pickupText": "Receive flat healing when attacked.",
+    "description": "Heal from incoming damage for 15 (+15 per stack).",
+    "stacking": [
+      {
+        "stat": "Heal on taking damage (health)",
+        "base": 15,
+        "perStack": 15,
+        "type": "linear"
+      }
+    ],
+    "tags": ["healing", "survivability"],
+    "icon": "/icons/planula.png",
+    "wiki": "https://riskofrain2.wiki.gg/wiki/Planula",
+    "verified": true
+  },
+  {
+    "id": "defense-nucleus",
+    "name": "Defense Nucleus",
+    "tier": "boss",
+    "dlc": "sotv",
+    "pickupText": "Summon an Alpha Construct on killing an elite.",
+    "description": "Killing elite monsters spawns an Alpha Construct with bonus 300% damage and 300% health. Limited to 4 (+4 per stack).",
+    "stacking": [
+      {
+        "stat": "Max Alpha Constructs",
+        "base": 4,
+        "perStack": 4,
+        "type": "linear"
+      }
+    ],
+    "tags": ["damage", "on-kill", "utility"],
+    "icon": "/icons/defense-nucleus.png",
+    "wiki": "https://riskofrain2.wiki.gg/wiki/Defense_Nucleus",
+    "verified": true
+  },
+  {
+    "id": "functional-coupler",
+    "name": "Functional Coupler",
+    "tier": "boss",
+    "dlc": "ac",
+    "pickupText": "Holds an additional equipment.",
+    "description": "Hold 1 additional equipment (+1 per stack). Press the interact and equipment buttons to cycle through held equipment.",
+    "stacking": [
+      {
+        "stat": "Extra equipment slots",
+        "base": 1,
+        "perStack": 1,
+        "type": "linear"
+      }
+    ],
+    "tags": ["utility", "equipment"],
+    "icon": "/icons/functional-coupler.png",
+    "wiki": "https://riskofrain2.wiki.gg/wiki/Functional_Coupler",
+    "verified": true
+  },
+  {
+    "id": "faulty-conductor",
+    "name": "Faulty Conductor",
+    "tier": "boss",
+    "dlc": "ac",
+    "pickupText": "Occasionally release a pulse of electricity that energizes allies and makes enemies more susceptible to electric damage.",
+    "description": "Every 15 (-20% per stack) seconds, release a wave of electricity that energizes nearby allies for 7 seconds. Energized allies gain +30% attack and movement speed and always land critical strikes with electric items and attacks.",
+    "stacking": [
+      {
+        "stat": "Pulse interval (s)",
+        "base": 15,
+        "perStack": -20,
+        "type": "exponential",
+        "formula": "interval multiplied by 0.8 per stack (multiplicative, so it shortens but never hits zero)"
+      }
+    ],
+    "tags": ["utility", "attack-speed", "movement-speed"],
+    "icon": "/icons/faulty-conductor.png",
+    "wiki": "https://riskofrain2.wiki.gg/wiki/Faulty_Conductor",
+    "verified": true
+  },
+  {
+    "id": "sentry-key",
+    "name": "Sentry Key",
+    "tier": "boss",
+    "dlc": "ac",
+    "pickupText": "Gain +15% move speed. Can be placed in a Sentry Terminal.",
+    "description": "Gain +15% move speed. Can be placed in a Sentry Terminal or used for decryption.",
+    "stacking": [
+      {
+        "stat": "Movement speed (%)",
+        "base": 15,
+        "perStack": 0,
+        "type": "none"
+      }
+    ],
+    "tags": ["utility", "movement-speed"],
+    "icon": "/icons/sentry-key.png",
+    "wiki": "https://riskofrain2.wiki.gg/wiki/Sentry_Key",
+    "verified": true
+  },
+  {
+    "id": "prison-matrix",
+    "name": "Prison Matrix",
+    "tier": "boss",
+    "dlc": "ac",
+    "pickupText": "Gain +50% armor. Can be placed in a Matrix Terminal.",
+    "description": "Gain +50% armor. Can be placed in a Matrix Terminal.",
+    "stacking": [
+      {
+        "stat": "Armor bonus (+50%)",
+        "base": 50,
+        "perStack": 0,
+        "type": "none"
+      }
+    ],
+    "tags": ["survivability", "armor"],
+    "icon": "/icons/prison-matrix.png",
+    "wiki": "https://riskofrain2.wiki.gg/wiki/Prison_Matrix",
+    "verified": true
+  },
+  {
+    "id": "encrypted-cerebellum",
+    "name": "Encrypted Cerebellum",
+    "tier": "boss",
+    "subtype": "untiered",
+    "dlc": "ac",
+    "pickupText": "Contains encrypted remnants of the Collective network. Needs to be decrypted.",
+    "description": "A quest item with no direct effect. Decrypt it (via the Wandering CHEF) to create the Exposed Cerebellum used to reach the Neural Sanctum.",
+    "stacking": [],
+    "tags": ["utility"],
+    "icon": "/icons/encrypted-cerebellum.png",
+    "wiki": "https://riskofrain2.wiki.gg/wiki/Encrypted_Cerebellum",
+    "verified": false
+  },
+  {
+    "id": "exposed-cerebellum",
+    "name": "Exposed Cerebellum",
+    "tier": "boss",
+    "subtype": "untiered",
+    "dlc": "ac",
+    "pickupText": "A swarming data nexus representing the Collective network. Can be given to a powerful entity.",
+    "description": "A quest item with no effect on the player; given to SPEX in the Computational Exchange.",
+    "stacking": [],
+    "tags": ["utility"],
+    "icon": "/icons/exposed-cerebellum.png",
+    "wiki": "https://riskofrain2.wiki.gg/wiki/Exposed_Cerebellum",
+    "verified": false
+  },
+  {
+    "id": "item-scrap-yellow",
+    "name": "Item Scrap, Yellow",
+    "tier": "boss",
+    "subtype": "untiered",
+    "dlc": "base",
+    "pickupText": "Does nothing. Prioritized when used with 3D Printers.",
+    "description": "A Boss-rarity scrap with no effect. Consumed first by 3D Printers and Cauldrons, letting you preserve real items.",
+    "stacking": [],
+    "tags": ["utility", "scrap"],
+    "icon": "/icons/item-scrap-yellow.png",
+    "wiki": "https://riskofrain2.wiki.gg/wiki/Item_Scrap",
+    "verified": true
   }
 ]
