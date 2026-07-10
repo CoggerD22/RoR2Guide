@@ -1654,5 +1654,363 @@
     "icon": "/icons/kinetic-dampener.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Kinetic_Dampener",
     "verified": true
+  },
+  {
+    "id": "brilliant-behemoth",
+    "name": "Brilliant Behemoth",
+    "tier": "legendary",
+    "dlc": "base",
+    "pickupText": "All your attacks explode!",
+    "description": "All your attacks explode in a 4m (+2.5m per stack) radius for a bonus 60% TOTAL damage to nearby enemies.",
+    "stacking": [
+      {
+        "stat": "Explosion radius (m)",
+        "base": 4,
+        "perStack": 2.5,
+        "type": "linear"
+      }
+    ],
+    "tags": ["damage", "aoe"],
+    "icon": "/icons/brilliant-behemoth.png",
+    "wiki": "https://riskofrain2.wiki.gg/wiki/Brilliant_Behemoth",
+    "verified": true
+  },
+  {
+    "id": "ceremonial-dagger",
+    "name": "Ceremonial Dagger",
+    "tier": "legendary",
+    "dlc": "base",
+    "pickupText": "Killing an enemy releases homing daggers.",
+    "description": "Killing an enemy fires out 3 homing daggers that deal 150% (+150% per stack) base damage.",
+    "stacking": [
+      {
+        "stat": "Dagger damage (% base)",
+        "base": 150,
+        "perStack": 150,
+        "type": "linear"
+      }
+    ],
+    "tags": ["damage", "on-kill"],
+    "icon": "/icons/ceremonial-dagger.png",
+    "wiki": "https://riskofrain2.wiki.gg/wiki/Ceremonial_Dagger",
+    "verified": true
+  },
+  {
+    "id": "alien-head",
+    "name": "Alien Head",
+    "tier": "legendary",
+    "dlc": "base",
+    "pickupText": "Reduces cooldowns for your skills.",
+    "description": "Reduce skill cooldowns by 25% (+25% per stack).",
+    "stacking": [
+      {
+        "stat": "Skill cooldown reduction (%)",
+        "base": 25,
+        "perStack": 25,
+        "type": "exponential",
+        "formula": "cooldown multiplied by 0.75 per stack (multiplicative, so reduction never reaches 100%)"
+      }
+    ],
+    "tags": ["utility"],
+    "icon": "/icons/alien-head.png",
+    "wiki": "https://riskofrain2.wiki.gg/wiki/Alien_Head",
+    "verified": true
+  },
+  {
+    "id": "57-leaf-clover",
+    "name": "57 Leaf Clover",
+    "tier": "legendary",
+    "dlc": "base",
+    "pickupText": "Luck is on your side.",
+    "description": "All random effects are rolled +1 (+1 per stack) times for a favorable outcome.",
+    "stacking": [
+      {
+        "stat": "Lucky rerolls",
+        "base": 1,
+        "perStack": 1,
+        "type": "special",
+        "formula": "each random proc is rolled +1 extra time per stack, keeping the favorable result"
+      }
+    ],
+    "tags": ["utility"],
+    "unlock": "The Long Road",
+    "icon": "/icons/57-leaf-clover.png",
+    "wiki": "https://riskofrain2.wiki.gg/wiki/57_Leaf_Clover",
+    "verified": true
+  },
+  {
+    "id": "dios-best-friend",
+    "name": "Dio's Best Friend",
+    "tier": "legendary",
+    "dlc": "base",
+    "pickupText": "Cheat death. Consumed on use.",
+    "description": "Upon death, this item will be consumed and you will return to life with 3 seconds of invulnerability.",
+    "stacking": [
+      {
+        "stat": "Extra lives",
+        "base": 1,
+        "perStack": 1,
+        "type": "linear"
+      }
+    ],
+    "tags": ["survivability"],
+    "unlock": "The Lone Survivor",
+    "icon": "/icons/dios-best-friend.png",
+    "wiki": "https://riskofrain2.wiki.gg/wiki/Dio%27s_Best_Friend",
+    "verified": true
+  },
+  {
+    "id": "sentient-meat-hook",
+    "name": "Sentient Meat Hook",
+    "tier": "legendary",
+    "dlc": "base",
+    "pickupText": "Chance to hook all nearby enemies.",
+    "description": "20% (+20% per stack) chance on hit to fire homing hooks at up to 10 (+5 per stack) enemies for 100% TOTAL damage.",
+    "stacking": [
+      {
+        "stat": "Chance on hit (%)",
+        "base": 20,
+        "perStack": 20,
+        "type": "hyperbolic",
+        "formula": "proc chance stacks hyperbolically, approaching but never reaching 100%"
+      },
+      {
+        "stat": "Enemies hooked",
+        "base": 10,
+        "perStack": 5,
+        "type": "linear"
+      }
+    ],
+    "tags": ["damage", "on-hit"],
+    "unlock": "Deja Vu?",
+    "icon": "/icons/sentient-meat-hook.png",
+    "wiki": "https://riskofrain2.wiki.gg/wiki/Sentient_Meat_Hook",
+    "verified": true
+  },
+  {
+    "id": "happiest-mask",
+    "name": "Happiest Mask",
+    "tier": "legendary",
+    "dlc": "base",
+    "pickupText": "Chance on killing an enemy to summon a ghost.",
+    "description": "Killing enemies has a 7% chance to spawn a ghost of the killed enemy with 1500% damage. Lasts 30s (+30s per stack).",
+    "stacking": [
+      {
+        "stat": "Ghost duration (s)",
+        "base": 30,
+        "perStack": 30,
+        "type": "linear"
+      }
+    ],
+    "tags": ["damage", "on-kill"],
+    "icon": "/icons/happiest-mask.png",
+    "wiki": "https://riskofrain2.wiki.gg/wiki/Happiest_Mask",
+    "verified": true
+  },
+  {
+    "id": "frost-relic",
+    "name": "Frost Relic",
+    "tier": "legendary",
+    "dlc": "base",
+    "pickupText": "Killing enemies surrounds you with an ice storm.",
+    "description": "Killing an enemy surrounds you with an ice storm that deals 1200% damage per second and slows enemies by 80% for 1.5s. Each kill grows the radius by 2m, up to 18m (+12m per stack).",
+    "stacking": [
+      {
+        "stat": "Max storm radius (m)",
+        "base": 18,
+        "perStack": 12,
+        "type": "linear"
+      }
+    ],
+    "tags": ["damage", "on-kill", "aoe", "crowd-control"],
+    "icon": "/icons/frost-relic.png",
+    "wiki": "https://riskofrain2.wiki.gg/wiki/Frost_Relic",
+    "verified": true
+  },
+  {
+    "id": "h3ad-5t-v2",
+    "name": "H3AD-5T v2",
+    "tier": "legendary",
+    "dlc": "base",
+    "pickupText": "Increase jump height. Hold 'Interact' to slam down to the ground.",
+    "description": "Increase jump height. Creates a 5m-100m radius kinetic explosion on hitting the ground, dealing 1000%-10000% base damage that scales with fall distance. Recharges in 10 (-50% per stack) seconds.",
+    "stacking": [
+      {
+        "stat": "Recharge time (s)",
+        "base": 10,
+        "perStack": -50,
+        "type": "special",
+        "formula": "recharge scales reciprocally with stacks (~10s, then halves toward 5s, 3.3s, …)"
+      }
+    ],
+    "tags": ["damage", "mobility", "aoe"],
+    "icon": "/icons/h3ad-5t-v2.png",
+    "wiki": "https://riskofrain2.wiki.gg/wiki/H3AD-5T_v2",
+    "verified": true
+  },
+  {
+    "id": "nkuhanas-opinion",
+    "name": "N'kuhana's Opinion",
+    "tier": "legendary",
+    "dlc": "base",
+    "pickupText": "Fire haunting skulls when healed.",
+    "description": "Store 100% (+100% per stack) of healing as Soul Energy. When your Soul Energy reaches 10% of your maximum health, fire a skull that deals 250% of your Soul Energy as damage.",
+    "stacking": [
+      {
+        "stat": "Healing stored as Soul Energy (%)",
+        "base": 100,
+        "perStack": 100,
+        "type": "linear"
+      }
+    ],
+    "tags": ["damage", "healing"],
+    "unlock": "Her Concepts",
+    "icon": "/icons/nkuhanas-opinion.png",
+    "wiki": "https://riskofrain2.wiki.gg/wiki/N%27kuhana%27s_Opinion",
+    "verified": true
+  },
+  {
+    "id": "unstable-tesla-coil",
+    "name": "Unstable Tesla Coil",
+    "tier": "legendary",
+    "dlc": "base",
+    "pickupText": "Shock all nearby enemies every 10 seconds.",
+    "description": "Fire out lightning that hits 3 (+2 per stack) enemies for 200% base damage every 0.5s. The Tesla Coil switches off every 10 seconds.",
+    "stacking": [
+      {
+        "stat": "Enemies hit",
+        "base": 3,
+        "perStack": 2,
+        "type": "linear"
+      }
+    ],
+    "tags": ["damage", "aoe"],
+    "unlock": "Macho",
+    "icon": "/icons/unstable-tesla-coil.png",
+    "wiki": "https://riskofrain2.wiki.gg/wiki/Unstable_Tesla_Coil",
+    "verified": true
+  },
+  {
+    "id": "soulbound-catalyst",
+    "name": "Soulbound Catalyst",
+    "tier": "legendary",
+    "dlc": "base",
+    "pickupText": "Kills reduce equipment cooldown.",
+    "description": "Kills reduce equipment cooldown by 4s (+2s per stack).",
+    "stacking": [
+      {
+        "stat": "Equipment cooldown reduction per kill (s)",
+        "base": 4,
+        "perStack": 2,
+        "type": "linear"
+      }
+    ],
+    "tags": ["utility", "equipment", "on-kill"],
+    "unlock": "Newtist",
+    "icon": "/icons/soulbound-catalyst.png",
+    "wiki": "https://riskofrain2.wiki.gg/wiki/Soulbound_Catalyst",
+    "verified": true
+  },
+  {
+    "id": "hardlight-afterburner",
+    "name": "Hardlight Afterburner",
+    "tier": "legendary",
+    "dlc": "base",
+    "pickupText": "Add 2 extra charges of your Utility skill. Reduce Utility skill cooldown.",
+    "description": "Add +2 (+2 per stack) charges of your Utility skill. Reduces Utility skill cooldown by 33%.",
+    "stacking": [
+      {
+        "stat": "Utility skill charges",
+        "base": 2,
+        "perStack": 2,
+        "type": "linear"
+      }
+    ],
+    "tags": ["utility"],
+    "icon": "/icons/hardlight-afterburner.png",
+    "wiki": "https://riskofrain2.wiki.gg/wiki/Hardlight_Afterburner",
+    "verified": true
+  },
+  {
+    "id": "wake-of-vultures",
+    "name": "Wake of Vultures",
+    "tier": "legendary",
+    "dlc": "base",
+    "pickupText": "Temporarily steal the power of slain elites.",
+    "description": "Gain the power of any killed elite monster for 8s (+5s per stack).",
+    "stacking": [
+      {
+        "stat": "Stolen elite power duration (s)",
+        "base": 8,
+        "perStack": 5,
+        "type": "linear"
+      }
+    ],
+    "tags": ["utility", "on-kill"],
+    "icon": "/icons/wake-of-vultures.png",
+    "wiki": "https://riskofrain2.wiki.gg/wiki/Wake_of_Vultures",
+    "verified": true
+  },
+  {
+    "id": "brainstalks",
+    "name": "Brainstalks",
+    "tier": "legendary",
+    "dlc": "base",
+    "pickupText": "Skills have NO cooldowns for a short period after killing an elite.",
+    "description": "Upon killing an elite monster, enter a frenzy for 4s (+4s per stack) where skills have 0.5s cooldowns.",
+    "stacking": [
+      {
+        "stat": "Frenzy duration (s)",
+        "base": 4,
+        "perStack": 4,
+        "type": "linear"
+      }
+    ],
+    "tags": ["utility", "on-kill"],
+    "unlock": "Deicide",
+    "icon": "/icons/brainstalks.png",
+    "wiki": "https://riskofrain2.wiki.gg/wiki/Brainstalks",
+    "verified": true
+  },
+  {
+    "id": "rejuvenation-rack",
+    "name": "Rejuvenation Rack",
+    "tier": "legendary",
+    "dlc": "base",
+    "pickupText": "Double the strength of healing.",
+    "description": "Heal +100% (+100% per stack) more.",
+    "stacking": [
+      {
+        "stat": "Healing bonus (%)",
+        "base": 100,
+        "perStack": 100,
+        "type": "linear"
+      }
+    ],
+    "tags": ["healing"],
+    "unlock": "Naturopath",
+    "icon": "/icons/rejuvenation-rack.png",
+    "wiki": "https://riskofrain2.wiki.gg/wiki/Rejuvenation_Rack",
+    "verified": true
+  },
+  {
+    "id": "aegis",
+    "name": "Aegis",
+    "tier": "legendary",
+    "dlc": "base",
+    "pickupText": "Healing past full grants you a temporary barrier.",
+    "description": "Healing past full grants you a temporary barrier for 50% (+50% per stack) of the amount you healed.",
+    "stacking": [
+      {
+        "stat": "Barrier from overheal (%)",
+        "base": 50,
+        "perStack": 50,
+        "type": "linear"
+      }
+    ],
+    "tags": ["survivability", "healing"],
+    "icon": "/icons/aegis.png",
+    "wiki": "https://riskofrain2.wiki.gg/wiki/Aegis",
+    "verified": true
   }
 ]
