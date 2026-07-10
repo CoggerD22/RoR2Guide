@@ -1282,5 +1282,119 @@
     "icon": "/icons/squid-polyp.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Squid_Polyp",
     "verified": true
+  },
+  {
+    "id": "death-mark",
+    "name": "Death Mark",
+    "tier": "uncommon",
+    "dlc": "base",
+    "pickupText": "Enemies with 4 or more debuffs are marked for death, taking bonus damage.",
+    "description": "Enemies with 4 or more debuffs are marked for death, increasing damage taken by 50% from all sources for 7 (+7 per stack) seconds.",
+    "stacking": [
+      {
+        "stat": "Mark duration (s)",
+        "base": 7,
+        "perStack": 7,
+        "type": "linear"
+      }
+    ],
+    "tags": ["damage", "on-hit"],
+    "icon": "/icons/death-mark.png",
+    "wiki": "https://riskofrain2.wiki.gg/wiki/Death_Mark",
+    "verified": true
+  },
+  {
+    "id": "shuriken",
+    "name": "Shuriken",
+    "tier": "uncommon",
+    "dlc": "sotv",
+    "pickupText": "Activating your Primary skill also throws a shuriken. Recharges over time.",
+    "description": "Activating your Primary skill also throws a shuriken that deals 400% (+100% per stack) base damage. You can hold up to 3 (+1 per stack) shurikens which all reload over 10 seconds.",
+    "stacking": [
+      {
+        "stat": "Shuriken damage (% base)",
+        "base": 400,
+        "perStack": 100,
+        "type": "linear"
+      },
+      {
+        "stat": "Max held shurikens",
+        "base": 3,
+        "perStack": 1,
+        "type": "linear"
+      }
+    ],
+    "tags": ["damage", "on-hit"],
+    "icon": "/icons/shuriken.png",
+    "wiki": "https://riskofrain2.wiki.gg/wiki/Shuriken",
+    "verified": true
+  },
+  {
+    "id": "shipping-request-form",
+    "name": "Shipping Request Form",
+    "tier": "uncommon",
+    "dlc": "sotv",
+    "pickupText": "Get a delivery each stage that contains powerful items.",
+    "description": "A delivery containing 2 items (79%/20%/1%) will appear in a random location on each stage. Increases rarity chances of the items per stack.",
+    "stacking": [
+      {
+        "stat": "Delivered item rarity",
+        "base": 1,
+        "perStack": 1,
+        "type": "special",
+        "formula": "each stack increases the rarity chances of the 2 items delivered each stage"
+      }
+    ],
+    "tags": ["utility"],
+    "icon": "/icons/shipping-request-form.png",
+    "wiki": "https://riskofrain2.wiki.gg/wiki/Shipping_Request_Form",
+    "verified": true
+  },
+  {
+    "id": "unstable-transmitter",
+    "name": "Unstable Transmitter",
+    "tier": "uncommon",
+    "dlc": "sots",
+    "pickupText": "Gain a temporary barrier and a dimensional aura on low health.",
+    "description": "Falling below 25% health gives you 60% of your maximum health as a temporary barrier and a dimensional aura for 8s that bleeds and teleports away enemies. Enemies killed by the aura extend the duration by 1s. Regenerates at the start of each stage.",
+    "stacking": [],
+    "tags": ["survivability", "utility"],
+    "icon": "/icons/unstable-transmitter.png",
+    "wiki": "https://riskofrain2.wiki.gg/wiki/Unstable_Transmitter",
+    "verified": false
+  },
+  {
+    "id": "item-scrap-green",
+    "name": "Item Scrap, Green",
+    "tier": "uncommon",
+    "subtype": "untiered",
+    "dlc": "base",
+    "pickupText": "Does nothing. Prioritized when used with 3D Printers.",
+    "description": "An Uncommon-rarity scrap with no effect. Consumed first by 3D Printers and Cauldrons, letting you preserve real items.",
+    "stacking": [],
+    "tags": ["utility", "scrap"],
+    "icon": "/icons/item-scrap-green.png",
+    "wiki": "https://riskofrain2.wiki.gg/wiki/Item_Scrap",
+    "verified": true
+  },
+  {
+    "id": "sale-star",
+    "name": "Sale Star",
+    "tier": "uncommon",
+    "dlc": "sots",
+    "pickupText": "First chest bought yields more than one reward. Usable once per stage.",
+    "description": "Gain an extra item on the first chest opened per stage. Each additional Sale Star increases the chance of getting more items by 5%.",
+    "stacking": [
+      {
+        "stat": "Chance for extra item(s) on first chest (%)",
+        "base": 5,
+        "perStack": 5,
+        "type": "linear"
+      }
+    ],
+    "tags": ["utility"],
+    "icon": "/icons/sale-star.png",
+    "wiki": "https://riskofrain2.wiki.gg/wiki/Sale_Star",
+    "verified": true
   }
 ]
