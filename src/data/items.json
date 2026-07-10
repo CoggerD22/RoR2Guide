@@ -2012,5 +2012,410 @@
     "icon": "/icons/aegis.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Aegis",
     "verified": true
+  },
+  {
+    "id": "shattering-justice",
+    "name": "Shattering Justice",
+    "tier": "legendary",
+    "dlc": "base",
+    "pickupText": "Reduce the armor of enemies after repeatedly striking them.",
+    "description": "After hitting an enemy 5 times, reduce their armor by 60 for 8 (+8 per stack) seconds.",
+    "stacking": [
+      {
+        "stat": "Armor-break duration (s)",
+        "base": 8,
+        "perStack": 8,
+        "type": "linear"
+      }
+    ],
+    "tags": ["damage", "on-hit"],
+    "icon": "/icons/shattering-justice.png",
+    "wiki": "https://riskofrain2.wiki.gg/wiki/Shattering_Justice",
+    "verified": true
+  },
+  {
+    "id": "resonance-disc",
+    "name": "Resonance Disc",
+    "tier": "legendary",
+    "dlc": "base",
+    "pickupText": "Obtain a Resonance Disc charged by killing enemies. Fires automatically when fully charged.",
+    "description": "Killing 4 enemies in 7 seconds charges the Resonance Disc. It launches toward a target for 300% (+300% per stack) base damage, piercing enemies, then explodes for 1000% (+1000% per stack) base damage, and returns to you striking enemies for 300% (+300% per stack) base damage.",
+    "stacking": [
+      {
+        "stat": "Explosion damage (% base)",
+        "base": 1000,
+        "perStack": 1000,
+        "type": "linear"
+      },
+      {
+        "stat": "Pierce & return damage (% base)",
+        "base": 300,
+        "perStack": 300,
+        "type": "linear"
+      }
+    ],
+    "tags": ["damage", "on-kill", "aoe"],
+    "icon": "/icons/resonance-disc.png",
+    "wiki": "https://riskofrain2.wiki.gg/wiki/Resonance_Disc",
+    "verified": true
+  },
+  {
+    "id": "defensive-microbots",
+    "name": "Defensive Microbots",
+    "tier": "legendary",
+    "dlc": "base",
+    "pickupText": "Shoot down nearby projectiles. Recharge rate scales with attack speed.",
+    "description": "Shoot down 1 (+1 per stack) projectiles within 20m every 0.5 seconds. Recharge rate scales with attack speed.",
+    "stacking": [
+      {
+        "stat": "Projectiles shot down per volley",
+        "base": 1,
+        "perStack": 1,
+        "type": "linear"
+      }
+    ],
+    "tags": ["survivability", "utility"],
+    "icon": "/icons/defensive-microbots.png",
+    "wiki": "https://riskofrain2.wiki.gg/wiki/Defensive_Microbots",
+    "verified": true
+  },
+  {
+    "id": "laser-scope",
+    "name": "Laser Scope",
+    "tier": "legendary",
+    "dlc": "sotv",
+    "pickupText": "Your 'Critical Strikes' deal an additional 100% damage.",
+    "description": "Critical Strikes deal an additional 100% damage (+100% per stack).",
+    "stacking": [
+      {
+        "stat": "Bonus critical strike damage (%)",
+        "base": 100,
+        "perStack": 100,
+        "type": "linear"
+      }
+    ],
+    "tags": ["damage", "critical-strike"],
+    "icon": "/icons/laser-scope.png",
+    "wiki": "https://riskofrain2.wiki.gg/wiki/Laser_Scope",
+    "verified": true
+  },
+  {
+    "id": "pocket-icbm",
+    "name": "Pocket I.C.B.M.",
+    "tier": "legendary",
+    "dlc": "sotv",
+    "pickupText": "All Missile items deal more damage and fire an additional two missiles.",
+    "description": "All missile items and equipment fire an additional 2 missiles. Increase missile damage by 0% (+50% per stack).",
+    "stacking": [
+      {
+        "stat": "Missile damage bonus (%)",
+        "base": 0,
+        "perStack": 50,
+        "type": "linear"
+      }
+    ],
+    "tags": ["damage"],
+    "icon": "/icons/pocket-icbm.png",
+    "wiki": "https://riskofrain2.wiki.gg/wiki/Pocket_I.C.B.M.",
+    "verified": true
+  },
+  {
+    "id": "spare-drone-parts",
+    "name": "Spare Drone Parts",
+    "tier": "legendary",
+    "dlc": "sotv",
+    "pickupText": "Your drones fire faster, have less cooldowns, shoot missiles, and gain a bonus chaingun.",
+    "description": "Gain Col. Droneman. Drones gain +25% (+25% per stack) attack speed and cooldown reduction. Drones gain a 10% chance to fire a missile on hit for 150% TOTAL damage, and an automatic chain gun dealing 6x50% damage bouncing to 2 enemies.",
+    "stacking": [
+      {
+        "stat": "Drone attack speed (%)",
+        "base": 25,
+        "perStack": 25,
+        "type": "linear"
+      },
+      {
+        "stat": "Drone cooldown reduction (%)",
+        "base": 25,
+        "perStack": 25,
+        "type": "exponential",
+        "formula": "drone cooldown multiplied by 0.75 per stack (multiplicative)"
+      }
+    ],
+    "tags": ["damage", "drone"],
+    "icon": "/icons/spare-drone-parts.png",
+    "wiki": "https://riskofrain2.wiki.gg/wiki/Spare_Drone_Parts",
+    "verified": true
+  },
+  {
+    "id": "interstellar-desk-plant",
+    "name": "Interstellar Desk Plant",
+    "tier": "legendary",
+    "dlc": "base",
+    "pickupText": "Plant a healing fruit on kill.",
+    "description": "On kill, plant a healing fruit seed that grows into a plant after 5 seconds. The plant heals for 5% of maximum health every 0.5 second to all allies within 10m (+5m per stack). Lasts 10 seconds.",
+    "stacking": [
+      {
+        "stat": "Heal zone radius (m)",
+        "base": 10,
+        "perStack": 5,
+        "type": "linear"
+      }
+    ],
+    "tags": ["healing", "on-kill"],
+    "icon": "/icons/interstellar-desk-plant.png",
+    "wiki": "https://riskofrain2.wiki.gg/wiki/Interstellar_Desk_Plant",
+    "verified": true
+  },
+  {
+    "id": "symbiotic-scorpion",
+    "name": "Symbiotic Scorpion",
+    "tier": "legendary",
+    "dlc": "sotv",
+    "pickupText": "Permanently reduce armor on hit.",
+    "description": "100% chance on hit to reduce armor by 2 (+2 per stack) permanently.",
+    "stacking": [
+      {
+        "stat": "Permanent armor reduction on hit",
+        "base": 2,
+        "perStack": 2,
+        "type": "linear"
+      }
+    ],
+    "tags": ["damage", "on-hit"],
+    "icon": "/icons/symbiotic-scorpion.png",
+    "wiki": "https://riskofrain2.wiki.gg/wiki/Symbiotic_Scorpion",
+    "verified": true
+  },
+  {
+    "id": "bens-raincoat",
+    "name": "Ben's Raincoat",
+    "tier": "legendary",
+    "dlc": "sotv",
+    "pickupText": "Prevent debuffs, instead gaining a temporary barrier. Recharges over time.",
+    "description": "Prevents 1 (+1 per stack) debuff and instead grants a temporary barrier for 10% of maximum health. Recharges every 5 seconds.",
+    "stacking": [
+      {
+        "stat": "Debuffs prevented before recharge",
+        "base": 1,
+        "perStack": 1,
+        "type": "linear"
+      }
+    ],
+    "tags": ["survivability"],
+    "icon": "/icons/bens-raincoat.png",
+    "wiki": "https://riskofrain2.wiki.gg/wiki/Ben%27s_Raincoat",
+    "verified": true
+  },
+  {
+    "id": "bottled-chaos",
+    "name": "Bottled Chaos",
+    "tier": "legendary",
+    "dlc": "sotv",
+    "pickupText": "Activating your Equipment triggers an additional, random Equipment effect.",
+    "description": "Trigger a random equipment effect 1 (+1 per stack) time(s).",
+    "stacking": [
+      {
+        "stat": "Random equipment activations",
+        "base": 1,
+        "perStack": 1,
+        "type": "linear"
+      }
+    ],
+    "tags": ["utility", "equipment"],
+    "icon": "/icons/bottled-chaos.png",
+    "wiki": "https://riskofrain2.wiki.gg/wiki/Bottled_Chaos",
+    "verified": true
+  },
+  {
+    "id": "electric-boomerang",
+    "name": "Electric Boomerang",
+    "tier": "legendary",
+    "dlc": "sots",
+    "pickupText": "On hit chance to throw a stunning boomerang.",
+    "description": "15% chance on hit to fire an electric boomerang that deals 120% (+120% per stack) damage and stuns all enemies hit, plus an additional 42% (+42% per stack) per second. Can strike enemies on the way back.",
+    "stacking": [
+      {
+        "stat": "Impact damage (%)",
+        "base": 120,
+        "perStack": 120,
+        "type": "linear"
+      },
+      {
+        "stat": "Damage over time (%/s)",
+        "base": 42,
+        "perStack": 42,
+        "type": "linear"
+      }
+    ],
+    "tags": ["damage", "on-hit", "crowd-control"],
+    "icon": "/icons/electric-boomerang.png",
+    "wiki": "https://riskofrain2.wiki.gg/wiki/Electric_Boomerang",
+    "verified": true
+  },
+  {
+    "id": "growth-nectar",
+    "name": "Growth Nectar",
+    "tier": "legendary",
+    "dlc": "sots",
+    "pickupText": "Your buffs grant an increase to ALL of your stats.",
+    "description": "Grants a 4% increase to ALL stats for each buff you have, up to a maximum of 4 (+4 per stack) buffs.",
+    "stacking": [
+      {
+        "stat": "Max buffs counted",
+        "base": 4,
+        "perStack": 4,
+        "type": "linear"
+      }
+    ],
+    "tags": ["utility"],
+    "icon": "/icons/growth-nectar.png",
+    "wiki": "https://riskofrain2.wiki.gg/wiki/Growth_Nectar",
+    "verified": true
+  },
+  {
+    "id": "runic-lens",
+    "name": "Runic Lens",
+    "tier": "legendary",
+    "dlc": "sots",
+    "pickupText": "Chance to call down a meteor. Damage and chance increase with higher damage hits.",
+    "description": "3% chance on hit to call down a meteor for 2000% base damage. Every 100% attack damage dealt increases the activation chance by 3% (+3% per stack) and damage by 150% (+50% per stack).",
+    "stacking": [
+      {
+        "stat": "Bonus chance per 100% damage (%)",
+        "base": 3,
+        "perStack": 3,
+        "type": "linear"
+      },
+      {
+        "stat": "Bonus damage per 100% damage (%)",
+        "base": 150,
+        "perStack": 50,
+        "type": "linear"
+      }
+    ],
+    "tags": ["damage", "on-hit", "aoe"],
+    "icon": "/icons/runic-lens.png",
+    "wiki": "https://riskofrain2.wiki.gg/wiki/Runic_Lens",
+    "verified": true
+  },
+  {
+    "id": "sonorous-whispers",
+    "name": "Sonorous Whispers",
+    "tier": "legendary",
+    "dlc": "sots",
+    "pickupText": "Upon large or elite monster kill, chance to drop items.",
+    "description": "When a large monster is killed it always drops an item. All elites have a 5% (+1% per stack) chance to drop an item.",
+    "stacking": [
+      {
+        "stat": "Elite item-drop chance (%)",
+        "base": 5,
+        "perStack": 1,
+        "type": "linear"
+      }
+    ],
+    "tags": ["utility", "on-kill"],
+    "icon": "/icons/sonorous-whispers.png",
+    "wiki": "https://riskofrain2.wiki.gg/wiki/Sonorous_Whispers",
+    "verified": true
+  },
+  {
+    "id": "war-bonds",
+    "name": "War Bonds",
+    "tier": "legendary",
+    "dlc": "sots",
+    "pickupText": "Bombard boss events with missiles. The more gold earned, the more support is granted.",
+    "description": "During boss events, 5 missiles bombard the area, dealing 2.5% (+2.5% per stack) of the boss's max health in damage. Before the boss event, gain additional missiles per 50 gold gained, up to a maximum of 20 (+5 per stack).",
+    "stacking": [
+      {
+        "stat": "Missile damage (% of boss max HP)",
+        "base": 2.5,
+        "perStack": 2.5,
+        "type": "linear"
+      },
+      {
+        "stat": "Max bonus missiles",
+        "base": 20,
+        "perStack": 5,
+        "type": "linear"
+      }
+    ],
+    "tags": ["damage", "gold"],
+    "icon": "/icons/war-bonds.png",
+    "wiki": "https://riskofrain2.wiki.gg/wiki/War_Bonds",
+    "verified": true
+  },
+  {
+    "id": "networked-suffering",
+    "name": "Networked Suffering",
+    "tier": "legendary",
+    "dlc": "ac",
+    "pickupText": "Inflict a computer virus on hit that spreads a portion of all damage dealt between infected enemies.",
+    "description": "Infect up to 4 (+2 per stack) enemies with a computer virus that duplicates 45% of all damage they take into a global pool. Every 3 seconds, all infected enemies suffer 100% of the pooled damage.",
+    "stacking": [
+      {
+        "stat": "Max infected enemies",
+        "base": 4,
+        "perStack": 2,
+        "type": "linear"
+      }
+    ],
+    "tags": ["damage", "on-hit"],
+    "icon": "/icons/networked-suffering.png",
+    "wiki": "https://riskofrain2.wiki.gg/wiki/Networked_Suffering",
+    "verified": true
+  },
+  {
+    "id": "orphaned-core",
+    "name": "Orphaned Core",
+    "tier": "legendary",
+    "dlc": "ac",
+    "pickupText": "Gain a buddy who launches itself at enemies to deal damage. Inherits your movement-related items.",
+    "description": "Gain a friendly Solus unit that launches itself at enemies for 400% (+400% per stack) damage. It inherits your movement speed items and hits harder the faster it moves, and can be pet to cleanse negative effects. Recharges after 15 seconds.",
+    "stacking": [
+      {
+        "stat": "Launch damage (%)",
+        "base": 400,
+        "perStack": 400,
+        "type": "linear"
+      }
+    ],
+    "tags": ["damage", "drone"],
+    "icon": "/icons/orphaned-core.png",
+    "wiki": "https://riskofrain2.wiki.gg/wiki/Orphaned_Core",
+    "verified": true
+  },
+  {
+    "id": "substandard-duplicator",
+    "name": "Substandard Duplicator",
+    "tier": "legendary",
+    "dlc": "ac",
+    "pickupText": "Picking up an item grants a temporary copy.",
+    "description": "Picking up an item gives you a temporary copy of itself. Temporary items last an additional 10 (+10 per stack) seconds.",
+    "stacking": [
+      {
+        "stat": "Temporary item duration bonus (s)",
+        "base": 10,
+        "perStack": 10,
+        "type": "linear"
+      }
+    ],
+    "tags": ["utility"],
+    "icon": "/icons/substandard-duplicator.png",
+    "wiki": "https://riskofrain2.wiki.gg/wiki/Substandard_Duplicator",
+    "verified": true
+  },
+  {
+    "id": "item-scrap-red",
+    "name": "Item Scrap, Red",
+    "tier": "legendary",
+    "subtype": "untiered",
+    "dlc": "base",
+    "pickupText": "Does nothing. Prioritized when used with 3D Printers.",
+    "description": "A Legendary-rarity scrap with no effect. Consumed first by 3D Printers and Cauldrons, letting you preserve real items.",
+    "stacking": [],
+    "tags": ["utility", "scrap"],
+    "icon": "/icons/item-scrap-red.png",
+    "wiki": "https://riskofrain2.wiki.gg/wiki/Item_Scrap",
+    "verified": true
   }
 ]
