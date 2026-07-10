@@ -7,6 +7,7 @@ import {
 import { RootLayout } from "@/components/layout/RootLayout";
 import { PlaceholderPage } from "@/components/PlaceholderPage";
 import { CodexPage } from "@/components/codex/CodexPage";
+import { PlannerPage } from "@/components/planner/PlannerPage";
 import { NAV_SECTIONS, type NavSection } from "@/lib/nav";
 
 const rootRoute = createRootRoute({ component: RootLayout });
@@ -48,10 +49,16 @@ const itemsRoute = createRoute({
   component: CodexPage,
 });
 
+const plannerRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/planner",
+  component: PlannerPage,
+});
+
 const routeTree = rootRoute.addChildren([
   indexRoute,
   itemsRoute,
-  placeholderRoute("/planner"),
+  plannerRoute,
   placeholderRoute("/stats"),
   placeholderRoute("/reference"),
 ]);

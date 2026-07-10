@@ -45,3 +45,23 @@ test("codex renders items, searches by tag, and opens the detail drawer", async 
   await expect(drawer).toBeVisible();
   await expect(drawer.getByText(/View on wiki\.gg/)).toBeVisible();
 });
+
+test("planner: cycling a card fills the run plan rail and persists a reload", async ({ page }) => {
+  await page.goto("/planner");
+  await expect(page.getByRole("heading", { name: "Run Planner" })).toBeVisible();
+
+  // Cycle Crowbar to "targeted".
+  await page.getByRole("button", { name: /^Crowbar: neutral/ }).click();
+
+  // The Run Plan rail now lists Crowbar.
+  const rail = page.getByRole("complementary");
+  await expect(rail.getByText("Crowbar")).toBeVisible();
+
+  // Plan survives a reload (localStorage persistence).
+  await page.reload();
+  await expect(page.getByRole("complementary").getByText("Crowbar")).toBeVisible();
+
+  // "New run" clears it.
+  await page.getByRole("button", { name: "New run" }).click();
+  await expect(page.getByRole("complementary").getByText("Crowbar")).toHaveCount(0);
+});
