@@ -1396,5 +1396,263 @@
     "icon": "/icons/sale-star.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Sale_Star",
     "verified": true
+  },
+  {
+    "id": "hunters-harpoon",
+    "name": "Hunter's Harpoon",
+    "tier": "uncommon",
+    "dlc": "sotv",
+    "pickupText": "Killing an enemy gives you a burst of movement speed.",
+    "description": "Killing an enemy increases movement speed by 125%, fading over 1 (+0.5 per stack) seconds.",
+    "stacking": [
+      {
+        "stat": "Movement speed burst duration (s)",
+        "base": 1,
+        "perStack": 0.5,
+        "type": "linear"
+      }
+    ],
+    "tags": ["utility", "movement-speed", "on-kill"],
+    "icon": "/icons/hunters-harpoon.png",
+    "wiki": "https://riskofrain2.wiki.gg/wiki/Hunter%27s_Harpoon",
+    "verified": true
+  },
+  {
+    "id": "ignition-tank",
+    "name": "Ignition Tank",
+    "tier": "uncommon",
+    "dlc": "sotv",
+    "pickupText": "Your ignite effects deal quadruple damage.",
+    "description": "Ignite effects deal +300% (+300% per stack) more damage over time.",
+    "stacking": [
+      {
+        "stat": "Ignite damage bonus (%)",
+        "base": 300,
+        "perStack": 300,
+        "type": "linear"
+      }
+    ],
+    "tags": ["damage"],
+    "icon": "/icons/ignition-tank.png",
+    "wiki": "https://riskofrain2.wiki.gg/wiki/Ignition_Tank",
+    "verified": true
+  },
+  {
+    "id": "regenerating-scrap",
+    "name": "Regenerating Scrap",
+    "tier": "uncommon",
+    "subtype": "untiered",
+    "dlc": "sotv",
+    "pickupText": "Prioritized when used with Uncommon 3D Printers. Usable once per stage.",
+    "description": "Does nothing. Prioritized when used with Uncommon 3D Printers. At the start of each stage, it regenerates.",
+    "stacking": [],
+    "tags": ["utility", "scrap"],
+    "icon": "/icons/regenerating-scrap.png",
+    "wiki": "https://riskofrain2.wiki.gg/wiki/Regenerating_Scrap",
+    "verified": true
+  },
+  {
+    "id": "breaching-fin",
+    "name": "Breaching Fin",
+    "tier": "uncommon",
+    "dlc": "sots",
+    "pickupText": "Grounded enemies hit by any skill are launched and take bonus damage.",
+    "description": "Grounded enemies hit with any skill are launched and stunned. Enemies hit while airborne are launched again up to 2 times (+1 per stack). Launched enemies take 10% increased damage from all sources per launch.",
+    "stacking": [
+      {
+        "stat": "Max airborne re-launches",
+        "base": 2,
+        "perStack": 1,
+        "type": "linear"
+      }
+    ],
+    "tags": ["damage", "crowd-control", "on-hit"],
+    "icon": "/icons/breaching-fin.png",
+    "wiki": "https://riskofrain2.wiki.gg/wiki/Breaching_Fin",
+    "verified": true
+  },
+  {
+    "id": "chance-doll",
+    "name": "Chance Doll",
+    "tier": "uncommon",
+    "dlc": "sots",
+    "pickupText": "Chance to increase item rarity at Shrines of Chance.",
+    "description": "40% (+10% per stack) chance to get higher rarity items from Shrines of Chance on success.",
+    "stacking": [
+      {
+        "stat": "Higher-rarity chance at Shrine of Chance (%)",
+        "base": 40,
+        "perStack": 10,
+        "type": "linear"
+      }
+    ],
+    "tags": ["utility"],
+    "icon": "/icons/chance-doll.png",
+    "wiki": "https://riskofrain2.wiki.gg/wiki/Chance_Doll",
+    "verified": true
+  },
+  {
+    "id": "luminous-shot",
+    "name": "Luminous Shot",
+    "tier": "uncommon",
+    "dlc": "sots",
+    "pickupText": "Activating your Secondary skill charges your Primary skill with powerful lightning strikes. Requires 3 charges.",
+    "description": "Activating your Secondary skill stores up to 5 charges (+1 per stack). At 3 charges, your Primary skill fires lightning strikes dealing 175% (+50% per stack) TOTAL damage each. Reduces Secondary skill cooldown by 20%.",
+    "stacking": [
+      {
+        "stat": "Max stored charges",
+        "base": 5,
+        "perStack": 1,
+        "type": "linear"
+      },
+      {
+        "stat": "Lightning strike damage (% TOTAL)",
+        "base": 175,
+        "perStack": 50,
+        "type": "linear"
+      }
+    ],
+    "tags": ["damage", "on-hit"],
+    "icon": "/icons/luminous-shot.png",
+    "wiki": "https://riskofrain2.wiki.gg/wiki/Luminous_Shot",
+    "verified": true
+  },
+  {
+    "id": "noxious-thorn",
+    "name": "Noxious Thorn",
+    "tier": "uncommon",
+    "dlc": "sots",
+    "pickupText": "Killing an enemy transfers debuffs to a nearby enemy.",
+    "description": "Gain 10% chance to bleed an enemy. On killing an enemy, transfer 33% of every debuff stack to 1 enemy (+1 per stack) within 20m (+5m per stack).",
+    "stacking": [
+      {
+        "stat": "Enemies debuffs transfer to",
+        "base": 1,
+        "perStack": 1,
+        "type": "linear"
+      },
+      {
+        "stat": "Transfer range (m)",
+        "base": 20,
+        "perStack": 5,
+        "type": "linear"
+      }
+    ],
+    "tags": ["damage", "on-kill", "bleed"],
+    "icon": "/icons/noxious-thorn.png",
+    "wiki": "https://riskofrain2.wiki.gg/wiki/Noxious_Thorn",
+    "verified": true
+  },
+  {
+    "id": "prayer-beads",
+    "name": "Prayer Beads",
+    "tier": "uncommon",
+    "dlc": "sots",
+    "pickupText": "Gains experience alongside you. Upon removal, grants bonus stats.",
+    "description": "Grows by gaining experience, storing 20% (+5% per stack) bonus stats (health, regeneration, and damage). On removal, gain all stored stats.",
+    "stacking": [
+      {
+        "stat": "Stored bonus stats (%)",
+        "base": 20,
+        "perStack": 5,
+        "type": "linear"
+      }
+    ],
+    "tags": ["utility"],
+    "icon": "/icons/prayer-beads.png",
+    "wiki": "https://riskofrain2.wiki.gg/wiki/Prayer_Beads",
+    "verified": true
+  },
+  {
+    "id": "box-of-dynamite",
+    "name": "Box of Dynamite",
+    "tier": "uncommon",
+    "dlc": "ac",
+    "pickupText": "Your drones periodically drop dynamite.",
+    "description": "Gain Lt. Droneboy. While in combat, your drones drop sticks of dynamite that detonate for 240% (+85% per stack) damage, stunning enemies. Recharges after 10 seconds.",
+    "stacking": [
+      {
+        "stat": "Dynamite damage (% base)",
+        "base": 240,
+        "perStack": 85,
+        "type": "linear"
+      }
+    ],
+    "tags": ["damage", "drone", "aoe"],
+    "icon": "/icons/box-of-dynamite.png",
+    "wiki": "https://riskofrain2.wiki.gg/wiki/Box_of_Dynamite",
+    "verified": true
+  },
+  {
+    "id": "collectors-compulsion",
+    "name": "Collector's Compulsion",
+    "tier": "uncommon",
+    "dlc": "ac",
+    "pickupText": "Pickups grant a stacking bonus to all stats. Open a barrel to find a minor pick-up.",
+    "description": "Picking up an item or other collectible increases all stats by +3% for 20 seconds, up to 3 (+2 per stack) times. Barrels grant minor pickups.",
+    "stacking": [
+      {
+        "stat": "Max stat-bonus stacks",
+        "base": 3,
+        "perStack": 2,
+        "type": "linear"
+      }
+    ],
+    "tags": ["utility"],
+    "icon": "/icons/collectors-compulsion.png",
+    "wiki": "https://riskofrain2.wiki.gg/wiki/Collector%27s_Compulsion",
+    "verified": true
+  },
+  {
+    "id": "faraday-spur",
+    "name": "Faraday Spur",
+    "tier": "uncommon",
+    "dlc": "ac",
+    "pickupText": "Moving around builds up movement speed and jump height. At 25% charge or higher, jump to discharge into an electric blast.",
+    "description": "Moving builds charge, granting up to +160% movement speed and +200% jump height at 100%. At 25% charge or higher, jumping triggers an explosive discharge for 400% (+280% per stack) damage in an area up to 32.3m (+7.5m per stack).",
+    "stacking": [
+      {
+        "stat": "Discharge damage (% base)",
+        "base": 400,
+        "perStack": 280,
+        "type": "linear"
+      },
+      {
+        "stat": "Max discharge radius (m)",
+        "base": 32.3,
+        "perStack": 7.5,
+        "type": "linear"
+      }
+    ],
+    "tags": ["damage", "movement-speed", "mobility", "aoe"],
+    "icon": "/icons/faraday-spur.png",
+    "wiki": "https://riskofrain2.wiki.gg/wiki/Faraday_Spur",
+    "verified": true
+  },
+  {
+    "id": "kinetic-dampener",
+    "name": "Kinetic Dampener",
+    "tier": "uncommon",
+    "dlc": "ac",
+    "pickupText": "Gain bonus armor while you have a shield. When shield breaks, release a stunning pulse that deals more damage the more shield you have.",
+    "description": "Increases armor by 30 (+30 per stack) while you have a shield. When shield breaks, release a stunning pulse for 100% damage plus 100% (+10% per stack) of your max shield. Grants a shield for 4% of your max health.",
+    "stacking": [
+      {
+        "stat": "Armor while shielded",
+        "base": 30,
+        "perStack": 30,
+        "type": "linear"
+      },
+      {
+        "stat": "Pulse damage from max shield (%)",
+        "base": 100,
+        "perStack": 10,
+        "type": "linear"
+      }
+    ],
+    "tags": ["survivability", "armor", "shield"],
+    "icon": "/icons/kinetic-dampener.png",
+    "wiki": "https://riskofrain2.wiki.gg/wiki/Kinetic_Dampener",
+    "verified": true
   }
 ]

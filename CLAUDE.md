@@ -60,7 +60,7 @@ left, bold white name, gray body with highlighted numeric values.
 ## Status
 
 - [x] M0 skeleton
-- [ ] M1 data: whites + greens
+- [x] M1 data: whites + greens
 - [ ] M2 codex UI
 - [ ] M3 run planner
 - [ ] M4 data complete
