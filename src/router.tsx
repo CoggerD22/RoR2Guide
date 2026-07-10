@@ -6,6 +6,7 @@ import {
 } from "@tanstack/react-router";
 import { RootLayout } from "@/components/layout/RootLayout";
 import { PlaceholderPage } from "@/components/PlaceholderPage";
+import { CodexPage } from "@/components/codex/CodexPage";
 import { NAV_SECTIONS, type NavSection } from "@/lib/nav";
 
 const rootRoute = createRootRoute({ component: RootLayout });
@@ -41,9 +42,15 @@ function placeholderRoute(path: NavSection["path"]) {
   });
 }
 
+const itemsRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/items",
+  component: CodexPage,
+});
+
 const routeTree = rootRoute.addChildren([
   indexRoute,
-  placeholderRoute("/items"),
+  itemsRoute,
   placeholderRoute("/planner"),
   placeholderRoute("/stats"),
   placeholderRoute("/reference"),

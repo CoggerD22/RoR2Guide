@@ -1,0 +1,147 @@
+import type { ReactNode } from "react";
+import { Search, X } from "lucide-react";
+import type { Tier, Dlc, StackingType } from "@/data/schema";
+import { PRESENT_TIERS, TIER_META, DLC_ORDER, DLC_META, ALL_TAGS } from "@/data/items";
+import { stackingLabel } from "@/lib/stacking";
+import { cn } from "@/lib/utils";
+import { STACKING_TYPES, type FilterState } from "./filters";
+
+interface CodexFiltersProps {
+  query: string;
+  onQueryChange: (q: string) => void;
+  filters: FilterState;
+  onToggleTier: (t: Tier) => void;
+  onToggleDlc: (d: Dlc) => void;
+  onToggleStacking: (s: StackingType) => void;
+  onToggleTag: (t: string) => void;
+  onToggleHideVariants: () => void;
+  onClear: () => void;
+  resultCount: number;
+  totalCount: number;
+  anyFilter: boolean;
+}
+
+function Chip({
+  active,
+  onClick,
+  children,
+}: {
+  active: boolean;
+  onClick: () => void;
+  children: ReactNode;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      aria-pressed={active}
+      className={cn(
+        "rounded-full border px-2.5 py-1 text-xs capitalize transition-colors",
+        active
+          ? "border-primary/60 bg-primary/15 text-foreground"
+          : "border-border text-muted-foreground hover:text-foreground",
+      )}
+    >
+      {children}
+    </button>
+  );
+}
+
+function Row({ label, children }: { label: string; children: ReactNode }) {
+  return (
+    <div className="flex flex-col gap-1.5 sm:flex-row sm:items-start sm:gap-3">
+      <span className="w-20 shrink-0 pt-1 text-xs font-semibold uppercase tracking-widest text-muted-foreground">
+        {label}
+      </span>
+      <div className="flex flex-wrap gap-1.5">{children}</div>
+    </div>
+  );
+}
+
+export function CodexFilters(props: CodexFiltersProps) {
+  const { filters } = props;
+
+  return (
+    <div className="flex flex-col gap-4">
+      <div className="flex items-center gap-3">
+        <div className="relative flex-1">
+          <Search className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
+          <input
+            type="search"
+            value={props.query}
+            onChange={(e) => props.onQueryChange(e.target.value)}
+            placeholder="Search items — name, effect, or tag (e.g. bleed, crit, armor)…"
+            className="w-full rounded-lg border border-border bg-surface py-2.5 pl-9 pr-3 text-sm text-foreground placeholder:text-muted-foreground focus:border-primary/60 focus:outline-none"
+            aria-label="Search items"
+          />
+        </div>
+        <span className="shrink-0 text-sm text-muted-foreground">
+          {props.resultCount} / {props.totalCount}
+        </span>
+      </div>
+
+      <div className="flex flex-col gap-3">
+        <Row label="Tier">
+          {PRESENT_TIERS.map((tier) => (
+            <Chip
+              key={tier}
+              active={filters.tiers.has(tier)}
+              onClick={() => props.onToggleTier(tier)}
+            >
+              {TIER_META[tier].label}
+            </Chip>
+          ))}
+        </Row>
+
+        <Row label="DLC">
+          {DLC_ORDER.map((dlc) => (
+            <Chip key={dlc} active={filters.dlcs.has(dlc)} onClick={() => props.onToggleDlc(dlc)}>
+              {DLC_META[dlc].short}
+            </Chip>
+          ))}
+        </Row>
+
+        <Row label="Stacking">
+          {STACKING_TYPES.map((s) => (
+            <Chip
+              key={s}
+              active={filters.stacking.has(s)}
+              onClick={() => props.onToggleStacking(s)}
+            >
+              {stackingLabel(s)}
+            </Chip>
+          ))}
+        </Row>
+
+        <Row label="Category">
+          {ALL_TAGS.map((tag) => (
+            <Chip key={tag} active={filters.tags.has(tag)} onClick={() => props.onToggleTag(tag)}>
+              {tag.replace(/-/g, " ")}
+            </Chip>
+          ))}
+        </Row>
+      </div>
+
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <label className="flex cursor-pointer items-center gap-2 text-xs text-muted-foreground">
+          <input
+            type="checkbox"
+            checked={filters.hideVariants}
+            onChange={props.onToggleHideVariants}
+            className="size-3.5 accent-[var(--color-primary)]"
+          />
+          Hide scrap / consumed variants
+        </label>
+        {(props.anyFilter || props.query) && (
+          <button
+            type="button"
+            onClick={props.onClear}
+            className="inline-flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground"
+          >
+            <X className="size-3.5" /> Clear all
+          </button>
+        )}
+      </div>
+    </div>
+  );
+}

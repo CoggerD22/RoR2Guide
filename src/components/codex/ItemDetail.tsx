@@ -1,0 +1,164 @@
+import { useEffect, type CSSProperties } from "react";
+import { ExternalLink, X } from "lucide-react";
+import type { Item } from "@/data/schema";
+import { TIER_META, DLC_META } from "@/data/items";
+import { highlightNumbers } from "@/lib/highlight";
+import { sparklinePoints } from "@/lib/stacking";
+import { StackingBadge } from "./StackingBadge";
+import { Sparkline } from "./Sparkline";
+
+interface ItemDetailProps {
+  item: Item | null;
+  onClose: () => void;
+}
+
+/** Slide-in detail drawer for a selected item. */
+export function ItemDetail({ item, onClose }: ItemDetailProps) {
+  useEffect(() => {
+    if (!item) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") onClose();
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [item, onClose]);
+
+  if (!item) return null;
+
+  const tier = TIER_META[item.tier];
+
+  return (
+    <div className="fixed inset-0 z-50" role="dialog" aria-modal="true" aria-label={item.name}>
+      <div
+        className="absolute inset-0 bg-black/60 backdrop-blur-sm"
+        onClick={onClose}
+        aria-hidden
+      />
+      <aside
+        className="absolute right-0 top-0 flex h-full w-full max-w-md flex-col overflow-y-auto border-l border-border bg-surface shadow-2xl"
+        style={{ "--tier": tier.color } as CSSProperties}
+      >
+        <div className="sticky top-0 z-10 flex items-start gap-3 border-b border-border bg-surface/95 p-4 backdrop-blur">
+          <img
+            src={item.icon}
+            alt=""
+            className="size-16 shrink-0 object-contain"
+            style={{ filter: "drop-shadow(0 0 8px color-mix(in srgb, var(--tier) 40%, transparent))" }}
+          />
+          <div className="min-w-0 flex-1">
+            <h2 className="text-lg font-semibold leading-tight text-foreground">{item.name}</h2>
+            <div className="mt-1 flex flex-wrap items-center gap-1.5 text-xs">
+              <span className="font-medium" style={{ color: "var(--tier)" }}>
+                {tier.label}
+              </span>
+              <span className="text-muted-foreground">·</span>
+              <span className="text-muted-foreground">{DLC_META[item.dlc].label}</span>
+              {!item.verified && (
+                <span className="rounded-full border border-amber-400/40 px-1.5 py-0.5 text-[10px] font-medium text-amber-300">
+                  Unverified
+                </span>
+              )}
+            </div>
+          </div>
+          <button
+            type="button"
+            onClick={onClose}
+            className="rounded-md p-1.5 text-muted-foreground hover:bg-surface-2 hover:text-foreground"
+            aria-label="Close"
+          >
+            <X className="size-5" />
+          </button>
+        </div>
+
+        <div className="flex flex-col gap-5 p-4">
+          <p className="text-sm italic text-muted-foreground">{item.pickupText}</p>
+
+          <p className="text-sm leading-relaxed text-foreground/90">
+            {highlightNumbers(item.description)}
+          </p>
+
+          {item.stacking.length > 0 && (
+            <section>
+              <h3 className="mb-2 text-xs font-semibold uppercase tracking-widest text-muted-foreground">
+                Stacking
+              </h3>
+              <div className="flex flex-col gap-3">
+                {item.stacking.map((entry, i) => {
+                  const points = sparklinePoints(entry);
+                  return (
+                    <div key={i} className="rounded-lg border border-border bg-surface-2 p-3">
+                      <div className="flex items-center justify-between gap-2">
+                        <span className="text-sm font-medium text-foreground">{entry.stat}</span>
+                        <StackingBadge type={entry.type} />
+                      </div>
+                      <div className="mt-1 text-xs text-muted-foreground">
+                        <span className="font-semibold text-foreground">{entry.base}</span> base
+                        {entry.perStack !== 0 && (
+                          <>
+                            , <span className="font-semibold text-foreground">
+                              {entry.perStack > 0 ? `+${entry.perStack}` : entry.perStack}
+                            </span>{" "}
+                            per stack
+                          </>
+                        )}
+                      </div>
+                      {entry.formula && (
+                        <p className="mt-2 font-mono text-[11px] leading-relaxed text-muted-foreground">
+                          {entry.formula}
+                        </p>
+                      )}
+                      {entry.cap && (
+                        <p className="mt-1 text-[11px] text-muted-foreground">Cap: {entry.cap}</p>
+                      )}
+                      {points && (
+                        <div className="mt-2">
+                          <Sparkline points={points} />
+                          <div className="mt-0.5 text-[10px] text-muted-foreground">1 → 8 stacks</div>
+                        </div>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+            </section>
+          )}
+
+          {item.unlock && (
+            <section>
+              <h3 className="mb-1 text-xs font-semibold uppercase tracking-widest text-muted-foreground">
+                Unlock
+              </h3>
+              <p className="text-sm text-foreground/90">{item.unlock}</p>
+            </section>
+          )}
+
+          {item.flavor && (
+            <p className="border-l-2 border-border pl-3 text-sm italic text-muted-foreground">
+              {item.flavor}
+            </p>
+          )}
+
+          <div className="flex flex-wrap gap-1.5">
+            {item.tags.map((tag) => (
+              <span
+                key={tag}
+                className="rounded-full bg-surface-2 px-2 py-0.5 text-[11px] text-muted-foreground"
+              >
+                {tag}
+              </span>
+            ))}
+          </div>
+
+          <a
+            href={item.wiki}
+            target="_blank"
+            rel="noreferrer noopener"
+            className="inline-flex items-center gap-1.5 text-sm text-primary hover:underline"
+          >
+            View on wiki.gg <ExternalLink className="size-3.5" />
+          </a>
+        </div>
+      </aside>
+    </div>
+  );
+}
