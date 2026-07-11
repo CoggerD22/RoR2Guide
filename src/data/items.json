@@ -56,6 +56,7 @@
       }
     ],
     "tags": ["damage", "critical-strike", "on-hit"],
+    "corruptedBy": "lost-seers-lenses",
     "icon": "/icons/lens-makers-glasses.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Lens-Maker%27s_Glasses",
     "verified": true
@@ -77,6 +78,7 @@
       }
     ],
     "tags": ["utility", "block", "survivability"],
+    "corruptedBy": "safer-spaces",
     "icon": "/icons/tougher-times.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Tougher_Times",
     "verified": true
@@ -97,6 +99,7 @@
       }
     ],
     "tags": ["damage", "on-hit", "bleed"],
+    "corruptedBy": "needletick",
     "icon": "/icons/tri-tip-dagger.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Tri-Tip_Dagger",
     "verified": true
@@ -203,6 +206,7 @@
       }
     ],
     "tags": ["healing"],
+    "corruptedBy": "weeping-fungus",
     "icon": "/icons/bustling-fungus.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Bustling_Fungus",
     "verified": true
@@ -682,6 +686,7 @@
       }
     ],
     "tags": ["utility"],
+    "corruptedBy": "encrusted-key",
     "icon": "/icons/rusted-key.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Rusted_Key",
     "verified": false
@@ -769,6 +774,7 @@
       }
     ],
     "tags": ["damage", "on-hit"],
+    "corruptedBy": "plasma-shrimp",
     "icon": "/icons/atg-missile-mk-1.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/AtG_Missile_Mk._1",
     "verified": true
@@ -795,6 +801,7 @@
       }
     ],
     "tags": ["damage", "on-kill", "aoe"],
+    "corruptedBy": "voidsent-flame",
     "icon": "/icons/will-o-the-wisp.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Will-o%27-the-wisp",
     "verified": true
@@ -841,6 +848,7 @@
       }
     ],
     "tags": ["damage", "on-hit", "aoe"],
+    "corruptedBy": "polylute",
     "icon": "/icons/ukulele.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Ukulele",
     "verified": true
@@ -972,6 +980,7 @@
     ],
     "tags": ["utility", "equipment"],
     "unlock": "Experimenting",
+    "corruptedBy": "lysate-cell",
     "icon": "/icons/fuel-cell.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Fuel_Cell",
     "verified": true
@@ -1088,6 +1097,7 @@
     ],
     "tags": ["damage", "on-hit", "crowd-control"],
     "unlock": "Death Do Us Part",
+    "corruptedBy": "singularity-band",
     "icon": "/icons/runalds-band.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Runald%27s_Band",
     "verified": true
@@ -1109,6 +1119,7 @@
     ],
     "tags": ["damage", "on-hit"],
     "unlock": "Death Do Us Part",
+    "corruptedBy": "singularity-band",
     "icon": "/icons/kjaros-band.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Kjaro%27s_Band",
     "verified": true
@@ -1129,6 +1140,7 @@
       }
     ],
     "tags": ["utility", "on-hit", "crowd-control"],
+    "corruptedBy": "tentabauble",
     "icon": "/icons/chronobauble.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Chronobauble",
     "verified": true
@@ -1734,6 +1746,7 @@
     ],
     "tags": ["utility"],
     "unlock": "The Long Road",
+    "corruptedBy": "benthic-bloom",
     "icon": "/icons/57-leaf-clover.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/57_Leaf_Clover",
     "verified": true
@@ -1755,6 +1768,7 @@
     ],
     "tags": ["survivability"],
     "unlock": "The Lone Survivor",
+    "corruptedBy": "pluripotent-larva",
     "icon": "/icons/dios-best-friend.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Dio%27s_Best_Friend",
     "verified": true
@@ -3347,6 +3361,256 @@
     "tags": ["utility"],
     "icon": "/icons/eulogy-zero.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Eulogy_Zero",
+    "verified": true
+  },
+  {
+    "id": "needletick",
+    "name": "Needletick",
+    "tier": "void-common",
+    "dlc": "sotv",
+    "pickupText": "Chance to collapse enemies on hit. Corrupts all Tri-Tip Daggers.",
+    "description": "10% (+10% per stack) chance to collapse an enemy for 400% base damage. Corrupts all Tri-Tip Daggers.",
+    "stacking": [
+      { "stat": "Chance to collapse on hit (%)", "base": 10, "perStack": 10, "type": "linear" }
+    ],
+    "tags": ["damage", "on-hit"],
+    "corrupts": ["tri-tip-dagger"],
+    "icon": "/icons/needletick.png",
+    "wiki": "https://riskofrain2.wiki.gg/wiki/Needletick",
+    "verified": true
+  },
+  {
+    "id": "lost-seers-lenses",
+    "name": "Lost Seer's Lenses",
+    "tier": "void-common",
+    "dlc": "sotv",
+    "pickupText": "Gain a chance to instantly kill a non-boss enemy. Corrupts all Lens-Maker's Glasses.",
+    "description": "Your attacks have a 0.5% (+0.5% per stack) chance to instantly kill a non-Boss enemy. Corrupts all Lens-Maker's Glasses.",
+    "stacking": [
+      { "stat": "Instant-kill chance (%)", "base": 0.5, "perStack": 0.5, "type": "linear" }
+    ],
+    "tags": ["damage", "on-hit", "execute"],
+    "corrupts": ["lens-makers-glasses"],
+    "icon": "/icons/lost-seers-lenses.png",
+    "wiki": "https://riskofrain2.wiki.gg/wiki/Lost_Seer%27s_Lenses",
+    "verified": true
+  },
+  {
+    "id": "safer-spaces",
+    "name": "Safer Spaces",
+    "tier": "void-common",
+    "dlc": "sotv",
+    "pickupText": "Block the next source of damage. Corrupts all Tougher Times.",
+    "description": "Blocks incoming damage once. Recharges after 13.5 seconds (-10% per stack). Corrupts all Tougher Times.",
+    "stacking": [
+      {
+        "stat": "Recharge cooldown (s)",
+        "base": 13.5,
+        "perStack": -10,
+        "type": "exponential",
+        "formula": "recharge multiplied by 0.9 per stack (multiplicative)"
+      }
+    ],
+    "tags": ["survivability", "block"],
+    "corrupts": ["tougher-times"],
+    "icon": "/icons/safer-spaces.png",
+    "wiki": "https://riskofrain2.wiki.gg/wiki/Safer_Spaces",
+    "verified": true
+  },
+  {
+    "id": "weeping-fungus",
+    "name": "Weeping Fungus",
+    "tier": "void-common",
+    "dlc": "sotv",
+    "pickupText": "Heal while sprinting. Corrupts all Bustling Fungi.",
+    "description": "Heals for 2% (+2% per stack) of your health every second while sprinting. Corrupts all Bustling Fungi.",
+    "stacking": [
+      { "stat": "Heal per second while sprinting (% health)", "base": 2, "perStack": 2, "type": "linear" }
+    ],
+    "tags": ["healing"],
+    "corrupts": ["bustling-fungus"],
+    "icon": "/icons/weeping-fungus.png",
+    "wiki": "https://riskofrain2.wiki.gg/wiki/Weeping_Fungus",
+    "verified": true
+  },
+  {
+    "id": "encrusted-key",
+    "name": "Encrusted Key",
+    "tier": "void-common",
+    "dlc": "sotv",
+    "pickupText": "Gain access to an Encrusted Cache that contains a void item. Corrupts all Rusted Keys.",
+    "description": "A hidden cache containing a void item will appear in a random location on each stage. Opening the cache consumes this item. Corrupts all Rusted Keys.",
+    "stacking": [
+      {
+        "stat": "Void cache behavior",
+        "base": 1,
+        "perStack": 1,
+        "type": "special",
+        "formula": "one cache per stage per key-holder; additional keys raise the cache item's rarity"
+      }
+    ],
+    "tags": ["utility"],
+    "corrupts": ["rusted-key"],
+    "icon": "/icons/encrusted-key.png",
+    "wiki": "https://riskofrain2.wiki.gg/wiki/Encrusted_Key",
+    "verified": true
+  },
+  {
+    "id": "plasma-shrimp",
+    "name": "Plasma Shrimp",
+    "tier": "void-uncommon",
+    "dlc": "sotv",
+    "pickupText": "While you have shield, fire missiles on every hit. Corrupts all AtG Missile Mk. 1s.",
+    "description": "Gain a shield equal to 10% of your maximum health. While you have a shield, hitting an enemy fires a missile that deals 40% (+40% per stack) TOTAL damage. Corrupts all AtG Missile Mk. 1s.",
+    "stacking": [
+      { "stat": "Missile damage (% TOTAL)", "base": 40, "perStack": 40, "type": "linear" }
+    ],
+    "tags": ["damage", "on-hit", "shield"],
+    "corrupts": ["atg-missile-mk-1"],
+    "icon": "/icons/plasma-shrimp.png",
+    "wiki": "https://riskofrain2.wiki.gg/wiki/Plasma_Shrimp",
+    "verified": true
+  },
+  {
+    "id": "lysate-cell",
+    "name": "Lysate Cell",
+    "tier": "void-uncommon",
+    "dlc": "sotv",
+    "pickupText": "Add an extra charge of your Special skill. Corrupts all Fuel Cells.",
+    "description": "Add +1 (+1 per stack) charge of your Special skill. Reduces Special skill cooldown by 33%. Corrupts all Fuel Cells.",
+    "stacking": [
+      { "stat": "Special skill charges", "base": 1, "perStack": 1, "type": "linear" }
+    ],
+    "tags": ["utility"],
+    "corrupts": ["fuel-cell"],
+    "icon": "/icons/lysate-cell.png",
+    "wiki": "https://riskofrain2.wiki.gg/wiki/Lysate_Cell",
+    "verified": true
+  },
+  {
+    "id": "polylute",
+    "name": "Polylute",
+    "tier": "void-uncommon",
+    "dlc": "sotv",
+    "pickupText": "Chance on hit to fire chain lightning. Corrupts all Ukuleles.",
+    "description": "25% chance to fire lightning for 60% TOTAL damage up to 3 (+3 per stack) times. Corrupts all Ukuleles.",
+    "stacking": [
+      { "stat": "Lightning hits", "base": 3, "perStack": 3, "type": "linear" }
+    ],
+    "tags": ["damage", "on-hit"],
+    "corrupts": ["ukulele"],
+    "icon": "/icons/polylute.png",
+    "wiki": "https://riskofrain2.wiki.gg/wiki/Polylute",
+    "verified": true
+  },
+  {
+    "id": "tentabauble",
+    "name": "Tentabauble",
+    "tier": "void-uncommon",
+    "dlc": "sotv",
+    "pickupText": "Chance to root enemies on hit. Corrupts all Chronobaubles.",
+    "description": "5% (+5% per stack) chance on hit to root enemies for 1s (+1s per stack). Corrupts all Chronobaubles.",
+    "stacking": [
+      {
+        "stat": "Chance on hit to root (%)",
+        "base": 5,
+        "perStack": 5,
+        "type": "hyperbolic",
+        "formula": "proc chance stacks hyperbolically, approaching but never reaching 100%"
+      },
+      { "stat": "Root duration (s)", "base": 1, "perStack": 1, "type": "linear" }
+    ],
+    "tags": ["utility", "on-hit", "crowd-control"],
+    "corrupts": ["chronobauble"],
+    "icon": "/icons/tentabauble.png",
+    "wiki": "https://riskofrain2.wiki.gg/wiki/Tentabauble",
+    "verified": true
+  },
+  {
+    "id": "singularity-band",
+    "name": "Singularity Band",
+    "tier": "void-uncommon",
+    "dlc": "sotv",
+    "pickupText": "High damage hits also create unstable black holes. Corrupts all Runald's and Kjaro's Bands.",
+    "description": "Hits that deal more than 400% damage fire a black hole that draws enemies within 15m into its center, lasting 5 seconds before collapsing for 100% (+100% per stack) TOTAL damage. Recharges every 20 seconds. Corrupts all Runald's and Kjaro's Bands.",
+    "stacking": [
+      { "stat": "Black hole damage (% TOTAL)", "base": 100, "perStack": 100, "type": "linear" }
+    ],
+    "tags": ["damage", "on-hit", "aoe", "crowd-control"],
+    "corrupts": ["runalds-band", "kjaros-band"],
+    "icon": "/icons/singularity-band.png",
+    "wiki": "https://riskofrain2.wiki.gg/wiki/Singularity_Band",
+    "verified": true
+  },
+  {
+    "id": "voidsent-flame",
+    "name": "Voidsent Flame",
+    "tier": "void-uncommon",
+    "dlc": "sotv",
+    "pickupText": "Full health enemies also detonate on hit. Corrupts all Will-o'-the-wisps.",
+    "description": "Upon hitting an enemy at full health, spawn a lava pillar in a 12m (+2.4m per stack) radius for 260% (+156% per stack) base damage. Corrupts all Will-o'-the-wisps.",
+    "stacking": [
+      { "stat": "Explosion radius (m)", "base": 12, "perStack": 2.4, "type": "linear" },
+      { "stat": "Explosion damage (% base)", "base": 260, "perStack": 156, "type": "linear" }
+    ],
+    "tags": ["damage", "on-hit", "aoe"],
+    "corrupts": ["will-o-the-wisp"],
+    "icon": "/icons/voidsent-flame.png",
+    "wiki": "https://riskofrain2.wiki.gg/wiki/Voidsent_Flame",
+    "verified": true
+  },
+  {
+    "id": "benthic-bloom",
+    "name": "Benthic Bloom",
+    "tier": "void-legendary",
+    "dlc": "sotv",
+    "pickupText": "Upgrades your items at the start of each stage. Corrupts all 57 Leaf Clovers.",
+    "description": "Upgrades 3 (+3 per stack) random items to items of the next higher rarity at the start of each stage. Corrupts all 57 Leaf Clovers.",
+    "stacking": [
+      { "stat": "Items upgraded per stage", "base": 3, "perStack": 3, "type": "linear" }
+    ],
+    "tags": ["utility"],
+    "corrupts": ["57-leaf-clover"],
+    "icon": "/icons/benthic-bloom.png",
+    "wiki": "https://riskofrain2.wiki.gg/wiki/Benthic_Bloom",
+    "verified": true
+  },
+  {
+    "id": "pluripotent-larva",
+    "name": "Pluripotent Larva",
+    "tier": "void-legendary",
+    "dlc": "sotv",
+    "pickupText": "Get a corrupted extra life. Consumed on use. Corrupts all Dio's Best Friends.",
+    "description": "Upon death, this item is consumed and you return to life with 3 seconds of invulnerability, and all of your items that can be corrupted will be. Corrupts all Dio's Best Friends.",
+    "stacking": [
+      { "stat": "Extra lives", "base": 1, "perStack": 1, "type": "linear" }
+    ],
+    "tags": ["survivability"],
+    "corrupts": ["dios-best-friend"],
+    "icon": "/icons/pluripotent-larva.png",
+    "wiki": "https://riskofrain2.wiki.gg/wiki/Pluripotent_Larva",
+    "verified": true
+  },
+  {
+    "id": "newly-hatched-zoea",
+    "name": "Newly Hatched Zoea",
+    "tier": "void-boss",
+    "dlc": "sotv",
+    "pickupText": "Periodically recruit allies from the Void. Corrupts all yellow items.",
+    "description": "Every 60 (-50% per stack) seconds, gain a random Void ally, up to a maximum of 1 (+1 per stack) at a time. Corrupts all yellow (boss) items.",
+    "stacking": [
+      {
+        "stat": "Recruit interval (s)",
+        "base": 60,
+        "perStack": -50,
+        "type": "special",
+        "formula": "interval divides reciprocally per stack (60s, ~40s, 30s, …)"
+      },
+      { "stat": "Max Void allies", "base": 1, "perStack": 1, "type": "linear" }
+    ],
+    "tags": ["damage", "utility", "drone"],
+    "icon": "/icons/newly-hatched-zoea.png",
+    "wiki": "https://riskofrain2.wiki.gg/wiki/Newly_Hatched_Zoea",
     "verified": true
   }
 ]
