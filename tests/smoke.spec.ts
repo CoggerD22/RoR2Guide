@@ -65,3 +65,15 @@ test("planner: cycling a card fills the run plan rail and persists a reload", as
   await page.getByRole("button", { name: "New run" }).click();
   await expect(page.getByRole("complementary").getByText("Crowbar")).toHaveCount(0);
 });
+
+test("stat lab computes stats and reacts to items", async ({ page }) => {
+  await page.goto("/stats");
+  await expect(page.getByRole("heading", { name: "Stat Lab" })).toBeVisible();
+
+  // Commando at level 1 has 110 max health.
+  await expect(page.getByText("110", { exact: true }).first()).toBeVisible();
+
+  // Adding a Bison Steak (+25 flat HP) bumps it to 135.
+  await page.getByRole("button", { name: "Add one Bison Steak" }).click();
+  await expect(page.getByText("135", { exact: true }).first()).toBeVisible();
+});

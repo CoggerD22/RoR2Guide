@@ -130,3 +130,34 @@ export type Item = z.infer<typeof itemSchema>;
 /** The whole items.json payload. */
 export const itemsFileSchema = z.array(itemSchema);
 export type ItemsFile = z.infer<typeof itemsFileSchema>;
+
+/**
+ * Survivor stats (PLAN §2.3). `base`/`perLevel` scale as
+ * stat(level) = base + perLevel*(level-1). Regen values are the standard
+ * (Rainstorm) difficulty figures; move speed, armor, and jumps are flat.
+ */
+export const statScalingSchema = z
+  .object({ base: z.number(), perLevel: z.number() })
+  .strict();
+export type StatScaling = z.infer<typeof statScalingSchema>;
+
+export const survivorSchema = z
+  .object({
+    id: slug,
+    name: z.string().min(1),
+    dlc: dlcSchema,
+    health: statScalingSchema,
+    regen: statScalingSchema,
+    damage: statScalingSchema,
+    moveSpeed: z.number(),
+    armor: z.number(),
+    jumpCount: z.number().int(),
+    baseAttackSpeed: z.number(),
+    wiki: z.url(),
+    verified: z.boolean(),
+  })
+  .strict();
+export type Survivor = z.infer<typeof survivorSchema>;
+
+export const survivorsFileSchema = z.array(survivorSchema);
+export type SurvivorsFile = z.infer<typeof survivorsFileSchema>;

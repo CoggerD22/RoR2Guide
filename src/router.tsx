@@ -8,6 +8,7 @@ import { RootLayout } from "@/components/layout/RootLayout";
 import { PlaceholderPage } from "@/components/PlaceholderPage";
 import { CodexPage } from "@/components/codex/CodexPage";
 import { PlannerPage } from "@/components/planner/PlannerPage";
+import { StatLabPage } from "@/components/statlab/StatLabPage";
 import { NAV_SECTIONS, type NavSection } from "@/lib/nav";
 
 const rootRoute = createRootRoute({ component: RootLayout });
@@ -55,11 +56,17 @@ const plannerRoute = createRoute({
   component: PlannerPage,
 });
 
+const statsRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/stats",
+  component: StatLabPage,
+});
+
 const routeTree = rootRoute.addChildren([
   indexRoute,
   itemsRoute,
   plannerRoute,
-  placeholderRoute("/stats"),
+  statsRoute,
   placeholderRoute("/reference"),
 ]);
 

@@ -64,5 +64,5 @@ left, bold white name, gray body with highlighted numeric values.
 - [x] M2 codex UI
 - [x] M3 run planner
 - [x] M4 data complete
-- [ ] M5 stat lab
+- [x] M5 stat lab
 - [ ] M6 reference pages
