@@ -55,3 +55,6 @@ export const ALL_TAGS: string[] = [...new Set(items.flatMap((it) => it.tags))].s
 export const PRESENT_TIERS: Tier[] = TIER_ORDER.filter((tier) =>
   items.some((it) => it.tier === tier),
 );
+
+/** Fast id → item lookup (for corruption-link resolution, etc.). */
+export const itemById: Map<string, Item> = new Map(items.map((it) => [it.id, it]));

@@ -1,19 +1,52 @@
 import { useEffect, type CSSProperties } from "react";
-import { ExternalLink, X } from "lucide-react";
+import { Biohazard, ExternalLink, X } from "lucide-react";
 import type { Item } from "@/data/schema";
-import { TIER_META, DLC_META } from "@/data/items";
+import { TIER_META, DLC_META, itemById } from "@/data/items";
 import { highlightNumbers } from "@/lib/highlight";
 import { sparklinePoints } from "@/lib/stacking";
+import { cn } from "@/lib/utils";
 import { StackingBadge } from "./StackingBadge";
 import { Sparkline } from "./Sparkline";
 
 interface ItemDetailProps {
   item: Item | null;
   onClose: () => void;
+  /** Navigate the drawer to a related item (corruption link). */
+  onSelectItem?: (item: Item) => void;
+}
+
+function CorruptionRow({
+  label,
+  other,
+  onSelectItem,
+}: {
+  label: string;
+  other: Item;
+  onSelectItem?: (item: Item) => void;
+}) {
+  const inner = (
+    <>
+      <img src={other.icon} alt="" className="size-7 shrink-0 object-contain" />
+      <span className="min-w-0">
+        <span className="block text-[10px] uppercase tracking-wide text-muted-foreground">
+          {label}
+        </span>
+        <span className="block truncate text-sm text-foreground">{other.name}</span>
+      </span>
+    </>
+  );
+  const base = "flex w-full items-center gap-2 rounded-lg border border-border bg-surface-2 p-2 text-left";
+  return onSelectItem ? (
+    <button type="button" onClick={() => onSelectItem(other)} className={cn(base, "hover:border-primary/50")}>
+      {inner}
+    </button>
+  ) : (
+    <div className={base}>{inner}</div>
+  );
 }
 
 /** Slide-in detail drawer for a selected item. */
-export function ItemDetail({ item, onClose }: ItemDetailProps) {
+export function ItemDetail({ item, onClose, onSelectItem }: ItemDetailProps) {
   useEffect(() => {
     if (!item) return;
     const onKey = (e: KeyboardEvent) => {
@@ -119,6 +152,40 @@ export function ItemDetail({ item, onClose }: ItemDetailProps) {
                     </div>
                   );
                 })}
+              </div>
+            </section>
+          )}
+
+          {(item.corrupts || item.corruptedBy) && (
+            <section>
+              <h3 className="mb-2 flex items-center gap-1.5 text-xs font-semibold uppercase tracking-widest text-muted-foreground">
+                <Biohazard className="size-3.5" style={{ color: "var(--tier-void)" }} /> Void
+                corruption
+              </h3>
+              <div className="flex flex-col gap-2">
+                {item.corrupts?.map((id) => {
+                  const other = itemById.get(id);
+                  return other ? (
+                    <CorruptionRow
+                      key={id}
+                      label="Corrupts"
+                      other={other}
+                      onSelectItem={onSelectItem}
+                    />
+                  ) : null;
+                })}
+                {item.corruptedBy
+                  ? (() => {
+                      const other = itemById.get(item.corruptedBy);
+                      return other ? (
+                        <CorruptionRow
+                          label="Corrupted by"
+                          other={other}
+                          onSelectItem={onSelectItem}
+                        />
+                      ) : null;
+                    })()
+                  : null}
               </div>
             </section>
           )}

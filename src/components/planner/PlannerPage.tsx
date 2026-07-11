@@ -68,7 +68,7 @@ export function PlannerPage() {
         </div>
       </div>
 
-      <ItemDetail item={selected} onClose={() => setSelected(null)} />
+      <ItemDetail item={selected} onClose={() => setSelected(null)} onSelectItem={setSelected} />
     </div>
   );
 }

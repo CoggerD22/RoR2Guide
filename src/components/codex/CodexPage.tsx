@@ -44,7 +44,7 @@ export function CodexPage() {
 
       <CodexGrid items={results} onSelect={setSelected} />
 
-      <ItemDetail item={selected} onClose={() => setSelected(null)} />
+      <ItemDetail item={selected} onClose={() => setSelected(null)} onSelectItem={setSelected} />
     </div>
   );
 }
