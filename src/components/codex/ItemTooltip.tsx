@@ -4,6 +4,7 @@ import { TIER_META } from "@/data/items";
 import { highlightNumbers } from "@/lib/highlight";
 import { StackingBadge } from "./StackingBadge";
 import { itemStackingTypes } from "@/lib/stacking";
+import { asset } from "@/lib/asset";
 
 /** In-game-style tooltip: dark panel, icon left, bold white name, gray body. */
 export function ItemTooltip({ item }: { item: Item }) {
@@ -17,7 +18,7 @@ export function ItemTooltip({ item }: { item: Item }) {
     >
       <div className="flex items-center gap-2">
         <img
-          src={item.icon}
+          src={asset(item.icon)}
           alt=""
           className="size-9 shrink-0 rounded-sm"
           style={{ boxShadow: "0 0 0 1px color-mix(in srgb, var(--tier) 60%, transparent)" }}

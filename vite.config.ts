@@ -4,7 +4,10 @@ import react from "@vitejs/plugin-react";
 import tailwindcss from "@tailwindcss/vite";
 
 // https://vite.dev/config/
-export default defineConfig({
+// Production builds are served from the GitHub Pages project subpath
+// (/RoR2Guide/); dev + tests stay at root so nothing local needs the prefix.
+export default defineConfig(({ mode }) => ({
+  base: mode === "production" ? "/RoR2Guide/" : "/",
   plugins: [react(), tailwindcss()],
   resolve: {
     alias: {
@@ -14,4 +17,4 @@ export default defineConfig({
   server: {
     port: 5173,
   },
-});
+}));

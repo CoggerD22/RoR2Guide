@@ -3,6 +3,7 @@ import { Check, Info, X } from "lucide-react";
 import type { Item } from "@/data/schema";
 import { TIER_META } from "@/data/items";
 import { cn } from "@/lib/utils";
+import { asset } from "@/lib/asset";
 import { ItemTooltip } from "@/components/codex/ItemTooltip";
 import type { PlanState } from "@/store/planner";
 
@@ -34,7 +35,7 @@ export function PlannerCard({ item, state, onCycle, onInfo }: PlannerCardProps) 
         )}
         style={!state ? ({ "--tier": tier.color } as CSSProperties) : undefined}
       >
-        <img src={item.icon} alt={item.name} loading="lazy" className="size-14 object-contain" />
+        <img src={asset(item.icon)} alt={item.name} loading="lazy" className="size-14 object-contain" />
         <span className="line-clamp-2 text-xs font-medium text-foreground">{item.name}</span>
       </button>
 

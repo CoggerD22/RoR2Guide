@@ -72,6 +72,9 @@ const routeTree = rootRoute.addChildren([
 
 export const router = createRouter({
   routeTree,
+  // Matches Vite's base so routes work under the GitHub Pages subpath
+  // ("/RoR2Guide") in production and at "" (root) in dev.
+  basepath: import.meta.env.BASE_URL.replace(/\/$/, ""),
   defaultPreload: "intent",
   scrollRestoration: true,
 });

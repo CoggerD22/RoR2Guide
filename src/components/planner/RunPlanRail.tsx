@@ -3,6 +3,7 @@ import type { Item } from "@/data/schema";
 import { items as allItems, PRESENT_TIERS, TIER_META } from "@/data/items";
 import { usePlanner, type PlanState } from "@/store/planner";
 import { cn } from "@/lib/utils";
+import { asset } from "@/lib/asset";
 
 interface RunPlanRailProps {
   onSelect: (item: Item) => void;
@@ -53,7 +54,7 @@ function PlanSection({
                       onClick={() => onSelect(item)}
                       className="flex min-w-0 flex-1 items-center gap-2 rounded px-1 py-0.5 text-left hover:bg-surface-2"
                     >
-                      <img src={item.icon} alt="" className="size-6 shrink-0 object-contain" />
+                      <img src={asset(item.icon)} alt="" className="size-6 shrink-0 object-contain" />
                       <span className="truncate text-xs text-foreground">{item.name}</span>
                     </button>
                     <button

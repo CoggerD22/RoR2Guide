@@ -5,6 +5,7 @@ import { TIER_META, DLC_META, itemById } from "@/data/items";
 import { highlightNumbers } from "@/lib/highlight";
 import { sparklinePoints } from "@/lib/stacking";
 import { cn } from "@/lib/utils";
+import { asset } from "@/lib/asset";
 import { StackingBadge } from "./StackingBadge";
 import { Sparkline } from "./Sparkline";
 
@@ -26,7 +27,7 @@ function CorruptionRow({
 }) {
   const inner = (
     <>
-      <img src={other.icon} alt="" className="size-7 shrink-0 object-contain" />
+      <img src={asset(other.icon)} alt="" className="size-7 shrink-0 object-contain" />
       <span className="min-w-0">
         <span className="block text-[10px] uppercase tracking-wide text-muted-foreground">
           {label}
@@ -73,7 +74,7 @@ export function ItemDetail({ item, onClose, onSelectItem }: ItemDetailProps) {
       >
         <div className="sticky top-0 z-10 flex items-start gap-3 border-b border-border bg-surface/95 p-4 backdrop-blur">
           <img
-            src={item.icon}
+            src={asset(item.icon)}
             alt=""
             className="size-16 shrink-0 object-contain"
             style={{ filter: "drop-shadow(0 0 8px color-mix(in srgb, var(--tier) 40%, transparent))" }}

@@ -6,6 +6,7 @@ import { STAT_ITEM_IDS } from "@/data/statItems";
 import { computeStats, type DerivedStats } from "@/lib/statMath";
 import { usePlanner } from "@/store/planner";
 import { cn } from "@/lib/utils";
+import { asset } from "@/lib/asset";
 
 const fmt = (n: number, d = 0) =>
   n.toLocaleString(undefined, { minimumFractionDigits: d, maximumFractionDigits: d });
@@ -145,7 +146,7 @@ export function StatLabPage() {
                       q > 0 ? "border-primary/40 bg-surface-2" : "border-transparent",
                     )}
                   >
-                    <img src={item.icon} alt="" className="size-7 shrink-0 object-contain" />
+                    <img src={asset(item.icon)} alt="" className="size-7 shrink-0 object-contain" />
                     <span className="min-w-0 flex-1 truncate text-sm text-foreground">
                       {item.name}
                     </span>

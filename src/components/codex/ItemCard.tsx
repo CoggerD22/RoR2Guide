@@ -1,6 +1,7 @@
 import type { CSSProperties } from "react";
 import type { Item } from "@/data/schema";
 import { TIER_META } from "@/data/items";
+import { asset } from "@/lib/asset";
 import { ItemTooltip } from "./ItemTooltip";
 
 interface ItemCardProps {
@@ -20,7 +21,7 @@ export function ItemCard({ item, onSelect }: ItemCardProps) {
         style={{ "--tier": tier.color } as CSSProperties}
       >
         <img
-          src={item.icon}
+          src={asset(item.icon)}
           alt={item.name}
           loading="lazy"
           className="size-14 object-contain [image-rendering:auto]"
