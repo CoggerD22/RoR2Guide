@@ -5,19 +5,12 @@ import {
   redirect,
 } from "@tanstack/react-router";
 import { RootLayout } from "@/components/layout/RootLayout";
-import { PlaceholderPage } from "@/components/PlaceholderPage";
 import { CodexPage } from "@/components/codex/CodexPage";
 import { PlannerPage } from "@/components/planner/PlannerPage";
 import { StatLabPage } from "@/components/statlab/StatLabPage";
-import { NAV_SECTIONS, type NavSection } from "@/lib/nav";
+import { ReferencePage } from "@/components/reference/ReferencePage";
 
 const rootRoute = createRootRoute({ component: RootLayout });
-
-function section(path: NavSection["path"]): NavSection {
-  const found = NAV_SECTIONS.find((s) => s.path === path);
-  if (!found) throw new Error(`Missing nav section for ${path}`);
-  return found;
-}
 
 /** `/` redirects to the codex, the app's home surface. */
 const indexRoute = createRoute({
@@ -27,22 +20,6 @@ const indexRoute = createRoute({
     throw redirect({ to: "/items" });
   },
 });
-
-function placeholderRoute(path: NavSection["path"]) {
-  const meta = section(path);
-  return createRoute({
-    getParentRoute: () => rootRoute,
-    path,
-    component: () => (
-      <PlaceholderPage
-        title={meta.label}
-        blurb={meta.blurb}
-        milestone={meta.milestone}
-        icon={meta.icon}
-      />
-    ),
-  });
-}
 
 const itemsRoute = createRoute({
   getParentRoute: () => rootRoute,
@@ -62,12 +39,18 @@ const statsRoute = createRoute({
   component: StatLabPage,
 });
 
+const referenceRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/reference",
+  component: ReferencePage,
+});
+
 const routeTree = rootRoute.addChildren([
   indexRoute,
   itemsRoute,
   plannerRoute,
   statsRoute,
-  placeholderRoute("/reference"),
+  referenceRoute,
 ]);
 
 export const router = createRouter({

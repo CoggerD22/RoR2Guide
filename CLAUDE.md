@@ -65,4 +65,4 @@ left, bold white name, gray body with highlighted numeric values.
 - [x] M3 run planner
 - [x] M4 data complete
 - [x] M5 stat lab
-- [ ] M6 reference pages
+- [x] M6 reference pages (artifacts, bazaar dreams, shrines; loadout unlocks → Phase 4)
