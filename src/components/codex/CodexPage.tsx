@@ -19,8 +19,8 @@ export function CodexPage() {
       <header>
         <h1 className="text-2xl font-semibold sm:text-3xl">Item Codex</h1>
         <p className="mt-1 text-sm text-muted-foreground">
-          {allItems.length} items so far — Common and Uncommon tiers. Hover a card for its
-          in-game tooltip; click for full details.
+          {allItems.length} items across every tier and DLC. Hover a card for its in-game
+          tooltip; click for full details.
         </p>
       </header>
 
