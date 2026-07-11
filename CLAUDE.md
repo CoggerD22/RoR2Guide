@@ -63,6 +63,6 @@ left, bold white name, gray body with highlighted numeric values.
 - [x] M1 data: whites + greens
 - [x] M2 codex UI
 - [x] M3 run planner
-- [ ] M4 data complete
+- [x] M4 data complete
 - [ ] M5 stat lab
 - [ ] M6 reference pages
