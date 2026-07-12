@@ -107,7 +107,18 @@ export function StatLabPage() {
               <h2 className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">
                 Level
               </h2>
-              <span className="text-sm font-semibold text-foreground">{level}</span>
+              <input
+                type="number"
+                min={1}
+                max={99}
+                value={level}
+                onChange={(e) => {
+                  const v = Number(e.target.value);
+                  if (!Number.isNaN(v)) setLevel(Math.max(1, Math.min(99, v)));
+                }}
+                className="w-14 rounded-md border border-border bg-surface px-2 py-0.5 text-right text-sm font-semibold text-foreground focus:border-primary/60 focus:outline-none"
+                aria-label="Survivor level"
+              />
             </div>
             <input
               type="range"
@@ -115,8 +126,8 @@ export function StatLabPage() {
               max={99}
               value={level}
               onChange={(e) => setLevel(Number(e.target.value))}
-              className="w-full accent-[var(--color-primary)]"
-              aria-label="Survivor level"
+              className="level-slider"
+              aria-label="Survivor level slider"
             />
           </section>
 
