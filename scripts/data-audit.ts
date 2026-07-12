@@ -15,11 +15,12 @@
 import { existsSync, readFileSync } from "node:fs";
 import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
-import { itemsFileSchema, type Item } from "../src/data/schema.ts";
+import { itemsFileSchema, survivorsFileSchema, type Item } from "../src/data/schema.ts";
 
 const here = dirname(fileURLToPath(import.meta.url));
 const root = resolve(here, "..");
 const itemsPath = resolve(root, "src/data/items.json");
+const survivorsPath = resolve(root, "src/data/survivors.json");
 
 const errors: string[] = [];
 const warnings: string[] = [];
@@ -96,8 +97,36 @@ function main(): number {
     if (!existsSync(iconPath)) warnings.push(`missing icon: ${it.icon} for "${it.id}"`);
   }
 
+  // --- Survivors (if present) ---------------------------------------------
+  let survivorCount = 0;
+  if (existsSync(survivorsPath)) {
+    let sraw: unknown;
+    try {
+      sraw = JSON.parse(readFileSync(survivorsPath, "utf8"));
+    } catch (e) {
+      console.error(`data:audit — survivors.json is not valid JSON: ${(e as Error).message}`);
+      return 1;
+    }
+    const sParsed = survivorsFileSchema.safeParse(sraw);
+    if (!sParsed.success) {
+      console.error("data:audit — survivors schema validation failed:\n");
+      for (const issue of sParsed.error.issues) {
+        const path = issue.path.length ? issue.path.join(".") : "(root)";
+        console.error(`  ✗ ${path}: ${issue.message}`);
+      }
+      return 1;
+    }
+    survivorCount = sParsed.data.length;
+    const seen = new Set<string>();
+    for (const s of sParsed.data) {
+      if (seen.has(s.id)) errors.push(`duplicate survivor id "${s.id}"`);
+      seen.add(s.id);
+      if (!s.verified) warnings.push(`unverified survivor: "${s.id}" (${s.name})`);
+    }
+  }
+
   // --- Report --------------------------------------------------------------
-  console.log(`data:audit — ${items.length} item(s) checked.`);
+  console.log(`data:audit — ${items.length} item(s), ${survivorCount} survivor(s) checked.`);
   if (warnings.length) {
     console.log(`\n${warnings.length} warning(s):`);
     for (const w of warnings) console.log(`  ⚠ ${w}`);
