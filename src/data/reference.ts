@@ -59,6 +59,116 @@ export const BAZAAR_DREAMS: DreamRef[] = [
   { dream: "You dream of potential.", stage: "Void Locus (Hidden Realm)", stageNumber: "—" },
 ];
 
+export interface SkillUnlock {
+  skill: string;
+  slot: "Primary" | "Secondary" | "Utility" | "Special" | "Passive";
+  challenge: string;
+  /** One-line requirement; empty when the wiki text was unreliable. */
+  requirement: string;
+}
+
+export interface SurvivorLoadout {
+  survivor: string;
+  skills: SkillUnlock[];
+}
+
+/**
+ * Challenge-unlocked ALTERNATE SKILLS for the base-game survivors (the
+ * hard-to-find, mechanically-relevant unlocks). Skins are omitted — each
+ * survivor's three skins follow the same pattern (Prime Meridian clear,
+ * Monsoon mastery, and the Alloyed Collective accept/reject choice).
+ */
+export const LOADOUT_UNLOCKS: SurvivorLoadout[] = [
+  {
+    survivor: "Commando",
+    skills: [
+      { skill: "Tactical Slide", slot: "Secondary", challenge: "Godspeed", requirement: "Charge the Stage 1 Teleporter in under 5 minutes." },
+      { skill: "Frag Grenade", slot: "Utility", challenge: "Incorruptible", requirement: "Clear 20 stages without picking up a Lunar item." },
+      { skill: "Phase Blast", slot: "Special", challenge: "Rolling Thunder", requirement: "Kill an Overloading Worm." },
+    ],
+  },
+  {
+    survivor: "Huntress",
+    skills: [
+      { skill: "Flurry", slot: "Primary", challenge: "Finishing Touch", requirement: "Land the killing blow with every hit of a single glaive." },
+      { skill: "Phase Blink", slot: "Utility", challenge: "One Shot, One Kill", requirement: "Carry 12 Crowbars at once." },
+      { skill: "Ballista", slot: "Special", challenge: "Piercing Wind", requirement: "Complete Rallypoint Delta or Scorched Acres without dropping below 100% health." },
+    ],
+  },
+  {
+    survivor: "MUL-T",
+    skills: [
+      { skill: "Power-Saw", slot: "Primary", challenge: "Gotcha!", requirement: "Kill the Imp Overlord with the Preon Accumulator." },
+      { skill: "Scrap Launcher", slot: "Secondary", challenge: "Pest Control", requirement: "Defeat 2 Beetle Queens without leaving the Teleporter zone." },
+      { skill: "Power Mode", slot: "Passive", challenge: "Seventh Day", requirement: "Clear the Void Fields on Stage 7 or later." },
+    ],
+  },
+  {
+    survivor: "Engineer",
+    skills: [
+      { skill: "Spider Mines", slot: "Primary", challenge: "100% Calculated", requirement: "Defeat a Teleporter boss in under 5 seconds." },
+      { skill: "TR58 Carbonizer Turret", slot: "Secondary", challenge: "Better With Friends", requirement: "Have 12 minions active at once." },
+      { skill: "Thermal Harpoons", slot: "Utility", challenge: "Zero Sum", requirement: "Finish charging a Teleporter with 0 monsters alive." },
+    ],
+  },
+  {
+    survivor: "Artificer",
+    skills: [
+      { skill: "Plasma Bolt", slot: "Primary", challenge: "Massacre", requirement: "" },
+      { skill: "Cast Nano-Spear", slot: "Secondary", challenge: "Chunked!", requirement: "" },
+      { skill: "Ion Surge", slot: "Special", challenge: "Orbital Bombardment", requirement: "" },
+    ],
+  },
+  {
+    survivor: "Mercenary",
+    skills: [
+      { skill: "Rising Thunder", slot: "Utility", challenge: "Demon of the Skies", requirement: "Stay airborne for 30 seconds." },
+      { skill: "Slicing Winds", slot: "Special", challenge: "Ethereal", requirement: "Complete a Prismatic Trial without dropping below 100% health." },
+      { skill: "Focused Assault", slot: "Passive", challenge: "Flash of Blades", requirement: "Use 20 abilities within 10 seconds." },
+    ],
+  },
+  {
+    survivor: "Bandit",
+    skills: [
+      { skill: "Desperado", slot: "Primary", challenge: "B&E", requirement: "Kill the final boss with 'Lights Out'." },
+      { skill: "Blast", slot: "Secondary", challenge: "Classic Man", requirement: "Reset cooldowns with 'Lights Out' 15 times in a row." },
+      { skill: "Serrated Shiv", slot: "Utility", challenge: "Sadist", requirement: "Kill a monster afflicted with 20 Hemorrhage stacks." },
+    ],
+  },
+  {
+    survivor: "Loader",
+    skills: [
+      { skill: "Thunder Gauntlet", slot: "Primary", challenge: "Earthshatter", requirement: "Land a Charged Gauntlet hit while moving 300 mph or faster." },
+      { skill: "Spiked Fist", slot: "Utility", challenge: "Swing By", requirement: "Reach the Celestial Portal in 25 minutes or less." },
+      { skill: "Thunderslam", slot: "Special", challenge: "The Thunderdome", requirement: "Kill 3 Loaders in Bulwark's Ambry." },
+    ],
+  },
+  {
+    survivor: "Acrid",
+    skills: [
+      { skill: "Ravenous Bite", slot: "Primary", challenge: "Bad Medicine", requirement: "Land the final blow on a Scavenger." },
+      { skill: "Blight", slot: "Secondary", challenge: "Easy Prey", requirement: "Kill 50 enemies that have 1 HP remaining." },
+      { skill: "Frenzied Leap", slot: "Utility", challenge: "Pandemic", requirement: "Inflict Poison 1000 times total." },
+    ],
+  },
+  {
+    survivor: "Captain",
+    skills: [
+      { skill: "OGM-72 'DIABLO' Strike", slot: "Primary", challenge: "Smushed!", requirement: "Kill the final boss with the Supply Beacon." },
+      { skill: "Beacon: Resupply", slot: "Secondary", challenge: "Wanderlust", requirement: "Visit 10 environments in a single run." },
+      { skill: "Beacon: Hacking", slot: "Utility", challenge: "Worth Every Penny", requirement: "Repair the TC-280 Prototype." },
+    ],
+  },
+  {
+    survivor: "REX",
+    skills: [
+      { skill: "DIRECTIVE: Drill", slot: "Primary", challenge: "Bushwhacked", requirement: "Complete a Teleporter event while under 50% health." },
+      { skill: "DIRECTIVE: Harvest", slot: "Secondary", challenge: "Full of Life", requirement: "Heal 1000 health at once." },
+      { skill: "Bramble Volley", slot: "Utility", challenge: "Dunked!", requirement: "Kill a Clay Dunestrider by knocking it into the pit on Abandoned Aqueduct." },
+    ],
+  },
+];
+
 export interface ShrineRef {
   name: string;
   cost: string;

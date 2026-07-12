@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { DLC_META } from "@/data/items";
-import { ARTIFACTS, BAZAAR_DREAMS, SHRINES } from "@/data/reference";
+import { ARTIFACTS, BAZAAR_DREAMS, SHRINES, LOADOUT_UNLOCKS } from "@/data/reference";
 import { cn } from "@/lib/utils";
 
 const TABS = ["Artifacts", "Bazaar Dreams", "Shrines", "Loadout Unlocks"] as const;
@@ -93,11 +93,40 @@ function Shrines() {
 
 function LoadoutUnlocks() {
   return (
-    <div className="rounded-xl border border-dashed border-border bg-surface p-8 text-center">
-      <p className="text-sm text-muted-foreground">
-        Per-survivor skill &amp; skin unlock tables are coming as part of the full survivor pages
-        (Phase 4). Each will list every alternate skill and the exact challenge to unlock it.
+    <div className="flex flex-col gap-6">
+      <p className="text-xs leading-relaxed text-muted-foreground">
+        Challenge-unlocked alternate skills for the base-game survivors. Skins aren&rsquo;t listed —
+        each survivor&rsquo;s three follow the same pattern (a Prime Meridian clear, a Monsoon
+        mastery run, and the Alloyed Collective accept/reject choice). DLC survivors are a future
+        addition.
       </p>
+      {LOADOUT_UNLOCKS.map((s) => (
+        <section key={s.survivor}>
+          <h3 className="mb-2 font-display text-sm font-semibold text-foreground">{s.survivor}</h3>
+          <div className="overflow-hidden rounded-xl border border-border">
+            <table className="w-full text-sm">
+              <tbody>
+                {s.skills.map((sk) => (
+                  <tr key={sk.skill} className="border-t border-border first:border-t-0">
+                    <td className="w-1/3 px-4 py-2 align-top">
+                      <div className="font-medium text-foreground">{sk.skill}</div>
+                      <div className="text-[11px] uppercase tracking-wide text-muted-foreground">
+                        {sk.slot}
+                      </div>
+                    </td>
+                    <td className="px-4 py-2 align-top">
+                      <div className="text-primary">{sk.challenge}</div>
+                      {sk.requirement && (
+                        <div className="mt-0.5 text-xs text-muted-foreground">{sk.requirement}</div>
+                      )}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </section>
+      ))}
     </div>
   );
 }
