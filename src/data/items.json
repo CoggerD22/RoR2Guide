@@ -44,7 +44,7 @@
     "name": "Lens-Maker's Glasses",
     "tier": "common",
     "dlc": "base",
-    "pickupText": "Gain a chance to 'Critically Strike', dealing double damage.",
+    "pickupText": "Gain 10% chance for hits to 'Critically Strike', dealing double damage.",
     "description": "Your attacks have a 10% (+10% per stack) chance to 'Critically Strike', dealing double damage.",
     "stacking": [
       {
@@ -88,7 +88,7 @@
     "name": "Tri-Tip Dagger",
     "tier": "common",
     "dlc": "base",
-    "pickupText": "Chance to bleed enemies on hit.",
+    "pickupText": "Gain +10% chance to bleed enemies on hit.",
     "description": "10% (+10% per stack) chance to bleed an enemy for 240% base damage.",
     "stacking": [
       {
@@ -515,7 +515,7 @@
     "name": "Warbanner",
     "tier": "common",
     "dlc": "base",
-    "pickupText": "Drop a Warbanner on level up or starting the Teleporter event.",
+    "pickupText": "Drop a Warbanner on level up or starting the Teleporter event. Grants allies attack and movement speed.",
     "description": "On level up or starting the Teleporter event, drop a banner that strengthens all allies within 16m (+8m per stack). Raise attack and movement speed by 30%.",
     "stacking": [
       {
@@ -689,7 +689,7 @@
     "corruptedBy": "encrusted-key",
     "icon": "/icons/rusted-key.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Rusted_Key",
-    "verified": false
+    "verified": true
   },
   {
     "id": "hikers-boots",
@@ -710,7 +710,7 @@
     "tags": ["damage", "critical-strike"],
     "icon": "/icons/hikers-boots.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Hiker%27s_Boots",
-    "verified": false
+    "verified": true
   },
   {
     "id": "bolstering-lantern",
@@ -736,7 +736,7 @@
     "tags": ["damage", "attack-speed"],
     "icon": "/icons/bolstering-lantern.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Bolstering_Lantern",
-    "verified": false
+    "verified": true
   },
   {
     "id": "eclipse-lite",
@@ -756,7 +756,7 @@
     "tags": ["survivability"],
     "icon": "/icons/eclipse-lite.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Eclipse_Lite",
-    "verified": false
+    "verified": true
   },
   {
     "id": "atg-missile-mk-1",
@@ -1214,7 +1214,7 @@
     "name": "Lepton Daisy",
     "tier": "uncommon",
     "dlc": "base",
-    "pickupText": "Periodically release a healing nova during the Teleporter event and 'Holdout Zones' such as the Void Fields.",
+    "pickupText": "Periodically release a healing nova during the Teleporter event.",
     "description": "Release a healing nova during the Teleporter event, healing all nearby allies for 50% of their maximum health. Occurs 1 (+1 per stack) times.",
     "stacking": [
       {
@@ -1468,8 +1468,8 @@
     "name": "Breaching Fin",
     "tier": "uncommon",
     "dlc": "sots",
-    "pickupText": "Grounded enemies hit by any skill are launched and take bonus damage.",
-    "description": "Grounded enemies hit with any skill are launched and stunned. Enemies hit while airborne are launched again up to 2 times (+1 per stack). Launched enemies take 10% increased damage from all sources per launch.",
+    "pickupText": "Grounded enemies hit with any skill are launched and take bonus damage.",
+    "description": "Grounded enemies hit with any skill are launched and stunned. Enemies hit while airborne are launched again up to 2 times (+1 per stack). Launched enemies take 10% increased damage from all sources per launch. Recharges after 15s.",
     "stacking": [
       {
         "stat": "Max airborne re-launches",
@@ -1488,7 +1488,7 @@
     "name": "Chance Doll",
     "tier": "uncommon",
     "dlc": "sots",
-    "pickupText": "Chance to increase item rarity at Shrines of Chance.",
+    "pickupText": "Gain 40% chance to increase item rarity at Shrines of Chance.",
     "description": "40% (+10% per stack) chance to get higher rarity items from Shrines of Chance on success.",
     "stacking": [
       {
@@ -1621,7 +1621,7 @@
     "tier": "uncommon",
     "dlc": "ac",
     "pickupText": "Moving around builds up movement speed and jump height. At 25% charge or higher, jump to discharge into an electric blast.",
-    "description": "Moving builds charge, granting up to +160% movement speed and +200% jump height at 100%. At 25% charge or higher, jumping triggers an explosive discharge for 400% (+280% per stack) damage in an area up to 32.3m (+7.5m per stack).",
+    "description": "Moving builds charge, granting up to +160% movement speed and +200% jump height at 100%. At 25% charge or higher, jumping triggers an explosive discharge for 400% (+280% per stack) damage in a 5m to 32.3m (+7.5m per stack) area.",
     "stacking": [
       {
         "stat": "Discharge damage (% base)",
@@ -1673,12 +1673,12 @@
     "tier": "legendary",
     "dlc": "base",
     "pickupText": "All your attacks explode!",
-    "description": "All your attacks explode in a 4m (+2.5m per stack) radius for a bonus 60% TOTAL damage to nearby enemies.",
+    "description": "All your attacks explode in a 4m (+1.5m per stack) radius for a bonus 60% TOTAL damage to nearby enemies.",
     "stacking": [
       {
         "stat": "Explosion radius (m)",
         "base": 4,
-        "perStack": 2.5,
+        "perStack": 1.5,
         "type": "linear"
       }
     ],
@@ -2291,7 +2291,7 @@
     "name": "Runic Lens",
     "tier": "legendary",
     "dlc": "sots",
-    "pickupText": "Chance to call down a meteor. Damage and chance increase with higher damage hits.",
+    "pickupText": "Chance to call down a meteor. Damage and chance are increased with higher damage hits.",
     "description": "3% chance on hit to call down a meteor for 2000% base damage. Every 100% attack damage dealt increases the activation chance by 3% (+3% per stack) and damage by 150% (+50% per stack).",
     "stacking": [
       {
@@ -2317,12 +2317,12 @@
     "name": "Sonorous Whispers",
     "tier": "legendary",
     "dlc": "sots",
-    "pickupText": "Upon large or elite monster kill, chance to drop items.",
-    "description": "When a large monster is killed it always drops an item. All elites have a 5% (+1% per stack) chance to drop an item.",
+    "pickupText": "Upon large or elite monster kill chance to drop items.",
+    "description": "When a large monster is killed it always drops an item. All elites have a 4% (+1% per stack) chance to drop an item.",
     "stacking": [
       {
         "stat": "Elite item-drop chance (%)",
-        "base": 5,
+        "base": 4,
         "perStack": 1,
         "type": "linear"
       }
@@ -2337,7 +2337,7 @@
     "name": "War Bonds",
     "tier": "legendary",
     "dlc": "sots",
-    "pickupText": "Bombard boss events with missiles. The more gold earned, the more support is granted.",
+    "pickupText": "Bombard boss events with missiles. The more gold earned, the more UES support is granted.",
     "description": "During boss events, 5 missiles bombard the area, dealing 2.5% (+2.5% per stack) of the boss's max health in damage. Before the boss event, gain additional missiles per 50 gold gained, up to a maximum of 20 (+5 per stack).",
     "stacking": [
       {
@@ -2363,7 +2363,7 @@
     "name": "Networked Suffering",
     "tier": "legendary",
     "dlc": "ac",
-    "pickupText": "Inflict a computer virus on hit that spreads a portion of all damage dealt between infected enemies.",
+    "pickupText": "Inflict a computer virus on hit that spreads a portion of all damage dealt between infected enemies. Affects up to 4 enemies.",
     "description": "Infect up to 4 (+2 per stack) enemies with a computer virus that duplicates 45% of all damage they take into a global pool. Every 3 seconds, all infected enemies suffer 100% of the pooled damage.",
     "stacking": [
       {
@@ -2535,7 +2535,7 @@
     "name": "Little Disciple",
     "tier": "boss",
     "dlc": "base",
-    "pickupText": "Fire a tracking wisp for damage while sprinting.",
+    "pickupText": "Fire tracking wisps while sprinting.",
     "description": "Fire tracking wisps while sprinting at 300% (+300% per stack) damage, firing every 1.6 seconds (fire rate scales with movement speed).",
     "stacking": [
       {
@@ -2556,7 +2556,7 @@
     "tier": "boss",
     "dlc": "base",
     "pickupText": "Fire an electric nova at low health.",
-    "description": "Falling below 25% health causes you to explode for 6000% base damage. Recharges every 30 / (1 + stacks) seconds.",
+    "description": "Falling below 25% health causes you to explode for 6000% base damage. Recharges every 30 seconds (-50% per stack).",
     "stacking": [
       {
         "stat": "Recharge time (s)",
@@ -2750,7 +2750,7 @@
     "name": "Functional Coupler",
     "tier": "boss",
     "dlc": "ac",
-    "pickupText": "Holds an additional equipment.",
+    "pickupText": "Hold an additional equipment.",
     "description": "Hold 1 additional equipment (+1 per stack). Press the interact and equipment buttons to cycle through held equipment.",
     "stacking": [
       {
@@ -2901,7 +2901,7 @@
     "name": "Brittle Crown",
     "tier": "lunar",
     "dlc": "base",
-    "pickupText": "Gain gold on hit... BUT surrender gold on getting hit.",
+    "pickupText": "Gain gold on hit... BUT lose gold on getting hit.",
     "description": "30% chance on hit to gain 2 (+2 per stack) gold. Lose gold on taking damage equal to 100% (+100% per stack) of the maximum health percentage lost.",
     "stacking": [
       {
@@ -3039,12 +3039,12 @@
     "tier": "lunar",
     "dlc": "base",
     "pickupText": "Replace your Utility Skill with 'Shadowfade'.",
-    "description": "Fade away, becoming intangible and gaining +30% movement speed. Heal for 18.2% (+18.2% per stack) of your maximum health. Lasts 3 (+3 per stack) seconds.",
+    "description": "Fade away, becoming intangible and gaining +30% movement speed. Heal for 25% (+25% per stack) of your maximum health. Lasts 3 (+3 per stack) seconds.",
     "stacking": [
       {
         "stat": "Heal (% of max health)",
-        "base": 18.2,
-        "perStack": 18.2,
+        "base": 25,
+        "perStack": 25,
         "type": "linear"
       },
       {
@@ -3309,7 +3309,7 @@
     "name": "Neutronium Weight",
     "tier": "lunar",
     "dlc": "ac",
-    "pickupText": "Reduces your stats while in combat, but send this item to an enemy on hit.",
+    "pickupText": "Reduces all stats while in combat, but can be sent to an enemy on hit.",
     "description": "Reduces damage by 30% (+10% per stack), attack speed by 30% (+10% per stack), movement speed by 30% (+10% per stack), and armor by 35 (+15 per stack).",
     "stacking": [
       {
@@ -3384,7 +3384,7 @@
     "name": "Lost Seer's Lenses",
     "tier": "void-common",
     "dlc": "sotv",
-    "pickupText": "Gain a chance to instantly kill a non-boss enemy. Corrupts all Lens-Maker's Glasses.",
+    "pickupText": "Gain a 0.5% chance to instantly kill a non-boss enemy. Corrupts all Lens-Maker's Glasses.",
     "description": "Your attacks have a 0.5% (+0.5% per stack) chance to instantly kill a non-Boss enemy. Corrupts all Lens-Maker's Glasses.",
     "stacking": [
       { "stat": "Instant-kill chance (%)", "base": 0.5, "perStack": 0.5, "type": "linear" }
@@ -3401,11 +3401,11 @@
     "tier": "void-common",
     "dlc": "sotv",
     "pickupText": "Block the next source of damage. Corrupts all Tougher Times.",
-    "description": "Blocks incoming damage once. Recharges after 13.5 seconds (-10% per stack). Corrupts all Tougher Times.",
+    "description": "Blocks incoming damage once. Recharges after 15 seconds (-10% per stack). Corrupts all Tougher Times.",
     "stacking": [
       {
         "stat": "Recharge cooldown (s)",
-        "base": 13.5,
+        "base": 15,
         "perStack": -10,
         "type": "exponential",
         "formula": "recharge multiplied by 0.9 per stack (multiplicative)"
@@ -3439,7 +3439,7 @@
     "tier": "void-common",
     "dlc": "sotv",
     "pickupText": "Gain access to an Encrusted Cache that contains a void item. Corrupts all Rusted Keys.",
-    "description": "A hidden cache containing a void item will appear in a random location on each stage. Opening the cache consumes this item. Corrupts all Rusted Keys.",
+    "description": "A hidden cache containing an item (60%/30%/10%) will appear in a random location on each stage. Opening the cache consumes this item. Corrupts all Rusted Keys.",
     "stacking": [
       {
         "stat": "Void cache behavior",
@@ -3461,9 +3461,9 @@
     "tier": "void-uncommon",
     "dlc": "sotv",
     "pickupText": "While you have shield, fire missiles on every hit. Corrupts all AtG Missile Mk. 1s.",
-    "description": "Gain a shield equal to 10% of your maximum health. While you have a shield, hitting an enemy fires a missile that deals 40% (+40% per stack) TOTAL damage. Corrupts all AtG Missile Mk. 1s.",
+    "description": "Gain a shield equal to 10% of your maximum health. While you have a shield, hitting an enemy fires a missile that deals 40% (+50% per stack) TOTAL damage. Corrupts all AtG Missile Mk. 1s.",
     "stacking": [
-      { "stat": "Missile damage (% TOTAL)", "base": 40, "perStack": 40, "type": "linear" }
+      { "stat": "Missile damage (% TOTAL)", "base": 40, "perStack": 50, "type": "linear" }
     ],
     "tags": ["damage", "on-hit", "shield"],
     "corrupts": ["atg-missile-mk-1"],
@@ -3492,7 +3492,7 @@
     "name": "Polylute",
     "tier": "void-uncommon",
     "dlc": "sotv",
-    "pickupText": "Chance on hit to fire chain lightning. Corrupts all Ukuleles.",
+    "pickupText": "Chance to repeatedly strike a single enemy with lightning. Corrupts all Ukuleles.",
     "description": "25% chance to fire lightning for 60% TOTAL damage up to 3 (+3 per stack) times. Corrupts all Ukuleles.",
     "stacking": [
       { "stat": "Lightning hits", "base": 3, "perStack": 3, "type": "linear" }
@@ -3531,7 +3531,7 @@
     "name": "Singularity Band",
     "tier": "void-uncommon",
     "dlc": "sotv",
-    "pickupText": "High damage hits also create unstable black holes. Corrupts all Runald's and Kjaro's Bands.",
+    "pickupText": "High damage hits also create unstable black holes. Recharges over time. Corrupts all Runald's and Kjaro's Bands.",
     "description": "Hits that deal more than 400% damage fire a black hole that draws enemies within 15m into its center, lasting 5 seconds before collapsing for 100% (+100% per stack) TOTAL damage. Recharges every 20 seconds. Corrupts all Runald's and Kjaro's Bands.",
     "stacking": [
       { "stat": "Black hole damage (% TOTAL)", "base": 100, "perStack": 100, "type": "linear" }
@@ -3547,8 +3547,8 @@
     "name": "Voidsent Flame",
     "tier": "void-uncommon",
     "dlc": "sotv",
-    "pickupText": "Full health enemies also detonate on hit. Corrupts all Will-o'-the-wisps.",
-    "description": "Upon hitting an enemy at full health, spawn a lava pillar in a 12m (+2.4m per stack) radius for 260% (+156% per stack) base damage. Corrupts all Will-o'-the-wisps.",
+    "pickupText": "Full health enemies detonate on hit. Corrupts all Will-o'-the-wisps.",
+    "description": "Upon hitting an enemy at or above 100% health, detonate them in a 12m (+2.4m per stack) radius burst for 260% (+156% per stack) base damage. Corrupts all Will-o'-the-wisps.",
     "stacking": [
       { "stat": "Explosion radius (m)", "base": 12, "perStack": 2.4, "type": "linear" },
       { "stat": "Explosion damage (% base)", "base": 260, "perStack": 156, "type": "linear" }
@@ -3670,7 +3670,7 @@
     "name": "Ocular HUD",
     "tier": "equipment",
     "dlc": "base",
-    "pickupText": "Gain +100% Critical Strike Chance for 8 seconds.",
+    "pickupText": "Gain 100% Critical Strike Chance for 8 seconds.",
     "description": "Gain +100% critical strike chance for 8 seconds. Cooldown: 60s.",
     "stacking": [],
     "tags": ["damage", "critical-strike", "equipment"],
@@ -3683,7 +3683,7 @@
     "name": "Royal Capacitor",
     "tier": "equipment",
     "dlc": "base",
-    "pickupText": "Call down a lightning strike.",
+    "pickupText": "Call down a lightning strike on a targeted monster.",
     "description": "Call down a lightning strike on a targeted monster, dealing 3000% damage and stunning nearby monsters. Cooldown: 20s.",
     "stacking": [],
     "tags": ["damage", "equipment"],
@@ -3710,7 +3710,7 @@
     "name": "Milky Chrysalis",
     "tier": "equipment",
     "dlc": "base",
-    "pickupText": "Sprout wings and fly.",
+    "pickupText": "Gain temporary flight.",
     "description": "Sprout wings and fly for 15 seconds. Gain +20% movement speed for the duration. Cooldown: 60s.",
     "stacking": [],
     "tags": ["utility", "mobility", "movement-speed", "equipment"],
@@ -3736,7 +3736,7 @@
     "name": "Primordial Cube",
     "tier": "equipment",
     "dlc": "base",
-    "pickupText": "Fire a black hole that draws enemies.",
+    "pickupText": "Fire a black hole that draws enemies in.",
     "description": "Fire a black hole that draws enemies within 30m into its center. Lasts 10 seconds. Cooldown: 60s.",
     "stacking": [],
     "tags": ["utility", "crowd-control", "aoe", "equipment"],
@@ -3789,7 +3789,7 @@
     "name": "Volcanic Egg",
     "tier": "equipment",
     "dlc": "base",
-    "pickupText": "Transform into a speeding draconic fireball.",
+    "pickupText": "Transform into a speeding draconic fireball, dealing damage as you pass through enemies.",
     "description": "Turn into a draconic fireball for 5 seconds. Deal 500% damage on impact and detonate at the end for 800% damage. Cooldown: 30s.",
     "stacking": [],
     "tags": ["damage", "mobility", "equipment"],
@@ -4012,7 +4012,7 @@
     "name": "Helfire Tincture",
     "tier": "lunar-equipment",
     "dlc": "base",
-    "pickupText": "Burn everything nearby... including you and allies.",
+    "pickupText": "Ignite everything nearby... including you and allies.",
     "description": "Ignite ALL characters within 15m for 12s, dealing 5% of your maximum health per second as burning damage. The burn is 0.5x on yourself, 0.25x on allies, and 24x on enemies. Cooldown: 45s.",
     "stacking": [],
     "tags": ["damage", "aoe", "equipment"],

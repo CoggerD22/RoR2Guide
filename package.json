@@ -11,6 +11,7 @@
     "preview": "vite preview",
     "typecheck": "tsc -b",
     "data:audit": "tsx scripts/data-audit.ts",
+    "data:diff": "tsx scripts/data-diff.ts",
     "test": "playwright test"
   },
   "dependencies": {
