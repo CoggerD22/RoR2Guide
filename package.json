@@ -12,7 +12,8 @@
     "typecheck": "tsc -b",
     "data:audit": "tsx scripts/data-audit.ts",
     "data:diff": "tsx scripts/data-diff.ts",
-    "test": "playwright test"
+    "test": "playwright test",
+    "test:unit": "vitest run"
   },
   "dependencies": {
     "@tanstack/react-router": "^1.87.0",
@@ -37,6 +38,7 @@
     "tsx": "^4.19.0",
     "tw-animate-css": "^1.0.0",
     "typescript": "^5.7.2",
-    "vite": "^7.0.0"
+    "vite": "^7.0.0",
+    "vitest": "^4.1.10"
   }
 }

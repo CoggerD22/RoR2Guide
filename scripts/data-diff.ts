@@ -17,6 +17,7 @@ import { existsSync, readFileSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { itemsFileSchema } from "../src/data/schema.ts";
+import { ARTIFACTS, LOADOUT_UNLOCKS } from "../src/data/reference.ts";
 
 const here = dirname(fileURLToPath(import.meta.url));
 const root = resolve(here, "..");
@@ -26,7 +27,15 @@ const DEFAULT_DIR =
 const langDir = process.argv[2] ?? process.env.ROR2_LANG_DIR ?? DEFAULT_DIR;
 
 // Files that hold item/equipment name+pickup+desc tokens.
-const LANG_FILES = ["Items.json", "Equipment.json", "DLC1.json", "DLC2.json", "DLC3.json"];
+const LANG_FILES = [
+  "Items.json",
+  "Equipment.json",
+  "Artifacts.json",
+  "Achievements.json",
+  "DLC1.json",
+  "DLC2.json",
+  "DLC3.json",
+];
 
 function loadStrings(dir: string): Record<string, string> {
   const merged: Record<string, string> = {};
@@ -61,6 +70,10 @@ const norm = (s: string) =>
     .replace(/\s+/g, " ")
     .trim();
 
+// Drop a leading "Survivor: " prefix — the game names skill challenges
+// "Commando: Godspeed" while we display the bare challenge under a header.
+const stripSurvivor = (s: string) => s.replace(/^[^:]+:\s*/, "");
+
 const numbersOf = (s: string) => {
   const found = stripTags(s).match(/\d+(?:\.\d+)?/g) ?? [];
   return [...new Set(found.map((n) => n.replace(/\.0+$/, "")))].sort(
@@ -87,10 +100,19 @@ function main(): number {
     if (!name) continue;
     gameByName.set(norm(name), {
       pickup: strings[`${base}_PICKUP`] ?? "",
-      desc: strings[`${base}_DESC`] ?? "",
+      desc: strings[`${base}_DESC`] ?? strings[`${base}_DESCRIPTION`] ?? "",
     });
   }
-  console.log(`Loaded ${gameByName.size} named entries from the game files.\n`);
+  const achievementNames = new Set<string>();
+  for (const key of Object.keys(strings)) {
+    if (key.startsWith("ACHIEVEMENT_") && key.endsWith("_NAME")) {
+      achievementNames.add(norm(strings[key]));
+      achievementNames.add(norm(stripSurvivor(strings[key])));
+    }
+  }
+  console.log(
+    `Loaded ${gameByName.size} named entries, ${achievementNames.size} challenge names.\n`,
+  );
 
   const items = itemsFileSchema.parse(JSON.parse(readFileSync(resolve(root, "src/data/items.json"), "utf8")));
 
@@ -125,6 +147,40 @@ function main(): number {
     }
   }
 
+  // --- Artifacts vs Artifacts.json (name + numbers) --------------------------
+  const artifactDiffs: string[] = [];
+  for (const a of ARTIFACTS) {
+    const g = gameByName.get(norm(a.name));
+    if (!g) {
+      artifactDiffs.push(`${a.name}: name not found in game files`);
+      continue;
+    }
+    if (g.desc) {
+      const have = new Set(numbersOf(a.effect));
+      const missing = numbersOf(g.desc).filter((n) => !have.has(n));
+      if (missing.length > 0) {
+        artifactDiffs.push(
+          `${a.name}: missing ${missing.map((n) => `[${n}]`).join(" ")}  «${stripTags(g.desc)}»`,
+        );
+      }
+    }
+  }
+
+  // --- Unlock challenge names vs the game's achievement names -----------------
+  const challengeMisses: string[] = [];
+  for (const it of items) {
+    if (it.unlock && !achievementNames.has(norm(stripSurvivor(it.unlock)))) {
+      challengeMisses.push(`item "${it.name}" unlock: "${it.unlock}"`);
+    }
+  }
+  for (const s of LOADOUT_UNLOCKS) {
+    for (const sk of s.skills) {
+      if (!achievementNames.has(norm(stripSurvivor(sk.challenge)))) {
+        challengeMisses.push(`${s.survivor} / ${sk.skill}: "${sk.challenge}"`);
+      }
+    }
+  }
+
   const section = (title: string, list: string[]) => {
     console.log(`\n=== ${title} (${list.length}) ===`);
     for (const l of list) console.log(`  • ${l}`);
@@ -133,10 +189,13 @@ function main(): number {
   section("Names not found in game files (check spelling/exact name)", notFound);
   section("Pickup-text mismatches", pickupDiffs);
   section("Numeric mismatches (description numbers differ)", numberDiffs);
+  section("Artifact mismatches", artifactDiffs);
+  section("Unlock challenge names not found in game", challengeMisses);
 
   console.log(
-    `\nSummary: ${items.length} items checked · ${notFound.length} name misses · ` +
-      `${pickupDiffs.length} pickup diffs · ${numberDiffs.length} number diffs.`,
+    `\nSummary: ${items.length} items · ${notFound.length} name misses · ` +
+      `${pickupDiffs.length} pickup diffs · ${numberDiffs.length} number diffs · ` +
+      `${artifactDiffs.length} artifact diffs · ${challengeMisses.length} challenge misses.`,
   );
   console.log("(Numeric diffs include harmless cases — e.g. style/phrasing — so eyeball each.)");
   return 0;

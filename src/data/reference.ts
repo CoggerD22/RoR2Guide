@@ -154,7 +154,7 @@ export const LOADOUT_UNLOCKS: SurvivorLoadout[] = [
   {
     survivor: "Captain",
     skills: [
-      { skill: "OGM-72 'DIABLO' Strike", slot: "Primary", challenge: "Smushed!", requirement: "Kill the final boss with the Supply Beacon." },
+      { skill: "OGM-72 'DIABLO' Strike", slot: "Primary", challenge: "Smushed", requirement: "Kill the final boss with the Supply Beacon." },
       { skill: "Beacon: Resupply", slot: "Secondary", challenge: "Wanderlust", requirement: "Visit 10 environments in a single run." },
       { skill: "Beacon: Hacking", slot: "Utility", challenge: "Worth Every Penny", requirement: "Repair the TC-280 Prototype." },
     ],
@@ -164,14 +164,14 @@ export const LOADOUT_UNLOCKS: SurvivorLoadout[] = [
     skills: [
       { skill: "DIRECTIVE: Drill", slot: "Primary", challenge: "Bushwhacked", requirement: "Complete a Teleporter event while under 50% health." },
       { skill: "DIRECTIVE: Harvest", slot: "Secondary", challenge: "Full of Life", requirement: "Heal 1000 health at once." },
-      { skill: "Bramble Volley", slot: "Utility", challenge: "Dunked!", requirement: "Kill a Clay Dunestrider by knocking it into the pit on Abandoned Aqueduct." },
+      { skill: "Bramble Volley", slot: "Utility", challenge: "Dunked", requirement: "Kill a Clay Dunestrider by knocking it into the pit on Abandoned Aqueduct." },
     ],
   },
   {
     survivor: "Railgunner (SotV)",
     skills: [
-      { skill: "HH44 Marksman", slot: "Secondary", challenge: "Railgunner: Marksman", requirement: "" },
-      { skill: "Cryocharge", slot: "Special", challenge: "Railgunner: Trickshot", requirement: "" },
+      { skill: "HH44 Marksman", slot: "Secondary", challenge: "Marksman", requirement: "" },
+      { skill: "Cryocharge", slot: "Special", challenge: "Trickshot", requirement: "" },
     ],
   },
   {
@@ -181,31 +181,31 @@ export const LOADOUT_UNLOCKS: SurvivorLoadout[] = [
   {
     survivor: "Seeker (SotS)",
     skills: [
-      { skill: "Soul Spiral", slot: "Secondary", challenge: "Seeker: Airborne Souls", requirement: "" },
-      { skill: "Reprieve", slot: "Utility", challenge: "Seeker: Scorched Earth", requirement: "" },
-      { skill: "Palm Blast", slot: "Special", challenge: "Seeker: Clear Mind", requirement: "" },
+      { skill: "Soul Spiral", slot: "Secondary", challenge: "Airborne Souls", requirement: "" },
+      { skill: "Reprieve", slot: "Utility", challenge: "Scorched Earth", requirement: "" },
+      { skill: "Palm Blast", slot: "Special", challenge: "Clear Mind", requirement: "" },
     ],
   },
   {
     survivor: "Chef (SotS)",
     skills: [
-      { skill: "Ice Box", slot: "Secondary", challenge: "CHEF: It's Getting Hot In Here!", requirement: "Apply 20 stacks of burn to Mithrix." },
-      { skill: "Oil Spill", slot: "Utility", challenge: "CHEF: You've Always Been Crazy", requirement: "" },
+      { skill: "Ice Box", slot: "Secondary", challenge: "It's Getting Hot In Here!", requirement: "Apply 20 stacks of burn to Mithrix." },
+      { skill: "Oil Spill", slot: "Utility", challenge: "You've Always Been Crazy", requirement: "" },
     ],
   },
   {
     survivor: "False Son (SotS)",
     skills: [
-      { skill: "Lunar Stakes", slot: "Secondary", challenge: "False Son: Protein Heavy Diet", requirement: "" },
-      { skill: "Laser Burst", slot: "Special", challenge: "False Son: Stare Them Down", requirement: "" },
+      { skill: "Lunar Stakes", slot: "Secondary", challenge: "Protein Heavy Diet", requirement: "" },
+      { skill: "Laser Burst", slot: "Special", challenge: "Stare Them Down", requirement: "" },
     ],
   },
   {
     survivor: "Operator (AC)",
     skills: [
-      { skill: "CMD-SWARM", slot: "Secondary", challenge: "Operator: That All You Got?", requirement: "" },
-      { skill: "FIREWALL", slot: "Utility", challenge: "Operator: Not So Different", requirement: "" },
-      { skill: "Amp Core", slot: "Special", challenge: "Operator: That Just Happened", requirement: "" },
+      { skill: "CMD-SWARM", slot: "Secondary", challenge: "That All You Got?", requirement: "" },
+      { skill: "FIREWALL", slot: "Utility", challenge: "Not So Different", requirement: "" },
+      { skill: "Amp Core", slot: "Special", challenge: "That Just Happened", requirement: "" },
     ],
   },
   {
