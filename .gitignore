@@ -26,3 +26,7 @@ pnpm-debug.log*
 .vscode/*
 !.vscode/extensions.json
 .idea/
+
+# Decompiled game code — LOCAL ONLY, never commit (copyright). Verification uses it
+# in place; the repo keeps only the derived facts + citations.
+.decompiled/
