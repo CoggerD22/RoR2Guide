@@ -61,12 +61,20 @@ test("Lens-Maker's Glasses — crit chance caps at 100%", () => {
   expect(s.critChance).toBe(100); // 1 + 120, capped
 });
 
-test("Irradiant Pearl — +10% to all stats per stack", () => {
+test("Irradiant Pearl — +10% to all stats per stack (incl. crit)", () => {
   const s = compute("commando", 1, { "irradiant-pearl": 2 }); // +20%
   expect(s.damage).toBeCloseTo(14.4, 5); // 12 * 1.2
   expect(s.moveSpeed).toBeCloseTo(8.4, 5); // 7 * 1.2
   expect(s.maxHealth).toBeCloseTo(132, 5); // 110 * 1.2
-  expect(s.healthRegen).toBeCloseTo(1.2, 5); // 1 * 1.2
+  expect(s.healthRegen).toBeCloseTo(1.2, 5); // 1 + 0.1*2 (level factor 1 at lvl 1)
+  expect(s.critChance).toBe(21); // 1 + 2*10 (RecalculateStats: ShinyPearl * 10)
+});
+
+test("Item regen scales with level — verified vs RecalculateStats", () => {
+  const s = compute("commando", 35, { "titanic-knurl": 2 });
+  // base regen 1 + 0.2*34 = 7.8; item regen (2*1.6=3.2) * (1 + 0.2*34 = 7.8) = 24.96
+  expect(s.healthRegen).toBeCloseTo(32.76, 1);
+  expect(s.maxHealth).toBeCloseTo(1312, 5); // 110 + 33*34 + 2*40
 });
 
 test("Titanic Knurl — flat health + regen", () => {

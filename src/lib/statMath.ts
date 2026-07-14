@@ -65,7 +65,11 @@ export function computeStats({ survivor, level, items, artifactOfGlass }: StatIn
   if (artifactOfGlass) maxHealth *= 0.1; // Artifact of Glass: 10% max health
 
   // --- Regen ---
-  const healthRegen = (baseRegen + sumTarget(items, "regenFlat")) * (1 + allStatsPct / 100);
+  // Verified against CharacterBody.RecalculateStats: regen FROM ITEMS scales with
+  // level by (1 + 0.2*(level-1)); Irradiant Pearl adds +0.1 hp/s per stack into
+  // that same level-scaled pool. Base regen already carries its own level growth.
+  const regenLevelFactor = 1 + 0.2 * (lvl - 1);
+  const healthRegen = baseRegen + (sumTarget(items, "regenFlat") + allStatsPct / 100) * regenLevelFactor;
 
   // --- Damage ---
   let damage = baseDamage * Math.pow(2, shapedGlass); // Shaped Glass doubles base damage per stack
@@ -80,7 +84,9 @@ export function computeStats({ survivor, level, items, artifactOfGlass }: StatIn
   const armor = survivor.armor * (1 + allStatsPct / 100);
 
   // --- Crit ---
-  const critChance = Math.min(100, 1 + sumTarget(items, "critChance"));
+  // Base 1% + item crit; Irradiant Pearl also adds +10% crit chance per stack
+  // (RecalculateStats: num111 += ShinyPearl * 10). Effective crit caps at 100%.
+  const critChance = Math.min(100, 1 + sumTarget(items, "critChance") + allStatsPct);
   const critMultiplier = 2 + sumTarget(items, "critDamagePct") / 100; // 2x base, +1x per Laser Scope
   const avgCritFactor = 1 + (critChance / 100) * (critMultiplier - 1);
 

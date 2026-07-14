@@ -71,8 +71,8 @@ export function StatLabPage() {
         <h1 className="text-2xl font-semibold sm:text-3xl">Stat Lab</h1>
         <p className="mt-1 text-sm text-muted-foreground">
           Pick a survivor and level, stack stat items, and watch the derived numbers update.
-          Uses standard (Rainstorm) regen and base attack speed; conditional and proc items are
-          out of scope for this v1.
+          The math mirrors the game&rsquo;s own RecalculateStats (verified against the decompiled
+          code); conditional and proc items are out of scope for now.
         </p>
       </header>
 
@@ -211,9 +211,10 @@ export function StatLabPage() {
             ))}
           </div>
           <p className="mt-4 text-xs leading-relaxed text-muted-foreground">
-            Effective HP uses the armor formula (reduction = armor / (100 + armor)). Stacking order
-            is a close approximation of in-game behavior; treat the DPS proxy as a relative
-            comparison, not an exact in-run figure.
+            Effective HP uses the armor formula (reduction = armor / (100 + armor)); regen from
+            items scales with level, matching the game. The DPS proxy (damage x attack speed x
+            crit) is a relative comparison, not an exact in-run figure &mdash; it ignores proc
+            coefficients and animations.
           </p>
         </div>
       </div>
