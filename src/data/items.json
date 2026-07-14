@@ -1853,7 +1853,7 @@
         "stat": "Recharge time (s)",
         "base": 10,
         "perStack": -50,
-        "type": "special",
+        "type": "reciprocal",
         "formula": "recharge scales reciprocally with stacks (~10s, then halves toward 5s, 3.3s, …)"
       }
     ],
@@ -2954,7 +2954,7 @@
         "stat": "Max heal per second (% of health)",
         "base": 10,
         "perStack": -50,
-        "type": "special",
+        "type": "reciprocal",
         "formula": "heal-per-second cap divides reciprocally: 10% at 1 stack, ~6.7% at 2, 5% at 3, …"
       }
     ],
@@ -3145,7 +3145,7 @@
         "stat": "Teleporter zone size reduction (%)",
         "base": 50,
         "perStack": -50,
-        "type": "special",
+        "type": "reciprocal",
         "formula": "zone shrinks reciprocally per stack (50% at 1 stack, then diminishing)"
       }
     ],
@@ -3214,7 +3214,7 @@
         "stat": "Movement speed reduction (%)",
         "base": 50,
         "perStack": -50,
-        "type": "special",
+        "type": "reciprocal",
         "formula": "speed penalty stacks reciprocally, approaching but never reaching a full stop"
       }
     ],
@@ -3242,7 +3242,7 @@
         "stat": "Attack speed reduction (%)",
         "base": 50,
         "perStack": -50,
-        "type": "special",
+        "type": "reciprocal",
         "formula": "attack speed penalty stacks reciprocally, approaching but never reaching zero"
       }
     ],
@@ -3289,7 +3289,7 @@
         "stat": "Bomb spawn interval (s)",
         "base": 3,
         "perStack": -50,
-        "type": "special",
+        "type": "reciprocal",
         "formula": "spawn interval divides reciprocally per stack (3s, ~2s, 1.5s, …)"
       },
       {
@@ -3603,7 +3603,7 @@
         "stat": "Recruit interval (s)",
         "base": 60,
         "perStack": -50,
-        "type": "special",
+        "type": "reciprocal",
         "formula": "interval divides reciprocally per stack (60s, ~40s, 30s, …)"
       },
       { "stat": "Max Void allies", "base": 1, "perStack": 1, "type": "linear" }

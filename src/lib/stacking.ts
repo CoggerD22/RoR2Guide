@@ -23,6 +23,7 @@ const STACKING_LABEL: Record<StackingEntry["type"], string> = {
   linear: "Linear",
   hyperbolic: "Hyperbolic",
   exponential: "Exponential",
+  reciprocal: "Reciprocal",
   special: "Special",
   none: "No stacking",
 };

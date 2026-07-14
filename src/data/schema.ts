@@ -16,6 +16,7 @@ export const stackingTypeSchema = z.enum([
   "linear", // base + perStack * x
   "hyperbolic", // 1 - 1/(1 + perStack * x)  — approaches but never reaches a cap
   "exponential", // compounding, e.g. perStack^x (Shaped Glass, Fuel Cell cooldown)
+  "reciprocal", // a/x — diminishing; strongest at 1 stack (Light Flux, Corpsebloom cap)
   "special", // bespoke formula; describe it in `formula`
   "none", // does not stack / single-shot effect
 ]);

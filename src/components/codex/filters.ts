@@ -13,6 +13,7 @@ export const STACKING_TYPES: StackingType[] = [
   "linear",
   "hyperbolic",
   "exponential",
+  "reciprocal",
   "special",
   "none",
 ];
