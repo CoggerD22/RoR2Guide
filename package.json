@@ -12,6 +12,7 @@
     "typecheck": "tsc -b",
     "data:audit": "tsx scripts/data-audit.ts",
     "data:diff": "tsx scripts/data-diff.ts",
+    "data:verify": "tsx scripts/data-verify.ts",
     "test": "playwright test",
     "test:unit": "vitest run"
   },

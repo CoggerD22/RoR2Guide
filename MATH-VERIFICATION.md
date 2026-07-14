@@ -131,8 +131,13 @@ check code-transcription alone can't give.
 - **Phase 1 — partial.** `reciprocal` promoted to a first-class stacking type and 7
   items re-tagged; Light Flux's attack-speed reduction is code-confirmed reciprocal
   (`/(stacks+1)`). Committed `d07e01c`. Item *numbers* remain verified against the
-  game language files (`pnpm data:diff`, 0 diffs). Still TODO: a `data:verify` that
-  diffs per-item stacking against the decompiled behavior classes + provenance notes.
+  game language files (`pnpm data:diff`, 0 diffs). Still TODO: extend the per-item
+  diff to non-stat behavior classes (on-hit/proc chances).
+- **Phase 6 — started.** `pnpm data:verify` (`scripts/data-verify.ts`) locks the 13
+  Stat Lab coefficients to the values transcribed from `RecalculateStats()` (each with
+  a source-line citation) and fails CI on drift; when `.decompiled/` is present locally
+  it also greps the live method for each pattern to catch post-patch changes. Still
+  TODO: wire into CI, and add per-number provenance/confidence tags across the datasets.
 - **Phase 3 — reclassified as in-game-only.** Survivor base stats live in Unity
   prefab **asset bundles, not `RoR2.dll`**, so they can't be decompiled. They stay
   wiki-sourced and are validated end-to-end in Phase 4 instead.

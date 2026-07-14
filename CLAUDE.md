@@ -35,7 +35,9 @@ milestone (M0 → M6) and do not pull in future-phase features early.
   TanStack Router, Zod for data validation.
 - Package manager: pnpm.
 - Commands (once scaffolded): `pnpm dev`, `pnpm build`, `pnpm typecheck`,
-  `pnpm data:audit` (schema + integrity checks over /src/data), `pnpm test`.
+  `pnpm data:audit` (schema + integrity checks over /src/data), `pnpm test`,
+  `pnpm test:unit` (stat-engine vitest), `pnpm data:diff` (numbers vs game language
+  files), `pnpm data:verify` (Stat Lab coefficients vs decompiled RecalculateStats).
 - Data files: `/src/data/items.json`, `/src/data/survivors.json`, schemas in
   `/src/data/schema.ts`. Icons in `/public/icons/<id>.png`.
 - Commit data work tier-by-tier (one tier per PR/commit) so it can be spot-checked
