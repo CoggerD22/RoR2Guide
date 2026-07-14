@@ -27,6 +27,9 @@ jobs:
       - name: Audit data
         run: pnpm data:audit
 
+      - name: Verify stat coefficients vs code truth
+        run: pnpm data:verify
+
       - name: Build
         run: pnpm build
 
