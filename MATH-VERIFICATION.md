@@ -117,6 +117,31 @@ check code-transcription alone can't give.
 
 ---
 
+## 3b. Progress log
+
+- **Phase 0 — done.** `scripts/decompile.sh` (ilspycmd 9.1.0.7988) emits
+  `RecalculateStats()` etc. to `.decompiled/` (git-ignored). Committed `826cc41`.
+- **Phase 2 — done for modeled stats.** Read `RecalculateStats()` block by block and
+  reconciled `statMath.ts`. Most already matched the code exactly (health order,
+  damage `×2^ShapedGlass` / `×5` glass, attack-speed coefficients, crit multiplier
+  `2 + LaserScope`, move speed, jumps, armor). **Two real bugs fixed** (`2f29b65`):
+  item regen scales with level `(1 + 0.2·(level−1))`; Irradiant Pearl also grants
+  +10% crit chance/stack. Shaped Glass health confirmed to be the Curse system
+  (`cursePenalty = 2^stacks` → effective HP `×0.5^n`), which the engine already did.
+- **Phase 1 — partial.** `reciprocal` promoted to a first-class stacking type and 7
+  items re-tagged; Light Flux's attack-speed reduction is code-confirmed reciprocal
+  (`/(stacks+1)`). Committed `d07e01c`. Item *numbers* remain verified against the
+  game language files (`pnpm data:diff`, 0 diffs). Still TODO: a `data:verify` that
+  diffs per-item stacking against the decompiled behavior classes + provenance notes.
+- **Phase 3 — reclassified as in-game-only.** Survivor base stats live in Unity
+  prefab **asset bundles, not `RoR2.dll`**, so they can't be decompiled. They stay
+  wiki-sourced and are validated end-to-end in Phase 4 instead.
+- **Phase 4 — sheet ready:** `docs/stat-validation.md` lists all 19 survivors'
+  expected Level-1 base stats + targeted item/level scenarios (generated from the
+  code-verified engine) for you to confirm against the in-game stat panel.
+
+---
+
 ## 4. Definition of done
 
 - 100% of item stacking values + types **code-verified** (`data:verify` clean).
