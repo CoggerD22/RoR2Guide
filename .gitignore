@@ -30,3 +30,6 @@ pnpm-debug.log*
 # Decompiled game code — LOCAL ONLY, never commit (copyright). Verification uses it
 # in place; the repo keeps only the derived facts + citations.
 .decompiled/
+
+# Extracted game asset data (copyright Gearbox) — produced by scripts/extract-bodies.py
+.gamedata/

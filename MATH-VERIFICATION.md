@@ -143,12 +143,28 @@ check code-transcription alone can't give.
   a source-line citation) and fails CI on drift; when `.decompiled/` is present locally
   it also greps the live method for each pattern to catch post-patch changes. Still
   TODO: wire into CI, and add per-number provenance/confidence tags across the datasets.
-- **Phase 3 — reclassified as in-game-only.** Survivor base stats live in Unity
-  prefab **asset bundles, not `RoR2.dll`**, so they can't be decompiled. They stay
-  wiki-sourced and are validated end-to-end in Phase 4 instead.
-- **Phase 4 — sheet ready:** `docs/stat-validation.md` lists all 19 survivors'
-  expected Level-1 base stats + targeted item/level scenarios (generated from the
-  code-verified engine) for you to confirm against the in-game stat panel.
+- **Phase 3 — done, via asset extraction.** Survivor base stats are *not* in
+  `RoR2.dll` (verified: `CharacterBody` declares `baseMaxHealth`/`levelRegen`/… as
+  plain public fields and **no code assigns them** — they're serialized per body
+  prefab). They are, however, fully extractable from the Addressables bundles.
+  `scripts/extract-bodies.py` (UnityPy) reads every `CharacterBody`'s serialized
+  stats in ~15s, plus the `SurvivorDef` roster. Both assets are located by **field
+  signature**, not MonoScript class name, because script pointers live in separate
+  `*_monoscripts_*` bundles and don't resolve.
+  - Roster confirmed against the game: exactly **19 SurvivorDefs**, matching
+    `survivors.json` 1:1. Notably **Operator's body is `DroneTechBody`**
+    (`DRONETECH_BODY_NAME`, cachedName `DroneTech`) — proven from the SurvivorDef,
+    not inferred from stat-matching.
+  - **Result: 19 survivors × 10 fields = 190 comparisons, 0 mismatches.** The
+    wiki-sourced values were correct — but they are now *asset-verified* rather than
+    trusted. `pnpm data:verify` locks them (CI-safe table + live cross-check).
+  - *Earlier this doc claimed Phase 3 was "in-game-only" because the values
+    "can't be decompiled". That conclusion was untested and wrong: not-in-the-DLL
+    does not mean not-extractable.*
+- **Phase 4 — largely obsolete.** With formulas code-verified (Phase 2) and base
+  stats asset-verified (Phase 3), every input and every operation now traces to game
+  data. `docs/stat-validation.md` is retained only as an *optional* end-to-end
+  spot-check; it is no longer a prerequisite for trusting the numbers.
 
 ---
 

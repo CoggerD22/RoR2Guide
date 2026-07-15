@@ -22,6 +22,7 @@ import { existsSync, readFileSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { STAT_ITEMS, type StatTarget } from "../src/data/statItems.ts";
+import survivors from "../src/data/survivors.json" with { type: "json" };
 
 const here = dirname(fileURLToPath(import.meta.url));
 const root = resolve(here, "..");
@@ -76,6 +77,113 @@ const SPECIAL_NOTES = [
 ];
 
 const DECOMPILED = join(root, ".decompiled", "RoR2.CharacterBody.decompiled.cs");
+const BODIES = join(root, ".gamedata", "bodies.json");
+
+/**
+ * Survivor base stats read out of the game's body PREFABS (asset bundles) by
+ * scripts/extract-bodies.py — they are not in RoR2.dll, so this is their only
+ * authoritative source. `body` is the GameObject name, proven from each
+ * SurvivorDef's cachedName (note Operator's body is DroneTechBody).
+ * Tuples are [base, perLevel]. Regenerate after a patch: run the extractor,
+ * then `pnpm data:verify` cross-checks this table against the fresh dump.
+ */
+interface SurvivorTruth {
+  body: string;
+  health: [number, number];
+  regen: [number, number];
+  damage: [number, number];
+  moveSpeed: number;
+  armor: number;
+  jumpCount: number;
+  baseAttackSpeed: number;
+}
+
+const SURVIVOR_TRUTH: Record<string, SurvivorTruth> = {
+  "commando": { body: "CommandoBody", health: [110, 33], regen: [1, 0.2], damage: [12, 2.4], moveSpeed: 7, armor: 0, jumpCount: 1, baseAttackSpeed: 1 },
+  "huntress": { body: "HuntressBody", health: [90, 27], regen: [1, 0.2], damage: [12, 2.4], moveSpeed: 7, armor: 0, jumpCount: 1, baseAttackSpeed: 1 },
+  "bandit": { body: "Bandit2Body", health: [110, 33], regen: [1, 0.2], damage: [12, 2.4], moveSpeed: 7, armor: 0, jumpCount: 1, baseAttackSpeed: 1 },
+  "mul-t": { body: "ToolbotBody", health: [200, 60], regen: [1, 0.2], damage: [11, 2.2], moveSpeed: 7, armor: 12, jumpCount: 1, baseAttackSpeed: 1 },
+  "engineer": { body: "EngiBody", health: [130, 39], regen: [1, 0.2], damage: [14, 2.8], moveSpeed: 7, armor: 0, jumpCount: 1, baseAttackSpeed: 1 },
+  "artificer": { body: "MageBody", health: [110, 33], regen: [1, 0.2], damage: [12, 2.4], moveSpeed: 7, armor: 0, jumpCount: 1, baseAttackSpeed: 1 },
+  "mercenary": { body: "MercBody", health: [110, 33], regen: [1, 0.2], damage: [12, 2.4], moveSpeed: 7, armor: 20, jumpCount: 2, baseAttackSpeed: 1 },
+  "rex": { body: "TreebotBody", health: [130, 39], regen: [1, 0.2], damage: [12, 2.4], moveSpeed: 7, armor: 20, jumpCount: 1, baseAttackSpeed: 1 },
+  "loader": { body: "LoaderBody", health: [160, 48], regen: [2.5, 0.5], damage: [12, 2.4], moveSpeed: 7, armor: 20, jumpCount: 1, baseAttackSpeed: 1 },
+  "acrid": { body: "CrocoBody", health: [160, 48], regen: [2.5, 0.5], damage: [15, 3], moveSpeed: 7, armor: 20, jumpCount: 1, baseAttackSpeed: 1 },
+  "captain": { body: "CaptainBody", health: [110, 33], regen: [1, 0.2], damage: [12, 2.4], moveSpeed: 7, armor: 0, jumpCount: 1, baseAttackSpeed: 1 },
+  "heretic": { body: "HereticBody", health: [440, 132], regen: [-6, -1.2], damage: [18, 3.6], moveSpeed: 8, armor: 0, jumpCount: 3, baseAttackSpeed: 1 },
+  "railgunner": { body: "RailgunnerBody", health: [110, 33], regen: [1, 0.2], damage: [12, 2.4], moveSpeed: 7, armor: 0, jumpCount: 1, baseAttackSpeed: 1 },
+  "void-fiend": { body: "VoidSurvivorBody", health: [110, 33], regen: [1, 0.2], damage: [12, 2.4], moveSpeed: 7, armor: 0, jumpCount: 1, baseAttackSpeed: 1 },
+  "seeker": { body: "SeekerBody", health: [115, 34], regen: [0.75, 0.15], damage: [12, 2.4], moveSpeed: 7, armor: 20, jumpCount: 1, baseAttackSpeed: 1 },
+  "false-son": { body: "FalseSonBody", health: [180, 54], regen: [1, 0.2], damage: [12, 2.4], moveSpeed: 7, armor: 0, jumpCount: 1, baseAttackSpeed: 1 },
+  "chef": { body: "ChefBody", health: [110, 33], regen: [1, 0.2], damage: [12, 2.4], moveSpeed: 7, armor: 0, jumpCount: 1, baseAttackSpeed: 1 },
+  "operator": { body: "DroneTechBody", health: [90, 27], regen: [1, 0.2], damage: [12, 2.4], moveSpeed: 7, armor: 0, jumpCount: 1, baseAttackSpeed: 1 },
+  "drifter": { body: "DrifterBody", health: [170, 52], regen: [1, 0.2], damage: [12, 2.4], moveSpeed: 7, armor: 20, jumpCount: 1, baseAttackSpeed: 1 },
+};
+
+const r4 = (n: number) => Math.round(n * 10000) / 10000;
+
+/** Layer 1: survivors.json must match the prefab-derived truth table. */
+function checkSurvivors(): number {
+  let bad = 0;
+  for (const s of survivors) {
+    const t = SURVIVOR_TRUTH[s.id];
+    if (!t) {
+      console.error(`✗ survivor "${s.id}" has no prefab truth entry (new survivor? re-run extract-bodies.py)`);
+      bad++;
+      continue;
+    }
+    const pairs: Array<[string, number, number]> = [
+      ["health.base", s.health.base, t.health[0]],
+      ["health.perLevel", s.health.perLevel, t.health[1]],
+      ["regen.base", s.regen.base, t.regen[0]],
+      ["regen.perLevel", s.regen.perLevel, t.regen[1]],
+      ["damage.base", s.damage.base, t.damage[0]],
+      ["damage.perLevel", s.damage.perLevel, t.damage[1]],
+      ["moveSpeed", s.moveSpeed, t.moveSpeed],
+      ["armor", s.armor, t.armor],
+      ["jumpCount", s.jumpCount, t.jumpCount],
+      ["baseAttackSpeed", s.baseAttackSpeed, t.baseAttackSpeed],
+    ];
+    for (const [label, mine, game] of pairs) {
+      if (r4(mine) !== r4(game)) {
+        console.error(`✗ ${s.id}.${label}: survivors.json has ${mine}, prefab ${t.body} has ${game}`);
+        bad++;
+      }
+    }
+  }
+  return bad;
+}
+
+/** Layer 2 (local only): truth table vs a fresh extraction — catches patch drift. */
+function crossCheckBodies(): string[] {
+  if (!existsSync(BODIES)) return [];
+  const dump = JSON.parse(readFileSync(BODIES, "utf8")) as Record<string, Record<string, number>>;
+  const drift: string[] = [];
+  for (const [id, t] of Object.entries(SURVIVOR_TRUTH)) {
+    const b = dump[t.body];
+    if (!b) {
+      drift.push(`${id}: body ${t.body} missing from extraction`);
+      continue;
+    }
+    const cmp: Array<[string, number, number]> = [
+      ["baseMaxHealth", t.health[0], b.baseMaxHealth],
+      ["levelMaxHealth", t.health[1], b.levelMaxHealth],
+      ["baseRegen", t.regen[0], b.baseRegen],
+      ["levelRegen", t.regen[1], b.levelRegen],
+      ["baseDamage", t.damage[0], b.baseDamage],
+      ["levelDamage", t.damage[1], b.levelDamage],
+      ["baseMoveSpeed", t.moveSpeed, b.baseMoveSpeed],
+      ["baseArmor", t.armor, b.baseArmor],
+      ["baseJumpCount", t.jumpCount, b.baseJumpCount],
+      ["baseAttackSpeed", t.baseAttackSpeed, b.baseAttackSpeed],
+    ];
+    for (const [f, table, game] of cmp) {
+      if (game === undefined) continue;
+      if (r4(table) !== r4(game)) drift.push(`${id}.${f}: table ${table} vs game ${r4(game)}`);
+    }
+  }
+  return drift;
+}
 
 function main() {
   let mismatches = 0;
@@ -121,11 +229,27 @@ function main() {
     console.log("Live decompiled grep: skipped (.decompiled/ absent — run scripts/decompile.sh locally).");
   }
 
-  if (mismatches > 0) {
-    console.error(`\n✗ ${mismatches} coefficient mismatch(es) vs code truth. Re-check statItems.ts.`);
+  // --- survivor base stats (prefab-derived truth) ---
+  const survivorBad = checkSurvivors();
+  const nSurv = Object.keys(SURVIVOR_TRUTH).length;
+  console.log(`\n${nSurv} survivors x 10 base-stat fields checked against prefab truth.`);
+  const drift = crossCheckBodies();
+  if (!existsSync(BODIES)) {
+    console.log("Live prefab cross-check: skipped (.gamedata/ absent — run scripts/extract-bodies.py locally).");
+  } else if (drift.length === 0) {
+    console.log("Live prefab cross-check: truth table matches a fresh extraction. ✓");
+  } else {
+    console.log("\n⚠ Live prefab cross-check — table differs from extraction (game patched?):");
+    for (const d of drift) console.log(`  - ${d}`);
+  }
+
+  const total = mismatches + survivorBad;
+  if (total > 0) {
+    console.error(`\n✗ ${total} mismatch(es) vs game truth (${mismatches} item coefficient, ${survivorBad} survivor stat).`);
     process.exit(1);
   }
   console.log("\n✓ statItems.ts matches the code-derived coefficients.");
+  console.log("✓ survivors.json matches the game's body prefabs.");
 }
 
 main();
