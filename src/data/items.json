@@ -1179,7 +1179,7 @@
         "base": 13,
         "perStack": 13,
         "type": "hyperbolic",
-        "formula": "execute threshold stacks hyperbolically (13% at 1 stack), diminishing per stack and approaching but never reaching 100%"
+        "formula": "execute threshold = 1 − 100/(100 + 13n): ~11.5% at 1 stack, ~20.6% at 2, ~28% at 3 — approaches but never reaches 100% (13% is the amplification input, not the 1-stack threshold)"
       }
     ],
     "tags": ["damage", "execute", "on-hit"],
@@ -2562,7 +2562,7 @@
         "stat": "Recharge time (s)",
         "base": 15,
         "perStack": 0,
-        "type": "special",
+        "type": "reciprocal",
         "formula": "recharge = 30 / (1 + n) seconds — 15s at 1 stack, 10s at 2, 7.5s at 3, …"
       }
     ],
@@ -3408,7 +3408,7 @@
         "base": 15,
         "perStack": -10,
         "type": "exponential",
-        "formula": "recharge multiplied by 0.9 per stack (multiplicative)"
+        "formula": "recharge = 15 × 0.9^stacks: 13.5s at 1 stack, 12.15s at 2, … (multiplicative, never reaches 0)"
       }
     ],
     "tags": ["survivability", "block"],

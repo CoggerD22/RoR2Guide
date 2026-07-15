@@ -131,8 +131,13 @@ check code-transcription alone can't give.
 - **Phase 1 — partial.** `reciprocal` promoted to a first-class stacking type and 7
   items re-tagged; Light Flux's attack-speed reduction is code-confirmed reciprocal
   (`/(stacks+1)`). Committed `d07e01c`. Item *numbers* remain verified against the
-  game language files (`pnpm data:diff`, 0 diffs). Still TODO: extend the per-item
-  diff to non-stat behavior classes (on-hit/proc chances).
+  game language files (`pnpm data:diff`, 0 diffs). Non-linear formulas spot-checked
+  against decompiled behavior classes: Tougher Times block = `ConvertAmp(15n)` →
+  13.04%@1/60%@10 (note was already right); Safer Spaces = `15·0.9^count` (clarified);
+  Genesis Loop `30/(1+n)` retagged special→reciprocal; **Old Guillotine corrected** —
+  `ConvertAmp(13n)` is ~11.5%@1 stack, not the 13% amplification input the tooltip
+  shows. `ConvertAmplificationPercentageIntoReductionPercentage(x) = (1−100/(100+x))·100`.
+  Still TODO: Sentient Meat Hook / Tentabauble proc chances (in GlobalEventManager).
 - **Phase 6 — started.** `pnpm data:verify` (`scripts/data-verify.ts`) locks the 13
   Stat Lab coefficients to the values transcribed from `RecalculateStats()` (each with
   a source-line citation) and fails CI on drift; when `.decompiled/` is present locally
