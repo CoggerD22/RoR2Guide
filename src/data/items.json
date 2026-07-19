@@ -1373,7 +1373,7 @@
     "tags": ["survivability", "utility"],
     "icon": "/icons/unstable-transmitter.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Unstable_Transmitter",
-    "verified": false
+    "verified": true
   },
   {
     "id": "item-scrap-green",
@@ -2838,7 +2838,7 @@
     "tags": ["utility"],
     "icon": "/icons/encrypted-cerebellum.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Encrypted_Cerebellum",
-    "verified": false
+    "verified": true
   },
   {
     "id": "exposed-cerebellum",
@@ -2852,7 +2852,7 @@
     "tags": ["utility"],
     "icon": "/icons/exposed-cerebellum.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Exposed_Cerebellum",
-    "verified": false
+    "verified": true
   },
   {
     "id": "item-scrap-yellow",
