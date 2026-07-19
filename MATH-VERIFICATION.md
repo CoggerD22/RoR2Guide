@@ -191,6 +191,21 @@ The three-path join into a per-skill dataset is a real build and is **net-new si
 content** (procs aren't shown today), so it is gated on the open question of whether
 procs surface in the codex UI or stay internal. Not started pending that call.
 
+## 3d. Phase 5b (artifacts + shrines) — verified against code/assets, clean
+
+Every numeric claim in `reference.ts` checked against the decompiled behavior classes
+and prefabs. All correct as written; no corrections needed.
+- Artifact of Glass "500% damage, 10% health": `num101 *= 5f` (damage) and
+  `cursePenalty *= 10f` → effective HP ÷10 (CharacterBody.RecalculateStats, flag7).
+- Artifact of Swarms "spawns doubled, health halved": `SwarmsArtifactManager.
+  swarmSpawnCount = 2`; spawned monsters get `RoR2Content.Items.CutHp`, which in
+  RecalculateStats does `maxHealth /= (count+1)` → halved.
+- Artifact of Frailty (`weakAssKneesArtifactDef`) "fall damage doubled and lethal":
+  on hit-ground, `damageInfo.damage *= 2f` and the `NonLethal` flag is cleared.
+- Shrine of Blood "~½ current health": prefab `PurchaseInteraction.cost = 50` with
+  `costType = PercentHealth` (extracted from ror2-base-shrineblood bundle). Exactly 50%.
+Remaining shrine copy is intentionally qualitative prose (no hard numbers to verify).
+
 ## 4. Definition of done
 
 - 100% of item stacking values + types **code-verified** (`data:verify` clean).
