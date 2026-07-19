@@ -186,10 +186,26 @@ A *correct* per-skill table needs three resolution paths, not one:
    (Many remaining skills are non-damaging — Captain beacons, Smoke Bomb — and
    correctly have no proc at all.)
 
-Status: extractor committed; raw truth lands in git-ignored `.gamedata/procs.json`.
-The three-path join into a per-skill dataset is a real build and is **net-new site
-content** (procs aren't shown today), so it is gated on the open question of whether
-procs surface in the codex UI or stay internal. Not started pending that call.
+Status: extractor resolves paths 1+2 automatically — **236 EntityStates resolved**
+(85 ESC-direct + 151 via same-bundle `projectilePrefab` PPtr → projectile's
+`procCoefficient`; the PPtr is FileID 0, so it resolves within the survivor's own
+bundle, e.g. `Mage.Weapon.FireFireBolt` → `MageFireboltBasic` → 1.0). Raw truth in
+git-ignored `.gamedata/procs.json`.
+
+Two facts learned that shape the UI build:
+- **Path 3 is mostly implicit.** Hitscan skills like `Commando…FirePistol2` set *no*
+  explicit `procCoefficient`; they inherit `BulletAttack`'s framework default of 1.0.
+  So the only *interesting* (non-1.0) procs are the ESC/projectile overrides already
+  captured — but "unresolved" must not be blindly defaulted to 1.0, because…
+- **…non-damaging skills have no proc at all** (Captain beacons, Smoke Bomb, dashes),
+  and the 188 raw survivor SkillDefs are polluted with intermediate Setup/Prep/Charge
+  sub-states and duplicates.
+
+Therefore the per-skill dataset is keyed on each survivor's **loadout structure**
+(body → SkillLocator → SkillFamily variants), not raw SkillDefs, with an explicit
+damaging/non-damaging flag. Decision taken: build the full dataset + surface it in the
+codex. Being built survivor-by-survivor (per CLAUDE.md's tier-by-tier discipline) so
+each is spot-checkable.
 
 ## 3d. Phase 5b (artifacts + shrines) — verified against code/assets, clean
 

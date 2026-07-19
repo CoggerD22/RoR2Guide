@@ -59,18 +59,39 @@ def finite(x):
     return x if isinstance(x, (int,)) or (isinstance(x, float) and x == x and abs(x) != float("inf")) else None
 
 
+def gameobject_proc(reader, byid):
+    """procCoefficient of a projectile GameObject: scan its components."""
+    try:
+        go = reader.read()
+        for c in go.m_Components:
+            try:
+                ct = c.read().object_reader.read_typetree()
+                if "procCoefficient" in ct:
+                    return num(ct["procCoefficient"])
+            except Exception:
+                pass
+    except Exception:
+        pass
+    return None
+
+
 def extract():
     if not os.path.isdir(AA):
         sys.exit(f"Addressables not found: {AA}")
     tokens = load_tokens()
     skills, state_proc, proj_proc = [], {}, {}
+    # stateType -> {"proc": value, "source": "esc"|"projectile:<name>", "projectile": name}
+    state_resolved = {}
 
     for f in sorted(glob.glob(f"{AA}/*.bundle")):
         try:
             env = UnityPy.load(f)
         except Exception:
             continue
-        for o in env.objects:
+        objs = list(env.objects)
+        byid = {o.path_id: o for o in objs}
+
+        for o in objs:
             if str(o.type.name) != "MonoBehaviour":
                 continue
             try:
@@ -78,14 +99,32 @@ def extract():
             except Exception:
                 continue
 
-            # layer 1: EntityStateConfiguration
+            # EntityStateConfiguration: direct procCoefficient and/or projectilePrefab link
             sfc = t.get("serializedFieldsCollection")
             if isinstance(sfc, dict):
                 tt = t.get("targetType") or {}
                 tname = (tt.get("assemblyQualifiedName", "") if isinstance(tt, dict) else str(tt)).split(",")[0]
+                direct, proj_pptr = None, None
                 for fld in sfc.get("serializedFields", []):
-                    if fld.get("fieldName") == "procCoefficient":
-                        state_proc[tname] = num((fld.get("fieldValue") or {}).get("stringValue"))
+                    fn = fld.get("fieldName")
+                    if fn == "procCoefficient":
+                        direct = num((fld.get("fieldValue") or {}).get("stringValue"))
+                    elif fn == "projectilePrefab":
+                        ov = (fld.get("fieldValue") or {}).get("objectValue") or {}
+                        proj_pptr = (ov.get("m_FileID"), ov.get("m_PathID"))
+                if direct is not None:
+                    state_proc[tname] = direct
+                    state_resolved[tname] = {"proc": direct, "source": "esc"}
+                elif proj_pptr and proj_pptr[0] == 0 and proj_pptr[1] in byid:
+                    ref = byid[proj_pptr[1]]
+                    pname = None
+                    try:
+                        pname = ref.read().m_Name
+                    except Exception:
+                        pass
+                    pv = gameobject_proc(ref, byid)
+                    if pv is not None:
+                        state_resolved.setdefault(tname, {"proc": pv, "source": f"projectile:{pname}", "projectile": pname})
 
             # SkillDef
             if "activationState" in t and "skillNameToken" in t:
@@ -99,23 +138,24 @@ def extract():
                     "maxStock": t.get("baseMaxStock"),
                 })
 
-            # layer 3: projectile prefab
+            # standalone projectile prefab
             if "procCoefficient" in t and "activationState" not in t and "serializedFieldsCollection" not in t:
                 try:
-                    name = o.read().m_GameObject.read().m_Name
-                    proj_proc[name] = num(t["procCoefficient"])
+                    proj_proc[o.read().m_GameObject.read().m_Name] = num(t["procCoefficient"])
                 except Exception:
                     pass
 
     os.makedirs(OUT_DIR, exist_ok=True)
     out = {
         "skills": sorted(skills, key=lambda s: str(s["stateType"])),
-        "stateProcConfigs": dict(sorted(state_proc.items())),
+        "stateProc": dict(sorted(state_resolved.items())),   # resolved: esc OR projectile
+        "stateProcConfigs": dict(sorted(state_proc.items())),  # esc-direct only
         "projectileProc": dict(sorted(proj_proc.items())),
     }
     json.dump(out, open(f"{OUT_DIR}/procs.json", "w"), indent=1)
-    print(f"{len(skills)} SkillDefs, {len(state_proc)} state proc configs, "
-          f"{len(proj_proc)} projectile procs -> {OUT_DIR}/procs.json")
+    print(f"{len(skills)} SkillDefs, {len(state_resolved)} states resolved "
+          f"({len(state_proc)} esc-direct + {len(state_resolved)-len(state_proc)} via projectile), "
+          f"{len(proj_proc)} standalone projectiles -> {OUT_DIR}/procs.json")
 
 
 if __name__ == "__main__":
