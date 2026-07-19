@@ -1,0 +1,1116 @@
+[
+  {
+    "survivor": "commando",
+    "body": "CommandoBody",
+    "skills": [
+      {
+        "slot": "primary",
+        "name": "Double Tap",
+        "state": "EntityStates.Commando.CommandoWeapon.FirePistol2",
+        "proc": 1,
+        "procSource": "code:default-1.0",
+        "verified": true
+      },
+      {
+        "slot": "secondary",
+        "name": "Phase Round",
+        "state": "EntityStates.Commando.CommandoWeapon.FireFMJ",
+        "proc": 1,
+        "procSource": "projectile:FMJRamping",
+        "verified": true
+      },
+      {
+        "slot": "secondary",
+        "name": "Phase Blast",
+        "state": "EntityStates.Commando.CommandoWeapon.FireShotgunBlast",
+        "proc": 0.5,
+        "procSource": "esc:procCoefficient",
+        "verified": true
+      },
+      {
+        "slot": "utility",
+        "name": "Tactical Dive",
+        "state": "EntityStates.Commando.DodgeState",
+        "proc": null,
+        "procSource": "review:no-attack",
+        "verified": false
+      },
+      {
+        "slot": "utility",
+        "name": "Tactical Slide",
+        "state": "EntityStates.Commando.SlideState",
+        "proc": null,
+        "procSource": "review:no-attack",
+        "verified": false
+      },
+      {
+        "slot": "special",
+        "name": "Suppressive Fire",
+        "state": "EntityStates.Commando.CommandoWeapon.FireBarrage",
+        "proc": 1,
+        "procSource": "code:default-1.0",
+        "verified": true
+      },
+      {
+        "slot": "special",
+        "name": "Frag Grenade",
+        "state": "EntityStates.Commando.CommandoWeapon.ThrowGrenade",
+        "proc": 1,
+        "procSource": "projectile:CommandoGrenadeProjectile",
+        "verified": true
+      }
+    ]
+  },
+  {
+    "survivor": "huntress",
+    "body": "HuntressBody",
+    "skills": [
+      {
+        "slot": "primary",
+        "name": "Strafe",
+        "state": "EntityStates.Huntress.HuntressWeapon.FireSeekingArrow",
+        "proc": 1,
+        "procSource": "esc:orbProcCoefficient",
+        "verified": true
+      },
+      {
+        "slot": "primary",
+        "name": "Flurry",
+        "state": "EntityStates.Huntress.HuntressWeapon.FireFlurrySeekingArrow",
+        "proc": 0.7,
+        "procSource": "esc:orbProcCoefficient",
+        "verified": true
+      },
+      {
+        "slot": "secondary",
+        "name": "Laser Glaive",
+        "state": "EntityStates.Huntress.HuntressWeapon.ThrowGlaive",
+        "proc": 0.8,
+        "procSource": "esc:glaiveProcCoefficient",
+        "verified": true
+      },
+      {
+        "slot": "utility",
+        "name": "Blink",
+        "state": "EntityStates.Huntress.BlinkState",
+        "proc": null,
+        "procSource": "review:no-attack",
+        "verified": false
+      },
+      {
+        "slot": "utility",
+        "name": "Phase Blink",
+        "state": "EntityStates.Huntress.MiniBlinkState",
+        "proc": null,
+        "procSource": "review:no-attack",
+        "verified": false
+      },
+      {
+        "slot": "special",
+        "name": "Arrow Rain",
+        "state": "EntityStates.Huntress.BeginArrowRain",
+        "proc": null,
+        "procSource": "review:no-attack",
+        "verified": false
+      },
+      {
+        "slot": "special",
+        "name": "Ballista",
+        "state": "EntityStates.Huntress.BeginArrowSnipe",
+        "proc": null,
+        "procSource": "review:no-attack",
+        "verified": false
+      }
+    ]
+  },
+  {
+    "survivor": "bandit",
+    "body": "Bandit2Body",
+    "skills": [
+      {
+        "slot": "primary",
+        "name": "Burst",
+        "state": "EntityStates.Bandit2.Weapon.FireShotgun2",
+        "proc": 0.5,
+        "procSource": "esc:procCoefficient",
+        "verified": true
+      },
+      {
+        "slot": "primary",
+        "name": "Blast",
+        "state": "EntityStates.Bandit2.Weapon.Bandit2FireRifle",
+        "proc": 1,
+        "procSource": "esc:procCoefficient",
+        "verified": true
+      },
+      {
+        "slot": "secondary",
+        "name": "Serrated Dagger",
+        "state": "EntityStates.Bandit2.Weapon.SlashBlade",
+        "proc": 1,
+        "procSource": "esc:procCoefficient",
+        "verified": true
+      },
+      {
+        "slot": "secondary",
+        "name": "Serrated Shiv",
+        "state": "EntityStates.Bandit2.Weapon.Bandit2FireShiv",
+        "proc": 1,
+        "procSource": "projectile:Bandit2ShivProjectile",
+        "verified": true
+      },
+      {
+        "slot": "utility",
+        "name": "Smoke Bomb",
+        "state": "EntityStates.Bandit2.ThrowSmokebomb",
+        "proc": null,
+        "procSource": "review:no-attack",
+        "verified": false
+      },
+      {
+        "slot": "special",
+        "name": "Lights Out",
+        "state": "EntityStates.Bandit2.Weapon.PrepSidearmResetRevolver",
+        "proc": null,
+        "procSource": "review:no-attack",
+        "verified": false
+      },
+      {
+        "slot": "special",
+        "name": "Desperado",
+        "state": "EntityStates.Bandit2.Weapon.PrepSidearmSkullRevolver",
+        "proc": null,
+        "procSource": "review:no-attack",
+        "verified": false
+      }
+    ]
+  },
+  {
+    "survivor": "mul-t",
+    "body": "ToolbotBody",
+    "skills": [
+      {
+        "slot": "primary",
+        "name": "Auto-Nailgun",
+        "state": "EntityStates.Toolbot.FireNailgun",
+        "proc": null,
+        "procSource": "review:no-attack",
+        "verified": false
+      },
+      {
+        "slot": "primary",
+        "name": "Rebar Puncher",
+        "state": "EntityStates.Toolbot.FireSpear",
+        "proc": 1,
+        "procSource": "esc:procCoefficient",
+        "verified": true
+      },
+      {
+        "slot": "primary",
+        "name": "Scrap Launcher",
+        "state": "EntityStates.Toolbot.FireGrenadeLauncher",
+        "proc": 1,
+        "procSource": "projectile:ToolbotGrenadeLauncherProjectile",
+        "verified": true
+      },
+      {
+        "slot": "primary",
+        "name": "Power-Saw",
+        "state": "EntityStates.Toolbot.FireBuzzsaw",
+        "proc": 1,
+        "procSource": "code:default-1.0",
+        "verified": true
+      },
+      {
+        "slot": "secondary",
+        "name": "Blast Canister",
+        "state": "EntityStates.Toolbot.AimStunDrone",
+        "proc": 1,
+        "procSource": "projectile:CryoCanisterProjectile",
+        "verified": true
+      },
+      {
+        "slot": "utility",
+        "name": "Transport Mode",
+        "state": "EntityStates.Toolbot.ToolbotDash",
+        "proc": 1,
+        "procSource": "code:default-1.0",
+        "verified": true
+      },
+      {
+        "slot": "special",
+        "name": "Retool",
+        "state": "EntityStates.Toolbot.StartToolbotStanceSwap",
+        "proc": null,
+        "procSource": "review:no-attack",
+        "verified": false
+      },
+      {
+        "slot": "special",
+        "name": "Power Mode",
+        "state": "EntityStates.Toolbot.ToolbotDualWieldStart",
+        "proc": null,
+        "procSource": "review:no-attack",
+        "verified": false
+      }
+    ]
+  },
+  {
+    "survivor": "engineer",
+    "body": "EngiBody",
+    "skills": [
+      {
+        "slot": "primary",
+        "name": "Bouncing Grenades",
+        "state": "EntityStates.Engi.EngiWeapon.ChargeGrenades",
+        "proc": null,
+        "procSource": "review:no-attack",
+        "verified": false
+      },
+      {
+        "slot": "secondary",
+        "name": "Pressure Mines",
+        "state": "EntityStates.Engi.EngiWeapon.FireMines",
+        "proc": 1,
+        "procSource": "projectile:EngiMine",
+        "verified": true
+      },
+      {
+        "slot": "secondary",
+        "name": "Spider Mines",
+        "state": "EntityStates.Engi.EngiWeapon.FireSpiderMine",
+        "proc": 1,
+        "procSource": "projectile:SpiderMine",
+        "verified": true
+      },
+      {
+        "slot": "utility",
+        "name": "Bubble Shield",
+        "state": "EntityStates.Engi.EngiWeapon.FireBubbleShield",
+        "proc": 1,
+        "procSource": "projectile:EngiBubbleShield",
+        "verified": true
+      },
+      {
+        "slot": "utility",
+        "name": "Thermal Harpoons",
+        "state": "EntityStates.Engi.EngiMissilePainter.Paint",
+        "proc": null,
+        "procSource": "review:no-attack",
+        "verified": false
+      },
+      {
+        "slot": "special",
+        "name": "TR12 Gauss Auto-Turret",
+        "state": "EntityStates.Engi.EngiWeapon.PlaceTurret",
+        "proc": null,
+        "procSource": "review:no-attack",
+        "verified": false
+      },
+      {
+        "slot": "special",
+        "name": "TR58 Carbonizer Turret",
+        "state": "EntityStates.Engi.EngiWeapon.PlaceWalkerTurret",
+        "proc": null,
+        "procSource": "review:no-attack",
+        "verified": false
+      }
+    ]
+  },
+  {
+    "survivor": "artificer",
+    "body": "MageBody",
+    "skills": [
+      {
+        "slot": "primary",
+        "name": "Flame Bolt",
+        "state": "EntityStates.Mage.Weapon.FireFireBolt",
+        "proc": 1,
+        "procSource": "esc:procCoefficient",
+        "verified": true
+      },
+      {
+        "slot": "primary",
+        "name": "Plasma Bolt",
+        "state": "EntityStates.Mage.Weapon.FireLightningBolt",
+        "proc": 1,
+        "procSource": "esc:procCoefficient",
+        "verified": true
+      },
+      {
+        "slot": "secondary",
+        "name": "Charged Nano-Bomb",
+        "state": "EntityStates.Mage.Weapon.ChargeNovabomb",
+        "proc": null,
+        "procSource": "review:no-attack",
+        "verified": false
+      },
+      {
+        "slot": "secondary",
+        "name": "Cast Nano-Spear",
+        "state": "EntityStates.Mage.Weapon.ChargeIcebomb",
+        "proc": null,
+        "procSource": "review:no-attack",
+        "verified": false
+      },
+      {
+        "slot": "utility",
+        "name": "Snapfreeze",
+        "state": "EntityStates.Mage.Weapon.PrepWall",
+        "proc": 1,
+        "procSource": "projectile:MageIcewallWalkerProjectile",
+        "verified": true
+      },
+      {
+        "slot": "special",
+        "name": "Flamethrower",
+        "state": "EntityStates.Mage.Weapon.Flamethrower",
+        "proc": 1,
+        "procSource": "code:default-1.0",
+        "verified": true
+      },
+      {
+        "slot": "special",
+        "name": "Ion Surge",
+        "state": "EntityStates.Mage.FlyUpState",
+        "proc": 1,
+        "procSource": "esc:blastAttackProcCoefficient",
+        "verified": true
+      }
+    ]
+  },
+  {
+    "survivor": "mercenary",
+    "body": "MercBody",
+    "skills": [
+      {
+        "slot": "primary",
+        "name": "Laser Sword",
+        "state": "EntityStates.Merc.Weapon.GroundLight2",
+        "proc": 1,
+        "procSource": "esc:procCoefficient",
+        "verified": true
+      },
+      {
+        "slot": "secondary",
+        "name": "Whirlwind",
+        "state": "EntityStates.Merc.WhirlwindEntry",
+        "proc": null,
+        "procSource": "review:no-attack",
+        "verified": false
+      },
+      {
+        "slot": "secondary",
+        "name": "Rising Thunder",
+        "state": "EntityStates.Merc.Uppercut",
+        "proc": null,
+        "procSource": "review:no-attack",
+        "verified": false
+      },
+      {
+        "slot": "utility",
+        "name": "Blinding Assault",
+        "state": "EntityStates.Merc.PrepAssaulter2",
+        "proc": null,
+        "procSource": "review:no-attack",
+        "verified": false
+      },
+      {
+        "slot": "utility",
+        "name": "Focused Assault",
+        "state": "EntityStates.Merc.FocusedAssaultPrep",
+        "proc": null,
+        "procSource": "review:no-attack",
+        "verified": false
+      },
+      {
+        "slot": "special",
+        "name": "Eviscerate",
+        "state": "EntityStates.Merc.EvisDash",
+        "proc": null,
+        "procSource": "review:no-attack",
+        "verified": false
+      },
+      {
+        "slot": "special",
+        "name": "Slicing Winds",
+        "state": "EntityStates.Merc.Weapon.ThrowEvisProjectile",
+        "proc": 1,
+        "procSource": "projectile:EvisProjectile",
+        "verified": true
+      }
+    ]
+  },
+  {
+    "survivor": "rex",
+    "body": "TreebotBody",
+    "skills": [
+      {
+        "slot": "primary",
+        "name": "DIRECTIVE: Inject",
+        "state": "EntityStates.Treebot.Weapon.FireSyringe",
+        "proc": 0.5,
+        "procSource": "projectile:SyringeProjectile",
+        "verified": true
+      },
+      {
+        "slot": "secondary",
+        "name": "DIRECTIVE: Drill",
+        "state": "EntityStates.Treebot.Weapon.AimMortarRain",
+        "proc": 1,
+        "procSource": "projectile:TreebotMortarRain",
+        "verified": true
+      },
+      {
+        "slot": "secondary",
+        "name": "Seed Barrage",
+        "state": "EntityStates.Treebot.Weapon.AimMortar2",
+        "proc": 1,
+        "procSource": "projectile:TreebotMortar2",
+        "verified": true
+      },
+      {
+        "slot": "utility",
+        "name": "DIRECTIVE: Disperse",
+        "state": "EntityStates.Treebot.Weapon.ChargeSonicBoom",
+        "proc": null,
+        "procSource": "review:no-attack",
+        "verified": false
+      },
+      {
+        "slot": "utility",
+        "name": "Bramble Volley",
+        "state": "EntityStates.Treebot.Weapon.ChargePlantSonicBoom",
+        "proc": null,
+        "procSource": "review:no-attack",
+        "verified": false
+      },
+      {
+        "slot": "special",
+        "name": "DIRECTIVE: Harvest",
+        "state": "EntityStates.Treebot.TreebotPrepFruitSeed",
+        "proc": null,
+        "procSource": "review:no-attack",
+        "verified": false
+      },
+      {
+        "slot": "special",
+        "name": "Tangling Growth",
+        "state": "EntityStates.PrepFlower2",
+        "proc": null,
+        "procSource": "review:class-not-found",
+        "verified": false
+      }
+    ]
+  },
+  {
+    "survivor": "loader",
+    "body": "LoaderBody",
+    "skills": [
+      {
+        "slot": "primary",
+        "name": "Knuckleboom",
+        "state": "EntityStates.Loader.SwingComboFist",
+        "proc": 1,
+        "procSource": "esc:procCoefficient",
+        "verified": true
+      },
+      {
+        "slot": "secondary",
+        "name": "Grapple Fist",
+        "state": "EntityStates.Loader.FireHook",
+        "proc": 1,
+        "procSource": "projectile:LoaderHook",
+        "verified": true
+      },
+      {
+        "slot": "secondary",
+        "name": "Spiked Fist",
+        "state": "EntityStates.Loader.FireYankHook",
+        "proc": 1,
+        "procSource": "projectile:LoaderYankHook",
+        "verified": true
+      },
+      {
+        "slot": "utility",
+        "name": "Charged Gauntlet",
+        "state": "EntityStates.Loader.ChargeFist",
+        "proc": null,
+        "procSource": "review:no-attack",
+        "verified": false
+      },
+      {
+        "slot": "utility",
+        "name": "Thunder Gauntlet",
+        "state": "EntityStates.Loader.ChargeZapFist",
+        "proc": null,
+        "procSource": "review:no-attack",
+        "verified": false
+      },
+      {
+        "slot": "special",
+        "name": "M551 Pylon",
+        "state": "EntityStates.Loader.ThrowPylon",
+        "proc": 1,
+        "procSource": "projectile:LoaderPylon",
+        "verified": true
+      },
+      {
+        "slot": "special",
+        "name": "Thunderslam",
+        "state": "EntityStates.Loader.PreGroundSlam",
+        "proc": null,
+        "procSource": "review:no-attack",
+        "verified": false
+      }
+    ]
+  },
+  {
+    "survivor": "acrid",
+    "body": "CrocoBody",
+    "skills": [
+      {
+        "slot": "primary",
+        "name": "Vicious Wounds",
+        "state": "EntityStates.Croco.Slash",
+        "proc": 1,
+        "procSource": "esc:procCoefficient",
+        "verified": true
+      },
+      {
+        "slot": "secondary",
+        "name": "Neurotoxin",
+        "state": "EntityStates.Croco.FireSpit",
+        "proc": 1,
+        "procSource": "projectile:CrocoSpit",
+        "verified": true
+      },
+      {
+        "slot": "secondary",
+        "name": "Ravenous Bite",
+        "state": "EntityStates.Croco.Bite",
+        "proc": 1,
+        "procSource": "esc:procCoefficient",
+        "verified": true
+      },
+      {
+        "slot": "utility",
+        "name": "Caustic Leap",
+        "state": "EntityStates.Croco.Leap",
+        "proc": null,
+        "procSource": "review:no-attack",
+        "verified": false
+      },
+      {
+        "slot": "utility",
+        "name": "Frenzied Leap",
+        "state": "EntityStates.Croco.ChainableLeap",
+        "proc": null,
+        "procSource": "review:no-attack",
+        "verified": false
+      },
+      {
+        "slot": "special",
+        "name": "Epidemic",
+        "state": "EntityStates.Croco.FireDiseaseProjectile",
+        "proc": 0,
+        "procSource": "projectile:CrocoDiseaseProjectile",
+        "verified": true
+      }
+    ]
+  },
+  {
+    "survivor": "captain",
+    "body": "CaptainBody",
+    "skills": [
+      {
+        "slot": "primary",
+        "name": "Vulcan Shotgun",
+        "state": "EntityStates.Captain.Weapon.ChargeCaptainShotgun",
+        "proc": null,
+        "procSource": "review:no-attack",
+        "verified": false
+      },
+      {
+        "slot": "secondary",
+        "name": "Power Tazer",
+        "state": "EntityStates.Captain.Weapon.FireTazer",
+        "proc": 1,
+        "procSource": "projectile:CaptainTazer",
+        "verified": true
+      },
+      {
+        "slot": "utility",
+        "name": "Orbital Probe",
+        "state": "EntityStates.Captain.Weapon.SetupAirstrike",
+        "proc": null,
+        "procSource": "review:no-attack",
+        "verified": false
+      },
+      {
+        "slot": "utility",
+        "name": "OGM-72 'DIABLO' Strike",
+        "state": "EntityStates.Captain.Weapon.SetupAirstrikeAlt",
+        "proc": null,
+        "procSource": "review:no-attack",
+        "verified": false
+      },
+      {
+        "slot": "special",
+        "name": "Orbital Supply Beacon",
+        "state": "EntityStates.Captain.Weapon.SetupSupplyDrop",
+        "proc": null,
+        "procSource": "review:no-attack",
+        "verified": false
+      }
+    ]
+  },
+  {
+    "survivor": "heretic",
+    "body": "HereticBody",
+    "skills": [
+      {
+        "slot": "primary",
+        "name": "Nevermore",
+        "state": "EntityStates.Heretic.Weapon.Squawk",
+        "proc": null,
+        "procSource": "review:no-attack",
+        "verified": false
+      },
+      {
+        "slot": "secondary",
+        "name": "Nevermore",
+        "state": "EntityStates.Heretic.Weapon.Squawk",
+        "proc": null,
+        "procSource": "review:no-attack",
+        "verified": false
+      },
+      {
+        "slot": "utility",
+        "name": "Nevermore",
+        "state": "EntityStates.Heretic.Weapon.Squawk",
+        "proc": null,
+        "procSource": "review:no-attack",
+        "verified": false
+      },
+      {
+        "slot": "special",
+        "name": "Nevermore",
+        "state": "EntityStates.Heretic.Weapon.Squawk",
+        "proc": null,
+        "procSource": "review:no-attack",
+        "verified": false
+      }
+    ]
+  },
+  {
+    "survivor": "railgunner",
+    "body": "RailgunnerBody",
+    "skills": [
+      {
+        "slot": "primary",
+        "name": "XQR Smart Round System",
+        "state": "EntityStates.Railgunner.Weapon.FirePistol",
+        "proc": 1,
+        "procSource": "projectile:RailgunnerPistolProjectile",
+        "verified": true
+      },
+      {
+        "slot": "secondary",
+        "name": "M99 Sniper",
+        "state": "EntityStates.Railgunner.Scope.WindUpScopeHeavy",
+        "proc": null,
+        "procSource": "review:no-attack",
+        "verified": false
+      },
+      {
+        "slot": "secondary",
+        "name": "HH44 Marksman",
+        "state": "EntityStates.Railgunner.Scope.WindUpScopeLight",
+        "proc": null,
+        "procSource": "review:no-attack",
+        "verified": false
+      },
+      {
+        "slot": "utility",
+        "name": "Concussion Device",
+        "state": "EntityStates.Railgunner.Weapon.FireMineConcussive",
+        "proc": 1,
+        "procSource": "projectile:RailgunnerMine",
+        "verified": true
+      },
+      {
+        "slot": "utility",
+        "name": "Polar Field Device",
+        "state": "EntityStates.Railgunner.Weapon.FireMineBlinding",
+        "proc": 1,
+        "procSource": "projectile:RailgunnerMineAlt",
+        "verified": true
+      },
+      {
+        "slot": "special",
+        "name": "Supercharge",
+        "state": "EntityStates.Railgunner.Weapon.ChargeSnipeSuper",
+        "proc": null,
+        "procSource": "review:no-attack",
+        "verified": false
+      },
+      {
+        "slot": "special",
+        "name": "Cryocharge",
+        "state": "EntityStates.Railgunner.Weapon.ChargeSnipeCryo",
+        "proc": null,
+        "procSource": "review:no-attack",
+        "verified": false
+      }
+    ]
+  },
+  {
+    "survivor": "void-fiend",
+    "body": "VoidSurvivorBody",
+    "skills": [
+      {
+        "slot": "primary",
+        "name": "【D??row?n」",
+        "state": "EntityStates.VoidSurvivor.Weapon.FireHandBeam",
+        "proc": 1,
+        "procSource": "code:default-1.0",
+        "verified": true
+      },
+      {
+        "slot": "secondary",
+        "name": "『Floo?d」",
+        "state": "EntityStates.VoidSurvivor.Weapon.ChargeMegaBlaster",
+        "proc": null,
+        "procSource": "review:no-attack",
+        "verified": false
+      },
+      {
+        "slot": "utility",
+        "name": "「?Tr?espass】",
+        "state": "EntityStates.VoidSurvivor.VoidBlinkBase+VoidBlinkUp",
+        "proc": null,
+        "procSource": "review:class-not-found",
+        "verified": false
+      },
+      {
+        "slot": "special",
+        "name": "【Sup??ress』",
+        "state": "EntityStates.VoidSurvivor.Weapon.ChargeCrushCorruption",
+        "proc": null,
+        "procSource": "review:no-attack",
+        "verified": false
+      }
+    ]
+  },
+  {
+    "survivor": "seeker",
+    "body": "SeekerBody",
+    "skills": [
+      {
+        "slot": "primary",
+        "name": "Spirit Punch",
+        "state": "EntityStates.Seeker.SpiritPunch",
+        "proc": 1,
+        "procSource": "esc:procCoefficient",
+        "verified": true
+      },
+      {
+        "slot": "secondary",
+        "name": "Unseen Hand",
+        "state": "EntityStates.Seeker.UnseenHand",
+        "proc": null,
+        "procSource": "review:code-projectile",
+        "verified": false
+      },
+      {
+        "slot": "secondary",
+        "name": "Soul Spiral",
+        "state": "EntityStates.Seeker.SoulSpiral",
+        "proc": 1,
+        "procSource": "projectile:SoulSpiralProjectile",
+        "verified": true
+      },
+      {
+        "slot": "utility",
+        "name": "Sojourn",
+        "state": "EntityStates.Seeker.Sojourn",
+        "proc": null,
+        "procSource": "review:no-attack",
+        "verified": false
+      },
+      {
+        "slot": "utility",
+        "name": "Reprieve",
+        "state": "EntityStates.Seeker.Reprieve",
+        "proc": null,
+        "procSource": "review:no-attack",
+        "verified": false
+      },
+      {
+        "slot": "special",
+        "name": "Meditate",
+        "state": "EntityStates.Seeker.Meditate",
+        "proc": 0.8,
+        "procSource": "esc:blastProcCoefficient",
+        "verified": true
+      },
+      {
+        "slot": "special",
+        "name": "Palm Blast",
+        "state": "EntityStates.Seeker.BaseChargePalmBlast",
+        "proc": null,
+        "procSource": "review:no-attack",
+        "verified": false
+      }
+    ]
+  },
+  {
+    "survivor": "false-son",
+    "body": "FalseSonBody",
+    "skills": [
+      {
+        "slot": "primary",
+        "name": "Club of the Forsaken",
+        "state": "EntityStates.FalseSon.ClubSwing",
+        "proc": 1,
+        "procSource": "esc:procCoefficient",
+        "verified": true
+      },
+      {
+        "slot": "secondary",
+        "name": "Lunar Spikes",
+        "state": "EntityStates.FalseSon.LunarSpikes",
+        "proc": 1,
+        "procSource": "projectile:LunarSpike",
+        "verified": true
+      },
+      {
+        "slot": "secondary",
+        "name": "Lunar Stakes",
+        "state": "EntityStates.FalseSon.LunarStake",
+        "proc": 1,
+        "procSource": "projectile:LunarStake",
+        "verified": true
+      },
+      {
+        "slot": "utility",
+        "name": "Step of the Brothers",
+        "state": "EntityStates.FalseSon.StepBrothers",
+        "proc": 0.5,
+        "procSource": "esc:procCoefficient",
+        "verified": true
+      },
+      {
+        "slot": "utility",
+        "name": "Meridian's Will",
+        "state": "EntityStates.FalseSon.MeridiansWillAim",
+        "proc": null,
+        "procSource": "review:no-attack",
+        "verified": false
+      },
+      {
+        "slot": "special",
+        "name": "Laser of the Father",
+        "state": "EntityStates.FalseSon.LaserFather",
+        "proc": null,
+        "procSource": "review:no-attack",
+        "verified": false
+      },
+      {
+        "slot": "special",
+        "name": "Laser Burst",
+        "state": "EntityStates.FalseSon.LaserFatherBurstPrep",
+        "proc": null,
+        "procSource": "review:no-attack",
+        "verified": false
+      }
+    ]
+  },
+  {
+    "survivor": "chef",
+    "body": "ChefBody",
+    "skills": [
+      {
+        "slot": "primary",
+        "name": "Dice",
+        "state": "EntityStates.Chef.Dice",
+        "proc": 1,
+        "procSource": "projectile:ChefCleaver",
+        "verified": true
+      },
+      {
+        "slot": "secondary",
+        "name": "Sear",
+        "state": "EntityStates.Chef.Sear",
+        "proc": null,
+        "procSource": "review:code-projectile",
+        "verified": false
+      },
+      {
+        "slot": "secondary",
+        "name": "Ice Box",
+        "state": "EntityStates.Chef.IceBox",
+        "proc": 1,
+        "procSource": "projectile:ChefIceCubeBurstProjectile",
+        "verified": true
+      },
+      {
+        "slot": "utility",
+        "name": "Roll",
+        "state": "EntityStates.Chef.RolyPoly",
+        "proc": 1,
+        "procSource": "projectile:BoostedRolyPolyProjectile",
+        "verified": true
+      },
+      {
+        "slot": "utility",
+        "name": "Oil Spill",
+        "state": "EntityStates.Chef.OilSpillBase",
+        "proc": 1,
+        "procSource": "esc:blastProcCoefficient",
+        "verified": true
+      },
+      {
+        "slot": "special",
+        "name": "Glaze",
+        "state": "EntityStates.Chef.Glaze",
+        "proc": 1,
+        "procSource": "projectile:ChefGlazeProjectile",
+        "verified": true
+      },
+      {
+        "slot": "special",
+        "name": "Yes, CHEF!",
+        "state": "EntityStates.Chef.YesChef",
+        "proc": 0,
+        "procSource": "esc:blastProcCoefficient",
+        "verified": true
+      }
+    ]
+  },
+  {
+    "survivor": "operator",
+    "body": "DroneTechBody",
+    "skills": [
+      {
+        "slot": "primary",
+        "name": "H3-11 OCR Custom",
+        "state": "EntityStates.DroneTech.Weapon.FireNanoPistol",
+        "proc": 1,
+        "procSource": "esc:procCoefficient",
+        "verified": true
+      },
+      {
+        "slot": "secondary",
+        "name": "ADMIN-OVERRIDE",
+        "state": "EntityStates.DroneTech.Weapon.Activate",
+        "proc": null,
+        "procSource": "review:no-attack",
+        "verified": false
+      },
+      {
+        "slot": "secondary",
+        "name": "CMD-SWARM",
+        "state": "EntityStates.DroneTech.Weapon.Paint.Paint",
+        "proc": null,
+        "procSource": "review:no-attack",
+        "verified": false
+      },
+      {
+        "slot": "utility",
+        "name": "Ascent Protocol",
+        "state": "EntityStates.DroneTech.DroneLeap",
+        "proc": null,
+        "procSource": "review:no-attack",
+        "verified": false
+      },
+      {
+        "slot": "utility",
+        "name": "FIREWALL",
+        "state": "EntityStates.DroneTech.Weapon.ShieldFormation",
+        "proc": null,
+        "procSource": "review:no-attack",
+        "verified": false
+      },
+      {
+        "slot": "special",
+        "name": "Ejection Core",
+        "state": "EntityStates.DroneTech.Weapon.ThrowDroneBall",
+        "proc": 1,
+        "procSource": "esc:procCoefficient",
+        "verified": true
+      },
+      {
+        "slot": "special",
+        "name": "Amp Core",
+        "state": "EntityStates.DroneTech.Weapon.ThrowDroneBallShootable",
+        "proc": 1,
+        "procSource": "projectile:DroneBallShootableProjectile",
+        "verified": true
+      }
+    ]
+  },
+  {
+    "survivor": "drifter",
+    "body": "DrifterBody",
+    "skills": [
+      {
+        "slot": "primary",
+        "name": "Blunt Force",
+        "state": "EntityStates.Drifter.BluntForceEntry",
+        "proc": null,
+        "procSource": "review:no-attack",
+        "verified": false
+      },
+      {
+        "slot": "secondary",
+        "name": "Cleanup",
+        "state": "EntityStates.Drifter.AimMagicBag",
+        "proc": null,
+        "procSource": "review:code-projectile",
+        "verified": false
+      },
+      {
+        "slot": "secondary",
+        "name": "Junk Cube",
+        "state": "EntityStates.Drifter.CubeSlam",
+        "proc": 1,
+        "procSource": "esc:procCoefficient",
+        "verified": true
+      },
+      {
+        "slot": "utility",
+        "name": "Repossess",
+        "state": "EntityStates.Drifter.AimRepossess",
+        "proc": null,
+        "procSource": "review:no-attack",
+        "verified": false
+      },
+      {
+        "slot": "utility",
+        "name": "Tornado Slam",
+        "state": "EntityStates.Drifter.ChargeTornadoSlam",
+        "proc": null,
+        "procSource": "review:no-attack",
+        "verified": false
+      },
+      {
+        "slot": "special",
+        "name": "Salvage",
+        "state": "EntityStates.Drifter.Salvage",
+        "proc": null,
+        "procSource": "review:no-attack",
+        "verified": false
+      },
+      {
+        "slot": "special",
+        "name": "Tinker",
+        "state": "EntityStates.Drifter.CastTinker",
+        "proc": 1,
+        "procSource": "projectile:TinkerWave",
+        "verified": true
+      }
+    ]
+  }
+]

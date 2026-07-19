@@ -202,10 +202,25 @@ Two facts learned that shape the UI build:
   sub-states and duplicates.
 
 Therefore the per-skill dataset is keyed on each survivor's **loadout structure**
-(body → SkillLocator → SkillFamily variants), not raw SkillDefs, with an explicit
-damaging/non-damaging flag. Decision taken: build the full dataset + surface it in the
-codex. Being built survivor-by-survivor (per CLAUDE.md's tier-by-tier discipline) so
-each is spot-checkable.
+(body → SkillLocator → SkillFamily variants), not raw SkillDefs.
+
+Pipeline (all reproducible, inputs git-ignored):
+- `extract-loadouts.py` → 125 loadout variants across 19 survivors, each variant's
+  proc resolved in-bundle from its ESC. Key correction: proc lives under *type-specific*
+  field names — `procCoefficient` (bullet), `orbProcCoefficient` (Huntress arrows = 1),
+  `glaiveProcCoefficient` (Laser Glaive = 0.8, which corrected a wrong memory of 1.0),
+  `blastProcCoefficient`, etc. — or on the `projectilePrefab`.
+- `build-skill-procs.mjs` fills the rest from the decompile: explicit
+  `.procCoefficient = <literal>`, or the framework default 1.0 when a state creates a
+  BulletAttack/OverlapAttack/BlastAttack without firing a projectile (all three
+  initialise `procCoefficient = 1f` — verified in the decompile). Emits
+  `src/data/skills.json`.
+
+**Coverage: 61/125 skills have a verified proc + provenance; 64 are left `verified:false`
+(proc:null), NOT guessed.** The 64 are the genuine tail: charge→fire sub-state
+indirection (Merc Eviscerate, Railgunner M99), projectiles fired from a code field, and
+non-damaging utility (dashes/beacons). These need per-skill tracing. Spot-checks on the
+verified set pass (Double Tap 1.0, Phase Blast 0.5, Frag Grenade 1.0, Strafe 1.0).
 
 ## 3d. Phase 5b (artifacts + shrines) — verified against code/assets, clean
 

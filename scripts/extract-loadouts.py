@@ -75,24 +75,46 @@ def build_body_index():
     return {name: rec["_bundle"] for name, rec in bodies.items()}
 
 
+# Fields that ARE the skill's primary proc coefficient, best first. A skill's
+# attack type dictates which one it uses (bullet=procCoefficient, orb=orbProcCoefficient,
+# blast=blastProcCoefficient, …). "Per"/bonus/delayed fields are secondary and skipped
+# for the headline value.
+PRIMARY_PROC_FIELDS = [
+    "procCoefficient", "blastProcCoefficient", "blastAttackProcCoefficient",
+    "explosionProcCoefficient", "orbProcCoefficient", "glaiveProcCoefficient",
+    "discProcCoefficient", "mainBeamProcCoefficient", "shockProcCoefficient",
+    "meatballProcCoefficient", "unchargedBlastProcCoefficient",
+    "procCoefficientPerTick", "procCoefficientPerSecond", "baseProcCoefficientPerSecond",
+]
+
+
+def esc_proc(esc):
+    """Pick the primary proc coefficient from an ESC's captured proc fields."""
+    pf = esc.get("procFields", {})
+    for name in PRIMARY_PROC_FIELDS:
+        if name in pf and pf[name] is not None:
+            return pf[name], f"esc:{name}"
+    return None, None
+
+
 def resolve_proc(sd_state_type, esc_by_type, byid):
     """Return (proc, source, projectile) for an activationState type."""
     esc = esc_by_type.get(sd_state_type)
-    if esc is None:
-        return None, "unresolved", None
-    if esc.get("proc") is not None:
-        return esc["proc"], "esc", None
-    ppid = esc.get("proj_pathid")
-    if ppid and ppid in byid:
-        ref = byid[ppid]
-        try:
-            go = ref.read()
-            for c in go.m_Components:
-                ct = c.read().object_reader.read_typetree()
-                if "procCoefficient" in ct:
-                    return num(ct["procCoefficient"]), f"projectile:{go.m_Name}", go.m_Name
-        except Exception:
-            pass
+    if esc is not None:
+        val, src = esc_proc(esc)
+        if val is not None:
+            return val, src, None
+        ppid = esc.get("proj_pathid")
+        if ppid and ppid in byid:
+            ref = byid[ppid]
+            try:
+                go = ref.read()
+                for c in go.m_Components:
+                    ct = c.read().object_reader.read_typetree()
+                    if "procCoefficient" in ct:
+                        return num(ct["procCoefficient"]), f"projectile:{go.m_Name}", go.m_Name
+            except Exception:
+                pass
     return None, "unresolved", None
 
 
@@ -139,11 +161,11 @@ def extract():
                 continue
             ttv = t.get("targetType") or {}
             tname = (ttv.get("assemblyQualifiedName", "") if isinstance(ttv, dict) else str(ttv)).split(",")[0]
-            rec = {"proc": None, "proj_pathid": None}
+            rec = {"procFields": {}, "proj_pathid": None}
             for fld in sfc.get("serializedFields", []):
-                fn = fld.get("fieldName")
-                if fn == "procCoefficient":
-                    rec["proc"] = num((fld.get("fieldValue") or {}).get("stringValue"))
+                fn = fld.get("fieldName", "")
+                if fn.endswith("procCoefficient") or fn.endswith("ProcCoefficient"):
+                    rec["procFields"][fn] = num((fld.get("fieldValue") or {}).get("stringValue"))
                 elif fn == "projectilePrefab":
                     ov = (fld.get("fieldValue") or {}).get("objectValue") or {}
                     if ov.get("m_FileID") == 0:
