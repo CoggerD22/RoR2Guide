@@ -168,6 +168,29 @@ check code-transcription alone can't give.
 
 ---
 
+## 3c. Phase 5 (proc coefficients) — extraction proven, join scoped
+
+Same asset-extraction path that solved Phase 3 also reaches proc data (correcting
+the earlier "unreachable, defer" call). `scripts/extract-procs.py` pulls, in ~30s:
+- **485 SkillDefs** (name token → English, `activationState._typeName`, recharge, stock).
+- **85 EntityStateConfiguration `procCoefficient` values** (31 of them survivor skills;
+  authoritative shipped values, e.g. Commando FireShotgunBlast 0.5, Captain shotgun 0.75).
+- **350 projectile-prefab `procCoefficient` values.**
+
+A *correct* per-skill table needs three resolution paths, not one:
+1. ESC-direct — the 31 above (done, verifiable).
+2. Projectile skills — the ESC holds a `projectilePrefab` PPtr (confirmed on
+   `Mage.Weapon.FireFireBolt`); resolve PathID → projectile → its proc.
+3. Hitscan skills — proc is hardcoded in C# (`bulletAttack.procCoefficient = 1f`,
+   e.g. `Commando…FirePistol2`); a decompile grep, no ESC/projectile.
+   (Many remaining skills are non-damaging — Captain beacons, Smoke Bomb — and
+   correctly have no proc at all.)
+
+Status: extractor committed; raw truth lands in git-ignored `.gamedata/procs.json`.
+The three-path join into a per-skill dataset is a real build and is **net-new site
+content** (procs aren't shown today), so it is gated on the open question of whether
+procs surface in the codex UI or stay internal. Not started pending that call.
+
 ## 4. Definition of done
 
 - 100% of item stacking values + types **code-verified** (`data:verify` clean).
