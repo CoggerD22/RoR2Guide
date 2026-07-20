@@ -99,3 +99,12 @@ test("stat lab shows verified proc coefficients and marks unverified honestly", 
   await page.getByRole("button", { name: "Huntress", exact: true }).click();
   await expect(panel.locator("tr", { hasText: "Laser Glaive" })).toContainText("0.8");
 });
+
+test("codex item detail shows a provenance badge", async ({ page }) => {
+  await page.goto("/items");
+  // Crowbar's numbers come from the game's language files.
+  await page.getByRole("button", { name: /Crowbar/ }).first().click();
+  const drawer = page.getByRole("dialog");
+  await expect(drawer).toBeVisible();
+  await expect(drawer.getByText("Game-text verified")).toBeVisible();
+});

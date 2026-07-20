@@ -14,10 +14,14 @@
         "type": "linear"
       }
     ],
-    "tags": ["damage", "on-hit"],
+    "tags": [
+      "damage",
+      "on-hit"
+    ],
     "icon": "/icons/crowbar.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Crowbar",
-    "verified": true
+    "verified": true,
+    "confidence": "langfile"
   },
   {
     "id": "soldiers-syringe",
@@ -34,10 +38,14 @@
         "type": "linear"
       }
     ],
-    "tags": ["damage", "attack-speed"],
+    "tags": [
+      "damage",
+      "attack-speed"
+    ],
     "icon": "/icons/soldiers-syringe.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Soldier%27s_Syringe",
-    "verified": true
+    "verified": true,
+    "confidence": "code"
   },
   {
     "id": "lens-makers-glasses",
@@ -55,11 +63,16 @@
         "cap": "Reaches 100% (guaranteed crit) at 10 stacks; further stacks add nothing."
       }
     ],
-    "tags": ["damage", "critical-strike", "on-hit"],
+    "tags": [
+      "damage",
+      "critical-strike",
+      "on-hit"
+    ],
     "corruptedBy": "lost-seers-lenses",
     "icon": "/icons/lens-makers-glasses.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Lens-Maker%27s_Glasses",
-    "verified": true
+    "verified": true,
+    "confidence": "code"
   },
   {
     "id": "tougher-times",
@@ -77,11 +90,16 @@
         "formula": "block chance = 0.15n / (0.15n + 1) — e.g. 13% at 1 stack, ~60% at 10 stacks, approaches but never reaches 100%"
       }
     ],
-    "tags": ["utility", "block", "survivability"],
+    "tags": [
+      "utility",
+      "block",
+      "survivability"
+    ],
     "corruptedBy": "safer-spaces",
     "icon": "/icons/tougher-times.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Tougher_Times",
-    "verified": true
+    "verified": true,
+    "confidence": "code"
   },
   {
     "id": "tri-tip-dagger",
@@ -98,11 +116,16 @@
         "type": "linear"
       }
     ],
-    "tags": ["damage", "on-hit", "bleed"],
+    "tags": [
+      "damage",
+      "on-hit",
+      "bleed"
+    ],
     "corruptedBy": "needletick",
     "icon": "/icons/tri-tip-dagger.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Tri-Tip_Dagger",
-    "verified": true
+    "verified": true,
+    "confidence": "langfile"
   },
   {
     "id": "pauls-goat-hoof",
@@ -119,10 +142,14 @@
         "type": "linear"
       }
     ],
-    "tags": ["utility", "movement-speed"],
+    "tags": [
+      "utility",
+      "movement-speed"
+    ],
     "icon": "/icons/pauls-goat-hoof.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Paul%27s_Goat_Hoof",
-    "verified": true
+    "verified": true,
+    "confidence": "code"
   },
   {
     "id": "armor-piercing-rounds",
@@ -139,10 +166,13 @@
         "type": "linear"
       }
     ],
-    "tags": ["damage"],
+    "tags": [
+      "damage"
+    ],
     "icon": "/icons/armor-piercing-rounds.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Armor-Piercing_Rounds",
-    "verified": true
+    "verified": true,
+    "confidence": "langfile"
   },
   {
     "id": "backup-magazine",
@@ -159,10 +189,13 @@
         "type": "linear"
       }
     ],
-    "tags": ["utility"],
+    "tags": [
+      "utility"
+    ],
     "icon": "/icons/backup-magazine.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Backup_Magazine",
-    "verified": true
+    "verified": true,
+    "confidence": "langfile"
   },
   {
     "id": "bison-steak",
@@ -179,10 +212,14 @@
         "type": "linear"
       }
     ],
-    "tags": ["survivability", "health"],
+    "tags": [
+      "survivability",
+      "health"
+    ],
     "icon": "/icons/bison-steak.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Bison_Steak",
-    "verified": true
+    "verified": true,
+    "confidence": "code"
   },
   {
     "id": "bustling-fungus",
@@ -205,11 +242,14 @@
         "type": "linear"
       }
     ],
-    "tags": ["healing"],
+    "tags": [
+      "healing"
+    ],
     "corruptedBy": "weeping-fungus",
     "icon": "/icons/bustling-fungus.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Bustling_Fungus",
-    "verified": true
+    "verified": true,
+    "confidence": "langfile"
   },
   {
     "id": "cautious-slug",
@@ -226,10 +266,13 @@
         "type": "linear"
       }
     ],
-    "tags": ["healing"],
+    "tags": [
+      "healing"
+    ],
     "icon": "/icons/cautious-slug.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Cautious_Slug",
-    "verified": true
+    "verified": true,
+    "confidence": "langfile"
   },
   {
     "id": "monster-tooth",
@@ -246,10 +289,14 @@
         "type": "linear"
       }
     ],
-    "tags": ["healing", "on-kill"],
+    "tags": [
+      "healing",
+      "on-kill"
+    ],
     "icon": "/icons/monster-tooth.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Monster_Tooth",
-    "verified": true
+    "verified": true,
+    "confidence": "langfile"
   },
   {
     "id": "bundle-of-fireworks",
@@ -266,10 +313,13 @@
         "type": "linear"
       }
     ],
-    "tags": ["damage"],
+    "tags": [
+      "damage"
+    ],
     "icon": "/icons/bundle-of-fireworks.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Bundle_of_Fireworks",
-    "verified": true
+    "verified": true,
+    "confidence": "langfile"
   },
   {
     "id": "delicate-watch",
@@ -286,10 +336,13 @@
         "type": "linear"
       }
     ],
-    "tags": ["damage"],
+    "tags": [
+      "damage"
+    ],
     "icon": "/icons/delicate-watch.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Delicate_Watch",
-    "verified": true
+    "verified": true,
+    "confidence": "langfile"
   },
   {
     "id": "energy-drink",
@@ -306,10 +359,14 @@
         "type": "linear"
       }
     ],
-    "tags": ["utility", "movement-speed"],
+    "tags": [
+      "utility",
+      "movement-speed"
+    ],
     "icon": "/icons/energy-drink.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Energy_Drink",
-    "verified": true
+    "verified": true,
+    "confidence": "langfile"
   },
   {
     "id": "focus-crystal",
@@ -326,10 +383,13 @@
         "type": "linear"
       }
     ],
-    "tags": ["damage"],
+    "tags": [
+      "damage"
+    ],
     "icon": "/icons/focus-crystal.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Focus_Crystal",
-    "verified": true
+    "verified": true,
+    "confidence": "langfile"
   },
   {
     "id": "gasoline",
@@ -352,10 +412,15 @@
         "type": "linear"
       }
     ],
-    "tags": ["damage", "on-kill", "aoe"],
+    "tags": [
+      "damage",
+      "on-kill",
+      "aoe"
+    ],
     "icon": "/icons/gasoline.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Gasoline",
-    "verified": true
+    "verified": true,
+    "confidence": "langfile"
   },
   {
     "id": "medkit",
@@ -372,10 +437,13 @@
         "type": "linear"
       }
     ],
-    "tags": ["healing"],
+    "tags": [
+      "healing"
+    ],
     "icon": "/icons/medkit.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Medkit",
-    "verified": true
+    "verified": true,
+    "confidence": "langfile"
   },
   {
     "id": "personal-shield-generator",
@@ -392,10 +460,14 @@
         "type": "linear"
       }
     ],
-    "tags": ["survivability", "shield"],
+    "tags": [
+      "survivability",
+      "shield"
+    ],
     "icon": "/icons/personal-shield-generator.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Personal_Shield_Generator",
-    "verified": true
+    "verified": true,
+    "confidence": "langfile"
   },
   {
     "id": "power-elixir",
@@ -405,10 +477,13 @@
     "pickupText": "Receive an instant heal at low health. Consumed on use.",
     "description": "Taking damage to below 25% health consumes this item, healing you for 75% of maximum health.",
     "stacking": [],
-    "tags": ["healing"],
+    "tags": [
+      "healing"
+    ],
     "icon": "/icons/power-elixir.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Power_Elixir",
-    "verified": true
+    "verified": true,
+    "confidence": "langfile"
   },
   {
     "id": "repulsion-armor-plate",
@@ -425,10 +500,13 @@
         "type": "linear"
       }
     ],
-    "tags": ["survivability"],
+    "tags": [
+      "survivability"
+    ],
     "icon": "/icons/repulsion-armor-plate.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Repulsion_Armor_Plate",
-    "verified": true
+    "verified": true,
+    "confidence": "langfile"
   },
   {
     "id": "roll-of-pennies",
@@ -445,10 +523,14 @@
         "type": "linear"
       }
     ],
-    "tags": ["utility", "gold"],
+    "tags": [
+      "utility",
+      "gold"
+    ],
     "icon": "/icons/roll-of-pennies.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Roll_of_Pennies",
-    "verified": true
+    "verified": true,
+    "confidence": "langfile"
   },
   {
     "id": "sticky-bomb",
@@ -465,10 +547,14 @@
         "type": "linear"
       }
     ],
-    "tags": ["damage", "on-hit"],
+    "tags": [
+      "damage",
+      "on-hit"
+    ],
     "icon": "/icons/sticky-bomb.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Sticky_Bomb",
-    "verified": true
+    "verified": true,
+    "confidence": "langfile"
   },
   {
     "id": "topaz-brooch",
@@ -485,10 +571,14 @@
         "type": "linear"
       }
     ],
-    "tags": ["survivability", "on-kill"],
+    "tags": [
+      "survivability",
+      "on-kill"
+    ],
     "icon": "/icons/topaz-brooch.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Topaz_Brooch",
-    "verified": true
+    "verified": true,
+    "confidence": "langfile"
   },
   {
     "id": "stun-grenade",
@@ -505,10 +595,15 @@
         "type": "linear"
       }
     ],
-    "tags": ["utility", "on-hit", "crowd-control"],
+    "tags": [
+      "utility",
+      "on-hit",
+      "crowd-control"
+    ],
     "icon": "/icons/stun-grenade.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Stun_Grenade",
-    "verified": true
+    "verified": true,
+    "confidence": "langfile"
   },
   {
     "id": "warbanner",
@@ -525,10 +620,15 @@
         "type": "linear"
       }
     ],
-    "tags": ["utility", "attack-speed", "movement-speed"],
+    "tags": [
+      "utility",
+      "attack-speed",
+      "movement-speed"
+    ],
     "icon": "/icons/warbanner.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Warbanner",
-    "verified": true
+    "verified": true,
+    "confidence": "langfile"
   },
   {
     "id": "mocha",
@@ -551,10 +651,15 @@
         "type": "linear"
       }
     ],
-    "tags": ["damage", "attack-speed", "movement-speed"],
+    "tags": [
+      "damage",
+      "attack-speed",
+      "movement-speed"
+    ],
     "icon": "/icons/mocha.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Mocha",
-    "verified": true
+    "verified": true,
+    "confidence": "code"
   },
   {
     "id": "oddly-shaped-opal",
@@ -571,10 +676,14 @@
         "type": "linear"
       }
     ],
-    "tags": ["survivability", "armor"],
+    "tags": [
+      "survivability",
+      "armor"
+    ],
     "icon": "/icons/oddly-shaped-opal.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Oddly-shaped_Opal",
-    "verified": true
+    "verified": true,
+    "confidence": "langfile"
   },
   {
     "id": "elusive-antlers",
@@ -604,10 +713,14 @@
         "formula": "interval reduced 10% per stack (multiplicative), minimum 2s"
       }
     ],
-    "tags": ["utility", "movement-speed"],
+    "tags": [
+      "utility",
+      "movement-speed"
+    ],
     "icon": "/icons/elusive-antlers.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Elusive_Antlers",
-    "verified": true
+    "verified": true,
+    "confidence": "langfile"
   },
   {
     "id": "chronic-expansion",
@@ -630,10 +743,14 @@
         "type": "linear"
       }
     ],
-    "tags": ["damage", "on-kill"],
+    "tags": [
+      "damage",
+      "on-kill"
+    ],
     "icon": "/icons/chronic-expansion.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Chronic_Expansion",
-    "verified": true
+    "verified": true,
+    "confidence": "langfile"
   },
   {
     "id": "warped-echo",
@@ -650,10 +767,14 @@
         "type": "linear"
       }
     ],
-    "tags": ["survivability", "utility"],
+    "tags": [
+      "survivability",
+      "utility"
+    ],
     "icon": "/icons/warped-echo.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Warped_Echo",
-    "verified": true
+    "verified": true,
+    "confidence": "langfile"
   },
   {
     "id": "item-scrap-white",
@@ -664,10 +785,14 @@
     "pickupText": "Does nothing. Prioritized when used with 3D Printers.",
     "description": "A Common-rarity scrap with no effect. Consumed first by 3D Printers and Cauldrons, letting you preserve real items.",
     "stacking": [],
-    "tags": ["utility", "scrap"],
+    "tags": [
+      "utility",
+      "scrap"
+    ],
     "icon": "/icons/item-scrap-white.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Item_Scrap",
-    "verified": true
+    "verified": true,
+    "confidence": "langfile"
   },
   {
     "id": "rusted-key",
@@ -685,11 +810,14 @@
         "formula": "One lockbox per stage per key-holder; additional keys' effect on rarity vs. count needs logbook confirmation"
       }
     ],
-    "tags": ["utility"],
+    "tags": [
+      "utility"
+    ],
     "corruptedBy": "encrusted-key",
     "icon": "/icons/rusted-key.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Rusted_Key",
-    "verified": true
+    "verified": true,
+    "confidence": "langfile"
   },
   {
     "id": "hikers-boots",
@@ -707,10 +835,14 @@
         "cap": "Buff stacks up to 10 times."
       }
     ],
-    "tags": ["damage", "critical-strike"],
+    "tags": [
+      "damage",
+      "critical-strike"
+    ],
     "icon": "/icons/hikers-boots.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Hiker%27s_Boots",
-    "verified": true
+    "verified": true,
+    "confidence": "langfile"
   },
   {
     "id": "bolstering-lantern",
@@ -733,10 +865,14 @@
         "type": "linear"
       }
     ],
-    "tags": ["damage", "attack-speed"],
+    "tags": [
+      "damage",
+      "attack-speed"
+    ],
     "icon": "/icons/bolstering-lantern.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Bolstering_Lantern",
-    "verified": true
+    "verified": true,
+    "confidence": "langfile"
   },
   {
     "id": "eclipse-lite",
@@ -753,10 +889,13 @@
         "type": "linear"
       }
     ],
-    "tags": ["survivability"],
+    "tags": [
+      "survivability"
+    ],
     "icon": "/icons/eclipse-lite.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Eclipse_Lite",
-    "verified": true
+    "verified": true,
+    "confidence": "langfile"
   },
   {
     "id": "atg-missile-mk-1",
@@ -773,11 +912,15 @@
         "type": "linear"
       }
     ],
-    "tags": ["damage", "on-hit"],
+    "tags": [
+      "damage",
+      "on-hit"
+    ],
     "corruptedBy": "plasma-shrimp",
     "icon": "/icons/atg-missile-mk-1.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/AtG_Missile_Mk._1",
-    "verified": true
+    "verified": true,
+    "confidence": "langfile"
   },
   {
     "id": "will-o-the-wisp",
@@ -800,11 +943,16 @@
         "type": "linear"
       }
     ],
-    "tags": ["damage", "on-kill", "aoe"],
+    "tags": [
+      "damage",
+      "on-kill",
+      "aoe"
+    ],
     "corruptedBy": "voidsent-flame",
     "icon": "/icons/will-o-the-wisp.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Will-o%27-the-wisp",
-    "verified": true
+    "verified": true,
+    "confidence": "langfile"
   },
   {
     "id": "hopoo-feather",
@@ -821,10 +969,14 @@
         "type": "linear"
       }
     ],
-    "tags": ["utility", "mobility"],
+    "tags": [
+      "utility",
+      "mobility"
+    ],
     "icon": "/icons/hopoo-feather.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Hopoo_Feather",
-    "verified": true
+    "verified": true,
+    "confidence": "code"
   },
   {
     "id": "ukulele",
@@ -847,11 +999,16 @@
         "type": "linear"
       }
     ],
-    "tags": ["damage", "on-hit", "aoe"],
+    "tags": [
+      "damage",
+      "on-hit",
+      "aoe"
+    ],
     "corruptedBy": "polylute",
     "icon": "/icons/ukulele.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Ukulele",
-    "verified": true
+    "verified": true,
+    "confidence": "langfile"
   },
   {
     "id": "leeching-seed",
@@ -868,10 +1025,14 @@
         "type": "linear"
       }
     ],
-    "tags": ["healing", "on-hit"],
+    "tags": [
+      "healing",
+      "on-hit"
+    ],
     "icon": "/icons/leeching-seed.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Leeching_Seed",
-    "verified": true
+    "verified": true,
+    "confidence": "langfile"
   },
   {
     "id": "predatory-instincts",
@@ -888,11 +1049,16 @@
         "type": "linear"
       }
     ],
-    "tags": ["damage", "attack-speed", "critical-strike"],
+    "tags": [
+      "damage",
+      "attack-speed",
+      "critical-strike"
+    ],
     "unlock": "Rapidfire",
     "icon": "/icons/predatory-instincts.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Predatory_Instincts",
-    "verified": true
+    "verified": true,
+    "confidence": "code"
   },
   {
     "id": "red-whip",
@@ -909,10 +1075,14 @@
         "type": "linear"
       }
     ],
-    "tags": ["utility", "movement-speed"],
+    "tags": [
+      "utility",
+      "movement-speed"
+    ],
     "icon": "/icons/red-whip.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Red_Whip",
-    "verified": true
+    "verified": true,
+    "confidence": "langfile"
   },
   {
     "id": "old-war-stealthkit",
@@ -930,10 +1100,14 @@
         "formula": "cooldown multiplied by 0.5 per stack (30s, 15s, 7.5s, ...)"
       }
     ],
-    "tags": ["utility", "survivability"],
+    "tags": [
+      "utility",
+      "survivability"
+    ],
     "icon": "/icons/old-war-stealthkit.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Old_War_Stealthkit",
-    "verified": true
+    "verified": true,
+    "confidence": "langfile"
   },
   {
     "id": "harvesters-scythe",
@@ -950,11 +1124,16 @@
         "type": "linear"
       }
     ],
-    "tags": ["healing", "critical-strike", "on-hit"],
+    "tags": [
+      "healing",
+      "critical-strike",
+      "on-hit"
+    ],
     "unlock": "Prismatically Aligned",
     "icon": "/icons/harvesters-scythe.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Harvester%27s_Scythe",
-    "verified": true
+    "verified": true,
+    "confidence": "code"
   },
   {
     "id": "fuel-cell",
@@ -978,12 +1157,16 @@
         "formula": "cooldown multiplied by 0.85 per stack (multiplicative, so reduction never reaches 100%)"
       }
     ],
-    "tags": ["utility", "equipment"],
+    "tags": [
+      "utility",
+      "equipment"
+    ],
     "unlock": "Experimenting",
     "corruptedBy": "lysate-cell",
     "icon": "/icons/fuel-cell.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Fuel_Cell",
-    "verified": true
+    "verified": true,
+    "confidence": "langfile"
   },
   {
     "id": "infusion",
@@ -1006,11 +1189,16 @@
         "type": "linear"
       }
     ],
-    "tags": ["survivability", "on-kill", "health"],
+    "tags": [
+      "survivability",
+      "on-kill",
+      "health"
+    ],
     "unlock": "Slaughter",
     "icon": "/icons/infusion.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Infusion",
-    "verified": true
+    "verified": true,
+    "confidence": "langfile"
   },
   {
     "id": "bandolier",
@@ -1028,10 +1216,14 @@
         "formula": "chance = 1 - 1/(1 + n)^0.33 (n = stacks); ~18% at 1 stack, diminishing per stack"
       }
     ],
-    "tags": ["utility", "on-kill"],
+    "tags": [
+      "utility",
+      "on-kill"
+    ],
     "icon": "/icons/bandolier.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Bandolier",
-    "verified": true
+    "verified": true,
+    "confidence": "langfile"
   },
   {
     "id": "berzerkers-pauldron",
@@ -1048,11 +1240,17 @@
         "type": "linear"
       }
     ],
-    "tags": ["damage", "attack-speed", "movement-speed", "on-kill"],
+    "tags": [
+      "damage",
+      "attack-speed",
+      "movement-speed",
+      "on-kill"
+    ],
     "unlock": "Glorious Battle",
     "icon": "/icons/berzerkers-pauldron.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Berzerker%27s_Pauldron",
-    "verified": true
+    "verified": true,
+    "confidence": "langfile"
   },
   {
     "id": "rose-buckler",
@@ -1069,10 +1267,14 @@
         "type": "linear"
       }
     ],
-    "tags": ["survivability", "armor"],
+    "tags": [
+      "survivability",
+      "armor"
+    ],
     "icon": "/icons/rose-buckler.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Rose_Buckler",
-    "verified": true
+    "verified": true,
+    "confidence": "langfile"
   },
   {
     "id": "runalds-band",
@@ -1095,12 +1297,17 @@
         "type": "linear"
       }
     ],
-    "tags": ["damage", "on-hit", "crowd-control"],
+    "tags": [
+      "damage",
+      "on-hit",
+      "crowd-control"
+    ],
     "unlock": "Death Do Us Part",
     "corruptedBy": "singularity-band",
     "icon": "/icons/runalds-band.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Runald%27s_Band",
-    "verified": true
+    "verified": true,
+    "confidence": "langfile"
   },
   {
     "id": "kjaros-band",
@@ -1117,12 +1324,16 @@
         "type": "linear"
       }
     ],
-    "tags": ["damage", "on-hit"],
+    "tags": [
+      "damage",
+      "on-hit"
+    ],
     "unlock": "Death Do Us Part",
     "corruptedBy": "singularity-band",
     "icon": "/icons/kjaros-band.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Kjaro%27s_Band",
-    "verified": true
+    "verified": true,
+    "confidence": "langfile"
   },
   {
     "id": "chronobauble",
@@ -1139,11 +1350,16 @@
         "type": "linear"
       }
     ],
-    "tags": ["utility", "on-hit", "crowd-control"],
+    "tags": [
+      "utility",
+      "on-hit",
+      "crowd-control"
+    ],
     "corruptedBy": "tentabauble",
     "icon": "/icons/chronobauble.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Chronobauble",
-    "verified": true
+    "verified": true,
+    "confidence": "langfile"
   },
   {
     "id": "wax-quail",
@@ -1160,11 +1376,15 @@
         "type": "linear"
       }
     ],
-    "tags": ["utility", "mobility"],
+    "tags": [
+      "utility",
+      "mobility"
+    ],
     "unlock": "Going Fast Recommended",
     "icon": "/icons/wax-quail.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Wax_Quail",
-    "verified": true
+    "verified": true,
+    "confidence": "langfile"
   },
   {
     "id": "old-guillotine",
@@ -1182,11 +1402,16 @@
         "formula": "execute threshold = 1 − 100/(100 + 13n): ~11.5% at 1 stack, ~20.6% at 2, ~28% at 3 — approaches but never reaches 100% (13% is the amplification input, not the 1-stack threshold)"
       }
     ],
-    "tags": ["damage", "execute", "on-hit"],
+    "tags": [
+      "damage",
+      "execute",
+      "on-hit"
+    ],
     "unlock": "Cut Down",
     "icon": "/icons/old-guillotine.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Old_Guillotine",
-    "verified": true
+    "verified": true,
+    "confidence": "code"
   },
   {
     "id": "war-horn",
@@ -1203,11 +1428,16 @@
         "type": "linear"
       }
     ],
-    "tags": ["damage", "attack-speed", "equipment"],
+    "tags": [
+      "damage",
+      "attack-speed",
+      "equipment"
+    ],
     "unlock": "Warmonger",
     "icon": "/icons/war-horn.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/War_Horn",
-    "verified": true
+    "verified": true,
+    "confidence": "langfile"
   },
   {
     "id": "lepton-daisy",
@@ -1224,10 +1454,14 @@
         "type": "linear"
       }
     ],
-    "tags": ["healing", "utility"],
+    "tags": [
+      "healing",
+      "utility"
+    ],
     "icon": "/icons/lepton-daisy.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Lepton_Daisy",
-    "verified": true
+    "verified": true,
+    "confidence": "langfile"
   },
   {
     "id": "razorwire",
@@ -1250,10 +1484,14 @@
         "type": "linear"
       }
     ],
-    "tags": ["damage", "aoe"],
+    "tags": [
+      "damage",
+      "aoe"
+    ],
     "icon": "/icons/razorwire.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Razorwire",
-    "verified": true
+    "verified": true,
+    "confidence": "langfile"
   },
   {
     "id": "ghors-tome",
@@ -1270,10 +1508,15 @@
         "type": "linear"
       }
     ],
-    "tags": ["utility", "gold", "on-kill"],
+    "tags": [
+      "utility",
+      "gold",
+      "on-kill"
+    ],
     "icon": "/icons/ghors-tome.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Ghor%27s_Tome",
-    "verified": true
+    "verified": true,
+    "confidence": "langfile"
   },
   {
     "id": "squid-polyp",
@@ -1290,10 +1533,14 @@
         "type": "linear"
       }
     ],
-    "tags": ["damage", "utility"],
+    "tags": [
+      "damage",
+      "utility"
+    ],
     "icon": "/icons/squid-polyp.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Squid_Polyp",
-    "verified": true
+    "verified": true,
+    "confidence": "langfile"
   },
   {
     "id": "death-mark",
@@ -1310,10 +1557,14 @@
         "type": "linear"
       }
     ],
-    "tags": ["damage", "on-hit"],
+    "tags": [
+      "damage",
+      "on-hit"
+    ],
     "icon": "/icons/death-mark.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Death_Mark",
-    "verified": true
+    "verified": true,
+    "confidence": "langfile"
   },
   {
     "id": "shuriken",
@@ -1336,10 +1587,14 @@
         "type": "linear"
       }
     ],
-    "tags": ["damage", "on-hit"],
+    "tags": [
+      "damage",
+      "on-hit"
+    ],
     "icon": "/icons/shuriken.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Shuriken",
-    "verified": true
+    "verified": true,
+    "confidence": "langfile"
   },
   {
     "id": "shipping-request-form",
@@ -1357,10 +1612,13 @@
         "formula": "each stack increases the rarity chances of the 2 items delivered each stage"
       }
     ],
-    "tags": ["utility"],
+    "tags": [
+      "utility"
+    ],
     "icon": "/icons/shipping-request-form.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Shipping_Request_Form",
-    "verified": true
+    "verified": true,
+    "confidence": "langfile"
   },
   {
     "id": "unstable-transmitter",
@@ -1370,10 +1628,14 @@
     "pickupText": "Gain a temporary barrier and a dimensional aura on low health.",
     "description": "Falling below 25% health gives you 60% of your maximum health as a temporary barrier and a dimensional aura for 8s that bleeds and teleports away enemies. Enemies killed by the aura extend the duration by 1s. Regenerates at the start of each stage.",
     "stacking": [],
-    "tags": ["survivability", "utility"],
+    "tags": [
+      "survivability",
+      "utility"
+    ],
     "icon": "/icons/unstable-transmitter.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Unstable_Transmitter",
-    "verified": true
+    "verified": true,
+    "confidence": "code"
   },
   {
     "id": "item-scrap-green",
@@ -1384,10 +1646,14 @@
     "pickupText": "Does nothing. Prioritized when used with 3D Printers.",
     "description": "An Uncommon-rarity scrap with no effect. Consumed first by 3D Printers and Cauldrons, letting you preserve real items.",
     "stacking": [],
-    "tags": ["utility", "scrap"],
+    "tags": [
+      "utility",
+      "scrap"
+    ],
     "icon": "/icons/item-scrap-green.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Item_Scrap",
-    "verified": true
+    "verified": true,
+    "confidence": "langfile"
   },
   {
     "id": "sale-star",
@@ -1404,10 +1670,13 @@
         "type": "linear"
       }
     ],
-    "tags": ["utility"],
+    "tags": [
+      "utility"
+    ],
     "icon": "/icons/sale-star.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Sale_Star",
-    "verified": true
+    "verified": true,
+    "confidence": "langfile"
   },
   {
     "id": "hunters-harpoon",
@@ -1424,10 +1693,15 @@
         "type": "linear"
       }
     ],
-    "tags": ["utility", "movement-speed", "on-kill"],
+    "tags": [
+      "utility",
+      "movement-speed",
+      "on-kill"
+    ],
     "icon": "/icons/hunters-harpoon.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Hunter%27s_Harpoon",
-    "verified": true
+    "verified": true,
+    "confidence": "langfile"
   },
   {
     "id": "ignition-tank",
@@ -1444,10 +1718,13 @@
         "type": "linear"
       }
     ],
-    "tags": ["damage"],
+    "tags": [
+      "damage"
+    ],
     "icon": "/icons/ignition-tank.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Ignition_Tank",
-    "verified": true
+    "verified": true,
+    "confidence": "langfile"
   },
   {
     "id": "regenerating-scrap",
@@ -1458,10 +1735,14 @@
     "pickupText": "Prioritized when used with Uncommon 3D Printers. Usable once per stage.",
     "description": "Does nothing. Prioritized when used with Uncommon 3D Printers. At the start of each stage, it regenerates.",
     "stacking": [],
-    "tags": ["utility", "scrap"],
+    "tags": [
+      "utility",
+      "scrap"
+    ],
     "icon": "/icons/regenerating-scrap.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Regenerating_Scrap",
-    "verified": true
+    "verified": true,
+    "confidence": "langfile"
   },
   {
     "id": "breaching-fin",
@@ -1478,10 +1759,15 @@
         "type": "linear"
       }
     ],
-    "tags": ["damage", "crowd-control", "on-hit"],
+    "tags": [
+      "damage",
+      "crowd-control",
+      "on-hit"
+    ],
     "icon": "/icons/breaching-fin.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Breaching_Fin",
-    "verified": true
+    "verified": true,
+    "confidence": "langfile"
   },
   {
     "id": "chance-doll",
@@ -1498,10 +1784,13 @@
         "type": "linear"
       }
     ],
-    "tags": ["utility"],
+    "tags": [
+      "utility"
+    ],
     "icon": "/icons/chance-doll.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Chance_Doll",
-    "verified": true
+    "verified": true,
+    "confidence": "langfile"
   },
   {
     "id": "luminous-shot",
@@ -1524,10 +1813,14 @@
         "type": "linear"
       }
     ],
-    "tags": ["damage", "on-hit"],
+    "tags": [
+      "damage",
+      "on-hit"
+    ],
     "icon": "/icons/luminous-shot.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Luminous_Shot",
-    "verified": true
+    "verified": true,
+    "confidence": "langfile"
   },
   {
     "id": "noxious-thorn",
@@ -1550,10 +1843,15 @@
         "type": "linear"
       }
     ],
-    "tags": ["damage", "on-kill", "bleed"],
+    "tags": [
+      "damage",
+      "on-kill",
+      "bleed"
+    ],
     "icon": "/icons/noxious-thorn.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Noxious_Thorn",
-    "verified": true
+    "verified": true,
+    "confidence": "langfile"
   },
   {
     "id": "prayer-beads",
@@ -1570,10 +1868,13 @@
         "type": "linear"
       }
     ],
-    "tags": ["utility"],
+    "tags": [
+      "utility"
+    ],
     "icon": "/icons/prayer-beads.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Prayer_Beads",
-    "verified": true
+    "verified": true,
+    "confidence": "langfile"
   },
   {
     "id": "box-of-dynamite",
@@ -1590,10 +1891,15 @@
         "type": "linear"
       }
     ],
-    "tags": ["damage", "drone", "aoe"],
+    "tags": [
+      "damage",
+      "drone",
+      "aoe"
+    ],
     "icon": "/icons/box-of-dynamite.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Box_of_Dynamite",
-    "verified": true
+    "verified": true,
+    "confidence": "langfile"
   },
   {
     "id": "collectors-compulsion",
@@ -1610,10 +1916,13 @@
         "type": "linear"
       }
     ],
-    "tags": ["utility"],
+    "tags": [
+      "utility"
+    ],
     "icon": "/icons/collectors-compulsion.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Collector%27s_Compulsion",
-    "verified": true
+    "verified": true,
+    "confidence": "langfile"
   },
   {
     "id": "faraday-spur",
@@ -1636,10 +1945,16 @@
         "type": "linear"
       }
     ],
-    "tags": ["damage", "movement-speed", "mobility", "aoe"],
+    "tags": [
+      "damage",
+      "movement-speed",
+      "mobility",
+      "aoe"
+    ],
     "icon": "/icons/faraday-spur.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Faraday_Spur",
-    "verified": true
+    "verified": true,
+    "confidence": "langfile"
   },
   {
     "id": "kinetic-dampener",
@@ -1662,10 +1977,15 @@
         "type": "linear"
       }
     ],
-    "tags": ["survivability", "armor", "shield"],
+    "tags": [
+      "survivability",
+      "armor",
+      "shield"
+    ],
     "icon": "/icons/kinetic-dampener.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Kinetic_Dampener",
-    "verified": true
+    "verified": true,
+    "confidence": "langfile"
   },
   {
     "id": "brilliant-behemoth",
@@ -1682,10 +2002,14 @@
         "type": "linear"
       }
     ],
-    "tags": ["damage", "aoe"],
+    "tags": [
+      "damage",
+      "aoe"
+    ],
     "icon": "/icons/brilliant-behemoth.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Brilliant_Behemoth",
-    "verified": true
+    "verified": true,
+    "confidence": "langfile"
   },
   {
     "id": "ceremonial-dagger",
@@ -1702,10 +2026,14 @@
         "type": "linear"
       }
     ],
-    "tags": ["damage", "on-kill"],
+    "tags": [
+      "damage",
+      "on-kill"
+    ],
     "icon": "/icons/ceremonial-dagger.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Ceremonial_Dagger",
-    "verified": true
+    "verified": true,
+    "confidence": "langfile"
   },
   {
     "id": "alien-head",
@@ -1723,10 +2051,13 @@
         "formula": "cooldown multiplied by 0.75 per stack (multiplicative, so reduction never reaches 100%)"
       }
     ],
-    "tags": ["utility"],
+    "tags": [
+      "utility"
+    ],
     "icon": "/icons/alien-head.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Alien_Head",
-    "verified": true
+    "verified": true,
+    "confidence": "langfile"
   },
   {
     "id": "57-leaf-clover",
@@ -1744,12 +2075,15 @@
         "formula": "each random proc is rolled +1 extra time per stack, keeping the favorable result"
       }
     ],
-    "tags": ["utility"],
+    "tags": [
+      "utility"
+    ],
     "unlock": "The Long Road",
     "corruptedBy": "benthic-bloom",
     "icon": "/icons/57-leaf-clover.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/57_Leaf_Clover",
-    "verified": true
+    "verified": true,
+    "confidence": "langfile"
   },
   {
     "id": "dios-best-friend",
@@ -1766,12 +2100,15 @@
         "type": "linear"
       }
     ],
-    "tags": ["survivability"],
+    "tags": [
+      "survivability"
+    ],
     "unlock": "The Lone Survivor",
     "corruptedBy": "pluripotent-larva",
     "icon": "/icons/dios-best-friend.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Dio%27s_Best_Friend",
-    "verified": true
+    "verified": true,
+    "confidence": "langfile"
   },
   {
     "id": "sentient-meat-hook",
@@ -1795,11 +2132,15 @@
         "type": "linear"
       }
     ],
-    "tags": ["damage", "on-hit"],
+    "tags": [
+      "damage",
+      "on-hit"
+    ],
     "unlock": "Deja Vu?",
     "icon": "/icons/sentient-meat-hook.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Sentient_Meat_Hook",
-    "verified": true
+    "verified": true,
+    "confidence": "langfile"
   },
   {
     "id": "happiest-mask",
@@ -1816,10 +2157,14 @@
         "type": "linear"
       }
     ],
-    "tags": ["damage", "on-kill"],
+    "tags": [
+      "damage",
+      "on-kill"
+    ],
     "icon": "/icons/happiest-mask.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Happiest_Mask",
-    "verified": true
+    "verified": true,
+    "confidence": "langfile"
   },
   {
     "id": "frost-relic",
@@ -1836,10 +2181,16 @@
         "type": "linear"
       }
     ],
-    "tags": ["damage", "on-kill", "aoe", "crowd-control"],
+    "tags": [
+      "damage",
+      "on-kill",
+      "aoe",
+      "crowd-control"
+    ],
     "icon": "/icons/frost-relic.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Frost_Relic",
-    "verified": true
+    "verified": true,
+    "confidence": "langfile"
   },
   {
     "id": "h3ad-5t-v2",
@@ -1857,10 +2208,15 @@
         "formula": "recharge scales reciprocally with stacks (~10s, then halves toward 5s, 3.3s, …)"
       }
     ],
-    "tags": ["damage", "mobility", "aoe"],
+    "tags": [
+      "damage",
+      "mobility",
+      "aoe"
+    ],
     "icon": "/icons/h3ad-5t-v2.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/H3AD-5T_v2",
-    "verified": true
+    "verified": true,
+    "confidence": "langfile"
   },
   {
     "id": "nkuhanas-opinion",
@@ -1877,11 +2233,15 @@
         "type": "linear"
       }
     ],
-    "tags": ["damage", "healing"],
+    "tags": [
+      "damage",
+      "healing"
+    ],
     "unlock": "Her Concepts",
     "icon": "/icons/nkuhanas-opinion.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/N%27kuhana%27s_Opinion",
-    "verified": true
+    "verified": true,
+    "confidence": "langfile"
   },
   {
     "id": "unstable-tesla-coil",
@@ -1898,11 +2258,15 @@
         "type": "linear"
       }
     ],
-    "tags": ["damage", "aoe"],
+    "tags": [
+      "damage",
+      "aoe"
+    ],
     "unlock": "Macho",
     "icon": "/icons/unstable-tesla-coil.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Unstable_Tesla_Coil",
-    "verified": true
+    "verified": true,
+    "confidence": "langfile"
   },
   {
     "id": "soulbound-catalyst",
@@ -1919,11 +2283,16 @@
         "type": "linear"
       }
     ],
-    "tags": ["utility", "equipment", "on-kill"],
+    "tags": [
+      "utility",
+      "equipment",
+      "on-kill"
+    ],
     "unlock": "Newtist",
     "icon": "/icons/soulbound-catalyst.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Soulbound_Catalyst",
-    "verified": true
+    "verified": true,
+    "confidence": "langfile"
   },
   {
     "id": "hardlight-afterburner",
@@ -1940,10 +2309,13 @@
         "type": "linear"
       }
     ],
-    "tags": ["utility"],
+    "tags": [
+      "utility"
+    ],
     "icon": "/icons/hardlight-afterburner.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Hardlight_Afterburner",
-    "verified": true
+    "verified": true,
+    "confidence": "langfile"
   },
   {
     "id": "wake-of-vultures",
@@ -1960,10 +2332,14 @@
         "type": "linear"
       }
     ],
-    "tags": ["utility", "on-kill"],
+    "tags": [
+      "utility",
+      "on-kill"
+    ],
     "icon": "/icons/wake-of-vultures.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Wake_of_Vultures",
-    "verified": true
+    "verified": true,
+    "confidence": "langfile"
   },
   {
     "id": "brainstalks",
@@ -1980,11 +2356,15 @@
         "type": "linear"
       }
     ],
-    "tags": ["utility", "on-kill"],
+    "tags": [
+      "utility",
+      "on-kill"
+    ],
     "unlock": "Deicide",
     "icon": "/icons/brainstalks.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Brainstalks",
-    "verified": true
+    "verified": true,
+    "confidence": "langfile"
   },
   {
     "id": "rejuvenation-rack",
@@ -2001,11 +2381,14 @@
         "type": "linear"
       }
     ],
-    "tags": ["healing"],
+    "tags": [
+      "healing"
+    ],
     "unlock": "Naturopath",
     "icon": "/icons/rejuvenation-rack.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Rejuvenation_Rack",
-    "verified": true
+    "verified": true,
+    "confidence": "langfile"
   },
   {
     "id": "aegis",
@@ -2022,10 +2405,14 @@
         "type": "linear"
       }
     ],
-    "tags": ["survivability", "healing"],
+    "tags": [
+      "survivability",
+      "healing"
+    ],
     "icon": "/icons/aegis.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Aegis",
-    "verified": true
+    "verified": true,
+    "confidence": "langfile"
   },
   {
     "id": "shattering-justice",
@@ -2042,10 +2429,14 @@
         "type": "linear"
       }
     ],
-    "tags": ["damage", "on-hit"],
+    "tags": [
+      "damage",
+      "on-hit"
+    ],
     "icon": "/icons/shattering-justice.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Shattering_Justice",
-    "verified": true
+    "verified": true,
+    "confidence": "langfile"
   },
   {
     "id": "resonance-disc",
@@ -2068,10 +2459,15 @@
         "type": "linear"
       }
     ],
-    "tags": ["damage", "on-kill", "aoe"],
+    "tags": [
+      "damage",
+      "on-kill",
+      "aoe"
+    ],
     "icon": "/icons/resonance-disc.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Resonance_Disc",
-    "verified": true
+    "verified": true,
+    "confidence": "langfile"
   },
   {
     "id": "defensive-microbots",
@@ -2088,10 +2484,14 @@
         "type": "linear"
       }
     ],
-    "tags": ["survivability", "utility"],
+    "tags": [
+      "survivability",
+      "utility"
+    ],
     "icon": "/icons/defensive-microbots.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Defensive_Microbots",
-    "verified": true
+    "verified": true,
+    "confidence": "langfile"
   },
   {
     "id": "laser-scope",
@@ -2108,10 +2508,14 @@
         "type": "linear"
       }
     ],
-    "tags": ["damage", "critical-strike"],
+    "tags": [
+      "damage",
+      "critical-strike"
+    ],
     "icon": "/icons/laser-scope.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Laser_Scope",
-    "verified": true
+    "verified": true,
+    "confidence": "code"
   },
   {
     "id": "pocket-icbm",
@@ -2128,10 +2532,13 @@
         "type": "linear"
       }
     ],
-    "tags": ["damage"],
+    "tags": [
+      "damage"
+    ],
     "icon": "/icons/pocket-icbm.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Pocket_I.C.B.M.",
-    "verified": true
+    "verified": true,
+    "confidence": "langfile"
   },
   {
     "id": "spare-drone-parts",
@@ -2155,10 +2562,14 @@
         "formula": "drone cooldown multiplied by 0.75 per stack (multiplicative)"
       }
     ],
-    "tags": ["damage", "drone"],
+    "tags": [
+      "damage",
+      "drone"
+    ],
     "icon": "/icons/spare-drone-parts.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Spare_Drone_Parts",
-    "verified": true
+    "verified": true,
+    "confidence": "langfile"
   },
   {
     "id": "interstellar-desk-plant",
@@ -2175,10 +2586,14 @@
         "type": "linear"
       }
     ],
-    "tags": ["healing", "on-kill"],
+    "tags": [
+      "healing",
+      "on-kill"
+    ],
     "icon": "/icons/interstellar-desk-plant.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Interstellar_Desk_Plant",
-    "verified": true
+    "verified": true,
+    "confidence": "langfile"
   },
   {
     "id": "symbiotic-scorpion",
@@ -2195,10 +2610,14 @@
         "type": "linear"
       }
     ],
-    "tags": ["damage", "on-hit"],
+    "tags": [
+      "damage",
+      "on-hit"
+    ],
     "icon": "/icons/symbiotic-scorpion.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Symbiotic_Scorpion",
-    "verified": true
+    "verified": true,
+    "confidence": "langfile"
   },
   {
     "id": "bens-raincoat",
@@ -2215,10 +2634,13 @@
         "type": "linear"
       }
     ],
-    "tags": ["survivability"],
+    "tags": [
+      "survivability"
+    ],
     "icon": "/icons/bens-raincoat.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Ben%27s_Raincoat",
-    "verified": true
+    "verified": true,
+    "confidence": "langfile"
   },
   {
     "id": "bottled-chaos",
@@ -2235,10 +2657,14 @@
         "type": "linear"
       }
     ],
-    "tags": ["utility", "equipment"],
+    "tags": [
+      "utility",
+      "equipment"
+    ],
     "icon": "/icons/bottled-chaos.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Bottled_Chaos",
-    "verified": true
+    "verified": true,
+    "confidence": "langfile"
   },
   {
     "id": "electric-boomerang",
@@ -2261,10 +2687,15 @@
         "type": "linear"
       }
     ],
-    "tags": ["damage", "on-hit", "crowd-control"],
+    "tags": [
+      "damage",
+      "on-hit",
+      "crowd-control"
+    ],
     "icon": "/icons/electric-boomerang.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Electric_Boomerang",
-    "verified": true
+    "verified": true,
+    "confidence": "langfile"
   },
   {
     "id": "growth-nectar",
@@ -2281,10 +2712,13 @@
         "type": "linear"
       }
     ],
-    "tags": ["utility"],
+    "tags": [
+      "utility"
+    ],
     "icon": "/icons/growth-nectar.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Growth_Nectar",
-    "verified": true
+    "verified": true,
+    "confidence": "langfile"
   },
   {
     "id": "runic-lens",
@@ -2307,10 +2741,15 @@
         "type": "linear"
       }
     ],
-    "tags": ["damage", "on-hit", "aoe"],
+    "tags": [
+      "damage",
+      "on-hit",
+      "aoe"
+    ],
     "icon": "/icons/runic-lens.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Runic_Lens",
-    "verified": true
+    "verified": true,
+    "confidence": "langfile"
   },
   {
     "id": "sonorous-whispers",
@@ -2327,10 +2766,14 @@
         "type": "linear"
       }
     ],
-    "tags": ["utility", "on-kill"],
+    "tags": [
+      "utility",
+      "on-kill"
+    ],
     "icon": "/icons/sonorous-whispers.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Sonorous_Whispers",
-    "verified": true
+    "verified": true,
+    "confidence": "langfile"
   },
   {
     "id": "war-bonds",
@@ -2353,10 +2796,14 @@
         "type": "linear"
       }
     ],
-    "tags": ["damage", "gold"],
+    "tags": [
+      "damage",
+      "gold"
+    ],
     "icon": "/icons/war-bonds.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/War_Bonds",
-    "verified": true
+    "verified": true,
+    "confidence": "langfile"
   },
   {
     "id": "networked-suffering",
@@ -2373,10 +2820,14 @@
         "type": "linear"
       }
     ],
-    "tags": ["damage", "on-hit"],
+    "tags": [
+      "damage",
+      "on-hit"
+    ],
     "icon": "/icons/networked-suffering.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Networked_Suffering",
-    "verified": true
+    "verified": true,
+    "confidence": "langfile"
   },
   {
     "id": "orphaned-core",
@@ -2393,10 +2844,14 @@
         "type": "linear"
       }
     ],
-    "tags": ["damage", "drone"],
+    "tags": [
+      "damage",
+      "drone"
+    ],
     "icon": "/icons/orphaned-core.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Orphaned_Core",
-    "verified": true
+    "verified": true,
+    "confidence": "langfile"
   },
   {
     "id": "substandard-duplicator",
@@ -2413,10 +2868,13 @@
         "type": "linear"
       }
     ],
-    "tags": ["utility"],
+    "tags": [
+      "utility"
+    ],
     "icon": "/icons/substandard-duplicator.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Substandard_Duplicator",
-    "verified": true
+    "verified": true,
+    "confidence": "langfile"
   },
   {
     "id": "item-scrap-red",
@@ -2427,10 +2885,14 @@
     "pickupText": "Does nothing. Prioritized when used with 3D Printers.",
     "description": "A Legendary-rarity scrap with no effect. Consumed first by 3D Printers and Cauldrons, letting you preserve real items.",
     "stacking": [],
-    "tags": ["utility", "scrap"],
+    "tags": [
+      "utility",
+      "scrap"
+    ],
     "icon": "/icons/item-scrap-red.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Item_Scrap",
-    "verified": true
+    "verified": true,
+    "confidence": "langfile"
   },
   {
     "id": "titanic-knurl",
@@ -2453,10 +2915,15 @@
         "type": "linear"
       }
     ],
-    "tags": ["survivability", "healing", "health"],
+    "tags": [
+      "survivability",
+      "healing",
+      "health"
+    ],
     "icon": "/icons/titanic-knurl.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Titanic_Knurl",
-    "verified": true
+    "verified": true,
+    "confidence": "code"
   },
   {
     "id": "queens-gland",
@@ -2473,10 +2940,14 @@
         "type": "linear"
       }
     ],
-    "tags": ["damage", "utility"],
+    "tags": [
+      "damage",
+      "utility"
+    ],
     "icon": "/icons/queens-gland.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Queen%27s_Gland",
-    "verified": true
+    "verified": true,
+    "confidence": "langfile"
   },
   {
     "id": "shatterspleen",
@@ -2499,10 +2970,16 @@
         "type": "linear"
       }
     ],
-    "tags": ["damage", "critical-strike", "bleed", "aoe"],
+    "tags": [
+      "damage",
+      "critical-strike",
+      "bleed",
+      "aoe"
+    ],
     "icon": "/icons/shatterspleen.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Shatterspleen",
-    "verified": true
+    "verified": true,
+    "confidence": "langfile"
   },
   {
     "id": "halcyon-seed",
@@ -2525,10 +3002,14 @@
         "type": "linear"
       }
     ],
-    "tags": ["damage", "utility"],
+    "tags": [
+      "damage",
+      "utility"
+    ],
     "icon": "/icons/halcyon-seed.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Halcyon_Seed",
-    "verified": true
+    "verified": true,
+    "confidence": "langfile"
   },
   {
     "id": "little-disciple",
@@ -2545,10 +3026,14 @@
         "type": "linear"
       }
     ],
-    "tags": ["damage", "mobility"],
+    "tags": [
+      "damage",
+      "mobility"
+    ],
     "icon": "/icons/little-disciple.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Little_Disciple",
-    "verified": true
+    "verified": true,
+    "confidence": "langfile"
   },
   {
     "id": "genesis-loop",
@@ -2566,10 +3051,15 @@
         "formula": "recharge = 30 / (1 + n) seconds — 15s at 1 stack, 10s at 2, 7.5s at 3, …"
       }
     ],
-    "tags": ["damage", "survivability", "aoe"],
+    "tags": [
+      "damage",
+      "survivability",
+      "aoe"
+    ],
     "icon": "/icons/genesis-loop.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Genesis_Loop",
-    "verified": true
+    "verified": true,
+    "confidence": "code"
   },
   {
     "id": "pearl",
@@ -2586,10 +3076,14 @@
         "type": "linear"
       }
     ],
-    "tags": ["survivability", "health"],
+    "tags": [
+      "survivability",
+      "health"
+    ],
     "icon": "/icons/pearl.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Pearl",
-    "verified": true
+    "verified": true,
+    "confidence": "code"
   },
   {
     "id": "irradiant-pearl",
@@ -2606,10 +3100,13 @@
         "type": "linear"
       }
     ],
-    "tags": ["utility"],
+    "tags": [
+      "utility"
+    ],
     "icon": "/icons/irradiant-pearl.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Irradiant_Pearl",
-    "verified": true
+    "verified": true,
+    "confidence": "code"
   },
   {
     "id": "artifact-key",
@@ -2620,10 +3117,13 @@
     "pickupText": "A stone shard with immense power.",
     "description": "Used during Artifact Trials in Bulwark's Ambry to damage the Artifact Reliquary. All Artifact Keys are consumed together when used.",
     "stacking": [],
-    "tags": ["utility"],
+    "tags": [
+      "utility"
+    ],
     "icon": "/icons/artifact-key.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Artifact_Key",
-    "verified": true
+    "verified": true,
+    "confidence": "langfile"
   },
   {
     "id": "molten-perforator",
@@ -2640,10 +3140,15 @@
         "type": "linear"
       }
     ],
-    "tags": ["damage", "on-hit", "aoe"],
+    "tags": [
+      "damage",
+      "on-hit",
+      "aoe"
+    ],
     "icon": "/icons/molten-perforator.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Molten_Perforator",
-    "verified": true
+    "verified": true,
+    "confidence": "langfile"
   },
   {
     "id": "charged-perforator",
@@ -2660,10 +3165,14 @@
         "type": "linear"
       }
     ],
-    "tags": ["damage", "on-hit"],
+    "tags": [
+      "damage",
+      "on-hit"
+    ],
     "icon": "/icons/charged-perforator.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Charged_Perforator",
-    "verified": true
+    "verified": true,
+    "confidence": "langfile"
   },
   {
     "id": "mired-urn",
@@ -2680,10 +3189,15 @@
         "type": "linear"
       }
     ],
-    "tags": ["damage", "healing", "on-hit"],
+    "tags": [
+      "damage",
+      "healing",
+      "on-hit"
+    ],
     "icon": "/icons/mired-urn.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Mired_Urn",
-    "verified": true
+    "verified": true,
+    "confidence": "langfile"
   },
   {
     "id": "empathy-cores",
@@ -2700,10 +3214,14 @@
         "type": "linear"
       }
     ],
-    "tags": ["damage", "utility"],
+    "tags": [
+      "damage",
+      "utility"
+    ],
     "icon": "/icons/empathy-cores.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Empathy_Cores",
-    "verified": true
+    "verified": true,
+    "confidence": "langfile"
   },
   {
     "id": "planula",
@@ -2720,10 +3238,14 @@
         "type": "linear"
       }
     ],
-    "tags": ["healing", "survivability"],
+    "tags": [
+      "healing",
+      "survivability"
+    ],
     "icon": "/icons/planula.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Planula",
-    "verified": true
+    "verified": true,
+    "confidence": "langfile"
   },
   {
     "id": "defense-nucleus",
@@ -2740,10 +3262,15 @@
         "type": "linear"
       }
     ],
-    "tags": ["damage", "on-kill", "utility"],
+    "tags": [
+      "damage",
+      "on-kill",
+      "utility"
+    ],
     "icon": "/icons/defense-nucleus.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Defense_Nucleus",
-    "verified": true
+    "verified": true,
+    "confidence": "langfile"
   },
   {
     "id": "functional-coupler",
@@ -2760,10 +3287,14 @@
         "type": "linear"
       }
     ],
-    "tags": ["utility", "equipment"],
+    "tags": [
+      "utility",
+      "equipment"
+    ],
     "icon": "/icons/functional-coupler.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Functional_Coupler",
-    "verified": true
+    "verified": true,
+    "confidence": "langfile"
   },
   {
     "id": "faulty-conductor",
@@ -2781,10 +3312,15 @@
         "formula": "interval multiplied by 0.8 per stack (multiplicative, so it shortens but never hits zero)"
       }
     ],
-    "tags": ["utility", "attack-speed", "movement-speed"],
+    "tags": [
+      "utility",
+      "attack-speed",
+      "movement-speed"
+    ],
     "icon": "/icons/faulty-conductor.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Faulty_Conductor",
-    "verified": true
+    "verified": true,
+    "confidence": "langfile"
   },
   {
     "id": "sentry-key",
@@ -2801,10 +3337,14 @@
         "type": "none"
       }
     ],
-    "tags": ["utility", "movement-speed"],
+    "tags": [
+      "utility",
+      "movement-speed"
+    ],
     "icon": "/icons/sentry-key.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Sentry_Key",
-    "verified": true
+    "verified": true,
+    "confidence": "langfile"
   },
   {
     "id": "prison-matrix",
@@ -2821,10 +3361,14 @@
         "type": "none"
       }
     ],
-    "tags": ["survivability", "armor"],
+    "tags": [
+      "survivability",
+      "armor"
+    ],
     "icon": "/icons/prison-matrix.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Prison_Matrix",
-    "verified": true
+    "verified": true,
+    "confidence": "langfile"
   },
   {
     "id": "encrypted-cerebellum",
@@ -2835,10 +3379,13 @@
     "pickupText": "Contains encrypted remnants of the Collective network. Needs to be decrypted.",
     "description": "A quest item with no direct effect. Decrypt it (via the Wandering CHEF) to create the Exposed Cerebellum used to reach the Neural Sanctum.",
     "stacking": [],
-    "tags": ["utility"],
+    "tags": [
+      "utility"
+    ],
     "icon": "/icons/encrypted-cerebellum.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Encrypted_Cerebellum",
-    "verified": true
+    "verified": true,
+    "confidence": "langfile"
   },
   {
     "id": "exposed-cerebellum",
@@ -2849,10 +3396,13 @@
     "pickupText": "A swarming data nexus representing the Collective network. Can be given to a powerful entity.",
     "description": "A quest item with no effect on the player; given to SPEX in the Computational Exchange.",
     "stacking": [],
-    "tags": ["utility"],
+    "tags": [
+      "utility"
+    ],
     "icon": "/icons/exposed-cerebellum.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Exposed_Cerebellum",
-    "verified": true
+    "verified": true,
+    "confidence": "langfile"
   },
   {
     "id": "item-scrap-yellow",
@@ -2863,10 +3413,14 @@
     "pickupText": "Does nothing. Prioritized when used with 3D Printers.",
     "description": "A Boss-rarity scrap with no effect. Consumed first by 3D Printers and Cauldrons, letting you preserve real items.",
     "stacking": [],
-    "tags": ["utility", "scrap"],
+    "tags": [
+      "utility",
+      "scrap"
+    ],
     "icon": "/icons/item-scrap-yellow.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Item_Scrap",
-    "verified": true
+    "verified": true,
+    "confidence": "langfile"
   },
   {
     "id": "shaped-glass",
@@ -2891,10 +3445,13 @@
         "formula": "maximum health multiplied by 0.5 per stack (half, quarter, …)"
       }
     ],
-    "tags": ["damage"],
+    "tags": [
+      "damage"
+    ],
     "icon": "/icons/shaped-glass.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Shaped_Glass",
-    "verified": true
+    "verified": true,
+    "confidence": "code"
   },
   {
     "id": "brittle-crown",
@@ -2911,10 +3468,14 @@
         "type": "linear"
       }
     ],
-    "tags": ["gold", "utility"],
+    "tags": [
+      "gold",
+      "utility"
+    ],
     "icon": "/icons/brittle-crown.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Brittle_Crown",
-    "verified": true
+    "verified": true,
+    "confidence": "langfile"
   },
   {
     "id": "transcendence",
@@ -2931,10 +3492,15 @@
         "type": "linear"
       }
     ],
-    "tags": ["survivability", "shield", "health"],
+    "tags": [
+      "survivability",
+      "shield",
+      "health"
+    ],
     "icon": "/icons/transcendence.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Transcendence",
-    "verified": true
+    "verified": true,
+    "confidence": "code"
   },
   {
     "id": "corpsebloom",
@@ -2958,10 +3524,13 @@
         "formula": "heal-per-second cap divides reciprocally: 10% at 1 stack, ~6.7% at 2, 5% at 3, …"
       }
     ],
-    "tags": ["healing"],
+    "tags": [
+      "healing"
+    ],
     "icon": "/icons/corpsebloom.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Corpsebloom",
-    "verified": true
+    "verified": true,
+    "confidence": "langfile"
   },
   {
     "id": "gesture-of-the-drowned",
@@ -2979,11 +3548,15 @@
         "formula": "cooldown = base x 0.5 x 0.85^(stacks-1) (multiplicative)"
       }
     ],
-    "tags": ["utility", "equipment"],
+    "tags": [
+      "utility",
+      "equipment"
+    ],
     "unlock": "The Demons And The Crabs",
     "icon": "/icons/gesture-of-the-drowned.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Gesture_of_the_Drowned",
-    "verified": true
+    "verified": true,
+    "confidence": "langfile"
   },
   {
     "id": "purity",
@@ -3000,11 +3573,14 @@
         "type": "linear"
       }
     ],
-    "tags": ["utility"],
+    "tags": [
+      "utility"
+    ],
     "unlock": "The Calm",
     "icon": "/icons/purity.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Purity",
-    "verified": true
+    "verified": true,
+    "confidence": "langfile"
   },
   {
     "id": "visions-of-heresy",
@@ -3027,11 +3603,15 @@
         "type": "linear"
       }
     ],
-    "tags": ["damage", "utility"],
+    "tags": [
+      "damage",
+      "utility"
+    ],
     "unlock": "Blockade Breaker",
     "icon": "/icons/visions-of-heresy.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Visions_of_Heresy",
-    "verified": true
+    "verified": true,
+    "confidence": "langfile"
   },
   {
     "id": "strides-of-heresy",
@@ -3054,11 +3634,16 @@
         "type": "linear"
       }
     ],
-    "tags": ["healing", "mobility", "utility"],
+    "tags": [
+      "healing",
+      "mobility",
+      "utility"
+    ],
     "unlock": "Blockade Breaker",
     "icon": "/icons/strides-of-heresy.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Strides_of_Heresy",
-    "verified": true
+    "verified": true,
+    "confidence": "langfile"
   },
   {
     "id": "hooks-of-heresy",
@@ -3081,11 +3666,16 @@
         "type": "linear"
       }
     ],
-    "tags": ["damage", "crowd-control", "utility"],
+    "tags": [
+      "damage",
+      "crowd-control",
+      "utility"
+    ],
     "unlock": "Blockade Breaker",
     "icon": "/icons/hooks-of-heresy.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Hooks_of_Heresy",
-    "verified": true
+    "verified": true,
+    "confidence": "langfile"
   },
   {
     "id": "essence-of-heresy",
@@ -3108,11 +3698,15 @@
         "type": "linear"
       }
     ],
-    "tags": ["damage", "utility"],
+    "tags": [
+      "damage",
+      "utility"
+    ],
     "unlock": "Blockade Breaker",
     "icon": "/icons/essence-of-heresy.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Essence_of_Heresy",
-    "verified": true
+    "verified": true,
+    "confidence": "langfile"
   },
   {
     "id": "beads-of-fealty",
@@ -3122,10 +3716,13 @@
     "pickupText": "Seems to do nothing... but...",
     "description": "Has no direct effect. Obliterating yourself at the Obelisk in A Moment, Fractured instead transports you to A Moment, Whole — a hidden realm containing a Twisted Scavenger.",
     "stacking": [],
-    "tags": ["utility"],
+    "tags": [
+      "utility"
+    ],
     "icon": "/icons/beads-of-fealty.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Beads_of_Fealty",
-    "verified": true
+    "verified": true,
+    "confidence": "langfile"
   },
   {
     "id": "focused-convergence",
@@ -3149,11 +3746,14 @@
         "formula": "zone shrinks reciprocally per stack (50% at 1 stack, then diminishing)"
       }
     ],
-    "tags": ["utility"],
+    "tags": [
+      "utility"
+    ],
     "unlock": "Never Back Down",
     "icon": "/icons/focused-convergence.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Focused_Convergence",
-    "verified": true
+    "verified": true,
+    "confidence": "langfile"
   },
   {
     "id": "defiant-gouge",
@@ -3170,10 +3770,13 @@
         "type": "linear"
       }
     ],
-    "tags": ["utility"],
+    "tags": [
+      "utility"
+    ],
     "icon": "/icons/defiant-gouge.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Defiant_Gouge",
-    "verified": true
+    "verified": true,
+    "confidence": "langfile"
   },
   {
     "id": "mercurial-rachis",
@@ -3191,10 +3794,14 @@
         "formula": "radius increased 50% per stack (multiplicative)"
       }
     ],
-    "tags": ["damage", "utility"],
+    "tags": [
+      "damage",
+      "utility"
+    ],
     "icon": "/icons/mercurial-rachis.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Mercurial_Rachis",
-    "verified": true
+    "verified": true,
+    "confidence": "langfile"
   },
   {
     "id": "stone-flux-pauldron",
@@ -3218,10 +3825,14 @@
         "formula": "speed penalty stacks reciprocally, approaching but never reaching a full stop"
       }
     ],
-    "tags": ["survivability", "health"],
+    "tags": [
+      "survivability",
+      "health"
+    ],
     "icon": "/icons/stone-flux-pauldron.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Stone_Flux_Pauldron",
-    "verified": true
+    "verified": true,
+    "confidence": "langfile"
   },
   {
     "id": "light-flux-pauldron",
@@ -3246,10 +3857,13 @@
         "formula": "attack speed penalty stacks reciprocally, approaching but never reaching zero"
       }
     ],
-    "tags": ["utility"],
+    "tags": [
+      "utility"
+    ],
     "icon": "/icons/light-flux-pauldron.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Light_Flux_Pauldron",
-    "verified": true
+    "verified": true,
+    "confidence": "code"
   },
   {
     "id": "longstanding-solitude",
@@ -3272,10 +3886,14 @@
         "type": "linear"
       }
     ],
-    "tags": ["utility", "gold"],
+    "tags": [
+      "utility",
+      "gold"
+    ],
     "icon": "/icons/longstanding-solitude.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Longstanding_Solitude",
-    "verified": true
+    "verified": true,
+    "confidence": "langfile"
   },
   {
     "id": "egocentrism",
@@ -3299,10 +3917,14 @@
         "type": "linear"
       }
     ],
-    "tags": ["damage", "aoe"],
+    "tags": [
+      "damage",
+      "aoe"
+    ],
     "icon": "/icons/egocentrism.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Egocentrism",
-    "verified": true
+    "verified": true,
+    "confidence": "langfile"
   },
   {
     "id": "neutronium-weight",
@@ -3338,10 +3960,13 @@
         "type": "linear"
       }
     ],
-    "tags": ["utility"],
+    "tags": [
+      "utility"
+    ],
     "icon": "/icons/neutronium-weight.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Neutronium_Weight",
-    "verified": true
+    "verified": true,
+    "confidence": "langfile"
   },
   {
     "id": "eulogy-zero",
@@ -3358,10 +3983,13 @@
         "type": "linear"
       }
     ],
-    "tags": ["utility"],
+    "tags": [
+      "utility"
+    ],
     "icon": "/icons/eulogy-zero.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Eulogy_Zero",
-    "verified": true
+    "verified": true,
+    "confidence": "langfile"
   },
   {
     "id": "needletick",
@@ -3371,13 +3999,24 @@
     "pickupText": "Chance to collapse enemies on hit. Corrupts all Tri-Tip Daggers.",
     "description": "10% (+10% per stack) chance to collapse an enemy for 400% base damage. Corrupts all Tri-Tip Daggers.",
     "stacking": [
-      { "stat": "Chance to collapse on hit (%)", "base": 10, "perStack": 10, "type": "linear" }
+      {
+        "stat": "Chance to collapse on hit (%)",
+        "base": 10,
+        "perStack": 10,
+        "type": "linear"
+      }
     ],
-    "tags": ["damage", "on-hit"],
-    "corrupts": ["tri-tip-dagger"],
+    "tags": [
+      "damage",
+      "on-hit"
+    ],
+    "corrupts": [
+      "tri-tip-dagger"
+    ],
     "icon": "/icons/needletick.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Needletick",
-    "verified": true
+    "verified": true,
+    "confidence": "langfile"
   },
   {
     "id": "lost-seers-lenses",
@@ -3387,13 +4026,25 @@
     "pickupText": "Gain a 0.5% chance to instantly kill a non-boss enemy. Corrupts all Lens-Maker's Glasses.",
     "description": "Your attacks have a 0.5% (+0.5% per stack) chance to instantly kill a non-Boss enemy. Corrupts all Lens-Maker's Glasses.",
     "stacking": [
-      { "stat": "Instant-kill chance (%)", "base": 0.5, "perStack": 0.5, "type": "linear" }
+      {
+        "stat": "Instant-kill chance (%)",
+        "base": 0.5,
+        "perStack": 0.5,
+        "type": "linear"
+      }
     ],
-    "tags": ["damage", "on-hit", "execute"],
-    "corrupts": ["lens-makers-glasses"],
+    "tags": [
+      "damage",
+      "on-hit",
+      "execute"
+    ],
+    "corrupts": [
+      "lens-makers-glasses"
+    ],
     "icon": "/icons/lost-seers-lenses.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Lost_Seer%27s_Lenses",
-    "verified": true
+    "verified": true,
+    "confidence": "langfile"
   },
   {
     "id": "safer-spaces",
@@ -3411,11 +4062,17 @@
         "formula": "recharge = 15 × 0.9^stacks: 13.5s at 1 stack, 12.15s at 2, … (multiplicative, never reaches 0)"
       }
     ],
-    "tags": ["survivability", "block"],
-    "corrupts": ["tougher-times"],
+    "tags": [
+      "survivability",
+      "block"
+    ],
+    "corrupts": [
+      "tougher-times"
+    ],
     "icon": "/icons/safer-spaces.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Safer_Spaces",
-    "verified": true
+    "verified": true,
+    "confidence": "code"
   },
   {
     "id": "weeping-fungus",
@@ -3425,13 +4082,23 @@
     "pickupText": "Heal while sprinting. Corrupts all Bustling Fungi.",
     "description": "Heals for 2% (+2% per stack) of your health every second while sprinting. Corrupts all Bustling Fungi.",
     "stacking": [
-      { "stat": "Heal per second while sprinting (% health)", "base": 2, "perStack": 2, "type": "linear" }
+      {
+        "stat": "Heal per second while sprinting (% health)",
+        "base": 2,
+        "perStack": 2,
+        "type": "linear"
+      }
     ],
-    "tags": ["healing"],
-    "corrupts": ["bustling-fungus"],
+    "tags": [
+      "healing"
+    ],
+    "corrupts": [
+      "bustling-fungus"
+    ],
     "icon": "/icons/weeping-fungus.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Weeping_Fungus",
-    "verified": true
+    "verified": true,
+    "confidence": "langfile"
   },
   {
     "id": "encrusted-key",
@@ -3449,11 +4116,16 @@
         "formula": "one cache per stage per key-holder; additional keys raise the cache item's rarity"
       }
     ],
-    "tags": ["utility"],
-    "corrupts": ["rusted-key"],
+    "tags": [
+      "utility"
+    ],
+    "corrupts": [
+      "rusted-key"
+    ],
     "icon": "/icons/encrusted-key.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Encrusted_Key",
-    "verified": true
+    "verified": true,
+    "confidence": "langfile"
   },
   {
     "id": "plasma-shrimp",
@@ -3463,13 +4135,25 @@
     "pickupText": "While you have shield, fire missiles on every hit. Corrupts all AtG Missile Mk. 1s.",
     "description": "Gain a shield equal to 10% of your maximum health. While you have a shield, hitting an enemy fires a missile that deals 40% (+50% per stack) TOTAL damage. Corrupts all AtG Missile Mk. 1s.",
     "stacking": [
-      { "stat": "Missile damage (% TOTAL)", "base": 40, "perStack": 50, "type": "linear" }
+      {
+        "stat": "Missile damage (% TOTAL)",
+        "base": 40,
+        "perStack": 50,
+        "type": "linear"
+      }
     ],
-    "tags": ["damage", "on-hit", "shield"],
-    "corrupts": ["atg-missile-mk-1"],
+    "tags": [
+      "damage",
+      "on-hit",
+      "shield"
+    ],
+    "corrupts": [
+      "atg-missile-mk-1"
+    ],
     "icon": "/icons/plasma-shrimp.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Plasma_Shrimp",
-    "verified": true
+    "verified": true,
+    "confidence": "langfile"
   },
   {
     "id": "lysate-cell",
@@ -3479,13 +4163,23 @@
     "pickupText": "Add an extra charge of your Special skill. Corrupts all Fuel Cells.",
     "description": "Add +1 (+1 per stack) charge of your Special skill. Reduces Special skill cooldown by 33%. Corrupts all Fuel Cells.",
     "stacking": [
-      { "stat": "Special skill charges", "base": 1, "perStack": 1, "type": "linear" }
+      {
+        "stat": "Special skill charges",
+        "base": 1,
+        "perStack": 1,
+        "type": "linear"
+      }
     ],
-    "tags": ["utility"],
-    "corrupts": ["fuel-cell"],
+    "tags": [
+      "utility"
+    ],
+    "corrupts": [
+      "fuel-cell"
+    ],
     "icon": "/icons/lysate-cell.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Lysate_Cell",
-    "verified": true
+    "verified": true,
+    "confidence": "langfile"
   },
   {
     "id": "polylute",
@@ -3495,13 +4189,24 @@
     "pickupText": "Chance to repeatedly strike a single enemy with lightning. Corrupts all Ukuleles.",
     "description": "25% chance to fire lightning for 60% TOTAL damage up to 3 (+3 per stack) times. Corrupts all Ukuleles.",
     "stacking": [
-      { "stat": "Lightning hits", "base": 3, "perStack": 3, "type": "linear" }
+      {
+        "stat": "Lightning hits",
+        "base": 3,
+        "perStack": 3,
+        "type": "linear"
+      }
     ],
-    "tags": ["damage", "on-hit"],
-    "corrupts": ["ukulele"],
+    "tags": [
+      "damage",
+      "on-hit"
+    ],
+    "corrupts": [
+      "ukulele"
+    ],
     "icon": "/icons/polylute.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Polylute",
-    "verified": true
+    "verified": true,
+    "confidence": "langfile"
   },
   {
     "id": "tentabauble",
@@ -3518,13 +4223,25 @@
         "type": "hyperbolic",
         "formula": "proc chance stacks hyperbolically, approaching but never reaching 100%"
       },
-      { "stat": "Root duration (s)", "base": 1, "perStack": 1, "type": "linear" }
+      {
+        "stat": "Root duration (s)",
+        "base": 1,
+        "perStack": 1,
+        "type": "linear"
+      }
     ],
-    "tags": ["utility", "on-hit", "crowd-control"],
-    "corrupts": ["chronobauble"],
+    "tags": [
+      "utility",
+      "on-hit",
+      "crowd-control"
+    ],
+    "corrupts": [
+      "chronobauble"
+    ],
     "icon": "/icons/tentabauble.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Tentabauble",
-    "verified": true
+    "verified": true,
+    "confidence": "langfile"
   },
   {
     "id": "singularity-band",
@@ -3534,13 +4251,27 @@
     "pickupText": "High damage hits also create unstable black holes. Recharges over time. Corrupts all Runald's and Kjaro's Bands.",
     "description": "Hits that deal more than 400% damage fire a black hole that draws enemies within 15m into its center, lasting 5 seconds before collapsing for 100% (+100% per stack) TOTAL damage. Recharges every 20 seconds. Corrupts all Runald's and Kjaro's Bands.",
     "stacking": [
-      { "stat": "Black hole damage (% TOTAL)", "base": 100, "perStack": 100, "type": "linear" }
+      {
+        "stat": "Black hole damage (% TOTAL)",
+        "base": 100,
+        "perStack": 100,
+        "type": "linear"
+      }
     ],
-    "tags": ["damage", "on-hit", "aoe", "crowd-control"],
-    "corrupts": ["runalds-band", "kjaros-band"],
+    "tags": [
+      "damage",
+      "on-hit",
+      "aoe",
+      "crowd-control"
+    ],
+    "corrupts": [
+      "runalds-band",
+      "kjaros-band"
+    ],
     "icon": "/icons/singularity-band.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Singularity_Band",
-    "verified": true
+    "verified": true,
+    "confidence": "langfile"
   },
   {
     "id": "voidsent-flame",
@@ -3550,14 +4281,31 @@
     "pickupText": "Full health enemies detonate on hit. Corrupts all Will-o'-the-wisps.",
     "description": "Upon hitting an enemy at or above 100% health, detonate them in a 12m (+2.4m per stack) radius burst for 260% (+156% per stack) base damage. Corrupts all Will-o'-the-wisps.",
     "stacking": [
-      { "stat": "Explosion radius (m)", "base": 12, "perStack": 2.4, "type": "linear" },
-      { "stat": "Explosion damage (% base)", "base": 260, "perStack": 156, "type": "linear" }
+      {
+        "stat": "Explosion radius (m)",
+        "base": 12,
+        "perStack": 2.4,
+        "type": "linear"
+      },
+      {
+        "stat": "Explosion damage (% base)",
+        "base": 260,
+        "perStack": 156,
+        "type": "linear"
+      }
     ],
-    "tags": ["damage", "on-hit", "aoe"],
-    "corrupts": ["will-o-the-wisp"],
+    "tags": [
+      "damage",
+      "on-hit",
+      "aoe"
+    ],
+    "corrupts": [
+      "will-o-the-wisp"
+    ],
     "icon": "/icons/voidsent-flame.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Voidsent_Flame",
-    "verified": true
+    "verified": true,
+    "confidence": "langfile"
   },
   {
     "id": "benthic-bloom",
@@ -3567,13 +4315,23 @@
     "pickupText": "Upgrades your items at the start of each stage. Corrupts all 57 Leaf Clovers.",
     "description": "Upgrades 3 (+3 per stack) random items to items of the next higher rarity at the start of each stage. Corrupts all 57 Leaf Clovers.",
     "stacking": [
-      { "stat": "Items upgraded per stage", "base": 3, "perStack": 3, "type": "linear" }
+      {
+        "stat": "Items upgraded per stage",
+        "base": 3,
+        "perStack": 3,
+        "type": "linear"
+      }
     ],
-    "tags": ["utility"],
-    "corrupts": ["57-leaf-clover"],
+    "tags": [
+      "utility"
+    ],
+    "corrupts": [
+      "57-leaf-clover"
+    ],
     "icon": "/icons/benthic-bloom.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Benthic_Bloom",
-    "verified": true
+    "verified": true,
+    "confidence": "langfile"
   },
   {
     "id": "pluripotent-larva",
@@ -3583,13 +4341,23 @@
     "pickupText": "Get a corrupted extra life. Consumed on use. Corrupts all Dio's Best Friends.",
     "description": "Upon death, this item is consumed and you return to life with 3 seconds of invulnerability, and all of your items that can be corrupted will be. Corrupts all Dio's Best Friends.",
     "stacking": [
-      { "stat": "Extra lives", "base": 1, "perStack": 1, "type": "linear" }
+      {
+        "stat": "Extra lives",
+        "base": 1,
+        "perStack": 1,
+        "type": "linear"
+      }
     ],
-    "tags": ["survivability"],
-    "corrupts": ["dios-best-friend"],
+    "tags": [
+      "survivability"
+    ],
+    "corrupts": [
+      "dios-best-friend"
+    ],
     "icon": "/icons/pluripotent-larva.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Pluripotent_Larva",
-    "verified": true
+    "verified": true,
+    "confidence": "langfile"
   },
   {
     "id": "newly-hatched-zoea",
@@ -3606,12 +4374,22 @@
         "type": "reciprocal",
         "formula": "interval divides reciprocally per stack (60s, ~40s, 30s, …)"
       },
-      { "stat": "Max Void allies", "base": 1, "perStack": 1, "type": "linear" }
+      {
+        "stat": "Max Void allies",
+        "base": 1,
+        "perStack": 1,
+        "type": "linear"
+      }
     ],
-    "tags": ["damage", "utility", "drone"],
+    "tags": [
+      "damage",
+      "utility",
+      "drone"
+    ],
     "icon": "/icons/newly-hatched-zoea.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Newly_Hatched_Zoea",
-    "verified": true
+    "verified": true,
+    "confidence": "langfile"
   },
   {
     "id": "disposable-missile-launcher",
@@ -3621,10 +4399,14 @@
     "pickupText": "Fire a swarm of missiles.",
     "description": "Fire a swarm of 12 missiles that deal 12x300% damage. Cooldown: 45s.",
     "stacking": [],
-    "tags": ["damage", "equipment"],
+    "tags": [
+      "damage",
+      "equipment"
+    ],
     "icon": "/icons/disposable-missile-launcher.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Disposable_Missile_Launcher",
-    "verified": true
+    "verified": true,
+    "confidence": "langfile"
   },
   {
     "id": "foreign-fruit",
@@ -3634,10 +4416,14 @@
     "pickupText": "Heal on use.",
     "description": "Instantly heal for 50% of your maximum health. Cooldown: 45s.",
     "stacking": [],
-    "tags": ["healing", "equipment"],
+    "tags": [
+      "healing",
+      "equipment"
+    ],
     "icon": "/icons/foreign-fruit.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Foreign_Fruit",
-    "verified": true
+    "verified": true,
+    "confidence": "langfile"
   },
   {
     "id": "preon-accumulator",
@@ -3647,10 +4433,15 @@
     "pickupText": "Fire a ball of energy that electrocutes nearby enemies before detonating.",
     "description": "Fire preon tendrils that zap enemies within 35m for up to 600% damage/second. On contact, detonate in a 20m explosion for 4000% damage. Cooldown: 140s.",
     "stacking": [],
-    "tags": ["damage", "aoe", "equipment"],
+    "tags": [
+      "damage",
+      "aoe",
+      "equipment"
+    ],
     "icon": "/icons/preon-accumulator.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Preon_Accumulator",
-    "verified": true
+    "verified": true,
+    "confidence": "langfile"
   },
   {
     "id": "the-back-up",
@@ -3660,10 +4451,15 @@
     "pickupText": "Call drones for back up. Lasts 25 seconds.",
     "description": "Call 4 Strike Drones to fight for you. Lasts 25 seconds. Cooldown: 100s.",
     "stacking": [],
-    "tags": ["damage", "drone", "equipment"],
+    "tags": [
+      "damage",
+      "drone",
+      "equipment"
+    ],
     "icon": "/icons/the-back-up.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/The_Back-up",
-    "verified": true
+    "verified": true,
+    "confidence": "langfile"
   },
   {
     "id": "ocular-hud",
@@ -3673,10 +4469,15 @@
     "pickupText": "Gain 100% Critical Strike Chance for 8 seconds.",
     "description": "Gain +100% critical strike chance for 8 seconds. Cooldown: 60s.",
     "stacking": [],
-    "tags": ["damage", "critical-strike", "equipment"],
+    "tags": [
+      "damage",
+      "critical-strike",
+      "equipment"
+    ],
     "icon": "/icons/ocular-hud.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Ocular_HUD",
-    "verified": true
+    "verified": true,
+    "confidence": "langfile"
   },
   {
     "id": "royal-capacitor",
@@ -3686,11 +4487,15 @@
     "pickupText": "Call down a lightning strike on a targeted monster.",
     "description": "Call down a lightning strike on a targeted monster, dealing 3000% damage and stunning nearby monsters. Cooldown: 20s.",
     "stacking": [],
-    "tags": ["damage", "equipment"],
+    "tags": [
+      "damage",
+      "equipment"
+    ],
     "unlock": "Ascendant",
     "icon": "/icons/royal-capacitor.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Royal_Capacitor",
-    "verified": true
+    "verified": true,
+    "confidence": "langfile"
   },
   {
     "id": "the-crowdfunder",
@@ -3700,10 +4505,15 @@
     "pickupText": "Toggle to fire. Costs gold per bullet.",
     "description": "Fire a continuous barrage that deals 100% damage per bullet. Costs $1 per bullet, increasing over time. Toggle-activated (no cooldown).",
     "stacking": [],
-    "tags": ["damage", "gold", "equipment"],
+    "tags": [
+      "damage",
+      "gold",
+      "equipment"
+    ],
     "icon": "/icons/the-crowdfunder.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/The_Crowdfunder",
-    "verified": true
+    "verified": true,
+    "confidence": "langfile"
   },
   {
     "id": "milky-chrysalis",
@@ -3713,10 +4523,16 @@
     "pickupText": "Gain temporary flight.",
     "description": "Sprout wings and fly for 15 seconds. Gain +20% movement speed for the duration. Cooldown: 60s.",
     "stacking": [],
-    "tags": ["utility", "mobility", "movement-speed", "equipment"],
+    "tags": [
+      "utility",
+      "mobility",
+      "movement-speed",
+      "equipment"
+    ],
     "icon": "/icons/milky-chrysalis.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Milky_Chrysalis",
-    "verified": true
+    "verified": true,
+    "confidence": "langfile"
   },
   {
     "id": "gnarled-woodsprite",
@@ -3726,10 +4542,14 @@
     "pickupText": "Heal over time. Activate to send to an ally.",
     "description": "Gain a Woodsprite follower that heals for 1.5% of your maximum health per second. Can be sent to an ally to heal them for 10% of their maximum health. Cooldown: 15s.",
     "stacking": [],
-    "tags": ["healing", "equipment"],
+    "tags": [
+      "healing",
+      "equipment"
+    ],
     "icon": "/icons/gnarled-woodsprite.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Gnarled_Woodsprite",
-    "verified": true
+    "verified": true,
+    "confidence": "langfile"
   },
   {
     "id": "primordial-cube",
@@ -3739,10 +4559,16 @@
     "pickupText": "Fire a black hole that draws enemies in.",
     "description": "Fire a black hole that draws enemies within 30m into its center. Lasts 10 seconds. Cooldown: 60s.",
     "stacking": [],
-    "tags": ["utility", "crowd-control", "aoe", "equipment"],
+    "tags": [
+      "utility",
+      "crowd-control",
+      "aoe",
+      "equipment"
+    ],
     "icon": "/icons/primordial-cube.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Primordial_Cube",
-    "verified": true
+    "verified": true,
+    "confidence": "langfile"
   },
   {
     "id": "radar-scanner",
@@ -3752,11 +4578,15 @@
     "pickupText": "Reveal all nearby interactables.",
     "description": "Reveal all interactables within 500m for 10 seconds. Cooldown: 45s.",
     "stacking": [],
-    "tags": ["utility", "equipment"],
+    "tags": [
+      "utility",
+      "equipment"
+    ],
     "unlock": "Bookworm",
     "icon": "/icons/radar-scanner.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Radar_Scanner",
-    "verified": true
+    "verified": true,
+    "confidence": "langfile"
   },
   {
     "id": "eccentric-vase",
@@ -3766,10 +4596,15 @@
     "pickupText": "Create a quantum tunnel between two locations.",
     "description": "Create a quantum tunnel of up to 1000m in length. Lasts 30 seconds. Cooldown: 45s.",
     "stacking": [],
-    "tags": ["utility", "mobility", "equipment"],
+    "tags": [
+      "utility",
+      "mobility",
+      "equipment"
+    ],
     "icon": "/icons/eccentric-vase.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Eccentric_Vase",
-    "verified": true
+    "verified": true,
+    "confidence": "langfile"
   },
   {
     "id": "blast-shower",
@@ -3779,10 +4614,15 @@
     "pickupText": "Cleanse all negative effects.",
     "description": "Cleanse all negative effects — debuffs, damage over time, and nearby projectiles. Cooldown: 20s.",
     "stacking": [],
-    "tags": ["utility", "survivability", "equipment"],
+    "tags": [
+      "utility",
+      "survivability",
+      "equipment"
+    ],
     "icon": "/icons/blast-shower.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Blast_Shower",
-    "verified": true
+    "verified": true,
+    "confidence": "langfile"
   },
   {
     "id": "volcanic-egg",
@@ -3792,10 +4632,15 @@
     "pickupText": "Transform into a speeding draconic fireball, dealing damage as you pass through enemies.",
     "description": "Turn into a draconic fireball for 5 seconds. Deal 500% damage on impact and detonate at the end for 800% damage. Cooldown: 30s.",
     "stacking": [],
-    "tags": ["damage", "mobility", "equipment"],
+    "tags": [
+      "damage",
+      "mobility",
+      "equipment"
+    ],
     "icon": "/icons/volcanic-egg.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Volcanic_Egg",
-    "verified": true
+    "verified": true,
+    "confidence": "langfile"
   },
   {
     "id": "jade-elephant",
@@ -3805,10 +4650,15 @@
     "pickupText": "Gain massive armor for 5 seconds.",
     "description": "Gain 500 armor for 5 seconds. Cooldown: 45s.",
     "stacking": [],
-    "tags": ["survivability", "armor", "equipment"],
+    "tags": [
+      "survivability",
+      "armor",
+      "equipment"
+    ],
     "icon": "/icons/jade-elephant.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Jade_Elephant",
-    "verified": true
+    "verified": true,
+    "confidence": "langfile"
   },
   {
     "id": "sawmerang",
@@ -3818,10 +4668,15 @@
     "pickupText": "Throw a fan of buzzing saws that come back to you.",
     "description": "Throw three large saw blades that slice through enemies for 3x400% damage, plus 3x100% per second while bleeding. Can strike enemies again on the way back. Cooldown: 45s.",
     "stacking": [],
-    "tags": ["damage", "bleed", "equipment"],
+    "tags": [
+      "damage",
+      "bleed",
+      "equipment"
+    ],
     "icon": "/icons/sawmerang.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Sawmerang",
-    "verified": true
+    "verified": true,
+    "confidence": "langfile"
   },
   {
     "id": "recycler",
@@ -3831,11 +4686,15 @@
     "pickupText": "Transform an Item or Equipment into a different one. Can only recycle once.",
     "description": "Transform an item or equipment into a different one of the same rarity tier. Each drop can only be recycled once. Cooldown: 45s.",
     "stacking": [],
-    "tags": ["utility", "equipment"],
+    "tags": [
+      "utility",
+      "equipment"
+    ],
     "unlock": "Cleanup Duty",
     "icon": "/icons/recycler.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Recycler",
-    "verified": true
+    "verified": true,
+    "confidence": "langfile"
   },
   {
     "id": "super-massive-leech",
@@ -3845,10 +4704,14 @@
     "pickupText": "Heal for a percentage of the damage you deal for 8 seconds.",
     "description": "Gain Life Steal, healing for 20% of all direct damage dealt, for 8 seconds. Cooldown: 60s.",
     "stacking": [],
-    "tags": ["healing", "equipment"],
+    "tags": [
+      "healing",
+      "equipment"
+    ],
     "icon": "/icons/super-massive-leech.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Super_Massive_Leech",
-    "verified": true
+    "verified": true,
+    "confidence": "langfile"
   },
   {
     "id": "gorags-opus",
@@ -3858,10 +4721,16 @@
     "pickupText": "You and all your allies enter a frenzy.",
     "description": "You and all your allies enter a frenzy for 7 seconds, gaining +50% movement speed and +100% attack speed. Cooldown: 45s.",
     "stacking": [],
-    "tags": ["damage", "attack-speed", "movement-speed", "equipment"],
+    "tags": [
+      "damage",
+      "attack-speed",
+      "movement-speed",
+      "equipment"
+    ],
     "icon": "/icons/gorags-opus.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Gorag%27s_Opus",
-    "verified": true
+    "verified": true,
+    "confidence": "langfile"
   },
   {
     "id": "forgive-me-please",
@@ -3871,10 +4740,15 @@
     "pickupText": "Throw a cursed doll that repeatedly triggers your 'On Kill' effects.",
     "description": "Throw a cursed doll that triggers your On-Kill effects every 1 second for 8 seconds. Cooldown: 45s.",
     "stacking": [],
-    "tags": ["damage", "on-kill", "equipment"],
+    "tags": [
+      "damage",
+      "on-kill",
+      "equipment"
+    ],
     "icon": "/icons/forgive-me-please.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Forgive_Me_Please",
-    "verified": true
+    "verified": true,
+    "confidence": "langfile"
   },
   {
     "id": "fuel-array",
@@ -3885,10 +4759,14 @@
     "pickupText": "Looks like it could power something. EXTREMELY unstable...",
     "description": "A single-use objective item used to power REX in the Abyssal Depths. Detonates for 300% of your maximum health if you fall below 50% health. Cannot be scrapped or selected from Command.",
     "stacking": [],
-    "tags": ["utility", "equipment"],
+    "tags": [
+      "utility",
+      "equipment"
+    ],
     "icon": "/icons/fuel-array.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Fuel_Array",
-    "verified": true
+    "verified": true,
+    "confidence": "langfile"
   },
   {
     "id": "molotov-6-pack",
@@ -3898,10 +4776,15 @@
     "pickupText": "Throw 6 flaming molotovs that ignite enemies upon shattering.",
     "description": "Throw 6 molotov cocktails that ignite enemies for 500% base damage. Each leaves a burning area dealing 200% damage per second. Cooldown: 45s.",
     "stacking": [],
-    "tags": ["damage", "aoe", "equipment"],
+    "tags": [
+      "damage",
+      "aoe",
+      "equipment"
+    ],
     "icon": "/icons/molotov-6-pack.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Molotov_(6-Pack)",
-    "verified": true
+    "verified": true,
+    "confidence": "langfile"
   },
   {
     "id": "executive-card",
@@ -3911,10 +4794,15 @@
     "pickupText": "Gain 10% cash back on all purchases. Multishops remain open.",
     "description": "Whenever you make a gold purchase, get 10% of the spent gold back. Multishop terminals stay open after a purchase. Cooldown: 0.1s.",
     "stacking": [],
-    "tags": ["utility", "gold", "equipment"],
+    "tags": [
+      "utility",
+      "gold",
+      "equipment"
+    ],
     "icon": "/icons/executive-card.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Executive_Card",
-    "verified": true
+    "verified": true,
+    "confidence": "langfile"
   },
   {
     "id": "goobo-jr",
@@ -3924,10 +4812,14 @@
     "pickupText": "Create a clone of you for 30 seconds.",
     "description": "Spawn a gummy clone with 300% damage and 300% health, using your skill loadout. Expires in 30 seconds. Cooldown: 100s.",
     "stacking": [],
-    "tags": ["damage", "equipment"],
+    "tags": [
+      "damage",
+      "equipment"
+    ],
     "icon": "/icons/goobo-jr.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Goobo_Jr.",
-    "verified": true
+    "verified": true,
+    "confidence": "langfile"
   },
   {
     "id": "remote-caffeinator",
@@ -3937,10 +4829,15 @@
     "pickupText": "Request a healing soda machine.",
     "description": "Request an Eclipse Zero Vending Machine from the UES Safe Travels, delivered in 5 seconds for 2000% damage. Heals up to 3 targets for 25% of their maximum health. Cooldown: 60s.",
     "stacking": [],
-    "tags": ["damage", "healing", "equipment"],
+    "tags": [
+      "damage",
+      "healing",
+      "equipment"
+    ],
     "icon": "/icons/remote-caffeinator.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Remote_Caffeinator",
-    "verified": true
+    "verified": true,
+    "confidence": "langfile"
   },
   {
     "id": "seed-of-life",
@@ -3950,10 +4847,14 @@
     "pickupText": "Revives the user when killed or dead allies on activation. Consumed on use.",
     "description": "Revive dead friendly Survivors on activation. Dying while holding it returns only you to life. Reviving grants 3s of invulnerability and consumes the equipment. Cooldown: 60s.",
     "stacking": [],
-    "tags": ["survivability", "equipment"],
+    "tags": [
+      "survivability",
+      "equipment"
+    ],
     "icon": "/icons/seed-of-life.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Seed_of_Life",
-    "verified": true
+    "verified": true,
+    "confidence": "langfile"
   },
   {
     "id": "deus-ex-machina",
@@ -3963,10 +4864,15 @@
     "pickupText": "Counter any damage. Successful counters bless your next attack, ensuring your on-hit effects ALWAYS activate.",
     "description": "Briefly enter a countering stance that parries any and all damage. A successful parry nullifies the damage, reduces equipment cooldown by 75%, and grants Blessing — your next attack always activates its on-hit effects. Cooldown: 60s.",
     "stacking": [],
-    "tags": ["survivability", "damage", "equipment"],
+    "tags": [
+      "survivability",
+      "damage",
+      "equipment"
+    ],
     "icon": "/icons/deus-ex-machina.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Deus_Ex_Machina",
-    "verified": true
+    "verified": true,
+    "confidence": "langfile"
   },
   {
     "id": "trophy-hunters-tricorn",
@@ -3976,10 +4882,14 @@
     "pickupText": "Execute a large monster and claim its trophy. Consumed on use.",
     "description": "Execute any enemy capable of spawning a unique reward and it will drop that item. Consumed on use.",
     "stacking": [],
-    "tags": ["utility", "equipment"],
+    "tags": [
+      "utility",
+      "equipment"
+    ],
     "icon": "/icons/trophy-hunters-tricorn.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Trophy_Hunter%27s_Tricorn",
-    "verified": true
+    "verified": true,
+    "confidence": "langfile"
   },
   {
     "id": "effigy-of-grief",
@@ -3989,10 +4899,15 @@
     "pickupText": "Drop a permanent effigy that cripples ALL characters inside. Can place up to 5.",
     "description": "Drop a permanent effigy. ALL characters within 15m are slowed by 50% and have their armor reduced by 20. Can place up to 5. Cooldown: 15s.",
     "stacking": [],
-    "tags": ["utility", "crowd-control", "equipment"],
+    "tags": [
+      "utility",
+      "crowd-control",
+      "equipment"
+    ],
     "icon": "/icons/effigy-of-grief.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Effigy_of_Grief",
-    "verified": true
+    "verified": true,
+    "confidence": "langfile"
   },
   {
     "id": "glowing-meteorite",
@@ -4002,10 +4917,15 @@
     "pickupText": "Rain meteors from the sky, hurting both enemies and allies.",
     "description": "Rain meteors from the sky, damaging ALL characters for 600% damage per blast. Lasts 20 seconds. Cooldown: 140s.",
     "stacking": [],
-    "tags": ["damage", "aoe", "equipment"],
+    "tags": [
+      "damage",
+      "aoe",
+      "equipment"
+    ],
     "icon": "/icons/glowing-meteorite.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Glowing_Meteorite",
-    "verified": true
+    "verified": true,
+    "confidence": "langfile"
   },
   {
     "id": "helfire-tincture",
@@ -4015,11 +4935,16 @@
     "pickupText": "Ignite everything nearby... including you and allies.",
     "description": "Ignite ALL characters within 15m for 12s, dealing 5% of your maximum health per second as burning damage. The burn is 0.5x on yourself, 0.25x on allies, and 24x on enemies. Cooldown: 45s.",
     "stacking": [],
-    "tags": ["damage", "aoe", "equipment"],
+    "tags": [
+      "damage",
+      "aoe",
+      "equipment"
+    ],
     "unlock": "Multikill!",
     "icon": "/icons/helfire-tincture.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Helfire_Tincture",
-    "verified": true
+    "verified": true,
+    "confidence": "langfile"
   },
   {
     "id": "spinel-tonic",
@@ -4029,11 +4954,15 @@
     "pickupText": "Gain a massive boost to ALL stats. Chance to gain an affliction that reduces ALL stats.",
     "description": "Gain a 20-second buff: +100% damage, +70% attack speed, +20 armor, +50% max health, +300% regen, +30% movement speed. On expiration, a 20% chance to gain a Tonic Affliction reducing all stats by -5% per stack. Cooldown: 60s.",
     "stacking": [],
-    "tags": ["utility", "equipment"],
+    "tags": [
+      "utility",
+      "equipment"
+    ],
     "unlock": "Cosmic Explorer",
     "icon": "/icons/spinel-tonic.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Spinel_Tonic",
-    "verified": true
+    "verified": true,
+    "confidence": "langfile"
   },
   {
     "id": "ifrits-distinction",
@@ -4043,10 +4972,16 @@
     "pickupText": "Become an aspect of fire.",
     "description": "Gain Blazing Elite powers: your attacks apply a burn for 50% TOTAL damage on hit, and a fire trail follows burned enemies. Passive (no cooldown).",
     "stacking": [],
-    "tags": ["damage", "on-hit", "equipment", "elite"],
+    "tags": [
+      "damage",
+      "on-hit",
+      "equipment",
+      "elite"
+    ],
     "icon": "/icons/ifrits-distinction.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Ifrit%27s_Distinction",
-    "verified": true
+    "verified": true,
+    "confidence": "langfile"
   },
   {
     "id": "silence-between-two-strikes",
@@ -4056,10 +4991,17 @@
     "pickupText": "Become an aspect of lightning.",
     "description": "Gain the power of an Overloading Elite: your attacks explode after a delay, and 50% of your health is replaced by shield. Passive (no cooldown).",
     "stacking": [],
-    "tags": ["damage", "aoe", "shield", "equipment", "elite"],
+    "tags": [
+      "damage",
+      "aoe",
+      "shield",
+      "equipment",
+      "elite"
+    ],
     "icon": "/icons/silence-between-two-strikes.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Silence_Between_Two_Strikes",
-    "verified": true
+    "verified": true,
+    "confidence": "langfile"
   },
   {
     "id": "her-biting-embrace",
@@ -4069,10 +5011,17 @@
     "pickupText": "Become an aspect of ice.",
     "description": "Gain the power of a Glacial Elite: leave an ice explosion on death and apply an 80% slow on hit. Passive (no cooldown).",
     "stacking": [],
-    "tags": ["damage", "crowd-control", "on-hit", "equipment", "elite"],
+    "tags": [
+      "damage",
+      "crowd-control",
+      "on-hit",
+      "equipment",
+      "elite"
+    ],
     "icon": "/icons/her-biting-embrace.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Her_Biting_Embrace",
-    "verified": true
+    "verified": true,
+    "confidence": "langfile"
   },
   {
     "id": "spectral-circlet",
@@ -4082,10 +5031,16 @@
     "pickupText": "Become an aspect of incorporeality.",
     "description": "Gain the power of a Celestine Elite: your attacks apply an 80% slow on hit, and nearby allies gain invisibility. Passive (no cooldown).",
     "stacking": [],
-    "tags": ["utility", "crowd-control", "equipment", "elite"],
+    "tags": [
+      "utility",
+      "crowd-control",
+      "equipment",
+      "elite"
+    ],
     "icon": "/icons/spectral-circlet.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Spectral_Circlet",
-    "verified": true
+    "verified": true,
+    "confidence": "langfile"
   },
   {
     "id": "his-spiteful-boon",
@@ -4095,10 +5050,16 @@
     "pickupText": "Become an aspect of spite.",
     "description": "Gain the power of a Twisted Elite: tether to up to 5 allies within 35m, granting them 300 armor. If tethered allies are hit 10 times, fire a lunar spike ball that homes onto an enemy for 100% damage and inflicts Lunar Ruin twice. Tethering disables for 10s after launching. Passive.",
     "stacking": [],
-    "tags": ["utility", "survivability", "equipment", "elite"],
+    "tags": [
+      "utility",
+      "survivability",
+      "equipment",
+      "elite"
+    ],
     "icon": "/icons/his-spiteful-boon.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/His_Spiteful_Boon",
-    "verified": true
+    "verified": true,
+    "confidence": "langfile"
   },
   {
     "id": "nkuhanas-retort",
@@ -4108,10 +5069,15 @@
     "pickupText": "Become an aspect of corruption.",
     "description": "Gain the power of a Malachite Elite: inflict a healing-disabled debuff for 8s on enemies, periodically release spiked balls that explode and leave spike pits, and spawn a Malachite Urchin on death. Passive.",
     "stacking": [],
-    "tags": ["damage", "equipment", "elite"],
+    "tags": [
+      "damage",
+      "equipment",
+      "elite"
+    ],
     "icon": "/icons/nkuhanas-retort.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/N%27kuhana%27s_Retort",
-    "verified": true
+    "verified": true,
+    "confidence": "langfile"
   },
   {
     "id": "his-reassurance",
@@ -4121,10 +5087,15 @@
     "pickupText": "Become an aspect of earth.",
     "description": "Gain the power of a Mending Elite: continuously heal nearby allies, and spawn a Healing Core on death that detonates to heal all nearby allies. Passive.",
     "stacking": [],
-    "tags": ["healing", "equipment", "elite"],
+    "tags": [
+      "healing",
+      "equipment",
+      "elite"
+    ],
     "icon": "/icons/his-reassurance.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/His_Reassurance",
-    "verified": true
+    "verified": true,
+    "confidence": "langfile"
   },
   {
     "id": "shared-design",
@@ -4134,10 +5105,16 @@
     "pickupText": "Become an aspect of perfection.",
     "description": "Gain the power of a Perfected Elite: attacks inflict Cripple, fire 4 bombs every 10 seconds (30% damage each), gain +30% movement speed, and +25% max health converted to shields. Passive.",
     "stacking": [],
-    "tags": ["damage", "survivability", "equipment", "elite"],
+    "tags": [
+      "damage",
+      "survivability",
+      "equipment",
+      "elite"
+    ],
     "icon": "/icons/shared-design.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Shared_Design",
-    "verified": true
+    "verified": true,
+    "confidence": "langfile"
   },
   {
     "id": "of-one-mind",
@@ -4147,10 +5124,16 @@
     "pickupText": "Become an aspect of the Collective.",
     "description": "Gain the power of a Collective Elite: a 30m dome blocks projectiles and reduces ally and self skill cooldowns by 20%. On death, explode for 100% damage and disable enemy items for 2.5s. The dome disables for 8s when hit by a skill attack. Passive.",
     "stacking": [],
-    "tags": ["utility", "survivability", "equipment", "elite"],
+    "tags": [
+      "utility",
+      "survivability",
+      "equipment",
+      "elite"
+    ],
     "icon": "/icons/of-one-mind.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Of_One_Mind",
-    "verified": true
+    "verified": true,
+    "confidence": "langfile"
   },
   {
     "id": "aurelionites-blessing",
@@ -4160,9 +5143,15 @@
     "pickupText": "Become an aspect of radiance.",
     "description": "Gain the power of a Gilded Elite: on hit, knock 8 gold out of enemies as collectible nuggets (scaling over time), and gain a rechargeable grounded spike attack for 15% (outer) / 150% (inner) damage. Cooldown: 25s.",
     "stacking": [],
-    "tags": ["damage", "gold", "equipment", "elite"],
+    "tags": [
+      "damage",
+      "gold",
+      "equipment",
+      "elite"
+    ],
     "icon": "/icons/aurelionites-blessing.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Aurelionite%27s_Blessing",
-    "verified": true
+    "verified": true,
+    "confidence": "langfile"
   }
 ]

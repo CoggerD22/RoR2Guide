@@ -86,6 +86,18 @@ const slug = z
   .string()
   .regex(/^[a-z0-9-]+$/, "id must be a lowercase kebab-case slug");
 
+/**
+ * How strongly a record's numbers are sourced (MATH-VERIFICATION.md §1), best first.
+ * Wiki-only data has been wrong repeatedly in this project, so the distinction is
+ * surfaced rather than implied by a bare `verified: true`.
+ *   code     — checked against the decompiled assembly (formulas/coefficients)
+ *   asset    — checked against the game's own asset bundles (prefab values)
+ *   langfile — checked against the game's language files (names/pickups/numbers)
+ *   wiki     — riskofrain2.wiki.gg only; not yet confirmed against game data
+ */
+export const confidenceSchema = z.enum(["code", "asset", "langfile", "wiki"]);
+export type Confidence = z.infer<typeof confidenceSchema>;
+
 export const itemSchema = z
   .object({
     /** Internal token-ish slug, e.g. "crowbar". Matches the icon filename. */
@@ -116,6 +128,8 @@ export const itemSchema = z
     wiki: z.url(),
     /** True only when every value traces to an approved source (rule #1). */
     verified: z.boolean(),
+    /** Strength of that sourcing (see confidenceSchema). */
+    confidence: confidenceSchema.optional(),
   })
   .strict()
   .refine((it) => !(it.corrupts && it.corruptedBy), {
@@ -156,6 +170,8 @@ export const survivorSchema = z
     baseAttackSpeed: z.number(),
     wiki: z.url(),
     verified: z.boolean(),
+    /** Strength of that sourcing (see confidenceSchema). */
+    confidence: confidenceSchema.optional(),
   })
   .strict();
 export type Survivor = z.infer<typeof survivorSchema>;

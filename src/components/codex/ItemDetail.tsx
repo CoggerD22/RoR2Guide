@@ -7,6 +7,7 @@ import { sparklinePoints } from "@/lib/stacking";
 import { cn } from "@/lib/utils";
 import { asset } from "@/lib/asset";
 import { StackingBadge } from "./StackingBadge";
+import { ConfidenceBadge } from "./ConfidenceBadge";
 import { Sparkline } from "./Sparkline";
 
 interface ItemDetailProps {
@@ -92,6 +93,7 @@ export function ItemDetail({ item, onClose, onSelectItem }: ItemDetailProps) {
                   Unverified
                 </span>
               )}
+              {item.verified && <ConfidenceBadge confidence={item.confidence} />}
             </div>
           </div>
           <button

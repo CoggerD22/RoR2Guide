@@ -237,6 +237,22 @@ and prefabs. All correct as written; no corrections needed.
   `costType = PercentHealth` (extracted from ror2-base-shrineblood bundle). Exactly 50%.
 Remaining shrine copy is intentionally qualitative prose (no hard numbers to verify).
 
+## 3e. Phase 6 (provenance) — done
+
+Every item/survivor record now carries a `confidence` tag (code > asset > langfile
+> wiki) alongside `verified`, surfaced as an understated badge in the codex detail
+drawer. Populated from what was actually checked, not aspirationally:
+- **20 items `code`** — Stat Lab coefficients locked by `data:verify`, plus the
+  non-linear formulas verified against behavior classes (Tougher Times, Old
+  Guillotine, Safer Spaces, Genesis Loop, Light Flux, Unstable Transmitter).
+- **192 items `langfile`** — name/pickup/numbers match the game's language files
+  (`data:diff`, 0 diffs).
+- **19 survivors `asset`** — 190/190 field comparisons against the body prefabs.
+
+Nothing is tagged `wiki` any more: every record has been confirmed against game
+data. The tag exists so that if future data lands wiki-only, it is visibly weaker
+rather than silently equal.
+
 ## 4. Definition of done
 
 - 100% of item stacking values + types **code-verified** (`data:verify` clean).
