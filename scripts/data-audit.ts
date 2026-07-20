@@ -15,12 +15,18 @@
 import { existsSync, readFileSync } from "node:fs";
 import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
-import { itemsFileSchema, survivorsFileSchema, type Item } from "../src/data/schema.ts";
+import {
+  itemsFileSchema,
+  survivorsFileSchema,
+  skillsFileSchema,
+  type Item,
+} from "../src/data/schema.ts";
 
 const here = dirname(fileURLToPath(import.meta.url));
 const root = resolve(here, "..");
 const itemsPath = resolve(root, "src/data/items.json");
 const survivorsPath = resolve(root, "src/data/survivors.json");
+const skillsPath = resolve(root, "src/data/skills.json");
 
 const errors: string[] = [];
 const warnings: string[] = [];
@@ -99,6 +105,7 @@ function main(): number {
 
   // --- Survivors (if present) ---------------------------------------------
   let survivorCount = 0;
+  const survivorIdList: string[] = [];
   if (existsSync(survivorsPath)) {
     let sraw: unknown;
     try {
@@ -119,14 +126,56 @@ function main(): number {
     survivorCount = sParsed.data.length;
     const seen = new Set<string>();
     for (const s of sParsed.data) {
+      survivorIdList.push(s.id);
       if (seen.has(s.id)) errors.push(`duplicate survivor id "${s.id}"`);
       seen.add(s.id);
       if (!s.verified) warnings.push(`unverified survivor: "${s.id}" (${s.name})`);
     }
   }
 
+  // --- Skills / proc coefficients (if present) ------------------------------
+  let skillCount = 0;
+  let procVerified = 0;
+  if (existsSync(skillsPath)) {
+    let kraw: unknown;
+    try {
+      kraw = JSON.parse(readFileSync(skillsPath, "utf8"));
+    } catch (e) {
+      console.error(`data:audit — skills.json is not valid JSON: ${(e as Error).message}`);
+      return 1;
+    }
+    const kParsed = skillsFileSchema.safeParse(kraw);
+    if (!kParsed.success) {
+      console.error("data:audit — skills schema validation failed:\n");
+      for (const issue of kParsed.error.issues) {
+        const path = issue.path.length ? issue.path.join(".") : "(root)";
+        console.error(`  ✗ ${path}: ${issue.message}`);
+      }
+      return 1;
+    }
+    const survivorIds = new Set(survivorIdList);
+    for (const entry of kParsed.data) {
+      if (survivorIds.size && !survivorIds.has(entry.survivor)) {
+        errors.push(`skills.json references unknown survivor "${entry.survivor}"`);
+      }
+      for (const sk of entry.skills) {
+        skillCount++;
+        if (sk.verified) procVerified++;
+      }
+    }
+    const unverified = skillCount - procVerified;
+    if (unverified) {
+      warnings.push(
+        `${unverified}/${skillCount} skills have no verified proc coefficient (proc:null) — see MATH-VERIFICATION.md Phase 5`,
+      );
+    }
+  }
+
   // --- Report --------------------------------------------------------------
-  console.log(`data:audit — ${items.length} item(s), ${survivorCount} survivor(s) checked.`);
+  console.log(
+    `data:audit — ${items.length} item(s), ${survivorCount} survivor(s), ` +
+      `${skillCount} skill(s) [${procVerified} with verified proc] checked.`,
+  );
   if (warnings.length) {
     console.log(`\n${warnings.length} warning(s):`);
     for (const w of warnings) console.log(`  ⚠ ${w}`);

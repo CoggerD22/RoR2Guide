@@ -77,3 +77,25 @@ test("stat lab computes stats and reacts to items", async ({ page }) => {
   await page.getByRole("button", { name: "Add one Bison Steak" }).click();
   await expect(page.getByText("135", { exact: true }).first()).toBeVisible();
 });
+
+test("stat lab shows verified proc coefficients and marks unverified honestly", async ({ page }) => {
+  await page.goto("/stats");
+
+  const panel = page.locator("section", { has: page.getByText("Proc coefficients") });
+  await expect(panel).toBeVisible();
+
+  // Commando's verified values, straight from the game's own assets/code:
+  // Phase Blast 0.5 (skill config) and Double Tap 1 (attack default).
+  const phaseBlast = panel.locator("tr", { hasText: "Phase Blast" });
+  await expect(phaseBlast).toContainText("0.5");
+  const doubleTap = panel.locator("tr", { hasText: "Double Tap" });
+  await expect(doubleTap).toContainText("1");
+
+  // Unverified skills must read "unverified" — never a number, never 0.
+  const dive = panel.locator("tr", { hasText: "Tactical Dive" });
+  await expect(dive).toContainText("unverified");
+
+  // Switching survivor swaps the table (Huntress' Strafe is 1, Laser Glaive 0.8).
+  await page.getByRole("button", { name: "Huntress", exact: true }).click();
+  await expect(panel.locator("tr", { hasText: "Laser Glaive" })).toContainText("0.8");
+});

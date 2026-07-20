@@ -7,6 +7,7 @@ import { computeStats, type DerivedStats } from "@/lib/statMath";
 import { usePlanner } from "@/store/planner";
 import { cn } from "@/lib/utils";
 import { asset } from "@/lib/asset";
+import { SkillProcPanel } from "./SkillProcPanel";
 
 const fmt = (n: number, d = 0) =>
   n.toLocaleString(undefined, { minimumFractionDigits: d, maximumFractionDigits: d });
@@ -216,6 +217,8 @@ export function StatLabPage() {
             crit) is a relative comparison, not an exact in-run figure &mdash; it ignores proc
             coefficients and animations.
           </p>
+
+          <SkillProcPanel survivorId={survivor.id} />
         </div>
       </div>
     </div>
