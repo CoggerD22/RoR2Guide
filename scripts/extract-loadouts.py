@@ -104,11 +104,11 @@ def resolve_proc(sd_state_type, esc_by_type, byid):
         val, src = esc_proc(esc)
         if val is not None:
             return val, src, None
-        ppid = esc.get("proj_pathid")
-        if ppid and ppid in byid:
-            ref = byid[ppid]
+        for ppid in esc.get("prefab_pathids", []):
+            if ppid not in byid:
+                continue
             try:
-                go = ref.read()
+                go = byid[ppid].read()
                 for c in go.m_Components:
                     ct = c.read().object_reader.read_typetree()
                     if "procCoefficient" in ct:
@@ -161,15 +161,20 @@ def extract():
                 continue
             ttv = t.get("targetType") or {}
             tname = (ttv.get("assemblyQualifiedName", "") if isinstance(ttv, dict) else str(ttv)).split(",")[0]
-            rec = {"procFields": {}, "proj_pathid": None}
+            rec = {"procFields": {}, "prefab_pathids": []}
             for fld in sfc.get("serializedFields", []):
                 fn = fld.get("fieldName", "")
                 if fn.endswith("procCoefficient") or fn.endswith("ProcCoefficient"):
                     rec["procFields"][fn] = num((fld.get("fieldValue") or {}).get("stringValue"))
-                elif fn == "projectilePrefab":
+                elif fn.endswith("Prefab") or fn.endswith("prefab"):
+                    # any prefab ref; only the one carrying procCoefficient is a projectile
                     ov = (fld.get("fieldValue") or {}).get("objectValue") or {}
-                    if ov.get("m_FileID") == 0:
-                        rec["proj_pathid"] = ov.get("m_PathID")
+                    if ov.get("m_FileID") == 0 and ov.get("m_PathID"):
+                        # projectilePrefab first if present, else append
+                        if fn == "projectilePrefab":
+                            rec["prefab_pathids"].insert(0, ov["m_PathID"])
+                        else:
+                            rec["prefab_pathids"].append(ov["m_PathID"])
             esc_by_type[tname] = rec
 
         # find each member's SkillLocator (component on the body GameObject)

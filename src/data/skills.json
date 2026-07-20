@@ -163,9 +163,9 @@
         "slot": "utility",
         "name": "Smoke Bomb",
         "state": "EntityStates.Bandit2.ThrowSmokebomb",
-        "proc": null,
-        "procSource": "review:no-attack",
-        "verified": false
+        "proc": 1,
+        "procSource": "code:default-1.0-via-transition",
+        "verified": true
       },
       {
         "slot": "special",
@@ -193,9 +193,9 @@
         "slot": "primary",
         "name": "Auto-Nailgun",
         "state": "EntityStates.Toolbot.FireNailgun",
-        "proc": null,
-        "procSource": "review:no-attack",
-        "verified": false
+        "proc": 0.6,
+        "procSource": "esc-via-transition:BaseNailgunState-via-base",
+        "verified": true
       },
       {
         "slot": "primary",
@@ -411,17 +411,17 @@
         "slot": "utility",
         "name": "Blinding Assault",
         "state": "EntityStates.Merc.PrepAssaulter2",
-        "proc": null,
-        "procSource": "review:no-attack",
-        "verified": false
+        "proc": 1,
+        "procSource": "esc-via-transition:Assaulter2",
+        "verified": true
       },
       {
         "slot": "utility",
         "name": "Focused Assault",
         "state": "EntityStates.Merc.FocusedAssaultPrep",
-        "proc": null,
-        "procSource": "review:no-attack",
-        "verified": false
+        "proc": 1,
+        "procSource": "esc-via-transition:FocusedAssaultDash",
+        "verified": true
       },
       {
         "slot": "special",
@@ -489,17 +489,17 @@
         "slot": "special",
         "name": "DIRECTIVE: Harvest",
         "state": "EntityStates.Treebot.TreebotPrepFruitSeed",
-        "proc": null,
-        "procSource": "review:no-attack",
-        "verified": false
+        "proc": 1,
+        "procSource": "esc-via-transition:TreebotFireFruitSeed",
+        "verified": true
       },
       {
         "slot": "special",
         "name": "Tangling Growth",
         "state": "EntityStates.PrepFlower2",
-        "proc": null,
-        "procSource": "review:class-not-found",
-        "verified": false
+        "proc": 1,
+        "procSource": "esc-via-transition:FireFlower2",
+        "verified": true
       }
     ]
   },
@@ -559,9 +559,9 @@
         "slot": "special",
         "name": "Thunderslam",
         "state": "EntityStates.Loader.PreGroundSlam",
-        "proc": null,
-        "procSource": "review:no-attack",
-        "verified": false
+        "proc": 1,
+        "procSource": "code:default-1.0-via-transition",
+        "verified": true
       }
     ]
   },
@@ -597,17 +597,17 @@
         "slot": "utility",
         "name": "Caustic Leap",
         "state": "EntityStates.Croco.Leap",
-        "proc": null,
-        "procSource": "review:no-attack",
-        "verified": false
+        "proc": 1,
+        "procSource": "esc-via-transition:BaseLeap-via-base",
+        "verified": true
       },
       {
         "slot": "utility",
         "name": "Frenzied Leap",
         "state": "EntityStates.Croco.ChainableLeap",
-        "proc": null,
-        "procSource": "review:no-attack",
-        "verified": false
+        "proc": 1,
+        "procSource": "esc-via-transition:BaseLeap-via-base",
+        "verified": true
       },
       {
         "slot": "special",
@@ -627,9 +627,9 @@
         "slot": "primary",
         "name": "Vulcan Shotgun",
         "state": "EntityStates.Captain.Weapon.ChargeCaptainShotgun",
-        "proc": null,
-        "procSource": "review:no-attack",
-        "verified": false
+        "proc": 0.75,
+        "procSource": "esc-via-transition:FireCaptainShotgun",
+        "verified": true
       },
       {
         "slot": "secondary",
@@ -781,9 +781,9 @@
         "slot": "secondary",
         "name": "『Floo?d」",
         "state": "EntityStates.VoidSurvivor.Weapon.ChargeMegaBlaster",
-        "proc": null,
-        "procSource": "review:no-attack",
-        "verified": false
+        "proc": 1,
+        "procSource": "esc-via-transition:FireMegaBlasterSmall",
+        "verified": true
       },
       {
         "slot": "utility",
@@ -797,9 +797,9 @@
         "slot": "special",
         "name": "【Sup??ress』",
         "state": "EntityStates.VoidSurvivor.Weapon.ChargeCrushCorruption",
-        "proc": null,
-        "procSource": "review:no-attack",
-        "verified": false
+        "proc": 0,
+        "procSource": "code:explicit-via-transition-via-base",
+        "verified": true
       }
     ]
   },
@@ -819,9 +819,9 @@
         "slot": "secondary",
         "name": "Unseen Hand",
         "state": "EntityStates.Seeker.UnseenHand",
-        "proc": null,
-        "procSource": "review:code-projectile",
-        "verified": false
+        "proc": 1,
+        "procSource": "projectile:UnseenHandMovingProjectile",
+        "verified": true
       },
       {
         "slot": "secondary",
@@ -859,9 +859,9 @@
         "slot": "special",
         "name": "Palm Blast",
         "state": "EntityStates.Seeker.BaseChargePalmBlast",
-        "proc": null,
-        "procSource": "review:no-attack",
-        "verified": false
+        "proc": 1,
+        "procSource": "esc-via-transition:BaseFirePalmBlast",
+        "verified": true
       }
     ]
   },
@@ -943,9 +943,9 @@
         "slot": "secondary",
         "name": "Sear",
         "state": "EntityStates.Chef.Sear",
-        "proc": null,
-        "procSource": "review:code-projectile",
-        "verified": false
+        "proc": 1,
+        "procSource": "projectile:BoostedSearFireballProjectile",
+        "verified": true
       },
       {
         "slot": "secondary",
@@ -1059,17 +1059,17 @@
         "slot": "primary",
         "name": "Blunt Force",
         "state": "EntityStates.Drifter.BluntForceEntry",
-        "proc": null,
-        "procSource": "review:no-attack",
-        "verified": false
+        "proc": 1,
+        "procSource": "esc-via-transition:BluntForceHit1",
+        "verified": true
       },
       {
         "slot": "secondary",
         "name": "Cleanup",
         "state": "EntityStates.Drifter.AimMagicBag",
-        "proc": null,
-        "procSource": "review:code-projectile",
-        "verified": false
+        "proc": 1,
+        "procSource": "projectile:DrifterJunkBallette, Classic",
+        "verified": true
       },
       {
         "slot": "secondary",
