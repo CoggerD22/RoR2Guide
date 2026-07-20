@@ -203,3 +203,55 @@
   background: var(--color-primary);
   cursor: grab;
 }
+
+/* Rendered guide markdown (opinion layer). Kept deliberately plain so guides
+   read as prose and never mimic the codex's verified-data styling. */
+.guide-prose h2 {
+  margin-top: 1.75rem;
+  margin-bottom: 0.5rem;
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: var(--color-foreground);
+}
+.guide-prose h3 {
+  margin-top: 1.25rem;
+  margin-bottom: 0.35rem;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--color-foreground);
+}
+.guide-prose p {
+  margin-bottom: 0.85rem;
+}
+.guide-prose strong {
+  color: var(--color-foreground);
+  font-weight: 600;
+}
+.guide-prose ul,
+.guide-prose ol {
+  margin: 0 0 0.85rem 1.1rem;
+  list-style: disc;
+}
+.guide-prose ol {
+  list-style: decimal;
+}
+.guide-prose li {
+  margin-bottom: 0.3rem;
+}
+.guide-prose a {
+  color: var(--color-primary);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+.guide-prose code {
+  border-radius: 0.25rem;
+  background: var(--color-surface-2);
+  padding: 0.1rem 0.3rem;
+  font-size: 0.85em;
+}
+.guide-prose blockquote {
+  margin: 0 0 0.85rem 0;
+  border-left: 2px solid var(--color-border);
+  padding-left: 0.75rem;
+  font-style: italic;
+}

@@ -74,3 +74,22 @@ left, bold white name, gray body with highlighted numeric values.
 - [x] M4 data complete
 - [x] M5 stat lab
 - [x] M6 reference pages (artifacts, bazaar dreams, shrines; loadout unlocks → Phase 4)
+- [x] Math verification pass (see `MATH-VERIFICATION.md` for the full log)
+      - Stat engine rebuilt against the decompiled `CharacterBody.RecalculateStats()`;
+        two real bugs fixed (item regen scales with level; Irradiant Pearl also grants crit).
+      - items.json 100% verified (0 `verified:false`); survivors verified field-by-field
+        against the body **prefabs** (190/190) — those values are NOT in RoR2.dll.
+      - Artifact + shrine numbers confirmed against their behavior classes.
+      - `pnpm data:verify` locks coefficients and survivor stats, and runs in CI.
+      - Every record carries a `confidence` tag (code > asset > langfile > wiki),
+        badged in the codex. Nothing is wiki-only any more.
+      - Proc coefficients: `src/data/skills.json`, 78/125 loadout skills verified with
+        provenance, surfaced in the Stat Lab. The rest are honestly marked unverified —
+        never guessed (see MATH-VERIFICATION §3c).
+
+### Next up
+
+- Opinion layer (rule #7) — `/content/guides/*.md` is designed but **unbuilt**. The site
+  is currently all facts, no guidance. Infrastructure first; opinions need a human author.
+- Proc tail: split genuinely non-damaging skills (dashes, beacons) from the truly
+  unknown ones so the UI can say "no proc" instead of "unverified".

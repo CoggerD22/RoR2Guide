@@ -1,5 +1,5 @@
 import type { LucideIcon } from "lucide-react";
-import { BookOpen, ClipboardList, Calculator, Library } from "lucide-react";
+import { BookOpen, ClipboardList, Calculator, Library, Lightbulb } from "lucide-react";
 
 /**
  * Single source of truth for the top-level sections. Both the router and the
@@ -7,7 +7,7 @@ import { BookOpen, ClipboardList, Calculator, Library } from "lucide-react";
  * `milestone` drives the "Coming in Mx" placeholder copy during M0.
  */
 export interface NavSection {
-  path: "/items" | "/planner" | "/stats" | "/reference";
+  path: "/items" | "/planner" | "/stats" | "/reference" | "/guides";
   label: string;
   blurb: string;
   milestone: string;
@@ -42,5 +42,12 @@ export const NAV_SECTIONS: NavSection[] = [
     blurb: "Bazaar dreams, shrines, loadout unlocks, and artifacts — the hard-to-find answers.",
     milestone: "M6",
     icon: Library,
+  },
+  {
+    path: "/guides",
+    label: "Guides",
+    blurb: "Build advice and item priorities — opinion, badged and dated, kept out of the codex.",
+    milestone: "M7",
+    icon: Lightbulb,
   },
 ];

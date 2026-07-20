@@ -108,3 +108,17 @@ test("codex item detail shows a provenance badge", async ({ page }) => {
   await expect(drawer).toBeVisible();
   await expect(drawer.getByText("Game-text verified")).toBeVisible();
 });
+
+test("guides section is reachable and honest when empty", async ({ page }) => {
+  await page.goto("/items");
+  await page.getByRole("link", { name: "Guides", exact: true }).click();
+  await expect(page).toHaveURL(/\/guides$/);
+  await expect(page.getByRole("heading", { name: "Guides" })).toBeVisible();
+
+  // No opinions are invented to fill the page — it says so plainly.
+  await expect(page.getByText("No guides published yet")).toBeVisible();
+
+  // Unknown guide slugs don't crash the app.
+  await page.goto("/guides/does-not-exist");
+  await expect(page.getByText(/No guide called/)).toBeVisible();
+});
