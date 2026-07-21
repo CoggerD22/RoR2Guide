@@ -145,3 +145,32 @@ test("codex secondary filters are collapsed by default and expand on demand", as
   // The toggle reports how many hidden filters are active.
   await expect(page.getByRole("button", { name: /Fewer filters/ })).toContainText("1");
 });
+
+test("survivor page joins base stats, skills, procs and unlock challenges", async ({ page }) => {
+  await page.goto("/survivors");
+  await page.getByRole("link", { name: /Commando/ }).click();
+  await expect(page).toHaveURL(/\/survivors\/commando$/);
+
+  // Base stats straight from the body prefab, with per-level growth.
+  await expect(page.getByRole("row", { name: /Health\s+110/ })).toBeVisible();
+
+  // Skills sit under their real in-game slot, with verified procs.
+  await expect(page.getByText("Phase Blast")).toBeVisible();
+
+  // Unlock challenge + requirement are joined in.
+  await expect(page.getByText("Rolling Thunder")).toBeVisible();
+  await expect(page.getByText("Kill an Overloading Worm.")).toBeVisible();
+
+  // Unverified procs must say so, never show a number.
+  await expect(page.getByText("proc unverified").first()).toBeVisible();
+
+  // DLC survivors join too — this silently rendered nothing while their names
+  // carried a "(SotV)" suffix that never matched survivors.json.
+  await page.goto("/survivors/railgunner");
+  await expect(page.getByRole("heading", { name: "Railgunner" })).toBeVisible();
+  await expect(page.getByText(/Marksman|Cryocharge/).first()).toBeVisible();
+
+  // Unknown ids don't crash.
+  await page.goto("/survivors/not-a-survivor");
+  await expect(page.getByText(/No survivor called/)).toBeVisible();
+});

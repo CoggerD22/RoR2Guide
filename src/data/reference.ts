@@ -82,9 +82,9 @@ export const LOADOUT_UNLOCKS: SurvivorLoadout[] = [
   {
     survivor: "Commando",
     skills: [
-      { skill: "Tactical Slide", slot: "Secondary", challenge: "Godspeed", requirement: "Charge the Stage 1 Teleporter in under 5 minutes." },
-      { skill: "Frag Grenade", slot: "Utility", challenge: "Incorruptible", requirement: "Clear 20 stages without picking up a Lunar item." },
-      { skill: "Phase Blast", slot: "Special", challenge: "Rolling Thunder", requirement: "Kill an Overloading Worm." },
+      { skill: "Tactical Slide", slot: "Utility", challenge: "Godspeed", requirement: "Charge the Stage 1 Teleporter in under 5 minutes." },
+      { skill: "Frag Grenade", slot: "Special", challenge: "Incorruptible", requirement: "Clear 20 stages without picking up a Lunar item." },
+      { skill: "Phase Blast", slot: "Secondary", challenge: "Rolling Thunder", requirement: "Kill an Overloading Worm." },
     ],
   },
   {
@@ -99,15 +99,15 @@ export const LOADOUT_UNLOCKS: SurvivorLoadout[] = [
     survivor: "MUL-T",
     skills: [
       { skill: "Power-Saw", slot: "Primary", challenge: "Gotcha!", requirement: "Kill the Imp Overlord with the Preon Accumulator." },
-      { skill: "Scrap Launcher", slot: "Secondary", challenge: "Pest Control", requirement: "Defeat 2 Beetle Queens without leaving the Teleporter zone." },
-      { skill: "Power Mode", slot: "Passive", challenge: "Seventh Day", requirement: "Clear the Void Fields on Stage 7 or later." },
+      { skill: "Scrap Launcher", slot: "Primary", challenge: "Pest Control", requirement: "Defeat 2 Beetle Queens without leaving the Teleporter zone." },
+      { skill: "Power Mode", slot: "Special", challenge: "Seventh Day", requirement: "Clear the Void Fields on Stage 7 or later." },
     ],
   },
   {
     survivor: "Engineer",
     skills: [
-      { skill: "Spider Mines", slot: "Primary", challenge: "100% Calculated", requirement: "Defeat a Teleporter boss in under 5 seconds." },
-      { skill: "TR58 Carbonizer Turret", slot: "Secondary", challenge: "Better With Friends", requirement: "Have 12 minions active at once." },
+      { skill: "Spider Mines", slot: "Secondary", challenge: "100% Calculated", requirement: "Defeat a Teleporter boss in under 5 seconds." },
+      { skill: "TR58 Carbonizer Turret", slot: "Special", challenge: "Better With Friends", requirement: "Have 12 minions active at once." },
       { skill: "Thermal Harpoons", slot: "Utility", challenge: "Zero Sum", requirement: "Finish charging a Teleporter with 0 monsters alive." },
     ],
   },
@@ -122,31 +122,31 @@ export const LOADOUT_UNLOCKS: SurvivorLoadout[] = [
   {
     survivor: "Mercenary",
     skills: [
-      { skill: "Rising Thunder", slot: "Utility", challenge: "Demon of the Skies", requirement: "Stay airborne for 30 seconds." },
+      { skill: "Rising Thunder", slot: "Secondary", challenge: "Demon of the Skies", requirement: "Stay airborne for 30 seconds." },
       { skill: "Slicing Winds", slot: "Special", challenge: "Ethereal", requirement: "Complete a Prismatic Trial without dropping below 100% health." },
-      { skill: "Focused Assault", slot: "Passive", challenge: "Flash of Blades", requirement: "Use 20 abilities within 10 seconds." },
+      { skill: "Focused Assault", slot: "Utility", challenge: "Flash of Blades", requirement: "Use 20 abilities within 10 seconds." },
     ],
   },
   {
     survivor: "Bandit",
     skills: [
-      { skill: "Desperado", slot: "Primary", challenge: "B&E", requirement: "Kill the final boss with 'Lights Out'." },
-      { skill: "Blast", slot: "Secondary", challenge: "Classic Man", requirement: "Reset cooldowns with 'Lights Out' 15 times in a row." },
-      { skill: "Serrated Shiv", slot: "Utility", challenge: "Sadist", requirement: "Kill a monster afflicted with 20 Hemorrhage stacks." },
+      { skill: "Desperado", slot: "Special", challenge: "B&E", requirement: "Kill the final boss with 'Lights Out'." },
+      { skill: "Blast", slot: "Primary", challenge: "Classic Man", requirement: "Reset cooldowns with 'Lights Out' 15 times in a row." },
+      { skill: "Serrated Shiv", slot: "Secondary", challenge: "Sadist", requirement: "Kill a monster afflicted with 20 Hemorrhage stacks." },
     ],
   },
   {
     survivor: "Loader",
     skills: [
-      { skill: "Thunder Gauntlet", slot: "Primary", challenge: "Earthshatter", requirement: "Land a Charged Gauntlet hit while moving 300 mph or faster." },
-      { skill: "Spiked Fist", slot: "Utility", challenge: "Swing By", requirement: "Reach the Celestial Portal in 25 minutes or less." },
+      { skill: "Thunder Gauntlet", slot: "Utility", challenge: "Earthshatter", requirement: "Land a Charged Gauntlet hit while moving 300 mph or faster." },
+      { skill: "Spiked Fist", slot: "Secondary", challenge: "Swing By", requirement: "Reach the Celestial Portal in 25 minutes or less." },
       { skill: "Thunderslam", slot: "Special", challenge: "The Thunderdome", requirement: "Kill 3 Loaders in Bulwark's Ambry." },
     ],
   },
   {
     survivor: "Acrid",
     skills: [
-      { skill: "Ravenous Bite", slot: "Primary", challenge: "Bad Medicine", requirement: "Land the final blow on a Scavenger." },
+      { skill: "Ravenous Bite", slot: "Secondary", challenge: "Bad Medicine", requirement: "Land the final blow on a Scavenger." },
       { skill: "Blight", slot: "Secondary", challenge: "Easy Prey", requirement: "Kill 50 enemies that have 1 HP remaining." },
       { skill: "Frenzied Leap", slot: "Utility", challenge: "Pandemic", requirement: "Inflict Poison 1000 times total." },
     ],
@@ -154,7 +154,7 @@ export const LOADOUT_UNLOCKS: SurvivorLoadout[] = [
   {
     survivor: "Captain",
     skills: [
-      { skill: "OGM-72 'DIABLO' Strike", slot: "Primary", challenge: "Smushed", requirement: "Kill the final boss with the Supply Beacon." },
+      { skill: "OGM-72 'DIABLO' Strike", slot: "Utility", challenge: "Smushed", requirement: "Kill the final boss with the Supply Beacon." },
       { skill: "Beacon: Resupply", slot: "Secondary", challenge: "Wanderlust", requirement: "Visit 10 environments in a single run." },
       { skill: "Beacon: Hacking", slot: "Utility", challenge: "Worth Every Penny", requirement: "Repair the TC-280 Prototype." },
     ],
@@ -162,24 +162,24 @@ export const LOADOUT_UNLOCKS: SurvivorLoadout[] = [
   {
     survivor: "REX",
     skills: [
-      { skill: "DIRECTIVE: Drill", slot: "Primary", challenge: "Bushwhacked", requirement: "Complete a Teleporter event while under 50% health." },
-      { skill: "DIRECTIVE: Harvest", slot: "Secondary", challenge: "Full of Life", requirement: "Heal 1000 health at once." },
+      { skill: "DIRECTIVE: Drill", slot: "Secondary", challenge: "Bushwhacked", requirement: "Complete a Teleporter event while under 50% health." },
+      { skill: "DIRECTIVE: Harvest", slot: "Special", challenge: "Full of Life", requirement: "Heal 1000 health at once." },
       { skill: "Bramble Volley", slot: "Utility", challenge: "Dunked", requirement: "Kill a Clay Dunestrider by knocking it into the pit on Abandoned Aqueduct." },
     ],
   },
   {
-    survivor: "Railgunner (SotV)",
+    survivor: "Railgunner",
     skills: [
       { skill: "HH44 Marksman", slot: "Secondary", challenge: "Marksman", requirement: "" },
       { skill: "Cryocharge", slot: "Special", challenge: "Trickshot", requirement: "" },
     ],
   },
   {
-    survivor: "Void Fiend (SotV)",
+    survivor: "Void Fiend",
     skills: [],
   },
   {
-    survivor: "Seeker (SotS)",
+    survivor: "Seeker",
     skills: [
       { skill: "Soul Spiral", slot: "Secondary", challenge: "Airborne Souls", requirement: "" },
       { skill: "Reprieve", slot: "Utility", challenge: "Scorched Earth", requirement: "" },
@@ -187,21 +187,21 @@ export const LOADOUT_UNLOCKS: SurvivorLoadout[] = [
     ],
   },
   {
-    survivor: "Chef (SotS)",
+    survivor: "Chef",
     skills: [
       { skill: "Ice Box", slot: "Secondary", challenge: "It's Getting Hot In Here!", requirement: "Apply 20 stacks of burn to Mithrix." },
       { skill: "Oil Spill", slot: "Utility", challenge: "You've Always Been Crazy", requirement: "" },
     ],
   },
   {
-    survivor: "False Son (SotS)",
+    survivor: "False Son",
     skills: [
       { skill: "Lunar Stakes", slot: "Secondary", challenge: "Protein Heavy Diet", requirement: "" },
       { skill: "Laser Burst", slot: "Special", challenge: "Stare Them Down", requirement: "" },
     ],
   },
   {
-    survivor: "Operator (AC)",
+    survivor: "Operator",
     skills: [
       { skill: "CMD-SWARM", slot: "Secondary", challenge: "That All You Got?", requirement: "" },
       { skill: "FIREWALL", slot: "Utility", challenge: "Not So Different", requirement: "" },
@@ -209,7 +209,7 @@ export const LOADOUT_UNLOCKS: SurvivorLoadout[] = [
     ],
   },
   {
-    survivor: "Drifter (AC)",
+    survivor: "Drifter",
     skills: [],
   },
 ];

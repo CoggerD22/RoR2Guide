@@ -21,6 +21,7 @@ import {
   skillsFileSchema,
   type Item,
 } from "../src/data/schema.ts";
+import { LOADOUT_UNLOCKS } from "../src/data/reference.ts";
 
 const here = dirname(fileURLToPath(import.meta.url));
 const root = resolve(here, "..");
@@ -168,6 +169,45 @@ function main(): number {
       warnings.push(
         `${unverified}/${skillCount} skills have no verified proc coefficient (proc:null) — see MATH-VERIFICATION.md Phase 5`,
       );
+    }
+  }
+
+  // --- Loadout unlocks cross-referenced against extracted game data ---------
+  // These were hand-entered from the wiki and drifted: 18 rows had the wrong slot
+  // and 12 more never joined at all because DLC survivors were named
+  // "Railgunner (SotV)" instead of "Railgunner". Both are silent failures — the
+  // page just renders nothing — so they're checked here now.
+  if (existsSync(skillsPath) && survivorIdList.length) {
+    const skillsRaw = skillsFileSchema.safeParse(
+      JSON.parse(readFileSync(skillsPath, "utf8")),
+    );
+    const survivorsByName = new Map(
+      survivorsFileSchema
+        .parse(JSON.parse(readFileSync(survivorsPath, "utf8")))
+        .map((s) => [s.name, s.id]),
+    );
+    const norm = (s: string) => s.toLowerCase().replace(/[^a-z0-9]/g, "");
+    if (skillsRaw.success) {
+      for (const entry of LOADOUT_UNLOCKS) {
+        const sid = survivorsByName.get(entry.survivor);
+        if (!sid) {
+          errors.push(
+            `LOADOUT_UNLOCKS survivor "${entry.survivor}" does not match any survivors.json name`,
+          );
+          continue;
+        }
+        const gameSkills = skillsRaw.data.find((x) => x.survivor === sid)?.skills ?? [];
+        for (const u of entry.skills) {
+          const hit = gameSkills.find((k) => norm(k.name) === norm(u.skill));
+          if (!hit) continue; // not a loadout-slot skill (e.g. Captain's beacon options)
+          const gameSlot = hit.slot.charAt(0).toUpperCase() + hit.slot.slice(1);
+          if (gameSlot !== u.slot) {
+            errors.push(
+              `LOADOUT_UNLOCKS "${entry.survivor} / ${u.skill}" slot is "${u.slot}", game says "${gameSlot}"`,
+            );
+          }
+        }
+      }
     }
   }
 

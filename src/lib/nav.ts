@@ -1,5 +1,5 @@
 import type { LucideIcon } from "lucide-react";
-import { BookOpen, ClipboardList, Calculator, Library, Lightbulb } from "lucide-react";
+import { BookOpen, ClipboardList, Calculator, Library, Lightbulb, Users } from "lucide-react";
 
 /**
  * Single source of truth for the top-level sections. Both the router and the
@@ -7,7 +7,7 @@ import { BookOpen, ClipboardList, Calculator, Library, Lightbulb } from "lucide-
  * `milestone` drives the "Coming in Mx" placeholder copy during M0.
  */
 export interface NavSection {
-  path: "/items" | "/planner" | "/stats" | "/reference" | "/guides";
+  path: "/items" | "/planner" | "/stats" | "/survivors" | "/reference" | "/guides";
   label: string;
   blurb: string;
   milestone: string;
@@ -35,6 +35,13 @@ export const NAV_SECTIONS: NavSection[] = [
     blurb: "Pick a survivor, set a level, stack items, and watch the derived stats update.",
     milestone: "M5",
     icon: Calculator,
+  },
+  {
+    path: "/survivors",
+    label: "Survivors",
+    blurb: "Base stats, every loadout skill with its proc coefficient, and unlock challenges.",
+    milestone: "M7",
+    icon: Users,
   },
   {
     path: "/reference",

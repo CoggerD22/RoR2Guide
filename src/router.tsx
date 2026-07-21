@@ -9,6 +9,8 @@ import { CodexPage } from "@/components/codex/CodexPage";
 import { PlannerPage } from "@/components/planner/PlannerPage";
 import { StatLabPage } from "@/components/statlab/StatLabPage";
 import { ReferencePage } from "@/components/reference/ReferencePage";
+import { SurvivorsPage } from "@/components/survivors/SurvivorsPage";
+import { SurvivorDetail } from "@/components/survivors/SurvivorDetail";
 import { GuidesPage } from "@/components/guides/GuidesPage";
 import { GuideDetail } from "@/components/guides/GuideDetail";
 
@@ -47,6 +49,21 @@ const referenceRoute = createRoute({
   component: ReferencePage,
 });
 
+const survivorsRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/survivors",
+  component: SurvivorsPage,
+});
+
+const survivorDetailRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/survivors/$id",
+  component: function SurvivorRoute() {
+    const { id } = survivorDetailRoute.useParams();
+    return <SurvivorDetail id={id} />;
+  },
+});
+
 const guidesRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/guides",
@@ -68,6 +85,8 @@ const routeTree = rootRoute.addChildren([
   plannerRoute,
   statsRoute,
   referenceRoute,
+  survivorsRoute,
+  survivorDetailRoute,
   guidesRoute,
   guideDetailRoute,
 ]);
