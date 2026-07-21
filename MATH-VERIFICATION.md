@@ -216,11 +216,32 @@ Pipeline (all reproducible, inputs git-ignored):
   initialise `procCoefficient = 1f` — verified in the decompile). Emits
   `src/data/skills.json`.
 
-**Coverage: 61/125 skills have a verified proc + provenance; 64 are left `verified:false`
-(proc:null), NOT guessed.** The 64 are the genuine tail: charge→fire sub-state
-indirection (Merc Eviscerate, Railgunner M99), projectiles fired from a code field, and
-non-damaging utility (dashes/beacons). These need per-skill tracing. Spot-checks on the
-verified set pass (Double Tap 1.0, Phase Blast 0.5, Frag Grenade 1.0, Strafe 1.0).
+**Coverage: 87/125 skills have a verified proc + provenance; 38 are left `verified:false`
+(proc:null), NOT guessed.** Spot-checks pass: Double Tap 1.0, Phase Blast 0.5, Frag
+Grenade 1.0, Strafe 1.0, Laser Glaive 0.8, Arrow Rain 1.0, Eviscerate 1.0, Vulcan
+Shotgun 0.75.
+
+Entry states hand off to the state that actually attacks, in at least three shapes:
+`SetNextState(new FireX())`, `return new ArrowRain()` (factory), and assign-to-variable
+then `SetNextState(v)`. Matching the *call* missed two of the three, so the resolver now
+follows any `new X()` whose class lives in an `EntityStates` namespace — that covers all
+three and can't wander into unrelated types. Base state classes are followed too
+(Merc's melee states inherit their OverlapAttack from `BaseMeleeAttack`).
+
+### Rejected: automatic "deals no damage" labelling
+
+Tried, and deliberately reverted. The plan was to mark skills with no damage evidence as
+"no proc" so the UI could stop saying "unverified" for dashes and beacons. It produced
+**false negatives on Huntress's Ballista and Railgunner's M99 Sniper** — both obviously
+damaging, both reported clean because their damage sits behind multi-hop handoffs the
+walk loses (`BeginArrowSnipe → AimArrowSnipe → FireArrowSnipe`). Three earlier traversal
+gaps had already been found and patched the same way: each surfaced only because a human
+recognised the skill.
+
+Absence of evidence is not evidence of absence here. A wrong "no proc" tells a player a
+skill cannot trigger on-hit items when it can — worse than admitting we don't know. Any
+future attempt needs positive proof of non-damage or hand-curation, not a failed search.
+The reasoning is recorded in `scripts/build-skill-procs.mjs` so it isn't retried blindly.
 
 ## 3d. Phase 5b (artifacts + shrines) — verified against code/assets, clean
 

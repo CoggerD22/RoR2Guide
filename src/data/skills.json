@@ -32,7 +32,7 @@
         "name": "Tactical Dive",
         "state": "EntityStates.Commando.DodgeState",
         "proc": null,
-        "procSource": "review:no-attack",
+        "procSource": "review:unresolved",
         "verified": false
       },
       {
@@ -40,7 +40,7 @@
         "name": "Tactical Slide",
         "state": "EntityStates.Commando.SlideState",
         "proc": null,
-        "procSource": "review:no-attack",
+        "procSource": "review:unresolved",
         "verified": false
       },
       {
@@ -94,7 +94,7 @@
         "name": "Blink",
         "state": "EntityStates.Huntress.BlinkState",
         "proc": null,
-        "procSource": "review:no-attack",
+        "procSource": "review:unresolved",
         "verified": false
       },
       {
@@ -102,23 +102,23 @@
         "name": "Phase Blink",
         "state": "EntityStates.Huntress.MiniBlinkState",
         "proc": null,
-        "procSource": "review:no-attack",
+        "procSource": "review:unresolved",
         "verified": false
       },
       {
         "slot": "special",
         "name": "Arrow Rain",
         "state": "EntityStates.Huntress.BeginArrowRain",
-        "proc": null,
-        "procSource": "review:no-attack",
-        "verified": false
+        "proc": 1,
+        "procSource": "esc-via-transition:ArrowRain",
+        "verified": true
       },
       {
         "slot": "special",
         "name": "Ballista",
         "state": "EntityStates.Huntress.BeginArrowSnipe",
         "proc": null,
-        "procSource": "review:no-attack",
+        "procSource": "review:unresolved",
         "verified": false
       }
     ]
@@ -171,17 +171,17 @@
         "slot": "special",
         "name": "Lights Out",
         "state": "EntityStates.Bandit2.Weapon.PrepSidearmResetRevolver",
-        "proc": null,
-        "procSource": "review:no-attack",
-        "verified": false
+        "proc": 1,
+        "procSource": "code:default-1.0-via-transition-via-base",
+        "verified": true
       },
       {
         "slot": "special",
         "name": "Desperado",
         "state": "EntityStates.Bandit2.Weapon.PrepSidearmSkullRevolver",
-        "proc": null,
-        "procSource": "review:no-attack",
-        "verified": false
+        "proc": 1,
+        "procSource": "code:default-1.0-via-transition-via-base",
+        "verified": true
       }
     ]
   },
@@ -242,7 +242,7 @@
         "name": "Retool",
         "state": "EntityStates.Toolbot.StartToolbotStanceSwap",
         "proc": null,
-        "procSource": "review:no-attack",
+        "procSource": "review:unresolved",
         "verified": false
       },
       {
@@ -250,7 +250,7 @@
         "name": "Power Mode",
         "state": "EntityStates.Toolbot.ToolbotDualWieldStart",
         "proc": null,
-        "procSource": "review:no-attack",
+        "procSource": "review:unresolved",
         "verified": false
       }
     ]
@@ -263,9 +263,9 @@
         "slot": "primary",
         "name": "Bouncing Grenades",
         "state": "EntityStates.Engi.EngiWeapon.ChargeGrenades",
-        "proc": null,
-        "procSource": "review:no-attack",
-        "verified": false
+        "proc": 1,
+        "procSource": "esc-via-transition:FireGrenades",
+        "verified": true
       },
       {
         "slot": "secondary",
@@ -296,7 +296,7 @@
         "name": "Thermal Harpoons",
         "state": "EntityStates.Engi.EngiMissilePainter.Paint",
         "proc": null,
-        "procSource": "review:no-attack",
+        "procSource": "review:unresolved",
         "verified": false
       },
       {
@@ -304,7 +304,7 @@
         "name": "TR12 Gauss Auto-Turret",
         "state": "EntityStates.Engi.EngiWeapon.PlaceTurret",
         "proc": null,
-        "procSource": "review:no-attack",
+        "procSource": "review:unresolved",
         "verified": false
       },
       {
@@ -312,7 +312,7 @@
         "name": "TR58 Carbonizer Turret",
         "state": "EntityStates.Engi.EngiWeapon.PlaceWalkerTurret",
         "proc": null,
-        "procSource": "review:no-attack",
+        "procSource": "review:unresolved",
         "verified": false
       }
     ]
@@ -341,17 +341,17 @@
         "slot": "secondary",
         "name": "Charged Nano-Bomb",
         "state": "EntityStates.Mage.Weapon.ChargeNovabomb",
-        "proc": null,
-        "procSource": "review:no-attack",
-        "verified": false
+        "proc": 1,
+        "procSource": "esc-via-transition:ThrowNovabomb",
+        "verified": true
       },
       {
         "slot": "secondary",
         "name": "Cast Nano-Spear",
         "state": "EntityStates.Mage.Weapon.ChargeIcebomb",
-        "proc": null,
-        "procSource": "review:no-attack",
-        "verified": false
+        "proc": 1,
+        "procSource": "esc-via-transition:ThrowIcebomb",
+        "verified": true
       },
       {
         "slot": "utility",
@@ -396,7 +396,7 @@
         "name": "Whirlwind",
         "state": "EntityStates.Merc.WhirlwindEntry",
         "proc": null,
-        "procSource": "review:no-attack",
+        "procSource": "review:unresolved",
         "verified": false
       },
       {
@@ -404,7 +404,7 @@
         "name": "Rising Thunder",
         "state": "EntityStates.Merc.Uppercut",
         "proc": null,
-        "procSource": "review:no-attack",
+        "procSource": "review:unresolved",
         "verified": false
       },
       {
@@ -427,9 +427,9 @@
         "slot": "special",
         "name": "Eviscerate",
         "state": "EntityStates.Merc.EvisDash",
-        "proc": null,
-        "procSource": "review:no-attack",
-        "verified": false
+        "proc": 1,
+        "procSource": "esc-via-transition:Evis",
+        "verified": true
       },
       {
         "slot": "special",
@@ -474,16 +474,16 @@
         "name": "DIRECTIVE: Disperse",
         "state": "EntityStates.Treebot.Weapon.ChargeSonicBoom",
         "proc": null,
-        "procSource": "review:no-attack",
+        "procSource": "review:unresolved",
         "verified": false
       },
       {
         "slot": "utility",
         "name": "Bramble Volley",
         "state": "EntityStates.Treebot.Weapon.ChargePlantSonicBoom",
-        "proc": null,
-        "procSource": "review:no-attack",
-        "verified": false
+        "proc": 0.5,
+        "procSource": "esc-via-transition:FirePlantSonicBoom",
+        "verified": true
       },
       {
         "slot": "special",
@@ -497,9 +497,9 @@
         "slot": "special",
         "name": "Tangling Growth",
         "state": "EntityStates.PrepFlower2",
-        "proc": 1,
-        "procSource": "esc-via-transition:FireFlower2",
-        "verified": true
+        "proc": null,
+        "procSource": "review:unresolved",
+        "verified": false
       }
     ]
   },
@@ -536,7 +536,7 @@
         "name": "Charged Gauntlet",
         "state": "EntityStates.Loader.ChargeFist",
         "proc": null,
-        "procSource": "review:no-attack",
+        "procSource": "review:unresolved",
         "verified": false
       },
       {
@@ -544,7 +544,7 @@
         "name": "Thunder Gauntlet",
         "state": "EntityStates.Loader.ChargeZapFist",
         "proc": null,
-        "procSource": "review:no-attack",
+        "procSource": "review:unresolved",
         "verified": false
       },
       {
@@ -644,7 +644,7 @@
         "name": "Orbital Probe",
         "state": "EntityStates.Captain.Weapon.SetupAirstrike",
         "proc": null,
-        "procSource": "review:no-attack",
+        "procSource": "review:unresolved",
         "verified": false
       },
       {
@@ -652,7 +652,7 @@
         "name": "OGM-72 'DIABLO' Strike",
         "state": "EntityStates.Captain.Weapon.SetupAirstrikeAlt",
         "proc": null,
-        "procSource": "review:no-attack",
+        "procSource": "review:unresolved",
         "verified": false
       },
       {
@@ -660,7 +660,7 @@
         "name": "Orbital Supply Beacon",
         "state": "EntityStates.Captain.Weapon.SetupSupplyDrop",
         "proc": null,
-        "procSource": "review:no-attack",
+        "procSource": "review:unresolved",
         "verified": false
       }
     ]
@@ -674,7 +674,7 @@
         "name": "Nevermore",
         "state": "EntityStates.Heretic.Weapon.Squawk",
         "proc": null,
-        "procSource": "review:no-attack",
+        "procSource": "review:unresolved",
         "verified": false
       },
       {
@@ -682,7 +682,7 @@
         "name": "Nevermore",
         "state": "EntityStates.Heretic.Weapon.Squawk",
         "proc": null,
-        "procSource": "review:no-attack",
+        "procSource": "review:unresolved",
         "verified": false
       },
       {
@@ -690,7 +690,7 @@
         "name": "Nevermore",
         "state": "EntityStates.Heretic.Weapon.Squawk",
         "proc": null,
-        "procSource": "review:no-attack",
+        "procSource": "review:unresolved",
         "verified": false
       },
       {
@@ -698,7 +698,7 @@
         "name": "Nevermore",
         "state": "EntityStates.Heretic.Weapon.Squawk",
         "proc": null,
-        "procSource": "review:no-attack",
+        "procSource": "review:unresolved",
         "verified": false
       }
     ]
@@ -720,7 +720,7 @@
         "name": "M99 Sniper",
         "state": "EntityStates.Railgunner.Scope.WindUpScopeHeavy",
         "proc": null,
-        "procSource": "review:no-attack",
+        "procSource": "review:unresolved",
         "verified": false
       },
       {
@@ -728,7 +728,7 @@
         "name": "HH44 Marksman",
         "state": "EntityStates.Railgunner.Scope.WindUpScopeLight",
         "proc": null,
-        "procSource": "review:no-attack",
+        "procSource": "review:unresolved",
         "verified": false
       },
       {
@@ -752,7 +752,7 @@
         "name": "Supercharge",
         "state": "EntityStates.Railgunner.Weapon.ChargeSnipeSuper",
         "proc": null,
-        "procSource": "review:no-attack",
+        "procSource": "review:unresolved",
         "verified": false
       },
       {
@@ -760,7 +760,7 @@
         "name": "Cryocharge",
         "state": "EntityStates.Railgunner.Weapon.ChargeSnipeCryo",
         "proc": null,
-        "procSource": "review:no-attack",
+        "procSource": "review:unresolved",
         "verified": false
       }
     ]
@@ -836,7 +836,7 @@
         "name": "Sojourn",
         "state": "EntityStates.Seeker.Sojourn",
         "proc": null,
-        "procSource": "review:no-attack",
+        "procSource": "review:unresolved",
         "verified": false
       },
       {
@@ -844,7 +844,7 @@
         "name": "Reprieve",
         "state": "EntityStates.Seeker.Reprieve",
         "proc": null,
-        "procSource": "review:no-attack",
+        "procSource": "review:unresolved",
         "verified": false
       },
       {
@@ -906,7 +906,7 @@
         "name": "Meridian's Will",
         "state": "EntityStates.FalseSon.MeridiansWillAim",
         "proc": null,
-        "procSource": "review:no-attack",
+        "procSource": "review:unresolved",
         "verified": false
       },
       {
@@ -914,7 +914,7 @@
         "name": "Laser of the Father",
         "state": "EntityStates.FalseSon.LaserFather",
         "proc": null,
-        "procSource": "review:no-attack",
+        "procSource": "review:unresolved",
         "verified": false
       },
       {
@@ -922,7 +922,7 @@
         "name": "Laser Burst",
         "state": "EntityStates.FalseSon.LaserFatherBurstPrep",
         "proc": null,
-        "procSource": "review:no-attack",
+        "procSource": "review:unresolved",
         "verified": false
       }
     ]
@@ -1006,7 +1006,7 @@
         "name": "ADMIN-OVERRIDE",
         "state": "EntityStates.DroneTech.Weapon.Activate",
         "proc": null,
-        "procSource": "review:no-attack",
+        "procSource": "review:unresolved",
         "verified": false
       },
       {
@@ -1014,7 +1014,7 @@
         "name": "CMD-SWARM",
         "state": "EntityStates.DroneTech.Weapon.Paint.Paint",
         "proc": null,
-        "procSource": "review:no-attack",
+        "procSource": "review:unresolved",
         "verified": false
       },
       {
@@ -1022,16 +1022,16 @@
         "name": "Ascent Protocol",
         "state": "EntityStates.DroneTech.DroneLeap",
         "proc": null,
-        "procSource": "review:no-attack",
+        "procSource": "review:unresolved",
         "verified": false
       },
       {
         "slot": "utility",
         "name": "FIREWALL",
         "state": "EntityStates.DroneTech.Weapon.ShieldFormation",
-        "proc": null,
-        "procSource": "review:no-attack",
-        "verified": false
+        "proc": 1,
+        "procSource": "esc-via-transition:FireShield",
+        "verified": true
       },
       {
         "slot": "special",
@@ -1084,23 +1084,23 @@
         "name": "Repossess",
         "state": "EntityStates.Drifter.AimRepossess",
         "proc": null,
-        "procSource": "review:no-attack",
+        "procSource": "review:unresolved",
         "verified": false
       },
       {
         "slot": "utility",
         "name": "Tornado Slam",
         "state": "EntityStates.Drifter.ChargeTornadoSlam",
-        "proc": null,
-        "procSource": "review:no-attack",
-        "verified": false
+        "proc": 1,
+        "procSource": "esc-via-transition:TornadoSlam",
+        "verified": true
       },
       {
         "slot": "special",
         "name": "Salvage",
         "state": "EntityStates.Drifter.Salvage",
         "proc": null,
-        "procSource": "review:no-attack",
+        "procSource": "review:unresolved",
         "verified": false
       },
       {

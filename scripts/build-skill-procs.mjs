@@ -86,18 +86,46 @@ function classBody(fqType) {
 const MELEE_HITSCAN = /\b(new BulletAttack|new OverlapAttack|new BlastAttack|FireMecanimHitboxes|\.Fire\(\))\b/;
 const PROJECTILE = /\b(FireProjectile|ProjectileManager)\b/;
 
+/** Namespace of a class by short name, or null. Used to tell states from other types. */
+function namespaceOf(shortName) {
+  if (!lines) return null;
+  const re = new RegExp(`\\bclass\\s+${shortName}\\b`);
+  for (let i = 0; i < lines.length; i++) {
+    if (!re.test(lines[i])) continue;
+    for (let j = i; j >= 0 && j > i - 4000; j--) {
+      const m = lines[j].match(/^\s*namespace\s+([A-Za-z0-9_.]+)/);
+      if (m) return m[1];
+    }
+  }
+  return null;
+}
+
 /**
- * A charge/scope state often deals no damage itself and transitions into a fire
- * state (`outer.SetNextState(new FireX())`). The skill's proc is that fire state's.
- * Follow those transitions (depth-limited, cycle-guarded) before giving up.
+ * An entry/charge state often deals no damage itself and hands off to the state
+ * that does. The handoff takes at least three shapes in this codebase:
+ *   outer.SetNextState(new FireX())          — direct
+ *   return new ArrowRain();                  — factory method (BeginArrowRain)
+ *   EntityState s = cond ? new A() : new B(); outer.SetNextState(s);  — via variable
+ * So rather than pattern-match the call, follow ANY `new X()` whose class lives in
+ * an EntityStates namespace. That covers all three and can't wander into unrelated
+ * types like DamageInfo or Vector3.
  */
 function nextStates(body, ns) {
-  const out = [];
-  for (const m of body.matchAll(/Set(?:Next)?State\s*\(\s*new\s+([A-Za-z0-9_.]+)\s*\(/g)) {
+  const out = new Set();
+  for (const m of body.matchAll(/\bnew\s+([A-Z][A-Za-z0-9_]*(?:\.[A-Z][A-Za-z0-9_]*)*)\s*\(/g)) {
     const t = m[1];
-    out.push(t.includes(".") ? t : `${ns}.${t}`);
+    if (t.includes(".")) {
+      if (t.startsWith("EntityStates.")) out.add(t);
+      continue;
+    }
+    // same namespace first (cheap + most common), else any EntityStates class
+    if (classInfo(`${ns}.${t}`)) out.add(`${ns}.${t}`);
+    else {
+      const found = namespaceOf(t);
+      if (found && found.startsWith("EntityStates")) out.add(`${found}.${t}`);
+    }
   }
-  return [...new Set(out)];
+  return [...out];
 }
 
 function classifyFromCode(state, escProc, depth = 0, seen = new Set()) {
@@ -136,8 +164,28 @@ function classifyFromCode(state, escProc, depth = 0, seen = new Set()) {
     const r = classifyFromCode(baseFq, escProc, depth + 1, seen);
     if (r.proc !== null) return { ...r, source: `${r.source}-via-base` };
   }
-  return { proc: null, source: "review:no-attack" };
+  return { proc: null, source: "review:unresolved" };
 }
+
+/*
+ * DELIBERATELY NOT IMPLEMENTED: automatic "this skill deals no damage" labelling.
+ *
+ * Tried and rejected. The idea was to walk a state (plus its transitions and base
+ * classes) for any damage evidence and, finding none, mark the skill "no proc" so
+ * the UI could say that instead of the vaguer "unverified".
+ *
+ * It produced false negatives on skills that obviously deal damage — Huntress's
+ * Ballista and Railgunner's M99 Sniper both came back "no damage evidence". Their
+ * damage sits behind multi-hop handoffs the walk loses (BeginArrowSnipe ->
+ * AimArrowSnipe -> FireArrowSnipe). Three separate traversal gaps were found and
+ * patched before this one; each was only caught because a human recognised the
+ * skill. Absence of evidence here is not evidence of absence.
+ *
+ * A wrong "no proc" is worse than an honest "unverified": it tells a player a
+ * skill can't trigger on-hit items when it can. So unresolved skills stay
+ * verified:false. Any future attempt needs positive proof of non-damage (or
+ * hand-curation), not a failed search.
+ */
 
 const SLOTS = ["primary", "secondary", "utility", "special"];
 const out = [];
@@ -164,4 +212,4 @@ for (const [survivor, d] of Object.entries(loadouts)) {
 }
 
 fs.writeFileSync(OUT, JSON.stringify(out, null, 2) + "\n");
-console.log(`${OUT}: ${out.length} survivors, ${total} loadout skills, ${verified} with a verified proc, ${total - verified} left for review.`);
+console.log(`${OUT}: ${out.length} survivors, ${total} loadout skills, ${verified} with a verified proc, ${total - verified} unverified.`);
