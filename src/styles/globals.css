@@ -255,3 +255,19 @@
   padding-left: 0.75rem;
   font-style: italic;
 }
+
+/* Horizontally scrollable nav: hide the scrollbar and fade the right edge so a
+   partially-visible link reads as "scroll for more" instead of clipped text. */
+.nav-scroll {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  mask-image: linear-gradient(to right, black calc(100% - 1.5rem), transparent 100%);
+}
+.nav-scroll::-webkit-scrollbar {
+  display: none;
+}
+@media (min-width: 640px) {
+  .nav-scroll {
+    mask-image: none;
+  }
+}

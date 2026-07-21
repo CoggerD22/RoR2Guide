@@ -72,8 +72,9 @@ export function StatLabPage() {
         <h1 className="text-2xl font-semibold sm:text-3xl">Stat Lab</h1>
         <p className="mt-1 text-sm text-muted-foreground">
           Pick a survivor and level, stack stat items, and watch the derived numbers update.
-          The math mirrors the game&rsquo;s own RecalculateStats (verified against the decompiled
-          code); conditional and proc items are out of scope for now.
+          Every formula and base stat here is checked against the game&rsquo;s own files, not a
+          wiki. Items with conditional effects (only while sprinting, only out of combat)
+          aren&rsquo;t modelled.
         </p>
       </header>
 

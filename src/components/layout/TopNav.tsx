@@ -9,17 +9,19 @@ export function TopNav() {
       <div className="mx-auto flex h-14 max-w-6xl items-center gap-4 px-4 sm:px-6">
         <Link
           to="/items"
-          className="flex items-center gap-2 font-display text-sm font-semibold tracking-wide"
+          className="flex shrink-0 items-center gap-2 font-display text-sm font-semibold tracking-wide"
         >
           <Orbit className="size-5 text-primary" aria-hidden />
-          <span>
+          <span className="whitespace-nowrap">
             RoR2<span className="text-primary"> Companion</span>
           </span>
         </Link>
 
+        {/* Scrolls horizontally on narrow screens; the mask fades the cut-off edge so a
+            clipped link reads as "more to scroll" rather than broken text. */}
         <nav
           aria-label="Primary"
-          className="ml-auto flex items-center gap-1 overflow-x-auto"
+          className="nav-scroll ml-auto flex items-center gap-1 overflow-x-auto"
         >
           {NAV_SECTIONS.map((section) => (
             <Link

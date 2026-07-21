@@ -1,5 +1,5 @@
-import type { ReactNode } from "react";
-import { Search, X } from "lucide-react";
+import { useState, type ReactNode } from "react";
+import { Search, X, SlidersHorizontal, ChevronDown } from "lucide-react";
 import type { Tier, Dlc, StackingType } from "@/data/schema";
 import { PRESENT_TIERS, TIER_META, DLC_ORDER, DLC_META, ALL_TAGS } from "@/data/items";
 import { stackingLabel } from "@/lib/stacking";
@@ -61,6 +61,13 @@ function Row({ label, children }: { label: string; children: ReactNode }) {
 export function CodexFilters(props: CodexFiltersProps) {
   const { filters } = props;
 
+  // Tier is how people actually browse RoR2 items, so it stays visible. The other
+  // ~30 chips are collapsed by default — expanded they pushed all content below the
+  // fold on desktop and took two full screens on mobile. Starts open if any of the
+  // hidden filters is already active (e.g. restored from a previous visit).
+  const hiddenActive = filters.dlcs.size + filters.stacking.size + filters.tags.size;
+  const [showMore, setShowMore] = useState(hiddenActive > 0);
+
   return (
     <div className="flex flex-col gap-4">
       <div className="flex items-center gap-3">
@@ -93,33 +100,53 @@ export function CodexFilters(props: CodexFiltersProps) {
           ))}
         </Row>
 
-        <Row label="DLC">
-          {DLC_ORDER.map((dlc) => (
-            <Chip key={dlc} active={filters.dlcs.has(dlc)} onClick={() => props.onToggleDlc(dlc)}>
-              {DLC_META[dlc].short}
-            </Chip>
-          ))}
-        </Row>
+        <button
+          type="button"
+          onClick={() => setShowMore((v) => !v)}
+          aria-expanded={showMore}
+          className="inline-flex w-fit items-center gap-1.5 rounded-md border border-border px-2.5 py-1 text-xs text-muted-foreground transition-colors hover:text-foreground"
+        >
+          <SlidersHorizontal className="size-3.5" />
+          {showMore ? "Fewer filters" : "More filters"}
+          {hiddenActive > 0 && (
+            <span className="rounded-full bg-primary/20 px-1.5 text-[10px] font-semibold text-primary">
+              {hiddenActive}
+            </span>
+          )}
+          <ChevronDown className={cn("size-3.5 transition-transform", showMore && "rotate-180")} />
+        </button>
 
-        <Row label="Stacking">
-          {STACKING_TYPES.map((s) => (
-            <Chip
-              key={s}
-              active={filters.stacking.has(s)}
-              onClick={() => props.onToggleStacking(s)}
-            >
-              {stackingLabel(s)}
-            </Chip>
-          ))}
-        </Row>
+        {showMore && (
+          <div className="flex flex-col gap-3">
+            <Row label="DLC">
+              {DLC_ORDER.map((dlc) => (
+                <Chip key={dlc} active={filters.dlcs.has(dlc)} onClick={() => props.onToggleDlc(dlc)}>
+                  {DLC_META[dlc].short}
+                </Chip>
+              ))}
+            </Row>
 
-        <Row label="Category">
-          {ALL_TAGS.map((tag) => (
-            <Chip key={tag} active={filters.tags.has(tag)} onClick={() => props.onToggleTag(tag)}>
-              {tag.replace(/-/g, " ")}
-            </Chip>
-          ))}
-        </Row>
+            <Row label="Stacking">
+              {STACKING_TYPES.map((s) => (
+                <Chip
+                  key={s}
+                  active={filters.stacking.has(s)}
+                  onClick={() => props.onToggleStacking(s)}
+                >
+                  {stackingLabel(s)}
+                </Chip>
+              ))}
+            </Row>
+
+            <Row label="Category">
+              {ALL_TAGS.map((tag) => (
+                <Chip key={tag} active={filters.tags.has(tag)} onClick={() => props.onToggleTag(tag)}>
+                  {tag.replace(/-/g, " ")}
+                </Chip>
+              ))}
+            </Row>
+          </div>
+        )}
       </div>
 
       <div className="flex flex-wrap items-center justify-between gap-3">

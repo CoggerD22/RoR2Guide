@@ -122,3 +122,26 @@ test("guides section is reachable and honest when empty", async ({ page }) => {
   await page.goto("/guides/does-not-exist");
   await expect(page.getByText(/No guide called/)).toBeVisible();
 });
+
+test("codex secondary filters are collapsed by default and expand on demand", async ({ page }) => {
+  await page.goto("/items");
+
+  // Tier stays visible (primary browse axis); the ~30 other chips start hidden so
+  // items are above the fold.
+  await expect(page.getByRole("button", { name: "Legendary", exact: true })).toBeVisible();
+  await expect(page.getByRole("button", { name: /^movement speed$/i })).toHaveCount(0);
+
+  const toggle = page.getByRole("button", { name: /More filters/ });
+  await expect(toggle).toHaveAttribute("aria-expanded", "false");
+  await toggle.click();
+
+  // Category chips now available, and filtering by one narrows the grid.
+  const chip = page.getByRole("button", { name: /^movement speed$/i });
+  await expect(chip).toBeVisible();
+  await chip.click();
+  await expect(page.getByRole("button", { name: /Paul's Goat Hoof/ })).toBeVisible();
+  await expect(page.getByRole("button", { name: /^Crowbar/ })).toHaveCount(0);
+
+  // The toggle reports how many hidden filters are active.
+  await expect(page.getByRole("button", { name: /Fewer filters/ })).toContainText("1");
+});
