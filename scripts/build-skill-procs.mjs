@@ -53,7 +53,9 @@ function classInfo(fqType, requireNs = true) {
   if (!lines) return null;
   const idx = fqType.lastIndexOf(".");
   const ns = idx >= 0 ? fqType.slice(0, idx) : "";
-  const cls = idx >= 0 ? fqType.slice(idx + 1) : fqType;
+  // Nested types arrive as "Outer+Inner" in SkillDef typeNames (e.g. Void Fiend's
+  // VoidBlinkBase+VoidBlinkUp); the declaration is just `class Inner`.
+  const cls = (idx >= 0 ? fqType.slice(idx + 1) : fqType).split("+").pop();
   const re = new RegExp(`\\bclass\\s+${cls}\\b`);
   for (let i = 0; i < lines.length; i++) {
     if (!re.test(lines[i])) continue;
@@ -83,7 +85,12 @@ function classBody(fqType) {
   return ci ? ci.body : null;
 }
 
-const MELEE_HITSCAN = /\b(new BulletAttack|new OverlapAttack|new BlastAttack|FireMecanimHitboxes|\.Fire\(\))\b/;
+// InitMeleeOverlap is BaseState's melee helper: it returns `new OverlapAttack()`
+// and never assigns procCoefficient (verified in the decompile), so a state using
+// it inherits OverlapAttack's `procCoefficient = 1f` initialiser — same footing as
+// the BulletAttack default below. Merc's melee kit reaches its attack this way.
+const MELEE_HITSCAN =
+  /\b(new BulletAttack|new OverlapAttack|new BlastAttack|InitMeleeOverlap|FireMecanimHitboxes|\.Fire\(\))\b/;
 const PROJECTILE = /\b(FireProjectile|ProjectileManager)\b/;
 
 /** Namespace of a class by short name, or null. Used to tell states from other types. */
@@ -112,7 +119,10 @@ function namespaceOf(shortName) {
  */
 function nextStates(body, ns) {
   const out = new Set();
-  for (const m of body.matchAll(/\bnew\s+([A-Z][A-Za-z0-9_]*(?:\.[A-Z][A-Za-z0-9_]*)*)\s*\(/g)) {
+  // `new X(...)` AND `new X { ... }` — C# object-initializer syntax omits the
+  // parens entirely, and several handoffs use it (Loader: `return new SwingZapFist
+  // { ... }`), so matching only "(" silently lost those chains.
+  for (const m of body.matchAll(/\bnew\s+([A-Z][A-Za-z0-9_]*(?:\.[A-Z][A-Za-z0-9_]*)*)\s*[({]/g)) {
     const t = m[1];
     if (t.includes(".")) {
       if (t.startsWith("EntityStates.")) out.add(t);

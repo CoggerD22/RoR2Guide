@@ -295,9 +295,9 @@
         "slot": "utility",
         "name": "Thermal Harpoons",
         "state": "EntityStates.Engi.EngiMissilePainter.Paint",
-        "proc": null,
-        "procSource": "review:unresolved",
-        "verified": false
+        "proc": 1,
+        "procSource": "esc-via-transition:Fire",
+        "verified": true
       },
       {
         "slot": "special",
@@ -395,17 +395,17 @@
         "slot": "secondary",
         "name": "Whirlwind",
         "state": "EntityStates.Merc.WhirlwindEntry",
-        "proc": null,
-        "procSource": "review:unresolved",
-        "verified": false
+        "proc": 1,
+        "procSource": "code:default-1.0-via-transition-via-base",
+        "verified": true
       },
       {
         "slot": "secondary",
         "name": "Rising Thunder",
         "state": "EntityStates.Merc.Uppercut",
-        "proc": null,
-        "procSource": "review:unresolved",
-        "verified": false
+        "proc": 1,
+        "procSource": "code:default-1.0",
+        "verified": true
       },
       {
         "slot": "utility",
@@ -535,17 +535,17 @@
         "slot": "utility",
         "name": "Charged Gauntlet",
         "state": "EntityStates.Loader.ChargeFist",
-        "proc": null,
-        "procSource": "review:unresolved",
-        "verified": false
+        "proc": 1,
+        "procSource": "esc-via-transition:SwingChargedFist-via-base",
+        "verified": true
       },
       {
         "slot": "utility",
         "name": "Thunder Gauntlet",
         "state": "EntityStates.Loader.ChargeZapFist",
-        "proc": null,
-        "procSource": "review:unresolved",
-        "verified": false
+        "proc": 1,
+        "procSource": "esc-via-transition:SwingZapFist",
+        "verified": true
       },
       {
         "slot": "special",
@@ -782,7 +782,7 @@
         "name": "『Floo?d」",
         "state": "EntityStates.VoidSurvivor.Weapon.ChargeMegaBlaster",
         "proc": 1,
-        "procSource": "esc-via-transition:FireMegaBlasterSmall",
+        "procSource": "esc-via-transition:FireMegaBlasterBig",
         "verified": true
       },
       {
@@ -790,7 +790,7 @@
         "name": "「?Tr?espass】",
         "state": "EntityStates.VoidSurvivor.VoidBlinkBase+VoidBlinkUp",
         "proc": null,
-        "procSource": "review:class-not-found",
+        "procSource": "review:unresolved",
         "verified": false
       },
       {
@@ -913,17 +913,17 @@
         "slot": "special",
         "name": "Laser of the Father",
         "state": "EntityStates.FalseSon.LaserFather",
-        "proc": null,
-        "procSource": "review:unresolved",
-        "verified": false
+        "proc": 1,
+        "procSource": "code:default-1.0-via-transition",
+        "verified": true
       },
       {
         "slot": "special",
         "name": "Laser Burst",
         "state": "EntityStates.FalseSon.LaserFatherBurstPrep",
-        "proc": null,
-        "procSource": "review:unresolved",
-        "verified": false
+        "proc": 1,
+        "procSource": "code:default-1.0-via-transition",
+        "verified": true
       }
     ]
   },
