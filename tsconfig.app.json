@@ -21,7 +21,8 @@
     "noUncheckedSideEffectImports": true,
     "resolveJsonModule": true,
 
-    "baseUrl": ".",
+    // No `baseUrl` — deprecated in TS 6 and removed in 7. Not needed: `paths`
+    // entries resolve relative to this file's directory on their own.
     "paths": {
       "@/*": ["./src/*"]
     }
