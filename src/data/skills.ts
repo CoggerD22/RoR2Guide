@@ -22,6 +22,10 @@ export const SLOT_LABEL: Record<Skill["slot"], string> = {
 
 /** Short, human explanation of where a proc value came from. */
 export function procProvenance(source: string): string {
+  // The value is read from the firing state's own game data; only the link from
+  // this skill to that state is a reviewed human judgement (see
+  // scripts/build-skill-procs.mjs CURATED_DAMAGE_STATE).
+  if (source.startsWith("curated-link")) return "game asset (hand-linked firing state)";
   if (source.startsWith("esc-via-transition")) return "game asset (via follow-up state)";
   if (source.startsWith("esc")) return "game asset (skill config)";
   if (source.startsWith("projectile")) return "game asset (projectile prefab)";

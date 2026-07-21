@@ -117,9 +117,9 @@
         "slot": "special",
         "name": "Ballista",
         "state": "EntityStates.Huntress.BeginArrowSnipe",
-        "proc": null,
-        "procSource": "review:unresolved",
-        "verified": false
+        "proc": 1,
+        "procSource": "curated-link:FireArrowSnipe",
+        "verified": true
       }
     ]
   },
@@ -643,17 +643,17 @@
         "slot": "utility",
         "name": "Orbital Probe",
         "state": "EntityStates.Captain.Weapon.SetupAirstrike",
-        "proc": null,
-        "procSource": "review:unresolved",
-        "verified": false
+        "proc": 1,
+        "procSource": "curated-link:CallAirstrike1",
+        "verified": true
       },
       {
         "slot": "utility",
         "name": "OGM-72 'DIABLO' Strike",
         "state": "EntityStates.Captain.Weapon.SetupAirstrikeAlt",
-        "proc": null,
-        "procSource": "review:unresolved",
-        "verified": false
+        "proc": 1,
+        "procSource": "curated-link:CallAirstrikeAlt",
+        "verified": true
       },
       {
         "slot": "special",
@@ -719,17 +719,17 @@
         "slot": "secondary",
         "name": "M99 Sniper",
         "state": "EntityStates.Railgunner.Scope.WindUpScopeHeavy",
-        "proc": null,
-        "procSource": "review:unresolved",
-        "verified": false
+        "proc": 1,
+        "procSource": "curated-link:FireSnipeHeavy",
+        "verified": true
       },
       {
         "slot": "secondary",
         "name": "HH44 Marksman",
         "state": "EntityStates.Railgunner.Scope.WindUpScopeLight",
-        "proc": null,
-        "procSource": "review:unresolved",
-        "verified": false
+        "proc": 1,
+        "procSource": "curated-link:FireSnipeLight",
+        "verified": true
       },
       {
         "slot": "utility",
@@ -751,17 +751,17 @@
         "slot": "special",
         "name": "Supercharge",
         "state": "EntityStates.Railgunner.Weapon.ChargeSnipeSuper",
-        "proc": null,
-        "procSource": "review:unresolved",
-        "verified": false
+        "proc": 3,
+        "procSource": "curated-link:FireSnipeSuper",
+        "verified": true
       },
       {
         "slot": "special",
         "name": "Cryocharge",
         "state": "EntityStates.Railgunner.Weapon.ChargeSnipeCryo",
-        "proc": null,
-        "procSource": "review:unresolved",
-        "verified": false
+        "proc": 1.5,
+        "procSource": "curated-link:FireSnipeCryo",
+        "verified": true
       }
     ]
   },

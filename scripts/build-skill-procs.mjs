@@ -138,6 +138,34 @@ function nextStates(body, ns) {
   return [...out];
 }
 
+/**
+ * Hand-asserted links from a loadout state to the state that actually delivers its
+ * damage, for cases no traversal can reach: scope/charge and firing run on SEPARATE
+ * state machines, so the skill's state never references the firing state in code.
+ *
+ * IMPORTANT — what is and isn't asserted here. The proc VALUE is not invented: it is
+ * read from the target state's own EntityStateConfiguration or projectile, exactly
+ * like every other verified entry. Only the LINK is human judgement, and each one is
+ * a same-survivor, same-weapon name correspondence that is obvious in the decompile
+ * (WindUpScopeHeavy is the scope for the Heavy snipe; EngiMissilePainter.Paint and
+ * .Fire are the two halves of one nested painter class). They carry their own
+ * "curated-link" provenance so the UI and any reviewer can tell them apart.
+ *
+ * Deliberately absent: REX's DIRECTIVE: Disperse. Its state uses a virtual
+ * CalculateProcCoefficient() that subclasses override, so there is no single value
+ * to assert.
+ */
+const CURATED_DAMAGE_STATE = {
+  "EntityStates.Railgunner.Scope.WindUpScopeHeavy": "EntityStates.Railgunner.Weapon.FireSnipeHeavy",
+  "EntityStates.Railgunner.Scope.WindUpScopeLight": "EntityStates.Railgunner.Weapon.FireSnipeLight",
+  "EntityStates.Railgunner.Weapon.ChargeSnipeSuper": "EntityStates.Railgunner.Weapon.FireSnipeSuper",
+  "EntityStates.Railgunner.Weapon.ChargeSnipeCryo": "EntityStates.Railgunner.Weapon.FireSnipeCryo",
+  "EntityStates.Huntress.BeginArrowSnipe": "EntityStates.Huntress.Weapon.FireArrowSnipe",
+  "EntityStates.Captain.Weapon.SetupAirstrike": "EntityStates.Captain.Weapon.CallAirstrike1",
+  "EntityStates.Captain.Weapon.SetupAirstrikeAlt": "EntityStates.Captain.Weapon.CallAirstrikeAlt",
+  "EntityStates.Engi.EngiMissilePainter.Paint": "EntityStates.Engi.EngiMissilePainter.Fire",
+};
+
 function classifyFromCode(state, escProc, depth = 0, seen = new Set()) {
   if (seen.has(state) || depth > 3) return { proc: null, source: "review:no-attack" };
   seen.add(state);
@@ -207,6 +235,15 @@ for (const [survivor, d] of Object.entries(loadouts)) {
       total++;
       let proc = it.proc, source = it.procSource;
       if (proc === null) ({ proc, source } = classifyFromCode(it.state, escProc));
+      // Curated link: only the link is asserted, the value is read from the
+      // target state's own verified ESC/projectile data.
+      if (proc === null && CURATED_DAMAGE_STATE[it.state]) {
+        const target = CURATED_DAMAGE_STATE[it.state];
+        if (escProc.has(target)) {
+          proc = escProc.get(target);
+          source = `curated-link:${target.split(".").pop()}`;
+        }
+      }
       if (proc !== null) verified++;
       skills.push({
         slot,
