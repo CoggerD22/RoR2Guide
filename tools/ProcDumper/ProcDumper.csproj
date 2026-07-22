@@ -1,0 +1,35 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <!-- RoR2.dll targets netstandard2.1; matching it avoids a version-downgrade error. -->
+    <TargetFramework>netstandard2.1</TargetFramework>
+    <AssemblyName>ProcDumper</AssemblyName>
+    <RootNamespace>ProcDumper</RootNamespace>
+    <LangVersion>latest</LangVersion>
+    <!-- The game ships its own copies of these; never copy them next to the plugin. -->
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+    <EnableDefaultCompileItems>true</EnableDefaultCompileItems>
+    <NoWarn>$(NoWarn);CS0436</NoWarn>
+  </PropertyGroup>
+
+  <!--
+    Paths to the game install and an existing BepInEx profile. Override on the CLI:
+      dotnet build -p:GameDir="..." -p:BepInExCore="..."
+  -->
+  <PropertyGroup>
+    <GameDir Condition="'$(GameDir)' == ''">E:\SteamLibrary\steamapps\common\Risk of Rain 2</GameDir>
+    <ManagedDir>$(GameDir)\Risk of Rain 2_Data\Managed</ManagedDir>
+    <BepInExCore Condition="'$(BepInExCore)' == ''">C:\Users\cogge\AppData\Roaming\Thunderstore Mod Manager\DataFolder\RiskOfRain2\profiles\Testing\BepInEx\core</BepInExCore>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Reference Include="BepInEx"><HintPath>$(BepInExCore)\BepInEx.dll</HintPath><Private>false</Private></Reference>
+    <Reference Include="0Harmony"><HintPath>$(BepInExCore)\0Harmony.dll</HintPath><Private>false</Private></Reference>
+    <Reference Include="RoR2"><HintPath>$(ManagedDir)\RoR2.dll</HintPath><Private>false</Private></Reference>
+    <Reference Include="UnityEngine"><HintPath>$(ManagedDir)\UnityEngine.dll</HintPath><Private>false</Private></Reference>
+    <Reference Include="UnityEngine.CoreModule"><HintPath>$(ManagedDir)\UnityEngine.CoreModule.dll</HintPath><Private>false</Private></Reference>
+    <!-- CharacterBody : NetworkBehaviour lives here; needed to touch any CharacterBody member. -->
+    <Reference Include="com.unity.multiplayer-hlapi.Runtime"><HintPath>$(ManagedDir)\com.unity.multiplayer-hlapi.Runtime.dll</HintPath><Private>false</Private></Reference>
+  </ItemGroup>
+
+</Project>

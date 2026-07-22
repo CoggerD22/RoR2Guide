@@ -33,3 +33,8 @@ pnpm-debug.log*
 
 # Extracted game asset data (copyright Gearbox) — produced by scripts/extract-bodies.py
 .gamedata/
+
+# ProcDumper build artifacts (the DLL is rebuilt from source; never commit it)
+tools/**/bin/
+tools/**/obj/
+proc-dump.csv
