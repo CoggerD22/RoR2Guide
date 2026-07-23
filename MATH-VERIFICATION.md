@@ -274,6 +274,52 @@ Nothing is tagged `wiki` any more: every record has been confirmed against game
 data. The tag exists so that if future data lands wiki-only, it is visibly weaker
 rather than silently equal.
 
+## 3f. The last 21 procs — static analysis is exhausted here
+
+After the curated-link pass and the Heretic fix (**104/125**), I traced every remaining
+skill through the decompile (transitions, base classes, virtual overrides). None yield a
+*clean* value, and the reasons are worth recording so they aren't re-drilled — each is a
+real limit, not a missed grep.
+
+(The tracing also found Heretic's four "Nevermore" slots were a placeholder, not real
+skills — her kit is item-granted; see §3g. Modelling it correctly resolved 3 more and is
+why this is now 21, not 25.)
+
+**Movement / stance / utility — no attack construct (13).** Tactical Dive/Slide,
+Blink, Phase Blink, Retool, Power Mode, Shadowfade, Trespass, Sojourn, Ascent Protocol,
+ADMIN-OVERRIDE, Salvage, Repossess. These build no BulletAttack/OverlapAttack/etc.
+They almost certainly have *no proc*, but that is a negative static analysis can't
+prove (see the reverted "no-damage" detector, §3c).
+
+**Entity spawners — the spawned thing procs, not the skill (3).** Engineer's TR12 and
+TR58 turrets, Captain's Orbital Supply Beacon. The turret/drone has its own body and
+proc (e.g. `EngiTurretWeapon.FireBeam` = 3); "the proc of the skill that places it" is
+arguably a category error, not a missing number.
+
+**Damaging but value not statically determinable (5).** REX's DIRECTIVE: Disperse
+(`FireSonicBoom.procCoefficient` has no initializer, no ESC config, and no assignment
+anywhere found — origin genuinely unclear); REX's Tangling Growth (a projectile plus a
+separate `procCoefficient = 0f` direct hit); Operator's CMD-SWARM (`DroneTech…Paint.Fire`
+delivers via a `FireMissile()` helper); False Son's Meridian's Will; Seeker's Reprieve.
+
+**Resolution: the runtime dumper, not more inference.** `tools/ProcDumper` observes the
+actual proc each hitscan/melee attack fires with. It settles the movement/stance "does it
+even proc" question that static analysis provably can't, reads the ambiguous values
+directly, and cross-checks the existing verified ones. That is the correct next step for
+these 21, and it needs one modded in-game session.
+
+## 3g. Heretic — placeholder vs. real kit
+
+The survivor page first showed Heretic with four identical "Nevermore" skills. Tracing
+confirmed this is not an extraction bug: `HereticBody`'s SkillLocator genuinely holds one
+placeholder (`EntityStates.Heretic.Weapon.Squawk`, token `HERETIC_DEFAULT_SKILL_NAME` =
+"Nevermore") in all four slots, because her real skills are granted at runtime by the four
+Heresy lunar items (`RoR2Content.Items.Lunar{Primary,Secondary,Utility,Special}Replacement`).
+`scripts/build-skill-procs.mjs` now substitutes her true kit — Hungering Gaze (0.1),
+Slicing Maelstrom (1), Shadowfade (—, intangible dash), Ruin (1) — verified from the game's
+own `SKILL_LUNAR_*_REPLACEMENT` tokens and SkillDefs, procs from the same global data as
+every other skill. The page carries a note that she has no fixed kit.
+
 ## 4. Definition of done
 
 - 100% of item stacking values + types **code-verified** (`data:verify` clean).
