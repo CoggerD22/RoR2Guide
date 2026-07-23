@@ -20,8 +20,10 @@ export function SurvivorDetail({ id }: { id: string }) {
   }
 
   const { survivor: s, slots, unmatchedUnlocks } = detail;
-  const verified = slots.flatMap((g) => g.skills).filter((k) => k.verified).length;
-  const totalSkills = slots.flatMap((g) => g.skills).length;
+  const allSkills = slots.flatMap((g) => g.skills);
+  const verified = allSkills.filter((k) => k.verified).length;
+  const totalSkills = allSkills.length;
+  const itemGranted = allSkills.some((k) => k.grantedBy);
 
   return (
     <div className="py-6">
@@ -79,6 +81,14 @@ export function SurvivorDetail({ id }: { id: string }) {
             </span>
           </div>
 
+          {itemGranted && (
+            <p className="mb-3 rounded-lg border border-tier-lunar/30 bg-tier-lunar/5 px-3 py-2 text-xs leading-relaxed text-muted-foreground">
+              Heretic has no fixed kit. She appears only while holding all four Heresy lunar
+              items, each of which replaces one skill slot &mdash; so the skills below are the
+              ones those items grant.
+            </p>
+          )}
+
           <div className="flex flex-col gap-3">
             {slots.map((group) => (
               <div key={group.slot} className="rounded-xl border border-border bg-surface">
@@ -92,6 +102,12 @@ export function SurvivorDetail({ id }: { id: string }) {
                       className="flex flex-wrap items-baseline gap-x-2 gap-y-1 border-b border-border/50 px-3 py-2 last:border-0"
                     >
                       <span className="font-medium text-foreground">{k.name}</span>
+
+                      {k.grantedBy && (
+                        <span className="rounded-full border border-tier-lunar/40 px-1.5 py-0.5 text-[10px] text-tier-lunar">
+                          {k.grantedBy}
+                        </span>
+                      )}
 
                       {k.challenge && (
                         <span

@@ -197,6 +197,8 @@ export const skillSchema = z
     proc: z.number().nullable(),
     procSource: z.string().min(1),
     verified: z.boolean(),
+    /** For item-granted kits (Heretic): the item that grants this skill. */
+    grantedBy: z.string().min(1).optional(),
   })
   .strict()
   .refine((s) => (s.proc === null) === !s.verified, {

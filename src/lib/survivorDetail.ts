@@ -64,10 +64,13 @@ export function getSurvivorDetail(id: string): SurvivorDetail | null {
 /** Stat rows for the detail page: base value plus per-level growth where it scales. */
 export function statRows(s: Survivor): Array<{ label: string; base: string; perLevel?: string }> {
   const n = (v: number) => (Number.isInteger(v) ? String(v) : v.toFixed(2).replace(/0$/, ""));
+  // Signed growth: "+33", "-1.2" — a "+" prefix on a negative (Heretic's regen)
+  // would read "+-1.2".
+  const g = (v: number) => (v < 0 ? n(v) : `+${n(v)}`);
   return [
-    { label: "Health", base: n(s.health.base), perLevel: `+${n(s.health.perLevel)}` },
-    { label: "Health regen", base: `${n(s.regen.base)}/s`, perLevel: `+${n(s.regen.perLevel)}/s` },
-    { label: "Damage", base: n(s.damage.base), perLevel: `+${n(s.damage.perLevel)}` },
+    { label: "Health", base: n(s.health.base), perLevel: g(s.health.perLevel) },
+    { label: "Health regen", base: `${n(s.regen.base)}/s`, perLevel: `${g(s.regen.perLevel)}/s` },
+    { label: "Damage", base: n(s.damage.base), perLevel: g(s.damage.perLevel) },
     { label: "Move speed", base: `${n(s.moveSpeed)} m/s` },
     { label: "Armor", base: n(s.armor) },
     { label: "Jumps", base: n(s.jumpCount) },

@@ -174,3 +174,18 @@ test("survivor page joins base stats, skills, procs and unlock challenges", asyn
   await page.goto("/survivors/not-a-survivor");
   await expect(page.getByText(/No survivor called/)).toBeVisible();
 });
+
+test("Heretic shows her real item-granted kit, not the placeholder", async ({ page }) => {
+  await page.goto("/survivors/heretic");
+  await expect(page.getByRole("heading", { name: "Heretic" })).toBeVisible();
+
+  // Real kit from the four Heresy lunar items — never the "Nevermore" placeholder.
+  await expect(page.getByText("Hungering Gaze")).toBeVisible();
+  await expect(page.getByText("Ruin", { exact: true })).toBeVisible();
+  await expect(page.getByText("Visions of Heresy")).toBeVisible();
+  await expect(page.getByText(/no fixed kit/)).toBeVisible();
+  await expect(page.getByText("Nevermore")).toHaveCount(0);
+
+  // Negative regen growth renders "-1.2/s", not "+-1.2/s".
+  await expect(page.getByText("+-", { exact: false })).toHaveCount(0);
+});

@@ -671,35 +671,39 @@
     "skills": [
       {
         "slot": "primary",
-        "name": "Nevermore",
-        "state": "EntityStates.Heretic.Weapon.Squawk",
-        "proc": null,
-        "procSource": "review:unresolved",
-        "verified": false
+        "name": "Hungering Gaze",
+        "grantedBy": "Visions of Heresy",
+        "state": "EntityStates.GlobalSkills.LunarNeedle.FireLunarNeedle",
+        "proc": 0.1,
+        "procSource": "projectile:LunarNeedleProjectile",
+        "verified": true
       },
       {
         "slot": "secondary",
-        "name": "Nevermore",
-        "state": "EntityStates.Heretic.Weapon.Squawk",
-        "proc": null,
-        "procSource": "review:unresolved",
-        "verified": false
+        "name": "Slicing Maelstrom",
+        "grantedBy": "Hooks of Heresy",
+        "state": "EntityStates.GlobalSkills.LunarNeedle.ChargeLunarSecondary",
+        "proc": 1,
+        "procSource": "esc-via-transition:ThrowLunarSecondary",
+        "verified": true
       },
       {
         "slot": "utility",
-        "name": "Nevermore",
-        "state": "EntityStates.Heretic.Weapon.Squawk",
+        "name": "Shadowfade",
+        "grantedBy": "Strides of Heresy",
+        "state": "EntityStates.GhostUtilitySkillState",
         "proc": null,
         "procSource": "review:unresolved",
         "verified": false
       },
       {
         "slot": "special",
-        "name": "Nevermore",
-        "state": "EntityStates.Heretic.Weapon.Squawk",
-        "proc": null,
-        "procSource": "review:unresolved",
-        "verified": false
+        "name": "Ruin",
+        "grantedBy": "Essence of Heresy",
+        "state": "EntityStates.GlobalSkills.LunarDetonator.Detonate",
+        "proc": 1,
+        "procSource": "esc",
+        "verified": true
       }
     ]
   },

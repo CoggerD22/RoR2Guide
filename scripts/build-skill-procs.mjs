@@ -41,12 +41,39 @@ const lines = fs.existsSync(DECOMP) ? fs.readFileSync(DECOMP, "utf8").split("\n"
 // state (e.g. FireCaptainShotgun = 0.75) can inherit it.
 const PROCS = path.join(root, ".gamedata", "procs.json");
 const escProc = new Map();
+const escSource = new Map(); // state -> original provenance ("projectile:X" / "esc")
 if (fs.existsSync(PROCS)) {
   const p = JSON.parse(fs.readFileSync(PROCS, "utf8"));
   for (const [state, rec] of Object.entries(p.stateProc ?? {})) {
-    if (rec && rec.proc !== null && rec.proc !== undefined) escProc.set(state, rec.proc);
+    if (rec && rec.proc !== null && rec.proc !== undefined) {
+      escProc.set(state, rec.proc);
+      escSource.set(state, rec.source || "asset");
+    }
   }
 }
+
+/**
+ * Heretic is a special case with no selectable loadout. HereticBody's SkillLocator
+ * carries a single placeholder skill ("Nevermore" / EntityStates.Heretic.Weapon.Squawk)
+ * in all four slots; her real kit is granted at runtime by the four Heresy lunar items
+ * (RoR2Content Items.Lunar{Primary,Secondary,Utility,Special}Replacement). Extracting
+ * from the SkillLocator therefore yields 4x "Nevermore", which is not what a player
+ * ever pilots. Model her true kit instead.
+ *
+ * Skill names, item mapping, and states are verified from the game's own language
+ * tokens (SKILL_LUNAR_*_REPLACEMENT_NAME) and SkillDefs; procs resolve from the same
+ * global data as every other skill.
+ */
+const HERETIC_SKILLS = [
+  { slot: "primary", name: "Hungering Gaze", grantedBy: "Visions of Heresy",
+    state: "EntityStates.GlobalSkills.LunarNeedle.FireLunarNeedle" },
+  { slot: "secondary", name: "Slicing Maelstrom", grantedBy: "Hooks of Heresy",
+    state: "EntityStates.GlobalSkills.LunarNeedle.ChargeLunarSecondary" },
+  { slot: "utility", name: "Shadowfade", grantedBy: "Strides of Heresy",
+    state: "EntityStates.GhostUtilitySkillState" },
+  { slot: "special", name: "Ruin", grantedBy: "Essence of Heresy",
+    state: "EntityStates.GlobalSkills.LunarDetonator.Detonate" },
+];
 
 /** Returns {body, base} for a type; `ns` match optional so short names resolve too. */
 function classInfo(fqType, requireNs = true) {
@@ -164,7 +191,22 @@ const CURATED_DAMAGE_STATE = {
   "EntityStates.Captain.Weapon.SetupAirstrike": "EntityStates.Captain.Weapon.CallAirstrike1",
   "EntityStates.Captain.Weapon.SetupAirstrikeAlt": "EntityStates.Captain.Weapon.CallAirstrikeAlt",
   "EntityStates.Engi.EngiMissilePainter.Paint": "EntityStates.Engi.EngiMissilePainter.Fire",
+  // Heretic secondary (Slicing Maelstrom): charge state fires ThrowLunarSecondary.
+  "EntityStates.GlobalSkills.LunarNeedle.ChargeLunarSecondary": "EntityStates.GlobalSkills.LunarNeedle.ThrowLunarSecondary",
 };
+
+/** Resolve a state's proc + provenance, most authoritative first. Shared by the
+ *  normal loop's fallback and the Heretic override. */
+function resolveState(state) {
+  if (escProc.has(state)) return { proc: escProc.get(state), source: escSource.get(state) };
+  const c = classifyFromCode(state, escProc);
+  if (c.proc !== null) return c;
+  const target = CURATED_DAMAGE_STATE[state];
+  if (target && escProc.has(target)) {
+    return { proc: escProc.get(target), source: `curated-link:${target.split(".").pop()}` };
+  }
+  return { proc: null, source: c.source };
+}
 
 function classifyFromCode(state, escProc, depth = 0, seen = new Set()) {
   if (seen.has(state) || depth > 3) return { proc: null, source: "review:no-attack" };
@@ -230,6 +272,27 @@ const out = [];
 let verified = 0, total = 0;
 for (const [survivor, d] of Object.entries(loadouts)) {
   const skills = [];
+
+  // Heretic: replace the 4 placeholder "Nevermore" slots with her real item-granted kit.
+  if (survivor === "heretic") {
+    for (const hs of HERETIC_SKILLS) {
+      total++;
+      const { proc, source } = resolveState(hs.state);
+      if (proc !== null) verified++;
+      skills.push({
+        slot: hs.slot,
+        name: hs.name,
+        grantedBy: hs.grantedBy,
+        state: hs.state,
+        proc,
+        procSource: source,
+        verified: proc !== null,
+      });
+    }
+    out.push({ survivor, body: d.body, skills });
+    continue;
+  }
+
   for (const slot of SLOTS) {
     for (const it of d.slots?.[slot] ?? []) {
       total++;
