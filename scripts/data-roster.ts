@@ -33,10 +33,16 @@ const DROPPABLE = new Set([
   "VoidTier1", "VoidTier2", "VoidTier3", "VoidBoss",
 ]);
 
+// Game ItemTier -> our tier vocabulary (equipment is handled via EquipmentDef.isLunar).
+const TIER_MAP: Record<string, string> = {
+  Tier1: "common", Tier2: "uncommon", Tier3: "legendary", Lunar: "lunar", Boss: "boss",
+  VoidTier1: "void-common", VoidTier2: "void-uncommon", VoidTier3: "void-legendary", VoidBoss: "void-boss",
+};
+
 const norm = (s: string) => s.toLowerCase().replace(/[^a-z0-9]/g, "");
 
 interface ItemDef { name: string; token: string; tier: string; cachedName: string; dlc: string | null }
-interface EquipDef { name: string; cachedName: string; isConsumed: boolean; dlc: string | null }
+interface EquipDef { name: string; cachedName: string; isConsumed: boolean; isLunar: boolean; dlc: string | null }
 
 function main(): number {
   if (!existsSync(DEFS)) {
@@ -49,8 +55,24 @@ function main(): number {
   const ourByName = new Set(ours.map((i) => norm(i.name)));
   const allDefs = [...defs.items, ...defs.equipment];
   const gameByName = new Set(allDefs.map((d) => norm(d.name)));
-  // DLC from the bundle prefix (ror2-base/dlc1/dlc2/dlc3) — authoritative per asset.
-  const dlcByName = new Map(allDefs.filter((d) => d.name !== "?" && d.dlc).map((d) => [norm(d.name), d.dlc!]));
+  // Some names collide across kinds — Alloyed Collective has a Boss *item* AND a drone
+  // *equipment* both called "Faulty Conductor". So match each codex entry against the
+  // game def of the SAME kind (equipment vs item), keyed off our own tier.
+  const isEquipTier = (tier: string) => tier === "equipment" || tier === "lunar-equipment";
+  const itemDlc = new Map<string, string>();
+  const itemTier = new Map<string, string>();
+  for (const d of defs.items) {
+    if (d.name === "?") continue;
+    if (d.dlc) itemDlc.set(norm(d.name), d.dlc);
+    if (TIER_MAP[d.tier]) itemTier.set(norm(d.name), TIER_MAP[d.tier]);
+  }
+  const equipDlc = new Map<string, string>();
+  const equipTier = new Map<string, string>();
+  for (const e of defs.equipment) {
+    if (e.name === "?") continue;
+    if (e.dlc) equipDlc.set(norm(e.name), e.dlc);
+    equipTier.set(norm(e.name), e.isLunar ? "lunar-equipment" : "equipment");
+  }
 
   const errors: string[] = [];
   const review: string[] = [];
@@ -67,9 +89,14 @@ function main(): number {
       errors.push(`STALE entry "${o.name}" [${o.tier}] has no game ItemDef/EquipmentDef`);
       continue;
     }
-    const gameDlc = dlcByName.get(norm(o.name));
+    const equip = isEquipTier(o.tier);
+    const gameDlc = (equip ? equipDlc : itemDlc).get(norm(o.name)) ?? (equip ? itemDlc : equipDlc).get(norm(o.name));
     if (gameDlc && gameDlc !== o.dlc) {
       errors.push(`DLC wrong for "${o.name}": ours="${o.dlc}", game bundle="${gameDlc}"`);
+    }
+    const gameTier = (equip ? equipTier : itemTier).get(norm(o.name));
+    if (gameTier && gameTier !== o.tier) {
+      errors.push(`TIER wrong for "${o.name}": ours="${o.tier}", game="${gameTier}"`);
     }
   }
 

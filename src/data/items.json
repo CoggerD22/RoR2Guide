@@ -5100,7 +5100,7 @@
   {
     "id": "shared-design",
     "name": "Shared Design",
-    "tier": "equipment",
+    "tier": "lunar-equipment",
     "dlc": "base",
     "pickupText": "Become an aspect of perfection.",
     "description": "Gain the power of a Perfected Elite: attacks inflict Cripple, fire 4 bombs every 10 seconds (30% damage each), gain +30% movement speed, and +25% max health converted to shields. Passive.",

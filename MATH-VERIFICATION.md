@@ -362,6 +362,14 @@ declaration, `.Items.X` usage, and the physical bundle):
 The other 208 were already correct; all 212 now match the game's own bundle
 organisation, and `data:roster` fails on any future drift (tested).
 
+**Tier** is checked the same way (game `ItemTier` for items, `isLunar` for equipment).
+One error: **Shared Design** was `equipment`; it's the *lunar* elite aspect
+(`EliteLunarEquipment` / `EQUIPMENT_AFFIXLUNAR`, `isLunar=true`, like every other
+lunar equipment we carry) → `lunar-equipment`. The check is kind-aware: Alloyed
+Collective ships a Boss *item* AND a drone *equipment* both named "Faulty Conductor",
+so each codex entry is matched to the game def of its own kind — our Boss item was
+correct and an early cross-kind version of the check false-flagged it.
+
 ## 4. Definition of done
 
 - 100% of item stacking values + types **code-verified** (`data:verify` clean).
