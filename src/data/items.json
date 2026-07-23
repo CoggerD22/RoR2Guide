@@ -2923,7 +2923,8 @@
     "icon": "/icons/titanic-knurl.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Titanic_Knurl",
     "verified": true,
-    "confidence": "code"
+    "confidence": "code",
+    "corruptedBy": "newly-hatched-zoea"
   },
   {
     "id": "queens-gland",
@@ -2947,7 +2948,8 @@
     "icon": "/icons/queens-gland.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Queen%27s_Gland",
     "verified": true,
-    "confidence": "langfile"
+    "confidence": "langfile",
+    "corruptedBy": "newly-hatched-zoea"
   },
   {
     "id": "shatterspleen",
@@ -2979,7 +2981,8 @@
     "icon": "/icons/shatterspleen.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Shatterspleen",
     "verified": true,
-    "confidence": "langfile"
+    "confidence": "langfile",
+    "corruptedBy": "newly-hatched-zoea"
   },
   {
     "id": "halcyon-seed",
@@ -3009,7 +3012,8 @@
     "icon": "/icons/halcyon-seed.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Halcyon_Seed",
     "verified": true,
-    "confidence": "langfile"
+    "confidence": "langfile",
+    "corruptedBy": "newly-hatched-zoea"
   },
   {
     "id": "little-disciple",
@@ -3033,7 +3037,8 @@
     "icon": "/icons/little-disciple.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Little_Disciple",
     "verified": true,
-    "confidence": "langfile"
+    "confidence": "langfile",
+    "corruptedBy": "newly-hatched-zoea"
   },
   {
     "id": "genesis-loop",
@@ -3059,7 +3064,8 @@
     "icon": "/icons/genesis-loop.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Genesis_Loop",
     "verified": true,
-    "confidence": "code"
+    "confidence": "code",
+    "corruptedBy": "newly-hatched-zoea"
   },
   {
     "id": "pearl",
@@ -3083,7 +3089,8 @@
     "icon": "/icons/pearl.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Pearl",
     "verified": true,
-    "confidence": "code"
+    "confidence": "code",
+    "corruptedBy": "newly-hatched-zoea"
   },
   {
     "id": "irradiant-pearl",
@@ -3106,7 +3113,8 @@
     "icon": "/icons/irradiant-pearl.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Irradiant_Pearl",
     "verified": true,
-    "confidence": "code"
+    "confidence": "code",
+    "corruptedBy": "newly-hatched-zoea"
   },
   {
     "id": "artifact-key",
@@ -3148,7 +3156,8 @@
     "icon": "/icons/molten-perforator.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Molten_Perforator",
     "verified": true,
-    "confidence": "langfile"
+    "confidence": "langfile",
+    "corruptedBy": "newly-hatched-zoea"
   },
   {
     "id": "charged-perforator",
@@ -3172,7 +3181,8 @@
     "icon": "/icons/charged-perforator.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Charged_Perforator",
     "verified": true,
-    "confidence": "langfile"
+    "confidence": "langfile",
+    "corruptedBy": "newly-hatched-zoea"
   },
   {
     "id": "mired-urn",
@@ -3197,7 +3207,8 @@
     "icon": "/icons/mired-urn.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Mired_Urn",
     "verified": true,
-    "confidence": "langfile"
+    "confidence": "langfile",
+    "corruptedBy": "newly-hatched-zoea"
   },
   {
     "id": "empathy-cores",
@@ -3221,7 +3232,8 @@
     "icon": "/icons/empathy-cores.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Empathy_Cores",
     "verified": true,
-    "confidence": "langfile"
+    "confidence": "langfile",
+    "corruptedBy": "newly-hatched-zoea"
   },
   {
     "id": "planula",
@@ -3245,7 +3257,8 @@
     "icon": "/icons/planula.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Planula",
     "verified": true,
-    "confidence": "langfile"
+    "confidence": "langfile",
+    "corruptedBy": "newly-hatched-zoea"
   },
   {
     "id": "defense-nucleus",
@@ -3270,7 +3283,8 @@
     "icon": "/icons/defense-nucleus.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Defense_Nucleus",
     "verified": true,
-    "confidence": "langfile"
+    "confidence": "langfile",
+    "corruptedBy": "newly-hatched-zoea"
   },
   {
     "id": "functional-coupler",
@@ -3294,7 +3308,8 @@
     "icon": "/icons/functional-coupler.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Functional_Coupler",
     "verified": true,
-    "confidence": "langfile"
+    "confidence": "langfile",
+    "corruptedBy": "newly-hatched-zoea"
   },
   {
     "id": "faulty-conductor",
@@ -3320,7 +3335,8 @@
     "icon": "/icons/faulty-conductor.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Faulty_Conductor",
     "verified": true,
-    "confidence": "langfile"
+    "confidence": "langfile",
+    "corruptedBy": "newly-hatched-zoea"
   },
   {
     "id": "sentry-key",
@@ -3420,7 +3436,8 @@
     "icon": "/icons/item-scrap-yellow.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Item_Scrap",
     "verified": true,
-    "confidence": "langfile"
+    "confidence": "langfile",
+    "corruptedBy": "newly-hatched-zoea"
   },
   {
     "id": "shaped-glass",
@@ -4389,7 +4406,26 @@
     "icon": "/icons/newly-hatched-zoea.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Newly_Hatched_Zoea",
     "verified": true,
-    "confidence": "langfile"
+    "confidence": "langfile",
+    "corrupts": [
+      "titanic-knurl",
+      "shatterspleen",
+      "queens-gland",
+      "planula",
+      "pearl",
+      "irradiant-pearl",
+      "molten-perforator",
+      "mired-urn",
+      "little-disciple",
+      "halcyon-seed",
+      "genesis-loop",
+      "empathy-cores",
+      "charged-perforator",
+      "defense-nucleus",
+      "item-scrap-yellow",
+      "functional-coupler",
+      "faulty-conductor"
+    ]
   },
   {
     "id": "disposable-missile-launcher",

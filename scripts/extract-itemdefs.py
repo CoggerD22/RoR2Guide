@@ -66,6 +66,8 @@ def extract():
         sys.exit(f"Addressables not found: {AA}")
     tokens = load_tokens()
     items, equipment = {}, {}
+    pid_to_cached = {}          # global ItemDef path_id -> cachedName (Addressables pids are unique)
+    corruption_pairs = None     # raw [(pid1, pid2)] from the ContagiousItem provider
 
     for f in sorted(glob.glob(f"{AA}/*.bundle")):
         bundle = os.path.basename(f)
@@ -81,9 +83,18 @@ def extract():
                 t = o.read_typetree()
             except Exception:
                 continue
+            # The single ItemRelationshipProvider holds void corruption (original -> void).
+            if corruption_pairs is None and "relationships" in t and "relationshipType" in t:
+                corruption_pairs = [
+                    ((p.get("itemDef1") or {}).get("m_PathID"), (p.get("itemDef2") or {}).get("m_PathID"))
+                    for p in (t.get("relationships") or [])
+                ]
+
             if "nameToken" not in t:
                 continue
             cached = t.get("m_Name") or ""
+            if "deprecatedTier" in t:
+                pid_to_cached[o.path_id] = cached
 
             if "cooldown" in t and "isConsumed" in t and "deprecatedTier" not in t:
                 tok = t.get("nameToken", "")
@@ -104,13 +115,24 @@ def extract():
                     "dlc": dlc,
                 })
 
+    # Resolve corruption pairs (original cachedName -> void cachedName), deduped.
+    corruption = []
+    seen_pairs = set()
+    for pid1, pid2 in (corruption_pairs or []):
+        a, b = pid_to_cached.get(pid1), pid_to_cached.get(pid2)
+        if a and b and (a, b) not in seen_pairs:
+            seen_pairs.add((a, b))
+            corruption.append([a, b])
+
     os.makedirs(OUT_DIR, exist_ok=True)
     out = {
         "items": sorted(items.values(), key=lambda x: (x["tier"], x["name"])),
         "equipment": sorted(equipment.values(), key=lambda x: x["name"]),
+        "corruption": corruption,
     }
     json.dump(out, open(f"{OUT_DIR}/itemdefs.json", "w", encoding="utf-8"), indent=1, ensure_ascii=False)
-    print(f"{len(out['items'])} ItemDefs, {len(out['equipment'])} EquipmentDefs -> {OUT_DIR}/itemdefs.json")
+    print(f"{len(out['items'])} ItemDefs, {len(out['equipment'])} EquipmentDefs, "
+          f"{len(corruption)} corruption pairs -> {OUT_DIR}/itemdefs.json")
 
 
 if __name__ == "__main__":

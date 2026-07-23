@@ -50,7 +50,11 @@ function main(): number {
     return 0;
   }
 
-  const defs = JSON.parse(readFileSync(DEFS, "utf8")) as { items: ItemDef[]; equipment: EquipDef[] };
+  const defs = JSON.parse(readFileSync(DEFS, "utf8")) as {
+    items: ItemDef[];
+    equipment: EquipDef[];
+    corruption?: [string, string][];
+  };
   const ours = itemsFileSchema.parse(JSON.parse(readFileSync(ITEMS, "utf8")));
   const ourByName = new Set(ours.map((i) => norm(i.name)));
   const allDefs = [...defs.items, ...defs.equipment];
@@ -97,6 +101,35 @@ function main(): number {
     const gameTier = (equip ? equipTier : itemTier).get(norm(o.name));
     if (gameTier && gameTier !== o.tier) {
       errors.push(`TIER wrong for "${o.name}": ours="${o.tier}", game="${gameTier}"`);
+    }
+  }
+
+  // Void corruption (rule #4): our corrupts/corruptedBy must match the game's
+  // ItemRelationshipProvider exactly. data:audit only checks that PRESENT pairs are
+  // bidirectional; it can't see an entirely MISSING relationship (Newly Hatched Zoea's
+  // 17 boss-item corruptions were absent and slipped through until this check).
+  if (defs.corruption?.length) {
+    const cachedToName = new Map<string, string>();
+    for (const d of allDefs) if (d.name !== "?") cachedToName.set(d.cachedName, d.name);
+    const nameToId = new Map(ours.map((o) => [norm(o.name), o.id]));
+    const toId = (cached: string) => nameToId.get(norm(cachedToName.get(cached) ?? ""));
+    const byId = new Map(ours.map((o) => [o.id, o]));
+
+    const expected = new Map<string, Set<string>>(); // voidId -> original ids
+    for (const [orig, vd] of defs.corruption) {
+      const oi = toId(orig), vi = toId(vd);
+      if (!oi || !vi) continue; // unmapped (e.g. a def not in our codex)
+      if (!expected.has(vi)) expected.set(vi, new Set());
+      expected.get(vi)!.add(oi);
+    }
+    for (const [vid, origs] of expected) {
+      const have = new Set(byId.get(vid)?.corrupts ?? []);
+      for (const oid of origs) {
+        if (!have.has(oid)) errors.push(`corruption: "${vid}" should corrupt "${oid}" (game) but doesn't`);
+        if (byId.get(oid)?.corruptedBy !== vid) {
+          errors.push(`corruption: "${oid}".corruptedBy should be "${vid}" (game)`);
+        }
+      }
     }
   }
 

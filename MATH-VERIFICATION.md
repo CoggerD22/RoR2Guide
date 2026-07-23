@@ -370,6 +370,22 @@ Collective ships a Boss *item* AND a drone *equipment* both named "Faulty Conduc
 so each codex entry is matched to the game def of its own kind — our Boss item was
 correct and an early cross-kind version of the check false-flagged it.
 
+## 3j. Void corruption — 17 missing pairs (rule #4)
+
+Rule #4 requires void corruption to be bidirectional *and correct*. `data:audit` only
+enforced the first half — that any pair we *declare* points back — so an entirely
+*absent* relationship was invisible to it. The game's single `ItemRelationshipProvider`
+(ContagiousItem, 31 pairs after dedupe) is authoritative; `extract-itemdefs.py` now
+resolves it (the item refs are external PPtrs, resolved via a global Addressables
+path_id → cachedName index) and `data:roster` checks it both directions.
+
+**Newly Hatched Zoea (`VoidMegaCrabItem`) corrupts all 17 boss-tier items — and our
+codex recorded none of it.** `newly-hatched-zoea.corrupts` was empty and all 17 boss
+items lacked `corruptedBy`. Added both directions (Titanic Knurl, Shatterspleen,
+Queen's Gland, Planula, Pearl, Irradiant Pearl, the four SotS/AC boss items, Yellow
+Scrap, etc.). The other 13 void items — including Singularity Band corrupting *both*
+Bands — were already exact. `data:roster` now fails on any corruption drift (tested).
+
 ## 4. Definition of done
 
 - 100% of item stacking values + types **code-verified** (`data:verify` clean).
