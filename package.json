@@ -14,7 +14,8 @@
     "data:diff": "tsx scripts/data-diff.ts",
     "data:verify": "tsx scripts/data-verify.ts",
     "test": "playwright test",
-    "test:unit": "vitest run"
+    "test:unit": "vitest run",
+    "data:roster": "tsx scripts/data-roster.ts"
   },
   "dependencies": {
     "@tanstack/react-router": "^1.87.0",

@@ -320,6 +320,32 @@ Slicing Maelstrom (1), Shadowfade (—, intangible dash), Ruin (1) — verified 
 own `SKILL_LUNAR_*_REPLACEMENT` tokens and SkillDefs, procs from the same global data as
 every other skill. The page carries a note that she has no fixed kit.
 
+## 3h. Roster completeness — every game item is in the codex
+
+`data:diff` checks the items we *have*; it never asked whether the game has one we're
+*missing* (how a new-DLC item would slip through). `scripts/extract-itemdefs.py` pulls
+every ItemDef/EquipmentDef from the bundles (237 items, 60 equipment) and
+`pnpm data:roster` diffs both directions.
+
+**Result: complete and clean.** All 170 droppable-tier game items (Tier1/2/3, Lunar,
+Boss, Void*) are in items.json, and all 212 codex entries are backed by a real game
+def — 0 missing, 0 stale.
+
+Eight equipment exist in the files but not the codex; each was run down and is
+correctly excluded — none is a real gap, but the reasoning is recorded so a future
+patch's genuine additions stand out:
+- **Cut content** — Reaper's Remorse (`JunkContent.Equipment.GhostGun`), plus Beyond
+  the Limits and Overloading Excavator (zero code references — dead assets).
+- **Consumed variants** — Seed of Life (Consumed), Trophy Hunter's Tricorn (Consumed):
+  we carry the base items and hide consumed forms by design.
+- **Unresolved / internal** — SoulCorruptor (name token doesn't resolve).
+- **Flagged for a human/in-game check (not added):** G-Force Accelerator (loads from
+  `RoR2/DLC3/…`) and Elegy of Extinction (`DLC1Content` with a live use-handler) are
+  active-DLC-referenced but `canDrop=false`; Coven of Gold (Gilded aspect) and Jar of
+  Souls have single references. Whether any is a *currently obtainable* codex pickup
+  needs the in-game logbook — `canDrop` alone can't decide it, since the elite aspects
+  we already include (Her Biting Embrace, Ifrit's Distinction) are also `canDrop=false`.
+
 ## 4. Definition of done
 
 - 100% of item stacking values + types **code-verified** (`data:verify` clean).
