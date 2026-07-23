@@ -325,7 +325,7 @@
     "id": "delicate-watch",
     "name": "Delicate Watch",
     "tier": "common",
-    "dlc": "base",
+    "dlc": "sotv",
     "pickupText": "Deal bonus damage. Breaks at low health.",
     "description": "Increase damage by 20% (+20% per stack). Taking damage to below 25% health breaks this item.",
     "stacking": [
@@ -473,7 +473,7 @@
     "id": "power-elixir",
     "name": "Power Elixir",
     "tier": "common",
-    "dlc": "base",
+    "dlc": "sotv",
     "pickupText": "Receive an instant heal at low health. Consumed on use.",
     "description": "Taking damage to below 25% health consumes this item, healing you for 75% of maximum health.",
     "stacking": [],
@@ -512,7 +512,7 @@
     "id": "roll-of-pennies",
     "name": "Roll of Pennies",
     "tier": "common",
-    "dlc": "base",
+    "dlc": "sotv",
     "pickupText": "Gain gold on taking damage.",
     "description": "Gain 3 (+3 per stack) gold on taking damage from an enemy. Scales over time.",
     "stacking": [
@@ -3227,7 +3227,7 @@
     "id": "planula",
     "name": "Planula",
     "tier": "boss",
-    "dlc": "sotv",
+    "dlc": "base",
     "pickupText": "Receive flat healing when attacked.",
     "description": "Heal from incoming damage for 15 (+15 per stack).",
     "stacking": [

@@ -35,8 +35,8 @@ const DROPPABLE = new Set([
 
 const norm = (s: string) => s.toLowerCase().replace(/[^a-z0-9]/g, "");
 
-interface ItemDef { name: string; token: string; tier: string; cachedName: string }
-interface EquipDef { name: string; cachedName: string; isConsumed: boolean }
+interface ItemDef { name: string; token: string; tier: string; cachedName: string; dlc: string | null }
+interface EquipDef { name: string; cachedName: string; isConsumed: boolean; dlc: string | null }
 
 function main(): number {
   if (!existsSync(DEFS)) {
@@ -47,7 +47,10 @@ function main(): number {
   const defs = JSON.parse(readFileSync(DEFS, "utf8")) as { items: ItemDef[]; equipment: EquipDef[] };
   const ours = itemsFileSchema.parse(JSON.parse(readFileSync(ITEMS, "utf8")));
   const ourByName = new Set(ours.map((i) => norm(i.name)));
-  const gameByName = new Set([...defs.items, ...defs.equipment].map((d) => norm(d.name)));
+  const allDefs = [...defs.items, ...defs.equipment];
+  const gameByName = new Set(allDefs.map((d) => norm(d.name)));
+  // DLC from the bundle prefix (ror2-base/dlc1/dlc2/dlc3) — authoritative per asset.
+  const dlcByName = new Map(allDefs.filter((d) => d.name !== "?" && d.dlc).map((d) => [norm(d.name), d.dlc!]));
 
   const errors: string[] = [];
   const review: string[] = [];
@@ -58,9 +61,16 @@ function main(): number {
     if (!ourByName.has(norm(d.name))) errors.push(`MISSING item [${d.tier}] "${d.name}" (${d.cachedName})`);
   }
 
-  // Our entries with no game def = stale/renamed.
+  // Our entries with no game def = stale/renamed; and wrong DLC vs the bundle.
   for (const o of ours) {
-    if (!gameByName.has(norm(o.name))) errors.push(`STALE entry "${o.name}" [${o.tier}] has no game ItemDef/EquipmentDef`);
+    if (!gameByName.has(norm(o.name))) {
+      errors.push(`STALE entry "${o.name}" [${o.tier}] has no game ItemDef/EquipmentDef`);
+      continue;
+    }
+    const gameDlc = dlcByName.get(norm(o.name));
+    if (gameDlc && gameDlc !== o.dlc) {
+      errors.push(`DLC wrong for "${o.name}": ours="${o.dlc}", game bundle="${gameDlc}"`);
+    }
   }
 
   // Equipment we don't have — review only (aspects vs cut content).

@@ -346,6 +346,22 @@ patch's genuine additions stand out:
   needs the in-game logbook — `canDrop` alone can't decide it, since the elite aspects
   we already include (Her Biting Embrace, Ifrit's Distinction) are also `canDrop=false`.
 
+## 3i. DLC assignment — 4 items were mislabelled
+
+Each item's `dlc` field (base/sotv/sots/ac) was hand-entered, and CLAUDE.md flags DLC
+knowledge as the stalest thing in training data. The game is authoritative: every asset
+ships in a bundle named by origin (`ror2-base-*`, `ror2-dlc1-*` = SotV, `ror2-dlc2-*` =
+SotS, `ror2-dlc3-*` = AC). `extract-itemdefs.py` now records that, and `data:roster`
+checks it.
+
+**Four were wrong**, each confirmed by three independent signals (content-pack
+declaration, `.Items.X` usage, and the physical bundle):
+- Delicate Watch, Power Elixir, Roll of Pennies: base → **sotv**
+- Planula: sotv → **base**
+
+The other 208 were already correct; all 212 now match the game's own bundle
+organisation, and `data:roster` fails on any future drift (tested).
+
 ## 4. Definition of done
 
 - 100% of item stacking values + types **code-verified** (`data:verify` clean).

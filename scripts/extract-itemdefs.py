@@ -32,6 +32,17 @@ OUT_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__)
 TIERS = ["Tier1", "Tier2", "Tier3", "Lunar", "Boss", "NoTier",
          "VoidTier1", "VoidTier2", "VoidTier3", "VoidBoss", "FoodTier"]
 
+# Bundles are named by origin: ror2-base-*, ror2-dlc1-*, ror2-dlc2-*, ror2-dlc3-*.
+# That prefix is the authoritative DLC of an asset — no field-name matching needed.
+DLC_BY_PREFIX = {"ror2-base": "base", "ror2-dlc1": "sotv", "ror2-dlc2": "sots", "ror2-dlc3": "ac"}
+
+
+def dlc_of(bundle):
+    for prefix, dlc in DLC_BY_PREFIX.items():
+        if bundle.startswith(prefix):
+            return dlc
+    return None
+
 
 def load_tokens():
     tokens = {}
@@ -57,6 +68,8 @@ def extract():
     items, equipment = {}, {}
 
     for f in sorted(glob.glob(f"{AA}/*.bundle")):
+        bundle = os.path.basename(f)
+        dlc = dlc_of(bundle)
         try:
             env = UnityPy.load(f)
         except Exception:
@@ -81,12 +94,14 @@ def extract():
                     "canDrop": bool(t.get("canDrop")),
                     "isLunar": bool(t.get("isLunar")),
                     "enabled": bool(t.get("enabled", True)),
+                    "dlc": dlc,
                 })
             elif "deprecatedTier" in t:
                 tok = t.get("nameToken", "")
                 items.setdefault(cached, {
                     "name": tokens.get(tok, "?"), "token": tok, "cachedName": cached,
                     "tier": tier_name(t.get("deprecatedTier")),
+                    "dlc": dlc,
                 })
 
     os.makedirs(OUT_DIR, exist_ok=True)
