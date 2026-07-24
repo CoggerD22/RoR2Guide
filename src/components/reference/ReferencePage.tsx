@@ -2,8 +2,9 @@ import { useState } from "react";
 import { DLC_META } from "@/data/items";
 import { ARTIFACTS, BAZAAR_DREAMS, SHRINES, LOADOUT_UNLOCKS } from "@/data/reference";
 import { cn } from "@/lib/utils";
+import { Breakpoints } from "./Breakpoints";
 
-const TABS = ["Artifacts", "Bazaar Dreams", "Shrines", "Loadout Unlocks"] as const;
+const TABS = ["Artifacts", "Bazaar Dreams", "Shrines", "Loadout Unlocks", "Breakpoints"] as const;
 type Tab = (typeof TABS)[number];
 
 /** Renders an Ambry code (rows of ●■▲♦ glyphs) as a 3-column grid. */
@@ -172,6 +173,7 @@ export function ReferencePage() {
       {tab === "Bazaar Dreams" && <Dreams />}
       {tab === "Shrines" && <Shrines />}
       {tab === "Loadout Unlocks" && <LoadoutUnlocks />}
+      {tab === "Breakpoints" && <Breakpoints />}
     </div>
   );
 }

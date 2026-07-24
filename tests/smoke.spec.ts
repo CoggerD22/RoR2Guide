@@ -189,3 +189,41 @@ test("Heretic shows her real item-granted kit, not the placeholder", async ({ pa
   // Negative regen growth renders "-1.2/s", not "+-1.2/s".
   await expect(page.getByText("+-", { exact: false })).toHaveCount(0);
 });
+
+test("breakpoints tab shows computed, code-verified milestones", async ({ page }) => {
+  await page.goto("/reference");
+  await page.getByRole("button", { name: "Breakpoints" }).click();
+
+  // Crit reaches exactly 100% at 10 Lens-Maker's Glasses.
+  const crit = page.locator("tr", { hasText: "Crit chance" });
+  await expect(crit).toContainText("100%");
+  await expect(crit).toContainText("11%"); // 1 glass
+
+  // Tougher Times block is the code-verified ConvertAmp curve: 13% @1, 60% @10.
+  const tt = page.locator("tr", { hasText: "Tougher Times" });
+  await expect(tt).toContainText("13%");
+  await expect(tt).toContainText("60%");
+  await expect(tt).toContainText("code-verified");
+
+  // Old Guillotine is ~11.5% @1, NOT the 13% tooltip.
+  await expect(page.locator("tr", { hasText: "Old Guillotine" })).toContainText("11.5%");
+});
+
+test("breakpoints tab shows computed, verified milestone values", async ({ page }) => {
+  await page.goto("/reference");
+  await page.getByRole("button", { name: "Breakpoints" }).click();
+
+  // Crit: 10 Lens-Maker's Glasses = exactly 100% (the cap).
+  const crit = page.locator("tr", { hasText: "Crit chance" });
+  await expect(crit).toContainText("100%");
+
+  // Tougher Times block at 10 stacks = 60% (code-verified ConvertAmp(150)).
+  const tt = page.locator("tr", { hasText: "Tougher Times" });
+  await expect(tt).toContainText("13%"); // 1 stack
+  await expect(tt).toContainText("60%"); // 10 stacks
+  await expect(tt).toContainText("code-verified");
+
+  // Old Guillotine: 11.5% at one stack, not the 13% tooltip.
+  const og = page.locator("tr", { hasText: "Old Guillotine" });
+  await expect(og).toContainText("11.5%");
+});

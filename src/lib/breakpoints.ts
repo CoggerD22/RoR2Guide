@@ -1,0 +1,66 @@
+/**
+ * Breakpoint math (PLAN §4.3) — "how many stacks to reach X".
+ *
+ * Facts only, computed from the game's own formulas. Every value here is derived,
+ * not hand-entered, so it can't drift from the mechanics. The two hyperbolic
+ * anchors (Tougher Times, Old Guillotine) were verified against the decompiled
+ * `Util.ConvertAmplificationPercentageIntoReductionPercentage` and
+ * `RecalculateStats` (see MATH-VERIFICATION.md §3b/§3d); crit chance likewise.
+ */
+
+/**
+ * RoR2's universal "chance that approaches but never reaches 100%" curve:
+ *   Util.ConvertAmplificationPercentageIntoReductionPercentage(amp) = (1 − 100/(100+amp))·100
+ * `amp` is the summed per-stack amplification. For an item with base==perStack
+ * (all of them), amp at n stacks = base·n.
+ * Verified exact: Tougher Times 15%/stack → 13.04% @1, 60% @10.
+ */
+export function hyperbolicChance(perStackAmp: number, stacks: number): number {
+  if (stacks <= 0) return 0;
+  const amp = perStackAmp * stacks;
+  return (1 - 100 / (100 + amp)) * 100;
+}
+
+/** Exponential multiplier stacking, e.g. cooldown ×m per stack. Returns the % reduction. */
+export function exponentialReduction(multiplierPerStack: number, stacks: number): number {
+  return (1 - Math.pow(multiplierPerStack, stacks)) * 100;
+}
+
+/** Linear stat at n stacks: base + perStack·(n−1). */
+export function linearAt(base: number, perStack: number, stacks: number): number {
+  return stacks <= 0 ? 0 : base + perStack * (stacks - 1);
+}
+
+/**
+ * Fewest stacks of a linear crit-chance item to reach a target (default 100%),
+ * starting from a survivor's base crit (1% for everyone in vanilla).
+ * Lens-Maker's Glasses (+10%/stack, code-verified): 1% + 10n ≥ 100 → 10 glasses.
+ */
+export function stacksToCritCap(
+  perStack: number,
+  baseCrit = 1,
+  target = 100,
+  flatBonus = 0,
+): number {
+  const need = target - baseCrit - flatBonus;
+  if (need <= 0) return 0;
+  return Math.ceil(need / perStack);
+}
+
+export type Verification = "code" | "convention";
+
+export interface HyperbolicRow {
+  item: string;
+  stat: string;
+  perStackAmp: number;
+  /** "code" = mechanic confirmed in the decompile; "convention" = RoR2's universal
+   *  proc-chance stacking, consistent but not individually decompiled. */
+  verified: Verification;
+}
+
+/** Value of a hyperbolic mechanic at the standard milestone stack counts. */
+export const MILESTONES = [1, 2, 3, 4, 5, 10] as const;
+
+export function hyperbolicTable(row: HyperbolicRow): { stacks: number; value: number }[] {
+  return MILESTONES.map((n) => ({ stacks: n, value: hyperbolicChance(row.perStackAmp, n) }));
+}

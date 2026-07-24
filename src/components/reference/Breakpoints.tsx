@@ -1,0 +1,163 @@
+import { itemById } from "@/data/items";
+import {
+  MILESTONES,
+  hyperbolicChance,
+  stacksToCritCap,
+  linearAt,
+  type Verification,
+} from "@/lib/breakpoints";
+import { asset } from "@/lib/asset";
+import { cn } from "@/lib/utils";
+
+/**
+ * Breakpoint tables (PLAN §4.3) — "how many stacks to reach X".
+ * Every number is computed from the game's own formulas, not hand-entered.
+ */
+
+interface HyperbolicItem {
+  id: string;
+  stat: string;
+  perStackAmp: number;
+  verified: Verification;
+}
+
+// Hyperbolic "chance that approaches but never reaches 100%" mechanics. Tougher
+// Times and Old Guillotine are code-verified (ConvertAmp); the two on-hit procs
+// follow RoR2's universal proc-chance stacking (same curve, not individually
+// decompiled) and are labelled accordingly.
+const HYPERBOLIC: HyperbolicItem[] = [
+  { id: "tougher-times", stat: "Block an attack", perStackAmp: 15, verified: "code" },
+  { id: "old-guillotine", stat: "Execute elites below", perStackAmp: 13, verified: "code" },
+  { id: "sentient-meat-hook", stat: "Fire hooks on hit", perStackAmp: 20, verified: "convention" },
+  { id: "tentabauble", stat: "Root on hit", perStackAmp: 5, verified: "convention" },
+];
+
+const CRIT_STACKS = [1, 3, 5, 7, 9, 10];
+const pct = (n: number) => `${n.toFixed(1).replace(/\.0$/, "")}%`;
+
+function VerifiedTag({ v }: { v: Verification }) {
+  return v === "code" ? (
+    <span
+      title="Formula confirmed against the decompiled game code"
+      className="rounded-full border border-emerald-400/30 px-1.5 py-0.5 text-[10px] text-emerald-300/90"
+    >
+      code-verified
+    </span>
+  ) : (
+    <span
+      title="Uses RoR2's universal proc-chance stacking; consistent but not individually decompiled"
+      className="rounded-full border border-sky-400/25 px-1.5 py-0.5 text-[10px] text-sky-300/80"
+    >
+      standard curve
+    </span>
+  );
+}
+
+export function Breakpoints() {
+  const critCap = stacksToCritCap(10); // Lens-Maker's, from 1% base
+
+  return (
+    <div className="flex flex-col gap-8">
+      {/* Critical strike */}
+      <section>
+        <h3 className="mb-1 font-display text-lg font-semibold text-foreground">Guaranteed crits</h3>
+        <p className="mb-3 max-w-2xl text-xs leading-relaxed text-muted-foreground">
+          Everyone starts at <span className="text-foreground">1%</span> crit. Lens-Maker&rsquo;s
+          Glasses add <span className="text-foreground">+10%</span> each, so{" "}
+          <span className="text-foreground">{critCap} Glasses</span> reach the 100% cap. Predatory
+          Instincts and Harvester&rsquo;s Scythe each add a flat <span className="text-foreground">+5%</span>{" "}
+          (one-time), shaving a Glass off. Laser Scope is crit <em>damage</em>, not chance.
+        </p>
+        <div className="overflow-x-auto rounded-xl border border-border bg-surface">
+          <table className="w-full min-w-[22rem] text-sm">
+            <thead>
+              <tr className="border-b border-border text-left text-[11px] uppercase tracking-wide text-muted-foreground">
+                <th className="px-3 py-2 font-medium">Lens-Maker&rsquo;s Glasses</th>
+                {CRIT_STACKS.map((s) => (
+                  <th key={s} className="px-3 py-2 text-right font-medium">{s}</th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td className="px-3 py-2 text-muted-foreground">Crit chance</td>
+                {CRIT_STACKS.map((s) => {
+                  const crit = Math.min(100, 1 + linearAt(10, 10, s));
+                  return (
+                    <td
+                      key={s}
+                      className={cn(
+                        "px-3 py-2 text-right font-semibold tabular-nums",
+                        crit >= 100 ? "text-emerald-300" : "text-foreground",
+                      )}
+                    >
+                      {crit}%
+                    </td>
+                  );
+                })}
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      {/* Hyperbolic chances */}
+      <section>
+        <h3 className="mb-1 font-display text-lg font-semibold text-foreground">
+          Block, execute &amp; on-hit chances
+        </h3>
+        <p className="mb-3 max-w-2xl text-xs leading-relaxed text-muted-foreground">
+          These stack <span className="text-foreground">hyperbolically</span> &mdash; each stack adds
+          less than the last, approaching but never reaching 100%. The tooltip percentage is the
+          per-stack <em>input</em>, not the actual chance (Tougher Times shows 15% but blocks 13% at
+          one stack).
+        </p>
+        <div className="overflow-x-auto rounded-xl border border-border bg-surface">
+          <table className="w-full min-w-[34rem] text-sm">
+            <thead>
+              <tr className="border-b border-border text-left text-[11px] uppercase tracking-wide text-muted-foreground">
+                <th className="px-3 py-2 font-medium">Item</th>
+                {MILESTONES.map((n) => (
+                  <th key={n} className="px-3 py-2 text-right font-medium">{n}&times;</th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {HYPERBOLIC.map((h) => {
+                const item = itemById.get(h.id);
+                return (
+                  <tr key={h.id} className="border-b border-border/50 last:border-0 align-top">
+                    <td className="px-3 py-2">
+                      <div className="flex items-center gap-2">
+                        {item && (
+                          <img src={asset(item.icon)} alt="" className="size-6 shrink-0 object-contain" />
+                        )}
+                        <div className="min-w-0">
+                          <div className="truncate font-medium text-foreground">{item?.name ?? h.id}</div>
+                          <div className="flex items-center gap-1.5 text-[11px] text-muted-foreground">
+                            {h.stat} <VerifiedTag v={h.verified} />
+                          </div>
+                        </div>
+                      </div>
+                    </td>
+                    {MILESTONES.map((n) => (
+                      <td key={n} className="px-3 py-2 text-right font-semibold tabular-nums text-foreground">
+                        {pct(hyperbolicChance(h.perStackAmp, n))}
+                      </td>
+                    ))}
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <p className="text-[11px] leading-relaxed text-muted-foreground">
+        Values are computed from the game&rsquo;s formulas, not transcribed. Hyperbolic uses{" "}
+        <code className="rounded bg-surface-2 px-1 py-0.5">100 &minus; 100/(100 + amp)</code>, RoR2&rsquo;s
+        standard chance-stacking curve.
+      </p>
+    </div>
+  );
+}
