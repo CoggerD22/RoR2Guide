@@ -11,6 +11,8 @@ export default defineConfig({
   },
   test: {
     include: ["src/**/*.test.ts"],
+    // Guides is parked (see tsconfig.app.json) — don't run its tests either.
+    exclude: ["src/content/guides.test.ts"],
     environment: "node",
   },
 });

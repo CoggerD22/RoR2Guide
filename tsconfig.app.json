@@ -27,5 +27,10 @@
       "@/*": ["./src/*"]
     }
   },
-  "include": ["src"]
+  "include": ["src"],
+  // Guides (opinion layer) is parked: kept in the repo but not compiled, tested,
+  // or bundled while the site is facts-only. Its components <Link> to routes that
+  // no longer exist, so they can't be typechecked in isolation. To re-enable,
+  // remove this exclude and rewire the nav (src/lib/nav.ts) + router (src/router.tsx).
+  "exclude": ["src/components/guides", "src/content/guides.ts", "src/content/guides.test.ts"]
 }

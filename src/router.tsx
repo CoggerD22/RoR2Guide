@@ -11,8 +11,10 @@ import { StatLabPage } from "@/components/statlab/StatLabPage";
 import { ReferencePage } from "@/components/reference/ReferencePage";
 import { SurvivorsPage } from "@/components/survivors/SurvivorsPage";
 import { SurvivorDetail } from "@/components/survivors/SurvivorDetail";
-import { GuidesPage } from "@/components/guides/GuidesPage";
-import { GuideDetail } from "@/components/guides/GuideDetail";
+// Guides (opinion layer) is intentionally PARKED — the code lives in
+// src/components/guides/, src/content/guides.ts and content/guides/, but is not
+// wired into the nav or router while the site stays facts-only. To re-enable:
+// restore the two imports + routes below and the nav entry in src/lib/nav.ts.
 
 const rootRoute = createRootRoute({ component: RootLayout });
 
@@ -64,21 +66,6 @@ const survivorDetailRoute = createRoute({
   },
 });
 
-const guidesRoute = createRoute({
-  getParentRoute: () => rootRoute,
-  path: "/guides",
-  component: GuidesPage,
-});
-
-const guideDetailRoute = createRoute({
-  getParentRoute: () => rootRoute,
-  path: "/guides/$slug",
-  component: function GuideRoute() {
-    const { slug } = guideDetailRoute.useParams();
-    return <GuideDetail slug={slug} />;
-  },
-});
-
 const routeTree = rootRoute.addChildren([
   indexRoute,
   itemsRoute,
@@ -87,8 +74,6 @@ const routeTree = rootRoute.addChildren([
   referenceRoute,
   survivorsRoute,
   survivorDetailRoute,
-  guidesRoute,
-  guideDetailRoute,
 ]);
 
 export const router = createRouter({

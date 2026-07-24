@@ -1,5 +1,5 @@
 import type { LucideIcon } from "lucide-react";
-import { BookOpen, ClipboardList, Calculator, Library, Lightbulb, Users } from "lucide-react";
+import { BookOpen, ClipboardList, Calculator, Library, Users } from "lucide-react";
 
 /**
  * Single source of truth for the top-level sections. Both the router and the
@@ -7,7 +7,7 @@ import { BookOpen, ClipboardList, Calculator, Library, Lightbulb, Users } from "
  * `milestone` drives the "Coming in Mx" placeholder copy during M0.
  */
 export interface NavSection {
-  path: "/items" | "/planner" | "/stats" | "/survivors" | "/reference" | "/guides";
+  path: "/items" | "/planner" | "/stats" | "/survivors" | "/reference";
   label: string;
   blurb: string;
   milestone: string;
@@ -50,11 +50,5 @@ export const NAV_SECTIONS: NavSection[] = [
     milestone: "M6",
     icon: Library,
   },
-  {
-    path: "/guides",
-    label: "Guides",
-    blurb: "Build advice and item priorities — opinion, badged and dated, kept out of the codex.",
-    milestone: "M7",
-    icon: Lightbulb,
-  },
+  // Guides (opinion layer) is intentionally parked — see the note in src/router.tsx.
 ];
