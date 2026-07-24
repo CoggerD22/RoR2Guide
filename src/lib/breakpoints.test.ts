@@ -4,6 +4,7 @@ import {
   exponentialReduction,
   linearAt,
   stacksToCritCap,
+  cooldownReduction,
 } from "./breakpoints";
 
 // Anchored to values verified against the decompiled game (MATH-VERIFICATION §3b/§3d).
@@ -43,4 +44,16 @@ test("crit cap accounts for flat crit sources (Predatory + Harvester's = +10%)",
 test("exponential cooldown: Fuel Cell ×0.85/stack reductions compound", () => {
   expect(exponentialReduction(0.85, 1)).toBeCloseTo(15, 4);
   expect(exponentialReduction(0.85, 2)).toBeCloseTo(27.75, 2); // 1 - 0.7225
+});
+
+test("cooldown reduction, code-verified multipliers", () => {
+  // Alien Head 0.75^n: 25% @1, 43.75% @2, ~94.4% @10.
+  expect(cooldownReduction(0.75, 0.75, 1)).toBeCloseTo(25, 4);
+  expect(cooldownReduction(0.75, 0.75, 2)).toBeCloseTo(43.75, 2);
+  // Fuel Cell 0.85^n: 15% @1, ~80.3% @10.
+  expect(cooldownReduction(0.85, 0.85, 1)).toBeCloseTo(15, 4);
+  expect(cooldownReduction(0.85, 0.85, 10)).toBeCloseTo(80.31, 1);
+  // Gesture 0.5 * 0.85^(n-1): 50% @1, 57.5% @2.
+  expect(cooldownReduction(0.5, 0.85, 1)).toBeCloseTo(50, 4);
+  expect(cooldownReduction(0.5, 0.85, 2)).toBeCloseTo(57.5, 2);
 });

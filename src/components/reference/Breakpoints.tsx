@@ -4,6 +4,8 @@ import {
   hyperbolicChance,
   stacksToCritCap,
   linearAt,
+  cooldownReduction,
+  COOLDOWN_ITEMS,
   type Verification,
 } from "@/lib/breakpoints";
 import { asset } from "@/lib/asset";
@@ -153,10 +155,59 @@ export function Breakpoints() {
         </div>
       </section>
 
+      {/* Cooldown reduction */}
+      <section>
+        <h3 className="mb-1 font-display text-lg font-semibold text-foreground">Cooldown reduction</h3>
+        <p className="mb-3 max-w-2xl text-xs leading-relaxed text-muted-foreground">
+          Cooldown items stack <span className="text-foreground">multiplicatively</span>, so total
+          reduction climbs fast early then flattens &mdash; never quite reaching 0 cooldown. All
+          multipliers below are confirmed in the game code.
+        </p>
+        <div className="overflow-x-auto rounded-xl border border-border bg-surface">
+          <table className="w-full min-w-[34rem] text-sm">
+            <thead>
+              <tr className="border-b border-border text-left text-[11px] uppercase tracking-wide text-muted-foreground">
+                <th className="px-3 py-2 font-medium">Item</th>
+                {MILESTONES.map((n) => (
+                  <th key={n} className="px-3 py-2 text-right font-medium">{n}&times;</th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {COOLDOWN_ITEMS.map((c) => {
+                const item = itemById.get(c.id);
+                return (
+                  <tr key={c.id} className="border-b border-border/50 last:border-0 align-top">
+                    <td className="px-3 py-2">
+                      <div className="flex items-center gap-2">
+                        {item && (
+                          <img src={asset(item.icon)} alt="" className="size-6 shrink-0 object-contain" />
+                        )}
+                        <div className="min-w-0">
+                          <div className="truncate font-medium text-foreground">{item?.name ?? c.id}</div>
+                          <div className="flex items-center gap-1.5 text-[11px] text-muted-foreground">
+                            {c.stat} <VerifiedTag v={c.verified} />
+                          </div>
+                        </div>
+                      </div>
+                    </td>
+                    {MILESTONES.map((n) => (
+                      <td key={n} className="px-3 py-2 text-right font-semibold tabular-nums text-foreground">
+                        {pct(cooldownReduction(c.firstStackScale, c.mult, n))}
+                      </td>
+                    ))}
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
+      </section>
+
       <p className="text-[11px] leading-relaxed text-muted-foreground">
         Values are computed from the game&rsquo;s formulas, not transcribed. Hyperbolic uses{" "}
-        <code className="rounded bg-surface-2 px-1 py-0.5">100 &minus; 100/(100 + amp)</code>, RoR2&rsquo;s
-        standard chance-stacking curve.
+        <code className="rounded bg-surface-2 px-1 py-0.5">100 &minus; 100/(100 + amp)</code>;
+        cooldown uses <code className="rounded bg-surface-2 px-1 py-0.5">1 &minus; first &middot; mult<sup>n&minus;1</sup></code>.
       </p>
     </div>
   );

@@ -26,6 +26,32 @@ export function exponentialReduction(multiplierPerStack: number, stacks: number)
   return (1 - Math.pow(multiplierPerStack, stacks)) * 100;
 }
 
+/**
+ * Cooldown reduction %, general form: remaining fraction = first · mult^(n−1).
+ * Covers the plain case (first == mult, e.g. Fuel Cell 0.85·0.85ⁿ⁻¹ = 0.85ⁿ) and
+ * Gesture of the Drowned's special first stack (0.5 · 0.85ⁿ⁻¹). All code-verified
+ * in CalculateEquipmentCooldownScale / RecalculateStats (MATH-VERIFICATION §3b).
+ */
+export function cooldownReduction(firstStackScale: number, mult: number, stacks: number): number {
+  if (stacks <= 0) return 0;
+  return (1 - firstStackScale * Math.pow(mult, stacks - 1)) * 100;
+}
+
+export interface CooldownItem {
+  id: string;
+  stat: string;
+  firstStackScale: number;
+  mult: number;
+  verified: Verification;
+}
+
+/** Cooldown-reduction items, all with multipliers confirmed in the decompile. */
+export const COOLDOWN_ITEMS: CooldownItem[] = [
+  { id: "alien-head", stat: "Skill cooldown", firstStackScale: 0.75, mult: 0.75, verified: "code" },
+  { id: "fuel-cell", stat: "Equipment cooldown", firstStackScale: 0.85, mult: 0.85, verified: "code" },
+  { id: "gesture-of-the-drowned", stat: "Equipment cooldown", firstStackScale: 0.5, mult: 0.85, verified: "code" },
+];
+
 /** Linear stat at n stacks: base + perStack·(n−1). */
 export function linearAt(base: number, perStack: number, stacks: number): number {
   return stacks <= 0 ? 0 : base + perStack * (stacks - 1);
