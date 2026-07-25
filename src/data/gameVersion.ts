@@ -15,3 +15,12 @@ export const GAME_BUILD_ID = "21587608";
 
 /** ISO date of the last full verification pass. */
 export const VERIFIED_ON = "2026-07-19";
+
+/**
+ * Player-facing game patch/version string — the number shown on the game's main menu
+ * (e.g. "Version 1.4.x"). Deliberately UNVERIFIED: it has not been read from the game,
+ * and CLAUDE.md rule #1 forbids guessing a number. Left null so the stamp falls back to
+ * the DLC name + Steam build (which ARE recorded). Fill this in from the main menu after
+ * the next play session, then bump VERIFIED_ON.
+ */
+export const PATCH_VERSION: string | null = null; // TODO: record exact patch string from the game's main menu

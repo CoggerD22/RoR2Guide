@@ -17,6 +17,9 @@ test("app shell renders, redirects to codex, and shows the disclaimer", async ({
   await expect(
     page.getByText(/Not affiliated with Gearbox Publishing or Hopoo Games/i),
   ).toBeVisible();
+
+  // Data-verification stamp (PLAN §4.6) tells readers how fresh the data is.
+  await expect(page.getByText(/Data verified against .* on \d{4}-\d{2}-\d{2}\./)).toBeVisible();
 });
 
 test("navigating to the planner updates the route", async ({ page }) => {
