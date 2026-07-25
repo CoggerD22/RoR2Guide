@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { DLC_META } from "@/data/items";
 import { ARTIFACTS, BAZAAR_DREAMS, SHRINES, LOADOUT_UNLOCKS } from "@/data/reference";
+import { asset } from "@/lib/asset";
 import { cn } from "@/lib/utils";
 import { Breakpoints } from "./Breakpoints";
 
@@ -34,7 +35,15 @@ function Artifacts() {
       {ARTIFACTS.map((a) => (
         <div key={a.name} className="flex flex-col gap-2 rounded-xl border border-border bg-surface p-4">
           <div className="flex items-start justify-between gap-2">
-            <h3 className="font-display text-sm font-semibold text-foreground">{a.name}</h3>
+            <div className="flex min-w-0 items-center gap-2.5">
+              <img
+                src={asset(a.icon)}
+                alt=""
+                loading="lazy"
+                className="size-9 shrink-0 object-contain"
+              />
+              <h3 className="font-display text-sm font-semibold text-foreground">{a.name}</h3>
+            </div>
             {a.dlc !== "base" && (
               <span className="shrink-0 rounded-full border border-border px-1.5 py-0.5 text-[10px] text-muted-foreground">
                 {DLC_META[a.dlc].short}

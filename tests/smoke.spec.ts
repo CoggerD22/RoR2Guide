@@ -179,6 +179,15 @@ test("Heretic shows her real item-granted kit, not the placeholder", async ({ pa
   await expect(page.getByText("+-", { exact: false })).toHaveCount(0);
 });
 
+test("artifacts reference shows each artifact's icon alongside its code", async ({ page }) => {
+  await page.goto("/reference");
+  // Artifacts is the default tab. Cards pair the emblem with the Ambry code.
+  const commandCard = page.locator("div", { has: page.getByRole("heading", { name: "Artifact of Command" }) }).first();
+  await expect(commandCard).toBeVisible();
+  const icon = page.locator('img[src*="artifacts/artifact-of-command.png"]');
+  await expect(icon).toBeVisible();
+});
+
 test("breakpoints tab shows computed, code-verified milestones", async ({ page }) => {
   await page.goto("/reference");
   await page.getByRole("button", { name: "Breakpoints" }).click();

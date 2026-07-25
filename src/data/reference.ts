@@ -7,14 +7,24 @@ import type { Dlc } from "./schema";
  */
 
 export interface ArtifactRef {
+  /** Stable slug, e.g. "artifact-of-command". */
+  id: string;
   name: string;
+  /** Icon path under /public, e.g. "/icons/artifacts/artifact-of-command.png". */
+  icon: string;
   effect: string;
   /** Ambry code as three space-separated rows, or null if not code-unlocked. */
   code: string | null;
   dlc: Dlc;
 }
 
-export const ARTIFACTS: ArtifactRef[] = [
+/** Slug an artifact name into a filename-safe id ("Artifact of Command" → "artifact-of-command"). */
+export function artifactSlug(name: string): string {
+  return name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+}
+
+/** Raw artifact facts; id + icon are derived from the name (PLAN §2.7 / §4.8). */
+const rawArtifacts: Omit<ArtifactRef, "id" | "icon">[] = [
   { name: "Artifact of Chaos", effect: "Friendly fire is enabled for both survivors and monsters alike.", code: "●▲● ●▲● ●▲●", dlc: "base" },
   { name: "Artifact of Command", effect: "Choose your items — item drops become a pickable selection of that tier.", code: "■■■ ■■■ ▲▲▲", dlc: "base" },
   { name: "Artifact of Death", effect: "When one player dies, everyone dies.", code: "●●● ■▲■ ●▲●", dlc: "base" },
@@ -36,6 +46,11 @@ export const ARTIFACTS: ArtifactRef[] = [
   { name: "Artifact of Swarms", effect: "Monster spawns are doubled, but monster maximum health is halved.", code: "●●▲ ▲♦▲ ▲●●", dlc: "base" },
   { name: "Artifact of Vengeance", effect: "Your relentless doppelganger will invade every 10 minutes.", code: "♦■■ ♦●■ ♦■■", dlc: "base" },
 ];
+
+export const ARTIFACTS: ArtifactRef[] = rawArtifacts.map((a) => {
+  const id = artifactSlug(a.name);
+  return { ...a, id, icon: `/icons/artifacts/${id}.png` };
+});
 
 export interface DreamRef {
   dream: string;

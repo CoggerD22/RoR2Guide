@@ -23,7 +23,7 @@ import {
   skillsFileSchema,
   type Item,
 } from "../src/data/schema.ts";
-import { LOADOUT_UNLOCKS } from "../src/data/reference.ts";
+import { LOADOUT_UNLOCKS, ARTIFACTS } from "../src/data/reference.ts";
 
 const here = dirname(fileURLToPath(import.meta.url));
 const root = resolve(here, "..");
@@ -126,6 +126,12 @@ function main(): number {
     } else if (!seen) {
       requirementByChallenge.set(it.unlock.challenge, { id: it.id, requirement: it.unlock.requirement });
     }
+  }
+
+  // --- Artifact icons (PLAN §4.8) -----------------------------------------
+  for (const a of ARTIFACTS) {
+    const iconPath = resolve(root, "public" + a.icon);
+    if (!existsSync(iconPath)) warnings.push(`missing artifact icon: ${a.icon} for "${a.id}"`);
   }
 
   // --- Survivors (if present) ---------------------------------------------
