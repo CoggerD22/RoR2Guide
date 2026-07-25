@@ -12,8 +12,19 @@ import type { Dlc } from "./schema";
  * from its ACHIEVEMENT_*_DESCRIPTION. Text is verbatim, including the game's own
  * typos (e.g. "cavernouse depths") — the site quotes the game, it doesn't correct it.
  *
+ * ⚠ IMPORTANT (PLAN §5.0.1): a _DESCRIPTION token proves what the game SAYS, not what
+ * it DOES. Descriptions are frequently incomplete — Shrine of Blood's omits that its
+ * cost compounds per purchase and that purchases are capped, both of which are only
+ * visible in ShrineBloodBehavior + the shrine prefab's serialized fields. So:
+ *   - SHRINES.description and ARTIFACTS.effect are **quoted text**, NOT verified
+ *     mechanics, and the UI must present them as quotes.
+ *   - The verified-mechanic layer (code formula + prefab constants) is still to be
+ *     built; see PLAN §5.0.3 for the re-verification backlog.
+ * BAZAAR_DREAMS is exempt — the Seer literally speaks those lines, so quoting IS the
+ * fact, and the stage mapping is structural (token name + SceneDef.stageOrder).
+ *
  * Still hand-entered / wiki-sourced: the Ambry codes (they live in asset prefabs,
- * not text) and the SHRINES block.
+ * not text). SHRINES.cost is OUR editorial summary, not game data.
  *
  * Artifacts carry their Bulwark's Ambry activation code as a 3-row glyph string
  * (● circle, ■ square, ▲ triangle, ♦ diamond).
@@ -262,54 +273,91 @@ export const LOADOUT_UNLOCKS: SurvivorLoadout[] = [
 
 export interface ShrineRef {
   name: string;
+  /**
+   * OUR editorial one-line cost summary — NOT game data, NOT code-verified.
+   * Must be rendered visibly labelled as ours (PLAN §5.0.2, "Editorial").
+   */
   cost: string;
-  effect: string;
+  /**
+   * The game's own SHRINE_*_DESCRIPTION, verbatim. This is a **Quoted text** claim:
+   * it is what the game SAYS, not a verified account of what the game DOES
+   * (PLAN §5.0.1). Descriptions are routinely incomplete — Shrine of Blood's omits
+   * that its cost compounds per use and that uses are capped. The verified mechanic
+   * layer (from `Shrine*Behavior` + prefab constants) is still to be added; until
+   * then the UI must present this as a quote, never as "the mechanic".
+   */
+  description: string;
 }
 
+/**
+ * Interactable shrines, names and effects taken verbatim from the game's own
+ * description tokens (PLAN §5.0). Every entry is cross-checked against a live
+ * behaviour class compiled into RoR2.dll, so cut content cannot sneak in.
+ *
+ * Deliberately EXCLUDED: "Shrine of Warding" (SHRINE_PROTECTION_NAME). It has name
+ * and context tokens but no description and no behaviour class in RoR2.dll — the
+ * same signature as the cut Artifact of Spirit. Not listed until it can be shown to
+ * be live content.
+ */
 export const SHRINES: ShrineRef[] = [
   {
     name: "Shrine of Chance",
     cost: "Escalating gold",
-    effect: "Gamble for a random item or equipment — or nothing on a failed roll. Can be used repeatedly; cost rises each use. Luck (57 Leaf Clover) rerolls the outcome.",
+    description: "When activated by a survivor the Shrine of Chance has a chance to drop an item of random rarity or a random equipment item.",
   },
   {
     name: "Shrine of Blood",
-    cost: "~½ current health",
-    effect: "Pay a chunk of your current health for gold (amount scales with time). Repeatable while you have health to spend.",
+    cost: "A percentage of current health",
+    description: "When activated by a survivor the Shrine of Blood consumes a percentage of the survivors health in exchange for gold equal to half the amount of HP taken.",
   },
   {
     name: "Shrine of Combat",
     cost: "Free",
-    effect: "Spawns a wave of monsters. Clearing it drops gold. Multiple can be triggered at once for a bigger fight.",
+    description: "When activated by a survivor a group of enemies already found in the stage will spawn around the Shrine of Combat.",
   },
   {
     name: "Shrine of the Mountain",
     cost: "Free",
-    effect: "Each activation adds one extra Teleporter boss and increases the Teleporter event's item rewards. Stacks — the risk and loot both scale.",
+    description: "When activated by a survivor the Teleporter Event will increase in difficulty and extra items will be given once the survivors kill all the Teleporter bosses.",
   },
   {
     name: "Shrine of Order",
     cost: "1 Lunar Coin",
-    effect: "Collapses each item tier in your inventory into the single item you hold the most of in that tier. High-variance, build-defining.",
+    description: "When activated by a survivor the Shrine of Order randomly selects an item from each tier of rarity and turns all items of the same rarity into the selected item of that tier.",
   },
   {
-    name: "Shrine of the Woods (Healing)",
-    cost: "Gold",
-    effect: "Activate to project a healing aura that regenerates nearby players. Cost scales; useful before a hard fight.",
+    name: "Shrine of the Woods",
+    cost: "Gold, repeatable",
+    description: "When activated by a survivor the Shrine of the Woods will create a circular field around it that heals all allies when inside it.",
+  },
+  {
+    name: "Shrine of Shaping",
+    cost: "An offering of Soul",
+    description: "An offering of Soul reduces all living Survivors' health by 30%, but revives all dead Survivors and gives an extra life to all living Survivors.",
+  },
+  {
+    name: "Halcyon Shrine",
+    cost: "Gold, siphoned from nearby survivors",
+    description: "A Shrine created from a shard from Meridian imbued with Aurelionite's energy. When the Shrine is activated it begins siphoning gold from nearby Survivors up until a maximum gold amount has been stored. After the first tier has been reached, the player can interact with the Shrine early and ending the gold siphon or wait till the final tier is reached. Interacting with the Shrine summons a slumbering Halcyonite and on its defeat an Aurelionite Fragment will drop. Depending on the amount of gold drained the Fragment gains more options and allow more items to be selected from the Fragment.",
+  },
+  {
+    name: "Shrine of Rebirth",
+    cost: "One item, stored for the next run",
+    description: "Praying at the Shrine of Rebirth allows the player to store an item in the Artifact of Rebirth. Storing an item in the Artifact of Rebirth replaces any item stored within. Activating the Artifact of Rebirth will gift the item to the Survivor upon descending to Petrichor V.",
   },
   {
     name: "Cleansing Pool",
-    cost: "1 Lunar item",
-    effect: "Trade a Lunar item to convert it into a random regular item of the same tier (removes the drawback).",
+    cost: "1 Lunar item or Lunar Equipment",
+    description: "Allows survivors to sacrifice a random Lunar item or Lunar Equipment in exchange for a Pearl item.",
   },
   {
     name: "Altar of Gold",
     cost: "Large gold sum",
-    effect: "Opens a portal to the Gilded Coast to fight Aurelionite for the Halcyon Seed. Appears occasionally; only worth it if you can afford it.",
+    description: "A rare and expensive shrine that will spawn a Gold Portal once the Teleporter Event has finished, allowing the player to travel to the Gilded Coast.",
   },
   {
     name: "Newt Altar",
     cost: "1 Lunar Coin",
-    effect: "Opens a Blue Portal at the Teleporter that leads to the Bazaar Between Time (lunar shop + stage-selecting Seers).",
+    description: "Costs one Lunar Coin to activate and will spawn a blue portal after the Teleporter Event allowing the player to travel to the Bazaar Between Time.",
   },
 ];

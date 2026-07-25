@@ -314,7 +314,115 @@ fully sourced — immediately found substantial, verifiable error:
     additions. Cross-check every token-derived record against its registered def.
 - **Loadout unlocks: 14 rows carry an empty `requirement`**, resolvable through the
   same achievement-token join already built for item unlocks (§2.6).
+- **Shrines: we ship 9; three live ones were missing** — Shrine of Shaping
+  (`ShrineColossusAccessBehavior`), Halcyon Shrine (`ShrineHalcyonite*`), and Shrine
+  of Rebirth (`ShrineRebirthController`), each confirmed against a behaviour class
+  compiled into RoR2.dll. The Cleansing Pool text was also **factually wrong**: it
+  gives a **Pearl item**, not "a random regular item of the same tier."
+  - A second cut-content catch: **Shrine of Warding** (`SHRINE_PROTECTION_NAME`) has
+    name and context tokens but *no* description and *no* behaviour class — the same
+    signature as Artifact of Spirit. Excluded, with the reasoning recorded in the file.
 - **Ambry codes** are extractable from `ArtifactFormulaDisplay` (§7).
+
+#### 5.0.1 The deeper flaw: description text is not behaviour
+
+The sweep above fixed *coverage* but introduced a *category error*, caught on review
+and worth stating plainly because it invalidates part of the work:
+
+> Replacing a wiki paraphrase with the game's own `_DESCRIPTION` token verifies
+> **what the game says**. It does **not** verify **what the game does**.
+
+Description tokens are player-facing blurbs. They are routinely incomplete, rounded,
+or stale. Storing one in a field the UI presents as *the mechanic* is the same class
+of error as trusting the wiki — the source merely looks more official.
+
+**Worked example — Shrine of Blood.** The token says it "consumes a percentage of the
+survivors health in exchange for gold equal to half the amount of HP taken." The
+decompiled `ShrineBloodBehavior` shows that is at best a third of the story:
+
+```csharp
+public float goldToPaidHpRatio  = 0.5f;   // gold = HP paid × ratio  (the "half")
+public float costMultiplierPerPurchase;   // cost COMPOUNDS every purchase
+public int   maxPurchaseCount;            // and the shrine is use-capped
+// cost is a PERCENT of max HP, recomputed after each use:
+Networkcost = (int)(100f * (1f - Mathf.Pow(1f - cost / 100f, costMultiplierPerPurchase)));
+```
+
+The escalating cost and the use cap — the two things a player actually needs to know
+before praying twice — appear nowhere in the description. Worse, the real constants
+(`costMultiplierPerPurchase`, `maxPurchaseCount`, and any per-prefab override of
+`goldToPaidHpRatio`) are **serialized on the shrine prefab**, so even the C# only
+gives the *shape* of the formula, not its values.
+
+#### 5.0.2 Claim taxonomy — every stored field is exactly one kind
+
+Verification is meaningless until the *kind* of claim is named, because each kind has
+a different authoritative source. Every field in every dataset must be classified:
+
+| Kind | Example | Authoritative source | Never acceptable |
+|---|---|---|---|
+| **Identity** | id, name, icon | `*Def` asset + `_NAME` token | — |
+| **Existence** | "this is live content" | Registration in a catalog (`RoR2Content.*`) or a compiled behaviour class | Language tokens alone |
+| **Quoted text** | pickup/flavour text, a Seer's line | `Language/en` **verbatim** — the token *is* the truth | Paraphrase |
+| **Behaviour** | "cost rises per use" | Decompiled C# | A `_DESCRIPTION` token |
+| **Numeric constant** | `goldToPaidHpRatio`, cooldowns | **Serialized field on the actual prefab/ScriptableObject**; code default only if never overridden | Numbers read out of prose |
+| **Derived** | DPS, breakpoints | Computed from verified constants, with inputs cited | — |
+| **Editorial** | our "cost" summary column | Ours — must be *visibly labelled as ours* | Presenting it as game fact |
+
+**The two rules that follow, and that the sweep violated:**
+1. A `_DESCRIPTION` token may populate a field typed **Quoted text**. It may *never*
+   populate a field typed **Behaviour** or **Numeric constant**.
+2. Code gives the **formula**; the prefab gives the **constants**. A behaviour claim
+   citing only one of the two is incomplete and must say so.
+
+#### 5.0.3 Consequence: what must be re-verified
+
+Anything where a description token was stored into a behaviour-typed field is
+**not verified** and must be redone against code + prefab:
+
+| Record set | Field | Status |
+|---|---|---|
+| `SHRINES` (12) | `effect` | ❌ **Invalid** — description-as-behaviour. Redo from `Shrine*Behavior` + prefab constants. |
+| `SHRINES` (12) | `cost` | ❌ **Editorial, unlabelled** — hand-written, presented as fact. Either derive from prefab or mark as ours. |
+| `ARTIFACTS` (20) | `effect` | ❌ **Invalid** — same error. Redo against each artifact's manager/behaviour class. |
+| `LOADOUT_UNLOCKS` (45) | `requirement` | ⚠️ **Conditionally valid** — it is the game's own stated unlock contract, so it is legitimately *Quoted text*, but it must be **labelled as the game's description**, not as the verified trigger. The true trigger lives in each achievement class. |
+| `BAZAAR_DREAMS` (31) | `dream` | ✅ **Valid** — the Seer literally speaks this line; it is Quoted text by nature. |
+| `BAZAAR_DREAMS` (31) | `stage`, `stageNumber` | ✅ **Valid** — structural, from the token name joined to `SceneDef.stageOrder`, not from prose. |
+| `items.json` (212) | `description`, `pickupText` | ✅ **Valid as Quoted text** — these are the in-game tooltips, and `data:diff` confirms transcription fidelity. Any *derived* number the site computes from them belongs to the stat engine, which is separately code-verified. |
+
+#### 5.0.4 Method going forward
+
+1. **Type every field** in the schemas with its claim kind, so the requirement is
+   visible at the point of definition rather than living in someone's head.
+2. **Per-field provenance, not per-record.** A record is not "verified"; each field
+   is verified *by a named source*. `confidence` becomes `{ source, ref }` — e.g.
+   `{ source: "code", ref: "ShrineBloodBehavior.AddShrineStack" }`.
+3. **Extract prefab constants**, not just code shape: pull the serialized fields off
+   each shrine/interactable prefab (UnityPy is available — §7) so numeric constants
+   come from the asset that actually ships.
+4. **Present both layers in the UI where they differ.** Show the game's own
+   description *as a quote*, and the verified mechanic separately. Users benefit from
+   seeing that the in-game blurb omits the escalation — that is exactly the
+   "answers the game hides" brief.
+5. **Audit enforcement:** `data:audit` fails when a behaviour-typed field has no code
+   citation, when a numeric constant has no asset citation, or when an editorial field
+   is not flagged as editorial.
+6. **No claim ships on a single source** when two layers exist (code + asset).
+
+**Verification status — honest, and revised after 5.0.1:**
+
+| Surface | State |
+|---|---|
+| `items.json` (212) | ✅ Quoted text + identity verified; `data:diff` reports 0 mismatches |
+| `survivors.json` (19) | ✅ Numeric constants verified against body prefabs (`data:verify`) |
+| `statItems.ts` | ✅ Constants match decompiled `RecalculateStats` |
+| `BAZAAR_DREAMS` (31) | ✅ Quoted text + structural mapping |
+| **`SHRINES` (12) effects/costs** | ❌ **Invalid — description-as-behaviour; redo** |
+| **`ARTIFACTS` (20) effects** | ❌ **Invalid — same; redo against behaviour classes** |
+| **`LOADOUT_UNLOCKS` (45)** | ⚠️ Valid only if relabelled as the game's stated description |
+| **Ambry codes (19)** | ⚠️ Still wiki-sourced — extractable, not yet done |
+| **Proc coefficients (21/125)** | ⚠️ Still unresolved — statically recoverable (§5.7) |
+| **Loadout alt-skill coverage** | ⚠️ 5 survivors under-reported (§5.1) |
 
 Work: re-derive every hand-entered `reference.ts` block from game text, transcribing
 **verbatim** — including the game's own typos (e.g. "cavernouse depths"); the site

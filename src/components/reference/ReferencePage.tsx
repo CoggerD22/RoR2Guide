@@ -88,13 +88,35 @@ function Dreams() {
 function Shrines() {
   return (
     <div className="flex flex-col gap-3">
+      {/*
+        The blurb below each shrine is the GAME'S OWN description, quoted verbatim —
+        not a verified account of the mechanic (PLAN §5.0.1). These descriptions are
+        often incomplete: Shrine of Blood's, for instance, never mentions that its
+        cost compounds per use or that uses are capped. Labelled as a quote until the
+        code+prefab-verified mechanic layer lands.
+      */}
+      <p className="rounded-lg border border-border bg-surface-2 px-3 py-2 text-xs leading-relaxed text-muted-foreground">
+        Text below is quoted from the game&rsquo;s own in-game description. These blurbs
+        can be incomplete — several omit escalating costs or use limits. Verified
+        mechanics are being added; the cost column is our own summary, not game data.
+      </p>
       {SHRINES.map((s) => (
         <div key={s.name} className="rounded-xl border border-border bg-surface p-4">
           <div className="flex flex-wrap items-baseline justify-between gap-2">
             <h3 className="font-display text-sm font-semibold text-foreground">{s.name}</h3>
-            <span className="rounded-full bg-surface-2 px-2 py-0.5 text-xs text-primary">{s.cost}</span>
+            <span
+              className="rounded-full bg-surface-2 px-2 py-0.5 text-xs text-primary"
+              title="Our summary, not game data"
+            >
+              {s.cost}
+            </span>
           </div>
-          <p className="mt-1.5 text-sm leading-relaxed text-muted-foreground">{s.effect}</p>
+          <p className="mt-1.5 border-l-2 border-border pl-3 text-sm leading-relaxed text-muted-foreground">
+            {s.description}
+          </p>
+          <p className="mt-1 text-[10px] uppercase tracking-widest text-muted-foreground/70">
+            In-game description
+          </p>
         </div>
       ))}
     </div>
