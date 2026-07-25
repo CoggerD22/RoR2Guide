@@ -236,3 +236,8 @@ test("items are deep-linkable and shareable via /items/<id>", async ({ page }) =
   await expect(page.getByRole("searchbox", { name: "Search items" })).toHaveValue("bleed");
   await expect(page.getByRole("button", { name: /^Crowbar/ })).toHaveCount(0);
 });
+
+test("trailing-slash item URL opens the drawer (production Pages serves /items/<id>/)", async ({ page }) => {
+  await page.goto("/items/crowbar/");
+  await expect(page.getByRole("dialog", { name: "Crowbar" })).toBeVisible();
+});
