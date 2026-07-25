@@ -336,18 +336,40 @@ fall back to text-only for exactly this reason, §4.4).
 - **Imagery for the Bazaar dreams table** — the dream portals are identified visually
   in-game, so the table should show them, not just quote the text.
 
-**5.7 Finish proc verification (the honest tail).** 21 of 125 loadout skills still
-carry no verified proc coefficient. They are not all the same kind of unknown, and
-lumping them together is itself misleading:
-- **Genuinely non-damaging** (dashes, repositioning, buffs): Tactical Dive/Slide,
-  Blink, Phase Blink, Trespass, Shadowfade, Sojourn, Repossess, Retool. These should
-  read **"no proc — deals no damage"**, which is a *fact*, not a gap.
-- **Summons** (TR12/TR58 turrets, CMD-SWARM): proc through the minion's own attacks;
-  model them as delegating rather than as null.
-- **Genuinely unresolved** (Power Mode, Salvage, Meridian's Will, Tangling Growth,
-  DIRECTIVE: Disperse, Orbital Supply Beacon, Ascent Protocol, ADMIN-OVERRIDE,
-  Reprieve): these need the runtime dumper (§6, user-gated) and stay marked
-  unverified until measured. **Never estimated.**
+**5.7 Finish proc verification — statically, no runtime dumper required.**
+21 of 125 loadout skills carry no verified proc coefficient. This was previously
+scoped as *"needs the in-game ProcDumper"*; **that was wrong**, and the correction
+matters because it moved work off the maintainer entirely.
+
+Root cause: `extract-loadouts.py` resolves procs only from **serialized Unity fields**
+(EntityStateConfiguration overrides and projectile prefabs). It never reads the game's
+**C# code**, and it keys on a skill's *entry* `activationState` — but for charge/setup
+skills the damage is dealt by a **later state** in the machine. So "unresolved" mostly
+meant "we looked in the wrong place," not "this value doesn't exist statically."
+
+Decompiling the `EntityStates.*` classes out of `RoR2.dll` (the same ilspycmd path
+already used for `CharacterBody`) resolves them. Verified while re-checking this claim:
+- `Treebot.Weapon.ChargeSonicBoom` merely transitions to `FireSonicBoom`, whose
+  `CalculateProcCoefficient()` **returns `0f`** — DIRECTIVE: Disperse is a pure
+  knockback. A code-verified fact, not an unknown.
+- Eight others — Captain `SetupSupplyDrop`, Drifter `Salvage`, DroneTech `DroneLeap` /
+  `Weapon.Activate` / `Weapon.Paint.Paint`, `PrepFlower2`, Seeker `Reprieve`, Toolbot
+  `ToolbotDualWieldStart` — contain **no damage path whatsoever** (no `DamageInfo`,
+  no attack construction).
+
+Work to do:
+1. Widen `scripts/decompile.sh` beyond its current 3 stat types to cover the
+   `EntityStates` tree, and follow state transitions to the state that actually fires.
+2. Classify each skill by the *kind* of answer, since collapsing them into
+   "unverified" is itself misleading:
+   - **Non-damaging** (dashes, stances, setups): Tactical Dive/Slide, Blink,
+     Phase Blink, Trespass, Shadowfade, Sojourn, Repossess, Retool, Power Mode,
+     Orbital Supply Beacon, Reprieve → **"no proc — deals no damage"**, a fact.
+   - **Delegating** (the state spawns something that carries the proc): TR12/TR58
+     turrets, CMD-SWARM, Tangling Growth, Salvage → resolve to the spawned
+     minion/projectile's own coefficient and model the delegation explicitly.
+   - **Genuinely runtime-dependent**, if any survive the above → only *these* justify
+     the ProcDumper, and they stay marked unverified until measured. Never estimated.
 
 **5.8 Make the locked-item state unmissable.** §4.7 shipped a lock badge, a
 "How to unlock" block, and a "Locked only" filter, but the badge is deliberately
@@ -495,12 +517,19 @@ than being guessed. Each entry states **why** it can't be automated and **what
 
 | # | Input | Why it's blocked | What to capture |
 |---|---|---|---|
-| 1 | **Runtime proc coefficients** for the 9 genuinely unresolved skills (§5.7) | The value isn't in a serialized field — it's set at runtime when the attack fires, so it can only be observed while playing | Run the BepInEx `ProcDumper` plugin (`tools/ProcDumper/`), play each affected survivor, use each listed skill on a target, then hand over the generated log |
-| 2 | **Logbook text for 4 edge-case equipment** — G-Force Accelerator, Elegy of Extinction, Coven of Gold, Jar of Souls | Their language-file tokens are ambiguous/templated, so the shipped text can't be confirmed from files alone | Open each in the in-game Logbook and copy the description verbatim |
-| 3 | **2 unconfirmed Ambry codes** — Artifact of Evolution (`♦♦♦ ■■■ ●●●`) and Artifact of Soul (`●■● ●♦● ■♦■`) | Codes are encoded in the monument, not in text assets; ours came from the wiki and are the only wiki-only values left | Confirm the glyph pattern on the Bulwark's Ambry monument (or the artifact's unlock entry) |
-| 4 | **Player-facing patch version** (`PATCH_VERSION`, currently `null`) | The main-menu version string isn't present in any data file; the footer honestly falls back to DLC + Steam build until supplied (§4.6) | Read the version string off the game's main menu |
-| 5 | *(Optional)* **A Python env with UnityPy** for asset extraction | The extractors need UnityPy, which has no wheel for the installed Python 3.14; wiki.gg is a working fallback for imagery | Install Python 3.12/3.13 + `pip install UnityPy` — unlocks extracting portraits/portal art from the game instead of the wiki (§5.5, §5.6) |
+| 1 | **Logbook text for 4 edge-case equipment** — G-Force Accelerator, Elegy of Extinction, Coven of Gold, Jar of Souls | Their language-file tokens are ambiguous/templated, so the shipped text can't be confirmed from files alone | Open each in the in-game Logbook and copy the description verbatim |
+| 2 | **2 unconfirmed Ambry codes** — Artifact of Evolution (`♦♦♦ ■■■ ●●●`) and Artifact of Soul (`●■● ●♦● ■♦■`) | Codes are encoded in the monument, not in text assets; ours came from the wiki and are the only wiki-only values left | Confirm the glyph pattern on the Bulwark's Ambry monument (or the artifact's unlock entry) |
+| 3 | **Player-facing patch version** (`PATCH_VERSION`, currently `null`) | The main-menu version string isn't present in any data file; the footer honestly falls back to DLC + Steam build until supplied (§4.6) | Read the version string off the game's main menu |
+| 4 | *(Optional)* **A Python env with UnityPy** for asset extraction | The extractors need UnityPy, which has no wheel for the installed Python 3.14; wiki.gg is a working fallback for imagery | Install Python 3.12/3.13 + `pip install UnityPy` — unlocks extracting portraits/portal art from the game instead of the wiki (§5.5, §5.6) |
 
-Items 1–3 are the last unverified values in the entire dataset. Item 4 is cosmetic
-but makes the freshness stamp precise. Item 5 only changes *where* imagery comes
-from, not whether the feature can ship.
+Items 1–2 are the last wiki-only / unconfirmed values in the dataset. Item 3 is
+cosmetic but makes the freshness stamp precise. Item 4 only changes *where* imagery
+comes from, not whether the feature can ship.
+
+**Deliberately NOT on this list: the ProcDumper run.** It was listed here previously
+on the claim that the remaining proc coefficients "can only be observed while
+playing." That was wrong — see §5.7. The values are recoverable by decompiling the
+`EntityStates` tree, which needs no game session and no mod. The plugin
+(`tools/ProcDumper/`) stays in the repo as a **cross-check of last resort**, for any
+skill that survives static analysis genuinely undetermined. Nothing currently
+requires it.
