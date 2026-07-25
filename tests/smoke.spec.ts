@@ -245,6 +245,27 @@ test("trailing-slash item URL opens the drawer (production Pages serves /items/<
   await expect(page.getByRole("dialog", { name: "Crowbar" })).toBeVisible();
 });
 
+test("locked items show how to unlock and can be filtered", async ({ page }) => {
+  // Detail drawer surfaces the challenge name + the verbatim in-game requirement.
+  await page.goto("/items/fuel-cell");
+  const drawer = page.getByRole("dialog", { name: "Fuel Cell" });
+  await expect(drawer).toBeVisible();
+  await expect(drawer.getByText("How to unlock")).toBeVisible();
+  await expect(drawer.getByText("Experimenting")).toBeVisible();
+  await expect(drawer.getByText("Pick up 5 different types of Equipment.")).toBeVisible();
+
+  // The card carries a lock indicator (accessible label names the challenge).
+  await page.goto("/items");
+  await expect(
+    page.getByLabel(/Locked behind challenge: Experimenting/).first(),
+  ).toBeVisible();
+
+  // "Locked only" narrows the grid to challenge-locked items (Crowbar is not one).
+  await page.getByRole("checkbox", { name: "Locked only" }).check();
+  await expect(page.getByRole("button", { name: /Fuel Cell/ })).toBeVisible();
+  await expect(page.getByRole("button", { name: /^Crowbar/ })).toHaveCount(0);
+});
+
 test("run plans are shareable and loadable via URL", async ({ page }) => {
   // Opening a shared link loads that plan into the rail...
   await page.goto("/planner?t=crowbar&a=tri-tip-dagger");

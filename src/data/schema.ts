@@ -120,8 +120,18 @@ export const itemSchema = z
     corrupts: z.array(slug).nonempty().optional(),
     /** Normal item → the void id that corrupts it. */
     corruptedBy: slug.optional(),
-    /** Unlock challenge text, if the item is locked behind one. */
-    unlock: z.string().min(1).optional(),
+    /**
+     * If the item is locked behind a Challenge: its name plus the one-line
+     * requirement (PLAN §2.6). `requirement` is the verbatim in-game achievement
+     * description; it is omitted ONLY when it can't be verified — never guessed.
+     */
+    unlock: z
+      .object({
+        challenge: z.string().min(1),
+        requirement: z.string().min(1).optional(),
+      })
+      .strict()
+      .optional(),
     /** Icon path, e.g. "/icons/crowbar.png". */
     icon: z.string().regex(/^\/icons\/[a-z0-9-]+\.png$/, "icon must be /icons/<slug>.png"),
     /** Canonical wiki.gg URL. */

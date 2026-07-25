@@ -107,6 +107,34 @@ Deferred indefinitely, per discussion. Modded item data varies by mod version an
 isn't reliably documented; revisit only if a concrete, well-documented mod list is
 chosen (e.g. specific Thunderstore packages with published stats).
 
+### 2.6 Unlock challenges (locked items, equipment & skills)
+A large share of items and equipment are not in the drop pool until the player
+completes a specific **Challenge** — e.g. Fuel Cell is gated behind *Experimenting*
+("Pick up 5 different types of Equipment."). This is precisely the
+kind of hard-to-find, in-game-buried fact the site exists to surface, and it is a
+**fact, not an opinion** (rule #7): it belongs in the datasets.
+
+Model each unlock as a challenge **name** plus its **requirement** — the one-line
+"how do I actually get this?" description. Both come from source 2 (the game's
+`Language/en` challenge/unlockable tokens, which carry the exact in-game text), with
+wiki.gg as the fallback for edge cases. Where a requirement can't be verified, leave
+it empty and flag it in the audit — **never invent an unlock condition** (rule #1).
+
+Because some challenges unlock more than one thing, and some item challenges overlap
+conceptually with the survivor alt-skill challenges already stored in
+`LOADOUT_UNLOCKS`, the requirement text is best kept **once** in a challenge lookup
+keyed by challenge name and referenced by items and loadout skills alike, rather than
+duplicated across datasets. Items with no challenge are the default drop-pool items
+and simply carry no unlock (shown as always available).
+
+### 2.7 Artifact identity (icons)
+Artifacts are recognized visually — by their circular emblem, and by the
+■ / ▲ / ● / ♦ monument pattern used to unlock them in Bulwark's Ambry. The Artifacts
+reference must therefore show **both** the artifact's **icon** and its Ambry code, not
+code alone. Icons are the artifact emblems from wiki.gg (Gearbox assets, shown under
+the site's standing non-affiliation/attribution disclaimer), stored alongside the item
+icons and referenced by a stable id per artifact.
+
 ---
 
 ## 3. Product spec
@@ -158,7 +186,10 @@ The page that replaces/betters the Netlify cheat sheet.
   (e.g. Shrine of the Mountain), spawn notes.
 - **Loadout unlocks**: per-survivor table of alternate skills/skins and the exact
   challenge to unlock each.
-- **Artifacts**: effect + Ambry code patterns.
+- **Artifacts**: each artifact shown with its **icon** (the circular emblem), its
+  effect, and its Bulwark's Ambry monument code (the ■/▲/●/♦ pattern) together — so the
+  page is scannable by sight and doubles as an Ambry cheat-sheet. Icons sourced from
+  wiki.gg (§2.7); codes verified against each artifact's unlock.
 
 ### Phase 4 — Future roadmap (planned, not scheduled)
 
@@ -209,7 +240,38 @@ items; changed entries get `verified: false` until re-checked against the wiki; 
 dataset carries a global `patchVersion` that drives the staleness banners in 4.2.
 Updating after a patch should be an evening, not a rebuild.
 
-**4.7 Explicitly parked.** Mod support (undocumented, version-volatile), other
+**4.7 Locked items — surfacing unlock challenges.** Phase 1 promised the detail
+drawer would show an item's "unlock challenge if locked behind one." The dataset
+records the challenge *name* for ~30 items (`unlock`), but not the *requirement*, and
+the codex gives no at-a-glance signal that an item is locked. Close the loop as three
+layers, all facts-only (rule #7) — "this is locked, here's the condition," never build
+advice:
+
+1. **Data.** Promote `unlock` from a bare challenge name to a challenge **name +
+   requirement**. The requirement is the verbatim achievement DESCRIPTION, resolved
+   from the game's `Language/en` text by `scripts/extract-challenges.py` (which joins
+   each stored challenge name to its `ACHIEVEMENT_*_DESCRIPTION`). Because one
+   challenge can unlock several items (Death Do Us Part → both Elite bands; Blockade
+   Breaker → all four Heresy items), `data:audit` enforces that those items carry
+   identical requirement text; any requirement that can't be verified is left empty
+   and flagged — never guessed (rule #1).
+2. **Indicator.** A small, non-intrusive **lock glyph** on locked item cards in the
+   codex and planner — tier color preserved, an unobtrusive corner badge consistent
+   with the stacking pill, with an accessible label ("Locked — unlock challenge:
+   <name>"). Nothing that interferes with the existing tooltip aesthetic.
+3. **How to unlock.** The detail drawer shows the challenge name and its one-line
+   requirement under a clear "How to unlock" heading. Add an optional codex filter
+   ("Locked only") so a player can see everything still gated behind a challenge.
+
+**4.8 Artifact visuals on the reference page.** Give the Artifacts reference each
+artifact's **icon** (§2.7) so the page is recognizable at a glance and doubles as an
+Ambry cheat-sheet: icon + name + effect + monument code per row/card. Download the
+artifact emblems from wiki.gg into `/public/icons/artifacts/`, add a stable `id` and
+an `icon` field to `ArtifactRef`, and render them beside the existing effect/code.
+Icons are Gearbox assets shown under the standing attribution disclaimer; a missing
+artifact icon is reported by `data:audit`.
+
+**4.9 Explicitly parked.** Mod support (undocumented, version-volatile), other
 languages (the game's language files make it *possible*, but it multiplies data
 maintenance), accounts/cloud sync (localStorage is enough; URL sharing covers co-op).
 
@@ -273,7 +335,8 @@ interface Item {
   tags: string[];          // "damage","on-hit","healing","drone",...
   corrupts?: string[];     // void item -> ids it corrupts
   corruptedBy?: string;    // normal item -> void id
-  unlock?: string;         // challenge text if locked
+  unlock?: { challenge: string; requirement?: string }; // §2.6: challenge name + how to
+                           // earn it; requirement omitted ONLY when unverified (never guessed)
   icon: string;            // /icons/crowbar.png
   wiki: string;            // wiki.gg URL
   verified: boolean;
@@ -285,10 +348,12 @@ interface Item {
    tier by tier (whites → greens → reds → boss → lunar → void → equipment → DLC sets),
    committing per tier so review is tractable.
 4. **Icons**: download per-item PNGs from wiki.gg into `/public/icons/` (keep original
-   filenames mapped in the JSON). Fan-use with attribution; site carries the
+   filenames mapped in the JSON). Artifact emblems download the same way into
+   `/public/icons/artifacts/` (§2.7, §4.8). Fan-use with attribution; site carries the
    non-affiliation disclaimer.
 5. **Validation**: build fails if any item violates schema; a `pnpm run data:audit`
-   script reports unverified items, missing icons, dangling corruption pairs.
+   script reports unverified items, missing item/artifact icons, dangling corruption
+   pairs, and locked items whose unlock requirement is still unverified (§2.6).
 
 Estimated effort: the dataset is ~230 entries; done tier-by-tier with Claude Code
 fetching wiki pages and the user spot-checking against the in-game logbook, this is a

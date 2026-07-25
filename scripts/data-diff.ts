@@ -169,8 +169,8 @@ function main(): number {
   // --- Unlock challenge names vs the game's achievement names -----------------
   const challengeMisses: string[] = [];
   for (const it of items) {
-    if (it.unlock && !achievementNames.has(norm(stripSurvivor(it.unlock)))) {
-      challengeMisses.push(`item "${it.name}" unlock: "${it.unlock}"`);
+    if (it.unlock && !achievementNames.has(norm(stripSurvivor(it.unlock.challenge)))) {
+      challengeMisses.push(`item "${it.name}" unlock: "${it.unlock.challenge}"`);
     }
   }
   for (const s of LOADOUT_UNLOCKS) {

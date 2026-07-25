@@ -52,6 +52,7 @@ export function PlannerPage() {
         onToggleStacking={(s) => setFilters((f) => ({ ...f, stacking: toggleInSet(f.stacking, s) }))}
         onToggleTag={(t) => setFilters((f) => ({ ...f, tags: toggleInSet(f.tags, t) }))}
         onToggleHideVariants={() => setFilters((f) => ({ ...f, hideVariants: !f.hideVariants }))}
+        onToggleLockedOnly={() => setFilters((f) => ({ ...f, lockedOnly: !f.lockedOnly }))}
         onClear={() => {
           setQuery("");
           setFilters(emptyFilters());

@@ -15,6 +15,7 @@ export function filterItems(query: string, filters: FilterState): Item[] {
     if (filters.stacking.size > 0 && !it.stacking.some((s) => filters.stacking.has(s.type)))
       return false;
     if (filters.tags.size > 0 && !it.tags.some((t) => filters.tags.has(t))) return false;
+    if (filters.lockedOnly && !it.unlock) return false;
     return true;
   });
 }

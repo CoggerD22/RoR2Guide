@@ -15,6 +15,7 @@ interface CodexFiltersProps {
   onToggleStacking: (s: StackingType) => void;
   onToggleTag: (t: string) => void;
   onToggleHideVariants: () => void;
+  onToggleLockedOnly: () => void;
   onClear: () => void;
   resultCount: number;
   totalCount: number;
@@ -150,15 +151,26 @@ export function CodexFilters(props: CodexFiltersProps) {
       </div>
 
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <label className="flex cursor-pointer items-center gap-2 text-xs text-muted-foreground">
-          <input
-            type="checkbox"
-            checked={filters.hideVariants}
-            onChange={props.onToggleHideVariants}
-            className="size-3.5 accent-[var(--color-primary)]"
-          />
-          Hide scrap / consumed variants
-        </label>
+        <div className="flex flex-wrap items-center gap-4">
+          <label className="flex cursor-pointer items-center gap-2 text-xs text-muted-foreground">
+            <input
+              type="checkbox"
+              checked={filters.hideVariants}
+              onChange={props.onToggleHideVariants}
+              className="size-3.5 accent-[var(--color-primary)]"
+            />
+            Hide scrap / consumed variants
+          </label>
+          <label className="flex cursor-pointer items-center gap-2 text-xs text-muted-foreground">
+            <input
+              type="checkbox"
+              checked={filters.lockedOnly}
+              onChange={props.onToggleLockedOnly}
+              className="size-3.5 accent-[var(--color-primary)]"
+            />
+            Locked only
+          </label>
+        </div>
         {(props.anyFilter || props.query) && (
           <button
             type="button"

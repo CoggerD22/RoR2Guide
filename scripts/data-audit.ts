@@ -5,10 +5,12 @@
  *   - items.json fails the Zod schema (CLAUDE.md rule #1/#3)
  *   - duplicate item ids
  *   - dangling or non-bidirectional void corruption pairs (rule #4)
+ *   - one challenge unlocking items with conflicting requirement text (§4.7)
  *
  * WARNINGS (exit 0) — reported but expected mid-milestone:
  *   - items with "verified": false (rule #1 — intermediate state)
  *   - missing icon files under /public/icons
+ *   - locked items whose unlock requirement is not yet verified (§4.7)
  *
  * If items.json is absent (pre-data), the audit passes with a note.
  */
@@ -102,6 +104,28 @@ function main(): number {
     if (!it.verified) warnings.push(`unverified: "${it.id}" (${it.name})`);
     const iconPath = resolve(root, "public" + it.icon); // it.icon "/icons/x.png" → public/icons/x.png
     if (!existsSync(iconPath)) warnings.push(`missing icon: ${it.icon} for "${it.id}"`);
+  }
+
+  // --- Unlock challenges (PLAN §4.7) --------------------------------------
+  // A locked item with no requirement text is an honest "not yet verified" gap
+  // (warning). A single challenge that unlocks several items must describe them
+  // identically — divergent text means one was hand-edited/drifted (error).
+  const requirementByChallenge = new Map<string, { id: string; requirement: string }>();
+  for (const it of items) {
+    if (!it.unlock) continue;
+    if (!it.unlock.requirement) {
+      warnings.push(`locked item "${it.id}" has no verified unlock requirement (challenge: ${it.unlock.challenge})`);
+      continue;
+    }
+    const seen = requirementByChallenge.get(it.unlock.challenge);
+    if (seen && seen.requirement !== it.unlock.requirement) {
+      errors.push(
+        `challenge "${it.unlock.challenge}" has conflicting requirements: ` +
+          `"${seen.id}" says "${seen.requirement}" but "${it.id}" says "${it.unlock.requirement}"`,
+      );
+    } else if (!seen) {
+      requirementByChallenge.set(it.unlock.challenge, { id: it.id, requirement: it.unlock.requirement });
+    }
   }
 
   // --- Survivors (if present) ---------------------------------------------

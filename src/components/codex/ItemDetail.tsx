@@ -1,5 +1,5 @@
 import { useEffect, type CSSProperties } from "react";
-import { Biohazard, ExternalLink, X } from "lucide-react";
+import { Biohazard, ExternalLink, Lock, X } from "lucide-react";
 import type { Item } from "@/data/schema";
 import { TIER_META, DLC_META, itemById } from "@/data/items";
 import { highlightNumbers } from "@/lib/highlight";
@@ -195,10 +195,18 @@ export function ItemDetail({ item, onClose, onSelectItem }: ItemDetailProps) {
 
           {item.unlock && (
             <section>
-              <h3 className="mb-1 text-xs font-semibold uppercase tracking-widest text-muted-foreground">
-                Unlock
+              <h3 className="mb-1 flex items-center gap-1.5 text-xs font-semibold uppercase tracking-widest text-muted-foreground">
+                <Lock className="size-3" aria-hidden />
+                How to unlock
               </h3>
-              <p className="text-sm text-foreground/90">{item.unlock}</p>
+              <p className="text-sm font-medium text-foreground/90">{item.unlock.challenge}</p>
+              {item.unlock.requirement ? (
+                <p className="mt-0.5 text-sm text-muted-foreground">{item.unlock.requirement}</p>
+              ) : (
+                <p className="mt-0.5 text-sm italic text-muted-foreground">
+                  Unlock condition not yet verified.
+                </p>
+              )}
             </section>
           )}
 

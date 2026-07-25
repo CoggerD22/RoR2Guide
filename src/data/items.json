@@ -1054,7 +1054,10 @@
       "attack-speed",
       "critical-strike"
     ],
-    "unlock": "Rapidfire",
+    "unlock": {
+      "challenge": "Rapidfire",
+      "requirement": "Reach +200% attack speed."
+    },
     "icon": "/icons/predatory-instincts.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Predatory_Instincts",
     "verified": true,
@@ -1129,7 +1132,10 @@
       "critical-strike",
       "on-hit"
     ],
-    "unlock": "Prismatically Aligned",
+    "unlock": {
+      "challenge": "Prismatically Aligned",
+      "requirement": "Complete a Prismatic Trial."
+    },
     "icon": "/icons/harvesters-scythe.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Harvester%27s_Scythe",
     "verified": true,
@@ -1161,7 +1167,10 @@
       "utility",
       "equipment"
     ],
-    "unlock": "Experimenting",
+    "unlock": {
+      "challenge": "Experimenting",
+      "requirement": "Pick up 5 different types of Equipment."
+    },
     "corruptedBy": "lysate-cell",
     "icon": "/icons/fuel-cell.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Fuel_Cell",
@@ -1194,7 +1203,10 @@
       "on-kill",
       "health"
     ],
-    "unlock": "Slaughter",
+    "unlock": {
+      "challenge": "Slaughter",
+      "requirement": "Defeat 3000 enemies."
+    },
     "icon": "/icons/infusion.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Infusion",
     "verified": true,
@@ -1246,7 +1258,10 @@
       "movement-speed",
       "on-kill"
     ],
-    "unlock": "Glorious Battle",
+    "unlock": {
+      "challenge": "Glorious Battle",
+      "requirement": "Charge the Teleporter with less than 10% health."
+    },
     "icon": "/icons/berzerkers-pauldron.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Berzerker%27s_Pauldron",
     "verified": true,
@@ -1302,7 +1317,10 @@
       "on-hit",
       "crowd-control"
     ],
-    "unlock": "Death Do Us Part",
+    "unlock": {
+      "challenge": "Death Do Us Part",
+      "requirement": "Discover the hidden chamber in the Abandoned Aqueduct."
+    },
     "corruptedBy": "singularity-band",
     "icon": "/icons/runalds-band.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Runald%27s_Band",
@@ -1328,7 +1346,10 @@
       "damage",
       "on-hit"
     ],
-    "unlock": "Death Do Us Part",
+    "unlock": {
+      "challenge": "Death Do Us Part",
+      "requirement": "Discover the hidden chamber in the Abandoned Aqueduct."
+    },
     "corruptedBy": "singularity-band",
     "icon": "/icons/kjaros-band.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Kjaro%27s_Band",
@@ -1380,7 +1401,10 @@
       "utility",
       "mobility"
     ],
-    "unlock": "Going Fast Recommended",
+    "unlock": {
+      "challenge": "Going Fast Recommended",
+      "requirement": "Reach +300% movespeed (includes sprinting)."
+    },
     "icon": "/icons/wax-quail.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Wax_Quail",
     "verified": true,
@@ -1407,7 +1431,10 @@
       "execute",
       "on-hit"
     ],
-    "unlock": "Cut Down",
+    "unlock": {
+      "challenge": "Cut Down",
+      "requirement": "Defeat 500 elite monsters."
+    },
     "icon": "/icons/old-guillotine.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Old_Guillotine",
     "verified": true,
@@ -1433,7 +1460,10 @@
       "attack-speed",
       "equipment"
     ],
-    "unlock": "Warmonger",
+    "unlock": {
+      "challenge": "Warmonger",
+      "requirement": "Complete 3 Combat Shrines in a single stage."
+    },
     "icon": "/icons/war-horn.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/War_Horn",
     "verified": true,
@@ -2078,7 +2108,10 @@
     "tags": [
       "utility"
     ],
-    "unlock": "The Long Road",
+    "unlock": {
+      "challenge": "The Long Road",
+      "requirement": "Complete 20 stages in a single run."
+    },
     "corruptedBy": "benthic-bloom",
     "icon": "/icons/57-leaf-clover.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/57_Leaf_Clover",
@@ -2103,7 +2136,10 @@
     "tags": [
       "survivability"
     ],
-    "unlock": "The Lone Survivor",
+    "unlock": {
+      "challenge": "The Lone Survivor",
+      "requirement": "Stay alive for 30 consecutive minutes."
+    },
     "corruptedBy": "pluripotent-larva",
     "icon": "/icons/dios-best-friend.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Dio%27s_Best_Friend",
@@ -2136,7 +2172,10 @@
       "damage",
       "on-hit"
     ],
-    "unlock": "Deja Vu?",
+    "unlock": {
+      "challenge": "Deja Vu?",
+      "requirement": "Loop back to the first stage."
+    },
     "icon": "/icons/sentient-meat-hook.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Sentient_Meat_Hook",
     "verified": true,
@@ -2237,7 +2276,10 @@
       "damage",
       "healing"
     ],
-    "unlock": "Her Concepts",
+    "unlock": {
+      "challenge": "Her Concepts",
+      "requirement": "Find the Altar to N'kuhana."
+    },
     "icon": "/icons/nkuhanas-opinion.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/N%27kuhana%27s_Opinion",
     "verified": true,
@@ -2262,7 +2304,10 @@
       "damage",
       "aoe"
     ],
-    "unlock": "Macho",
+    "unlock": {
+      "challenge": "Macho",
+      "requirement": "Deal 5000 damage in one shot."
+    },
     "icon": "/icons/unstable-tesla-coil.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Unstable_Tesla_Coil",
     "verified": true,
@@ -2288,7 +2333,10 @@
       "equipment",
       "on-kill"
     ],
-    "unlock": "Newtist",
+    "unlock": {
+      "challenge": "Newtist",
+      "requirement": "Discover and activate 8 unique Newt Altars."
+    },
     "icon": "/icons/soulbound-catalyst.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Soulbound_Catalyst",
     "verified": true,
@@ -2360,7 +2408,10 @@
       "utility",
       "on-kill"
     ],
-    "unlock": "Deicide",
+    "unlock": {
+      "challenge": "Deicide",
+      "requirement": "Defeat an Elite boss on Monsoon difficulty."
+    },
     "icon": "/icons/brainstalks.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Brainstalks",
     "verified": true,
@@ -2384,7 +2435,10 @@
     "tags": [
       "healing"
     ],
-    "unlock": "Naturopath",
+    "unlock": {
+      "challenge": "Naturopath",
+      "requirement": "Without healing, reach and complete the 3rd Teleporter event."
+    },
     "icon": "/icons/rejuvenation-rack.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Rejuvenation_Rack",
     "verified": true,
@@ -3569,7 +3623,10 @@
       "utility",
       "equipment"
     ],
-    "unlock": "The Demons And The Crabs",
+    "unlock": {
+      "challenge": "The Demons And The Crabs",
+      "requirement": "Kill 20 Hermit Crabs by chasing them off the edge of the map."
+    },
     "icon": "/icons/gesture-of-the-drowned.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Gesture_of_the_Drowned",
     "verified": true,
@@ -3593,7 +3650,10 @@
     "tags": [
       "utility"
     ],
-    "unlock": "The Calm",
+    "unlock": {
+      "challenge": "The Calm",
+      "requirement": "Escape the moon on Monsoon difficulty."
+    },
     "icon": "/icons/purity.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Purity",
     "verified": true,
@@ -3624,7 +3684,10 @@
       "damage",
       "utility"
     ],
-    "unlock": "Blockade Breaker",
+    "unlock": {
+      "challenge": "Blockade Breaker",
+      "requirement": "Kill 15 boss monsters in a single run."
+    },
     "icon": "/icons/visions-of-heresy.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Visions_of_Heresy",
     "verified": true,
@@ -3656,7 +3719,10 @@
       "mobility",
       "utility"
     ],
-    "unlock": "Blockade Breaker",
+    "unlock": {
+      "challenge": "Blockade Breaker",
+      "requirement": "Kill 15 boss monsters in a single run."
+    },
     "icon": "/icons/strides-of-heresy.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Strides_of_Heresy",
     "verified": true,
@@ -3688,7 +3754,10 @@
       "crowd-control",
       "utility"
     ],
-    "unlock": "Blockade Breaker",
+    "unlock": {
+      "challenge": "Blockade Breaker",
+      "requirement": "Kill 15 boss monsters in a single run."
+    },
     "icon": "/icons/hooks-of-heresy.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Hooks_of_Heresy",
     "verified": true,
@@ -3719,7 +3788,10 @@
       "damage",
       "utility"
     ],
-    "unlock": "Blockade Breaker",
+    "unlock": {
+      "challenge": "Blockade Breaker",
+      "requirement": "Kill 15 boss monsters in a single run."
+    },
     "icon": "/icons/essence-of-heresy.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Essence_of_Heresy",
     "verified": true,
@@ -3766,7 +3838,10 @@
     "tags": [
       "utility"
     ],
-    "unlock": "Never Back Down",
+    "unlock": {
+      "challenge": "Never Back Down",
+      "requirement": "In 4 consecutive stages don’t leave the teleporter radius until it is fully charged."
+    },
     "icon": "/icons/focused-convergence.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Focused_Convergence",
     "verified": true,
@@ -4527,7 +4602,10 @@
       "damage",
       "equipment"
     ],
-    "unlock": "Ascendant",
+    "unlock": {
+      "challenge": "Ascendant",
+      "requirement": "Defeat the Teleporter bosses after activating 2 Shrines of the Mountain."
+    },
     "icon": "/icons/royal-capacitor.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Royal_Capacitor",
     "verified": true,
@@ -4618,7 +4696,10 @@
       "utility",
       "equipment"
     ],
-    "unlock": "Bookworm",
+    "unlock": {
+      "challenge": "Bookworm",
+      "requirement": "Collect 10 Monster or Environment Logs."
+    },
     "icon": "/icons/radar-scanner.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Radar_Scanner",
     "verified": true,
@@ -4726,7 +4807,10 @@
       "utility",
       "equipment"
     ],
-    "unlock": "Cleanup Duty",
+    "unlock": {
+      "challenge": "Cleanup Duty",
+      "requirement": "Destroy 20 flying rocks in Sky Meadow."
+    },
     "icon": "/icons/recycler.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Recycler",
     "verified": true,
@@ -4976,7 +5060,10 @@
       "aoe",
       "equipment"
     ],
-    "unlock": "Multikill!",
+    "unlock": {
+      "challenge": "Multikill!",
+      "requirement": "Kill 15 enemies simultaneously."
+    },
     "icon": "/icons/helfire-tincture.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Helfire_Tincture",
     "verified": true,
@@ -4994,7 +5081,10 @@
       "utility",
       "equipment"
     ],
-    "unlock": "Cosmic Explorer",
+    "unlock": {
+      "challenge": "Cosmic Explorer",
+      "requirement": "Discover and enter three unique portals."
+    },
     "icon": "/icons/spinel-tonic.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Spinel_Tonic",
     "verified": true,

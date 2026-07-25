@@ -7,6 +7,8 @@ export interface FilterState {
   tags: Set<string>;
   /** Hide scrap / consumed / temporary variants (on by default, PLAN §3). */
   hideVariants: boolean;
+  /** Show only items locked behind an unlock challenge (PLAN §4.7). */
+  lockedOnly: boolean;
 }
 
 export const STACKING_TYPES: StackingType[] = [
@@ -25,11 +27,14 @@ export function emptyFilters(): FilterState {
     stacking: new Set(),
     tags: new Set(),
     hideVariants: true,
+    lockedOnly: false,
   };
 }
 
 export function hasActiveFilter(f: FilterState): boolean {
-  return f.tiers.size > 0 || f.dlcs.size > 0 || f.stacking.size > 0 || f.tags.size > 0;
+  return (
+    f.tiers.size > 0 || f.dlcs.size > 0 || f.stacking.size > 0 || f.tags.size > 0 || f.lockedOnly
+  );
 }
 
 /** Toggle a value inside a Set immutably (returns a new Set). */

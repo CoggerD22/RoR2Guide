@@ -1,4 +1,5 @@
 import type { CSSProperties } from "react";
+import { Lock } from "lucide-react";
 import type { Item } from "@/data/schema";
 import { TIER_META } from "@/data/items";
 import { asset } from "@/lib/asset";
@@ -27,6 +28,14 @@ export function ItemCard({ item, onSelect }: ItemCardProps) {
           className="size-14 object-contain [image-rendering:auto]"
         />
         <span className="line-clamp-2 text-xs font-medium text-foreground">{item.name}</span>
+        {item.unlock && (
+          <span
+            className="absolute left-1.5 top-1.5 rounded-full bg-black/40 p-0.5 text-muted-foreground"
+            title={`Locked — unlock challenge: ${item.unlock.challenge}`}
+          >
+            <Lock className="size-3" aria-label={`Locked behind challenge: ${item.unlock.challenge}`} />
+          </span>
+        )}
         {!item.verified && (
           <span
             className="absolute right-1.5 top-1.5 size-2 rounded-full bg-amber-400"
