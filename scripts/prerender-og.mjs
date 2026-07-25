@@ -21,21 +21,27 @@ const SITE = "https://coggerd22.github.io/RoR2Guide";
 const esc = (s) =>
   String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
 
-/** Build the OG/Twitter/title/description head fragment for one page. */
+/** Build the OG/Twitter/title/description head fragment for one page. Image is
+ * optional — survivors have no portrait asset, so they get a text-only summary card
+ * rather than a misleading item icon. */
 function head({ title, description, image, url }) {
-  const t = esc(title), d = esc(description), i = esc(image), u = esc(url);
-  return [
+  const t = esc(title), d = esc(description), u = esc(url);
+  const tags = [
     `<meta property="og:type" content="website">`,
     `<meta property="og:site_name" content="RoR2 Companion">`,
     `<meta property="og:title" content="${t}">`,
     `<meta property="og:description" content="${d}">`,
-    `<meta property="og:image" content="${i}">`,
     `<meta property="og:url" content="${u}">`,
     `<meta name="twitter:card" content="summary">`,
     `<meta name="twitter:title" content="${t}">`,
     `<meta name="twitter:description" content="${d}">`,
-    `<meta name="twitter:image" content="${i}">`,
-  ].join("\n    ");
+  ];
+  if (image) {
+    const i = esc(image);
+    tags.splice(4, 0, `<meta property="og:image" content="${i}">`);
+    tags.push(`<meta name="twitter:image" content="${i}">`);
+  }
+  return tags.join("\n    ");
 }
 
 /** Swap <title>/description and inject the OG fragment into a copy of the shell. */
@@ -54,6 +60,7 @@ function main() {
   }
   const template = fs.readFileSync(indexPath, "utf8");
   const items = JSON.parse(fs.readFileSync(path.join(root, "src/data/items.json"), "utf8"));
+  const survivors = JSON.parse(fs.readFileSync(path.join(root, "src/data/survivors.json"), "utf8"));
 
   // 1) Home page: give the root URL a sensible default card (edit index.html in place).
   fs.writeFileSync(
@@ -81,7 +88,35 @@ function main() {
     fs.writeFileSync(path.join(dir, "index.html"), html);
     n++;
   }
-  console.log(`prerender-og: ${n} item pages + home OG written to dist/items/*/index.html`);
+
+  // 3) One page per survivor at /survivors/<id>/index.html. No portrait asset exists,
+  // so these are text-only cards; the description is built only from verified base
+  // stats (never invented prose — CLAUDE.md rule #1).
+  const DLC_LABEL = {
+    base: "Base game",
+    sotv: "Survivors of the Void",
+    sots: "Seekers of the Storm",
+    ac: "Alloyed Collective",
+  };
+  let s = 0;
+  for (const surv of survivors) {
+    const dir = path.join(dist, "survivors", surv.id);
+    fs.mkdirSync(dir, { recursive: true });
+    const origin = DLC_LABEL[surv.dlc] ?? "Risk of Rain 2";
+    const description =
+      `${origin} survivor · ${surv.health.base} HP · ${surv.damage.base} base damage · ` +
+      `${surv.moveSpeed} m/s. Verified base stats, skills, proc coefficients, and unlock challenge.`;
+    const html = render(template, {
+      title: `${surv.name} · Risk of Rain 2`,
+      description,
+      image: undefined, // text-only summary card (no portrait asset)
+      url: `${SITE}/survivors/${surv.id}`,
+    });
+    fs.writeFileSync(path.join(dir, "index.html"), html);
+    s++;
+  }
+
+  console.log(`prerender-og: ${n} item pages + ${s} survivor pages + home OG written to dist/`);
 }
 
 main();
