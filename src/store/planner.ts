@@ -11,6 +11,8 @@ interface PlannerState {
   cycle: (id: string) => void;
   /** Set (or clear, with null) a specific state. */
   set: (id: string, state: PlanState | null) => void;
+  /** Replace the whole plan wholesale (e.g. loading a shared plan from a URL). */
+  importPlan: (plan: Record<string, PlanState>) => void;
   /** Wipe the whole plan ("New run"). */
   reset: () => void;
 }
@@ -35,6 +37,7 @@ export const usePlanner = create<PlannerState>()(
           else delete next[id];
           return { plan: next };
         }),
+      importPlan: (plan) => set({ plan }),
       reset: () => set({ plan: {} }),
     }),
     { name: "ror2-run-plan" },

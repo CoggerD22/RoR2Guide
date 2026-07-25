@@ -1,7 +1,10 @@
-import { Check, RotateCcw, X } from "lucide-react";
+import { useState } from "react";
+import { Check, Link2, RotateCcw, X } from "lucide-react";
 import type { Item } from "@/data/schema";
 import { items as allItems, PRESENT_TIERS, TIER_META } from "@/data/items";
 import { usePlanner, type PlanState } from "@/store/planner";
+import { encodePlan } from "@/lib/planUrl";
+import { copyText } from "@/lib/clipboard";
 import { cn } from "@/lib/utils";
 import { asset } from "@/lib/asset";
 
@@ -79,25 +82,49 @@ function PlanSection({
 export function RunPlanRail({ onSelect }: RunPlanRailProps) {
   const plan = usePlanner((s) => s.plan);
   const reset = usePlanner((s) => s.reset);
+  const [shareLabel, setShareLabel] = useState<"idle" | "copied" | "failed">("idle");
 
   const targeted = allItems.filter((it) => plan[it.id] === "targeted");
   const avoided = allItems.filter((it) => plan[it.id] === "avoided");
   const total = targeted.length + avoided.length;
 
+  const share = async () => {
+    // Current planner URL (origin + path, no query) + the encoded plan.
+    const url = `${window.location.origin}${window.location.pathname}?${encodePlan(plan)}`;
+    const ok = await copyText(url);
+    setShareLabel(ok ? "copied" : "failed");
+    setTimeout(() => setShareLabel("idle"), 2000);
+  };
+
   return (
     <aside className="flex flex-col gap-4 rounded-xl border border-border bg-surface p-4 lg:sticky lg:top-16">
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between gap-2">
         <h2 className="font-display text-sm font-semibold uppercase tracking-widest text-foreground">
           Run Plan
         </h2>
-        <button
-          type="button"
-          onClick={reset}
-          disabled={total === 0}
-          className="inline-flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground disabled:opacity-40"
-        >
-          <RotateCcw className="size-3.5" /> New run
-        </button>
+        <div className="flex items-center gap-3">
+          <button
+            type="button"
+            onClick={share}
+            disabled={total === 0}
+            className={cn(
+              "inline-flex items-center gap-1 text-xs hover:text-foreground disabled:opacity-40",
+              shareLabel === "copied" ? "text-emerald-400" : shareLabel === "failed" ? "text-red-400" : "text-muted-foreground",
+            )}
+            title="Copy a shareable link to this plan"
+          >
+            {shareLabel === "copied" ? <Check className="size-3.5" /> : <Link2 className="size-3.5" />}
+            {shareLabel === "copied" ? "Copied!" : shareLabel === "failed" ? "Copy failed" : "Copy link"}
+          </button>
+          <button
+            type="button"
+            onClick={reset}
+            disabled={total === 0}
+            className="inline-flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground disabled:opacity-40"
+          >
+            <RotateCcw className="size-3.5" /> New run
+          </button>
+        </div>
       </div>
 
       {total === 0 && (

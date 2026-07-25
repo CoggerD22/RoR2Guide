@@ -1,6 +1,7 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import type { Item } from "@/data/schema";
-import { items as allItems } from "@/data/items";
+import { items as allItems, itemById } from "@/data/items";
+import { decodePlan, hasPlanParams } from "@/lib/planUrl";
 import { filterItems } from "@/lib/filterPipeline";
 import { CodexFilters } from "@/components/codex/CodexFilters";
 import { TierGrid } from "@/components/codex/TierGrid";
@@ -17,6 +18,17 @@ export function PlannerPage() {
 
   const plan = usePlanner((s) => s.plan);
   const cycle = usePlanner((s) => s.cycle);
+  const importPlan = usePlanner((s) => s.importPlan);
+
+  // A shared link (/planner?t=…&a=…) loads that plan, replacing the local one — the
+  // recipient followed the link to see this plan. Unknown ids are dropped. We then
+  // strip the query so a refresh keeps the (now-persisted) plan and the URL stays clean.
+  useEffect(() => {
+    if (!hasPlanParams(window.location.search)) return;
+    const shared = decodePlan(window.location.search, (id) => itemById.has(id));
+    if (Object.keys(shared).length > 0) importPlan(shared);
+    window.history.replaceState(null, "", window.location.pathname + window.location.hash);
+  }, [importPlan]);
 
   const results = useMemo(() => filterItems(query, filters), [query, filters]);
 

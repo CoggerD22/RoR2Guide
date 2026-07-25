@@ -241,3 +241,24 @@ test("trailing-slash item URL opens the drawer (production Pages serves /items/<
   await page.goto("/items/crowbar/");
   await expect(page.getByRole("dialog", { name: "Crowbar" })).toBeVisible();
 });
+
+test("run plans are shareable and loadable via URL", async ({ page }) => {
+  // Opening a shared link loads that plan into the rail...
+  await page.goto("/planner?t=crowbar&a=tri-tip-dagger");
+  const rail = page.getByRole("complementary");
+  await expect(rail.getByText("Crowbar")).toBeVisible();
+  await expect(rail.getByText("Tri-Tip Dagger")).toBeVisible();
+
+  // ...and the query is stripped so a refresh keeps the now-persisted plan.
+  await expect(page).toHaveURL(/\/planner$/);
+  await page.reload();
+  await expect(page.getByRole("complementary").getByText("Crowbar")).toBeVisible();
+
+  // The "Copy link" affordance is enabled once the plan is non-empty.
+  await expect(page.getByRole("button", { name: /Copy link/ })).toBeEnabled();
+
+  // Unknown ids in a stale link are dropped rather than showing phantom rows.
+  await page.goto("/planner?t=crowbar,not-a-real-item");
+  await expect(page.getByRole("complementary").getByText("Crowbar")).toBeVisible();
+  await expect(page.getByRole("complementary").getByText("not-a-real-item")).toHaveCount(0);
+});
