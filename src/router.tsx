@@ -3,9 +3,12 @@ import {
   createRoute,
   createRouter,
   redirect,
+  useNavigate,
 } from "@tanstack/react-router";
 import { RootLayout } from "@/components/layout/RootLayout";
 import { CodexPage } from "@/components/codex/CodexPage";
+import { ItemDetail } from "@/components/codex/ItemDetail";
+import { itemById } from "@/data/items";
 import { PlannerPage } from "@/components/planner/PlannerPage";
 import { StatLabPage } from "@/components/statlab/StatLabPage";
 import { ReferencePage } from "@/components/reference/ReferencePage";
@@ -31,6 +34,31 @@ const itemsRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/items",
   component: CodexPage,
+});
+
+// /items exact — no drawer (CodexPage's <Outlet/> renders nothing).
+const itemsIndexRoute = createRoute({
+  getParentRoute: () => itemsRoute,
+  path: "/",
+  component: () => null,
+});
+
+// /items/<id> — deep-linkable, shareable item drawer over the (still-mounted) grid.
+const itemDetailRoute = createRoute({
+  getParentRoute: () => itemsRoute,
+  path: "$id",
+  component: function ItemDrawerRoute() {
+    const { id } = itemDetailRoute.useParams();
+    const navigate = useNavigate();
+    const item = itemById.get(id) ?? null;
+    return (
+      <ItemDetail
+        item={item}
+        onClose={() => navigate({ to: "/items" })}
+        onSelectItem={(it) => navigate({ to: "/items/$id", params: { id: it.id } })}
+      />
+    );
+  },
 });
 
 const plannerRoute = createRoute({
@@ -68,7 +96,7 @@ const survivorDetailRoute = createRoute({
 
 const routeTree = rootRoute.addChildren([
   indexRoute,
-  itemsRoute,
+  itemsRoute.addChildren([itemsIndexRoute, itemDetailRoute]),
   plannerRoute,
   statsRoute,
   referenceRoute,

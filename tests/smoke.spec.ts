@@ -213,3 +213,26 @@ test("breakpoints tab shows computed, verified milestone values", async ({ page 
   const og = page.locator("tr", { hasText: "Old Guillotine" });
   await expect(og).toContainText("11.5%");
 });
+
+test("items are deep-linkable and shareable via /items/<id>", async ({ page }) => {
+  // Direct URL opens the drawer for that item (the shareable case).
+  await page.goto("/items/crowbar");
+  const drawer = page.getByRole("dialog", { name: "Crowbar" });
+  await expect(drawer).toBeVisible();
+
+  // Clicking a card puts the item in the URL.
+  await drawer.getByRole("button", { name: "Close" }).click();
+  await expect(page).toHaveURL(/\/items$/);
+  await page.getByRole("button", { name: /Tri-Tip Dagger/ }).click();
+  await expect(page).toHaveURL(/\/items\/tri-tip-dagger$/);
+
+  // Filter state survives opening an item (list stays mounted under the drawer).
+  await page.goto("/items");
+  await page.getByRole("searchbox", { name: "Search items" }).fill("bleed");
+  await page.getByRole("button", { name: /Tri-Tip Dagger/ }).click();
+  await expect(page.getByRole("dialog", { name: "Tri-Tip Dagger" })).toBeVisible();
+  await page.getByRole("button", { name: "Close" }).click();
+  // Back on the list, the "bleed" filter is still applied (Crowbar absent).
+  await expect(page.getByRole("searchbox", { name: "Search items" })).toHaveValue("bleed");
+  await expect(page.getByRole("button", { name: /^Crowbar/ })).toHaveCount(0);
+});

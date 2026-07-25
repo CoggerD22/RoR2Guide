@@ -1,17 +1,19 @@
 import { useMemo, useState } from "react";
-import type { Item } from "@/data/schema";
+import { Outlet, useNavigate } from "@tanstack/react-router";
 import { items as allItems } from "@/data/items";
 import { filterItems } from "@/lib/filterPipeline";
 import { CodexFilters } from "./CodexFilters";
 import { CodexGrid } from "./CodexGrid";
-import { ItemDetail } from "./ItemDetail";
 import { emptyFilters, hasActiveFilter, toggleInSet, type FilterState } from "./filters";
 
 export function CodexPage() {
+  const navigate = useNavigate();
   const [query, setQuery] = useState("");
   const [filters, setFilters] = useState<FilterState>(emptyFilters);
-  const [selected, setSelected] = useState<Item | null>(null);
 
+  // The selected item lives in the URL (/items/<id>) so links are shareable and
+  // back/forward works. Filter + query state stays here in the parent, so opening
+  // an item never loses your place — the drawer renders through <Outlet/>.
   const results = useMemo(() => filterItems(query, filters), [query, filters]);
 
   return (
@@ -42,9 +44,13 @@ export function CodexPage() {
         anyFilter={hasActiveFilter(filters)}
       />
 
-      <CodexGrid items={results} onSelect={setSelected} />
+      <CodexGrid
+        items={results}
+        onSelect={(item) => navigate({ to: "/items/$id", params: { id: item.id } })}
+      />
 
-      <ItemDetail item={selected} onClose={() => setSelected(null)} onSelectItem={setSelected} />
+      {/* Drawer for /items/<id> renders here; /items alone renders nothing. */}
+      <Outlet />
     </div>
   );
 }
