@@ -275,6 +275,118 @@ artifact icon is reported by `data:audit`.
 languages (the game's language files make it *possible*, but it multiplies data
 maintenance), accounts/cloud sync (localStorage is enough; URL sharing covers co-op).
 
+### Phase 5 — Correctness, coverage & discovery (queued behind Phase 4)
+
+Raised from real use of the live site. Deliberately ordered so the **correctness**
+work lands before the features that would otherwise build on top of bad data.
+
+**5.1 Loadout-table correctness pass — and an audit that makes it stick.**
+`LOADOUT_UNLOCKS` uses an empty skill list to mean two different things: *"this
+survivor genuinely has no challenge-locked alternates"* (Void Fiend — correct) and
+*"we never entered the data"* (Drifter — wrong). The UI renders both as the positive
+claim **"Fixed kit — no challenge-locked alternate skills."** The site is therefore
+asserting something false, which rules #1 and #7 forbid. Cross-checking the table
+against the extracted SkillFamily variants (`.gamedata/loadouts.json`) shows **five
+survivors under-reported**: MUL-T (4 real vs 3 listed), Railgunner (3 vs 2),
+False Son (3 vs 2), Chef (3 vs 2), and **Drifter (3 vs 0 — the visible bug)**. Fix:
+1. Fill the missing rows from the game's own skill variants + achievement text.
+2. Represent "no alternates" and "not yet recorded" as *distinct states* in the data,
+   so the UI can say the honest thing in each case instead of defaulting to a claim.
+3. Extend `data:audit` to **fail** when a survivor's table lists fewer alternates than
+   the game data contains. This class of silent gap must not be able to ship again.
+
+The inverse also exists and is benign but should be labelled rather than left
+mismatched: Acrid and Captain list rows that aren't loadout-slot variants (Captain's
+beacon sub-skills).
+
+**5.2 Undo a cleared run plan.** "New run" is instantly destructive with no recovery.
+Retain the cleared plan in memory and offer an **Undo** affordance that stays
+available until the plan is meaningfully rebuilt (first new item marked) or the
+session ends — matching the "undo toast" pattern users expect, without adding
+persistence complexity.
+
+**5.3 Stat Lab item coverage.** The Stat Lab currently models **14 of 212 items**.
+That is by design (Phase 2 scoped it to items that directly modify survivor stats),
+but it undershoots even that scope — the plan said ~30 — and the UI never explains
+the boundary, so it reads as broken rather than deliberate. Two parts:
+1. Expand to every item whose effect is a *direct, unconditional* stat change
+   (Energy Drink, Hiker's Boots, Red Whip, Elusive Antlers, Oddly-shaped Opal,
+   Cautious Slug, Warbanner, Chronic Expansion, …), each with its verified numbers.
+2. State the boundary in the UI: proc-chain, on-hit, and situational items are
+   excluded **because they can't be reduced to a stat line**, not because they were
+   forgotten. Items outside the model should be visibly marked as such.
+
+**5.4 Survivor → Stat Lab handoff.** From a survivor page, a single action ("Open in
+Stat Lab") that loads that survivor into the calculator. Pure navigation + preselect;
+no new math.
+
+**5.5 Survivor portraits.** Survivor pages and the survivor index are text-only
+because no portrait assets exist. Source them the same way as item and artifact icons
+(§2.7), add an `icon` field to `survivors.json`, and use them in the index, the
+detail header, the Stat Lab picker, and survivor OpenGraph cards (which currently
+fall back to text-only for exactly this reason, §4.4).
+
+**5.6 Portal guide + Bazaar dream imagery.** Two related gaps:
+- A **complete portal reference**: every portal in the game (Blue/Newt → Bazaar,
+  Green/Celestial → Obliterate, Gold → Gilded Coast, Void/Purple → Void Fields,
+  Null → Void Locus, Deep Void, Primordial Teleporter, and the DLC additions), each
+  with how it is opened, where it leads, what it costs, and what it locks out.
+  This is the same "answers the game hides" brief that justified the Bazaar
+  dreams table.
+- **Imagery for the Bazaar dreams table** — the dream portals are identified visually
+  in-game, so the table should show them, not just quote the text.
+
+**5.7 Finish proc verification (the honest tail).** 21 of 125 loadout skills still
+carry no verified proc coefficient. They are not all the same kind of unknown, and
+lumping them together is itself misleading:
+- **Genuinely non-damaging** (dashes, repositioning, buffs): Tactical Dive/Slide,
+  Blink, Phase Blink, Trespass, Shadowfade, Sojourn, Repossess, Retool. These should
+  read **"no proc — deals no damage"**, which is a *fact*, not a gap.
+- **Summons** (TR12/TR58 turrets, CMD-SWARM): proc through the minion's own attacks;
+  model them as delegating rather than as null.
+- **Genuinely unresolved** (Power Mode, Salvage, Meridian's Will, Tangling Growth,
+  DIRECTIVE: Disperse, Orbital Supply Beacon, Ascent Protocol, ADMIN-OVERRIDE,
+  Reprieve): these need the runtime dumper (§6, user-gated) and stay marked
+  unverified until measured. **Never estimated.**
+
+**5.8 Make the locked-item state unmissable.** §4.7 shipped a lock badge, a
+"How to unlock" block, and a "Locked only" filter, but the badge is deliberately
+subtle and reads as invisible at grid density. Strengthen the *visual* language:
+a clearly distinct treatment for locked cards (dimmed/desaturated art with the lock
+overlaid, in the spirit of the in-game logbook), a legend so the state is
+self-explanatory, and the challenge surfaced in the hover tooltip rather than only
+in the drawer.
+
+**5.9 Objective build guidance — what is and isn't honestly possible.** Sites like
+Rogueranker publish per-survivor item lists with no stated methodology, no math, and
+no sourcing. The instinct to distrust them is correct. Three tiers of claim, of which
+only the first two belong on this site:
+
+1. **Derivable and objective** — *build this.* Given a survivor's verified base
+   stats, proc coefficients, and attack rates, the **marginal value of the next
+   stack** is computable: "+1 Soldier's Syringe = +X% sustained DPS for Commando at
+   level N with this inventory." Same for effective HP per armor item, expected procs
+   per second for on-hit items on a given primary, and breakpoints (§4.3, shipped).
+   These are facts *under explicitly stated assumptions* (target dummy, stationary,
+   sustained fire, no movement), and the assumptions must be shown with the number so
+   any reader can reproduce or reject it.
+2. **Factual interaction (synergy)** — already defined in §4.2: *why* two items
+   combine, stated mechanically, no ranking.
+3. **"Best items for X"** — **not objective and cannot be made so.** It requires an
+   objective function (survive? clear speed? boss burst?) that different players
+   answer differently, and item value in a roguelike depends on run state, stage,
+   difficulty, artifacts, and player skill. Any site presenting this as fact is
+   laundering opinion. If it ever appears here it goes through §4.2's Opinion class:
+   badged, authored, dated, patch-stamped.
+
+So: the answer to "is there an objective build guide?" is **no for rankings, yes for
+math** — and the math is the part nobody has built. That is the version worth doing.
+
+**5.10 Image loading polish.** Item icons are lazy-loaded with no reserved space, so
+a card can briefly render without its art while scrolling (observed on Shuriken; the
+asset is present and intact — this is a loading artifact, not missing data). Reserve
+the icon box and decode asynchronously so cards never reflow or flash empty.
+
 ---
 
 ## 4. Tech stack (deliberately boring where it counts)
@@ -372,3 +484,23 @@ few focused sessions — and it's the moat that makes every other feature possib
 7. **M6 — Reference pages**: dreams→stages, shrines, loadout unlocks, artifacts.
 
 Ship publicly after M4; M5/M6 iterate on a live site.
+
+---
+
+## 7. Maintainer-gated inputs (things only a human with the game can supply)
+
+Rule #1 forbids filling these in by inference, so they block on the maintainer rather
+than being guessed. Each entry states **why** it can't be automated and **what
+"done" looks like**, so it can be knocked out in one sitting.
+
+| # | Input | Why it's blocked | What to capture |
+|---|---|---|---|
+| 1 | **Runtime proc coefficients** for the 9 genuinely unresolved skills (§5.7) | The value isn't in a serialized field — it's set at runtime when the attack fires, so it can only be observed while playing | Run the BepInEx `ProcDumper` plugin (`tools/ProcDumper/`), play each affected survivor, use each listed skill on a target, then hand over the generated log |
+| 2 | **Logbook text for 4 edge-case equipment** — G-Force Accelerator, Elegy of Extinction, Coven of Gold, Jar of Souls | Their language-file tokens are ambiguous/templated, so the shipped text can't be confirmed from files alone | Open each in the in-game Logbook and copy the description verbatim |
+| 3 | **2 unconfirmed Ambry codes** — Artifact of Evolution (`♦♦♦ ■■■ ●●●`) and Artifact of Soul (`●■● ●♦● ■♦■`) | Codes are encoded in the monument, not in text assets; ours came from the wiki and are the only wiki-only values left | Confirm the glyph pattern on the Bulwark's Ambry monument (or the artifact's unlock entry) |
+| 4 | **Player-facing patch version** (`PATCH_VERSION`, currently `null`) | The main-menu version string isn't present in any data file; the footer honestly falls back to DLC + Steam build until supplied (§4.6) | Read the version string off the game's main menu |
+| 5 | *(Optional)* **A Python env with UnityPy** for asset extraction | The extractors need UnityPy, which has no wheel for the installed Python 3.14; wiki.gg is a working fallback for imagery | Install Python 3.12/3.13 + `pip install UnityPy` — unlocks extracting portraits/portal art from the game instead of the wiki (§5.5, §5.6) |
+
+Items 1–3 are the last unverified values in the entire dataset. Item 4 is cosmetic
+but makes the freshness stamp precise. Item 5 only changes *where* imagery comes
+from, not whether the feature can ship.
