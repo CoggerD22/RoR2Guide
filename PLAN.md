@@ -509,27 +509,36 @@ Ship publicly after M4; M5/M6 iterate on a live site.
 
 ---
 
-## 7. Maintainer-gated inputs (things only a human with the game can supply)
+## 7. What actually requires a human (and what only looked like it did)
 
-Rule #1 forbids filling these in by inference, so they block on the maintainer rather
-than being guessed. Each entry states **why** it can't be automated and **what
-"done" looks like**, so it can be knocked out in one sitting.
+This section previously listed five "maintainer-gated inputs." **Four of the five were
+wrong** — each was an assumption about where data lived, never tested. Re-checking them
+one at a time resolved all four without a game session. The pattern is recorded here
+because it recurred three times in a single day and is the main risk to this project's
+accuracy: *an unverified claim about a data source is still an unverified claim.*
 
-| # | Input | Why it's blocked | What to capture |
-|---|---|---|---|
-| 1 | **Logbook text for 4 edge-case equipment** — G-Force Accelerator, Elegy of Extinction, Coven of Gold, Jar of Souls | Their language-file tokens are ambiguous/templated, so the shipped text can't be confirmed from files alone | Open each in the in-game Logbook and copy the description verbatim |
-| 2 | **2 unconfirmed Ambry codes** — Artifact of Evolution (`♦♦♦ ■■■ ●●●`) and Artifact of Soul (`●■● ●♦● ■♦■`) | Codes are encoded in the monument, not in text assets; ours came from the wiki and are the only wiki-only values left | Confirm the glyph pattern on the Bulwark's Ambry monument (or the artifact's unlock entry) |
-| 3 | **Player-facing patch version** (`PATCH_VERSION`, currently `null`) | The main-menu version string isn't present in any data file; the footer honestly falls back to DLC + Steam build until supplied (§4.6) | Read the version string off the game's main menu |
-| 4 | *(Optional)* **A Python env with UnityPy** for asset extraction | The extractors need UnityPy, which has no wheel for the installed Python 3.14; wiki.gg is a working fallback for imagery | Install Python 3.12/3.13 + `pip install UnityPy` — unlocks extracting portraits/portal art from the game instead of the wiki (§5.5, §5.6) |
+| Former "blocker" | What testing it actually showed |
+|---|---|
+| **Logbook text for 4 equipment** (G-Force Accelerator, Elegy of Extinction, Coven of Gold, Jar of Souls) — *"tokens are ambiguous/templated"* | False. Three have complete verbatim `_DESC` text in `Language/en` right now. The fourth, Coven of Gold (`EQUIPMENT_AFFIXGOLD_DESC`), ships the literal string `???` — the *game* has no description, so no logbook visit can produce one. And the real reason these 4 are absent from the codex isn't text at all (see below). |
+| **2 unconfirmed Ambry codes** (Evolution, Soul) — *"encoded in the monument, not in text assets"* | Half-true, and not a blocker. The codes live on `ArtifactFormulaDisplay` components — confirmed present with exactly **9 compound slots** (the 3×3 pattern) in `ror2-base-artifactworld_assets_all_*.bundle`. `ArtifactCompoundDef` carries an `int value` per glyph. Extractable offline; needs an extractor, not a playthrough. |
+| **Player-facing patch version** — *"isn't present in any data file"* | False. `RoR2Application` returns `Application.version`, which Unity bakes into `globalgamemanagers` at build time. Read directly from the PlayerSettings block: **`1.4.1`** (alongside Unity `2021.3.33f1`). Now set in `gameVersion.ts` — build metadata, strictly better than transcribing a menu screenshot. |
+| **A Python env with UnityPy** — *"no wheel for Python 3.14"* | False. `pip install UnityPy` succeeded on the installed Python 3.14 (**v1.25.2**). Asset extraction — artifact codes, survivor portraits, portal art (§5.5, §5.6) — is unblocked. |
+| **ProcDumper run** *(removed earlier, same failure mode)* | The remaining proc coefficients are recoverable by decompiling the `EntityStates` tree — see §5.7. Plugin stays only as a last-resort cross-check. |
 
-Items 1–2 are the last wiki-only / unconfirmed values in the dataset. Item 3 is
-cosmetic but makes the freshness stamp precise. Item 4 only changes *where* imagery
-comes from, not whether the feature can ship.
+### The one genuine human decision
 
-**Deliberately NOT on this list: the ProcDumper run.** It was listed here previously
-on the claim that the remaining proc coefficients "can only be observed while
-playing." That was wrong — see §5.7. The values are recoverable by decompiling the
-`EntityStates` tree, which needs no game session and no mod. The plugin
-(`tools/ProcDumper/`) stays in the repo as a **cross-check of last resort**, for any
-skill that survives static analysis genuinely undetermined. Nothing currently
-requires it.
+Not a data gap — a **product scope call**, which is exactly the kind of thing that
+*should* come from a person:
+
+`data:roster` flags **8 equipment defs that exist in the game but not in the codex**:
+Beyond the Limits, Coven of Gold, Elegy of Extinction, G-Force Accelerator,
+Jar of Souls, Overloading Excavator, Reaper's Remorse, and `SoulCorruptor` (whose
+name token is unlocalized — almost certainly cut content). **All eight have
+`canDrop = false`**, meaning they never appear in the normal equipment drop pool.
+Some are elite aspects obtained by other means; at least one is cut content.
+
+The question is *what the codex is for*: strictly the standard drop pool, or every
+equipment a player can end up holding. Once that's decided, the data to implement it
+already exists (names, descriptions, DLC, and flags are all extracted) — so it's one
+decision, not a research task. Coven of Gold would ship with the game's own `???`,
+honestly labelled.
