@@ -280,6 +280,49 @@ maintenance), accounts/cloud sync (localStorage is enough; URL sharing covers co
 Raised from real use of the live site. Deliberately ordered so the **correctness**
 work lands before the features that would otherwise build on top of bad data.
 
+**5.0 Systematic verification sweep — do this before anything else in Phase 5.**
+
+Three separate "unverified values" turned out to be **lookup failures, not real gaps**
+(Drifter's kit, the proc tail, and every item on the old maintainer-input list). That
+is a *methodology* failure, not bad luck: each was recorded as unknowable without ever
+testing whether the game's own files contained it. The standing rule is now:
+
+> **No value may be described as unverified, blocked, or wiki-sourced until it has
+> been searched for in the language files, the decompiled C#, and the asset bundles.**
+
+Applying that rule to `reference.ts` — the one dataset with **no provenance tags at
+all**, while `items.json` (192 langfile / 20 code) and `survivors.json` (19 asset) are
+fully sourced — immediately found substantial, verifiable error:
+
+- **Bazaar dreams: we ship 13; the game defines 31.** The `BAZAAR_SEER_<STAGE>` tokens
+  encode the dream→stage mapping *in the token name*, so the table can be generated
+  rather than transcribed. All 13 existing rows check out, but **18 are missing**
+  (Aphelian Sanctuary, Conduit Canyon, Treeborn Colony, Golden Dieback, Iron Alluvium,
+  Iron Auroras, Viscous Falls, Reformed Altar, Prime Meridian, Commencement,
+  Pretender's Precipice, Repurposed Crater, Siphoned Forest, Solutional Haunt,
+  Sulfur Pools, Shattered Abodes, Disturbed Impact, …).
+- **Artifacts: the count of 20 is correct, but the text is paraphrase.** Several
+  shipped descriptions differ from the in-game `ARTIFACT_*_DESCRIPTION` — Prestige
+  omits "Shrine of the Mountain effects are permanent," and Devotion's "grow into
+  permanent allies" is not the game's wording. Replace all 20 with verbatim text.
+  - **Counter-example worth preserving:** the language files define a 21st,
+    **Artifact of Spirit** ("All characters move faster at lower health"). Adding it
+    would have been a *false* entry — `RoR2Content.Artifacts` registers no `ArtifactDef`
+    for it, so it is cut content that still ships tokens (same as the `SoulCorruptor`
+    equipment). **Presence in the language files is not proof of live content.** The
+    verification rule cuts both ways: it removes phantom gaps *and* prevents phantom
+    additions. Cross-check every token-derived record against its registered def.
+- **Loadout unlocks: 14 rows carry an empty `requirement`**, resolvable through the
+  same achievement-token join already built for item unlocks (§2.6).
+- **Ambry codes** are extractable from `ArtifactFormulaDisplay` (§7).
+
+Work: re-derive every hand-entered `reference.ts` block from game text, transcribing
+**verbatim** — including the game's own typos (e.g. "cavernouse depths"); the site
+quotes the game, it does not correct it. Attach `confidence` tags to these records the
+way items and survivors already carry them, and extend `data:audit` to flag any
+reference row lacking provenance. Portals (§5.6) should be built from the `PORTAL_*`
+and interactable tokens for the same reason.
+
 **5.1 Loadout-table correctness pass — and an audit that makes it stick.**
 `LOADOUT_UNLOCKS` uses an empty skill list to mean two different things: *"this
 survivor genuinely has no challenge-locked alternates"* (Void Fiend — correct) and

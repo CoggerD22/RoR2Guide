@@ -146,9 +146,13 @@ test("survivor page joins base stats, skills, procs and unlock challenges", asyn
   // Skills sit under their real in-game slot, with verified procs.
   await expect(page.getByText("Phase Blast")).toBeVisible();
 
-  // Unlock challenge + requirement are joined in.
+  // Unlock challenge + requirement are joined in. The requirement is the verbatim
+  // ACHIEVEMENT_*_DESCRIPTION from the game, not the wiki's looser paraphrase
+  // ("Kill an Overloading Worm.") — the game also scopes it to playing Commando.
   await expect(page.getByText("Rolling Thunder")).toBeVisible();
-  await expect(page.getByText("Kill an Overloading Worm.")).toBeVisible();
+  await expect(
+    page.getByText("As Commando, land the killing blow on an Overloading Worm."),
+  ).toBeVisible();
 
   // Unverified procs must say so, never show a number.
   await expect(page.getByText("proc unverified").first()).toBeVisible();
@@ -177,6 +181,20 @@ test("Heretic shows her real item-granted kit, not the placeholder", async ({ pa
 
   // Negative regen growth renders "-1.2/s", not "+-1.2/s".
   await expect(page.getByText("+-", { exact: false })).toHaveCount(0);
+});
+
+test("bazaar dreams table is generated from game text, not the 13-row wiki subset", async ({ page }) => {
+  await page.goto("/reference");
+  await page.getByRole("button", { name: "Bazaar Dreams" }).click();
+
+  // Dreams that only exist in the game's BAZAAR_SEER_* tokens (absent from the
+  // wiki-transcribed table this replaced).
+  await expect(page.getByText("You dream of clarity.")).toBeVisible();
+  await expect(page.getByText("You dream of worms.")).toBeVisible();
+  await expect(page.getByRole("row", { name: /Helminth Hatchery/ })).toBeVisible();
+
+  // Verbatim transcription includes the game's own typo — we quote, not correct.
+  await expect(page.getByText("You dream of cavernouse depths.")).toBeVisible();
 });
 
 test("artifacts reference shows each artifact's icon alongside its code", async ({ page }) => {
