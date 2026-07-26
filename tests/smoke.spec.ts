@@ -412,6 +412,24 @@ test("planner: priority and goal are settable and ranked within tier", async ({ 
   ).toHaveAttribute("aria-pressed", "true");
 });
 
+test("planner states hard caps as fact, and flags a goal that exceeds one", async ({ page }) => {
+  // Focused Convergence is code-verified capped at 3 (HoldoutZoneController cap = 3).
+  await page.goto("/planner?t=focused-convergence");
+  const rail = page.getByRole("complementary");
+  await expect(rail.getByText("cap 3")).toBeVisible();
+
+  // A goal past the cap is flagged — extra copies do literally nothing.
+  await rail.getByLabel("Goal stack count for Focused Convergence").fill("5");
+  await expect(rail.getByText("caps at 3")).toBeVisible();
+
+  // An item whose cap SCALES with stacks must show no fixed number: Hiker's Boots
+  // caps its buff at 10 × item count, so claiming a single ceiling would be false.
+  await page.goto("/planner?t=hikers-boots");
+  const rail2 = page.getByRole("complementary");
+  await expect(rail2.getByText("Hiker's Boots")).toBeVisible();
+  await expect(rail2.getByText(/^cap \d/)).toHaveCount(0);
+});
+
 test("shared links carry priority and goal, and old links still work", async ({ page }) => {
   // New-format link.
   await page.goto("/planner?t=soldiers-syringe!h*4,crowbar!l");

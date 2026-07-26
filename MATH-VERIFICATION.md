@@ -505,3 +505,52 @@ Longstanding Solitude is also a worked example of **not over-claiming**: its
 `confidence: "langfile"` even though its cap is now code-sourced. Confidence is
 per-record while claims are per-field — the tension §6A.3 exists to resolve. Until
 that lands, the rule is: **the record's confidence reflects its weakest field.**
+
+### 3j.2 Hard-cap sweep — and the cap that isn't a number
+
+Caps are the objective half of "how many should I take?" (PLAN §5.8b): past one, every
+further copy does literally nothing. Only 5 of 212 items recorded a cap, so
+`scripts/scan-item-caps.py` sweeps for them properly.
+
+**The scan needed a second hop.** Looking near each `GetItemCountEffective(...)` misses
+most caps, because the count is read into a local or an `ItemCounts` field and clamped
+much later — which is exactly why Longstanding Solitude's `i < 3` went unnoticed until
+it was traced by hand. So the scanner records the variable each count lands in, then
+looks forward for that variable inside a capping construct (`Math.Min`, `Mathf.Clamp`,
+a bounded grant loop, a ternary clamp, `maxStacks`).
+
+**Precision beat recall, deliberately.** The first run returned 20 items / 22 sites,
+mostly false: decompiled code reuses generic names (`num`, `itemCountEffective`,
+`result`) for *different* items in one file, so shared lines were attributed to every
+candidate — `timedBuffs[num].timer = Mathf.Min(a, max)` "capped" five unrelated items.
+Two filters fixed it: drop any variable that holds counts of more than one item in a
+file, and only look forward within a method-sized window. Result: **5 sites, reviewable
+by hand.** A false "this item is capped" is a wrong claim shipped to players; a miss is
+just a known gap.
+
+Of those 5: two are null-guards (`(!inventory) ? 1 : count`), one is Fuel Cell's
+255-charge ceiling (real, unreachable), one is the known Longstanding Solitude clamp,
+and Pocket I.C.B.M.'s `(num5 <= 0) ? 1 : 3` is a binary effect, not a stacking cap.
+**Conclusion: RoR2 has very few hard stacking caps, and we now have the meaningful
+ones.** That negative result is worth recording — it's evidence, not an absence of
+looking.
+
+**Hiker's Boots was wrong, and instructively so.** Recorded cap: "Buff stacks up to 10
+times," quoted from the description. The code:
+
+```csharp
+int num = 10 * itemCountEffective;                 // ceiling SCALES with item count
+for (int i = 0; i < itemCountEffective; i++)
+    characterBody.AddTimedBuff(CritChanceAndDamage, 10f, num);
+// each buff stack: num111 += buffCount5;  critMultiplier += 0.01f * buffCount5;
+```
+
+So each stack grants +1% crit chance **and** +1% crit damage, and the ceiling is
+**10 × item count** — +10% at one stack, +20% at two. "Up to 10 times" describes buff
+stacks at one item and reads as a flat ceiling. Corrected and code-verified.
+
+This produced a schema distinction worth keeping: `capStacks` (machine-readable, drives
+the planner's warning) is set **only where a single fixed number is genuinely true**.
+Hiker's Boots gets the prose `cap` but no `capStacks`, because no single number is
+correct — a scaling ceiling asserted as a fixed one would be exactly the kind of
+confident-and-wrong claim this programme exists to prevent. **32 / 212 code-verified.**

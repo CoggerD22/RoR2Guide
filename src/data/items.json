@@ -64,7 +64,8 @@
         "base": 10,
         "perStack": 10,
         "type": "linear",
-        "cap": "Reaches 100% (guaranteed crit) at 10 stacks; further stacks add nothing."
+        "cap": "Reaches 100% (guaranteed crit) at 10 stacks; further stacks add nothing.",
+        "capStacks": 10
       }
     ],
     "tags": [
@@ -864,7 +865,8 @@
         "base": 1,
         "perStack": 1,
         "type": "linear",
-        "cap": "Buff stacks up to 10 times."
+        "cap": "Buff caps at 10 x item count (GlobalEventManager: num = 10 * itemCountEffective), NOT a flat 10. So the ceiling rises with stacks: +10% at 1 stack, +20% at 2, +30% at 3.",
+        "formula": "Each elevated hit grants n buff stacks (n = item count); the buff caps at 10n. Each stack is +1% crit chance AND +1% crit damage (CharacterBody: num111 += buffCount; critMultiplier += 0.01f * buffCount). Lasts 10s, refreshed on hit."
       }
     ],
     "tags": [
@@ -874,7 +876,7 @@
     "icon": "/icons/hikers-boots.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Hiker%27s_Boots",
     "verified": true,
-    "confidence": "langfile"
+    "confidence": "code"
   },
   {
     "id": "bolstering-lantern",
@@ -3868,7 +3870,8 @@
         "perStack": 30,
         "type": "linear",
         "formula": "chargeRate x= 1 + 0.3n (HoldoutZoneController.FocusConvergenceController). Linear +30% per stack.",
-        "cap": "Hard cap at 3 stacks (cap = 3): a 4th and beyond do nothing at all."
+        "cap": "Hard cap at 3 stacks (cap = 3): a 4th and beyond do nothing at all.",
+        "capStacks": 3
       },
       {
         "stat": "Teleporter zone size reduction (%)",
@@ -3876,7 +3879,8 @@
         "perStack": -50,
         "type": "reciprocal",
         "formula": "radius /= 2n (convergenceRadiusDivisor = 2). Reciprocal: zone is 1/2 size at 1 stack, 1/4 at 2, 1/6 at 3 - i.e. 50%, 75%, 83.3% smaller.",
-        "cap": "Hard cap at 3 stacks (cap = 3)."
+        "cap": "Hard cap at 3 stacks (cap = 3).",
+        "capStacks": 3
       }
     ],
     "tags": [
@@ -4015,7 +4019,8 @@
         "perStack": 1,
         "type": "linear",
         "cap": "Hard cap at 3 (CharacterBody.AddFreeChestBuff: the grant loop runs while i < 3). A 4th stack grants NO extra free unlock, despite the description reading +1 per stack.",
-        "formula": "1 free unlock per stack, capped at 3 per level up (AddFreeChestBuff). Separately, the gold->XP conversion factor is 0.12 + 0.0125(n-1) with the stack count clamped to 8 (CharacterMaster.GiveMoneyWithOnLevelUpFreeUnlock)."
+        "formula": "1 free unlock per stack, capped at 3 per level up (AddFreeChestBuff). Separately, the gold->XP conversion factor is 0.12 + 0.0125(n-1) with the stack count clamped to 8 (CharacterMaster.GiveMoneyWithOnLevelUpFreeUnlock).",
+        "capStacks": 3
       },
       {
         "stat": "Gold cost increase (%)",

@@ -37,6 +37,21 @@ function groupByTier(list: Item[]) {
   })).filter((g) => g.list.length > 0);
 }
 
+/**
+ * The lowest hard ceiling across an item's stacking entries, or null.
+ *
+ * This is the ONLY objective answer to "how many should I take?" (PLAN §5.8b Part 2):
+ * past this, extra copies do literally nothing — it's the code, not a recommendation.
+ * Items whose cap scales with stacks carry no `capStacks`, so they correctly produce
+ * no warning here.
+ */
+function hardCap(item: Item): number | null {
+  const caps = item.stacking
+    .map((s) => s.capStacks)
+    .filter((n): n is number => typeof n === "number");
+  return caps.length ? Math.min(...caps) : null;
+}
+
 /** Priority + goal controls for one targeted item. */
 function TargetControls({ item }: { item: Item }) {
   const entry = usePlanner((s) => s.plan[item.id]);
@@ -44,8 +59,11 @@ function TargetControls({ item }: { item: Item }) {
   const setGoal = usePlanner((s) => s.setGoal);
   if (!entry) return null;
 
+  const cap = hardCap(item);
+  const overCap = cap !== null && entry.goal !== undefined && entry.goal > cap;
+
   return (
-    <div className="flex items-center gap-1 pl-8">
+    <div className="flex flex-wrap items-center gap-1 pl-8">
       <div className="flex overflow-hidden rounded border border-border" role="group" aria-label={`Priority for ${item.name}`}>
         {PRIORITIES.map((p) => (
           <button
@@ -78,6 +96,25 @@ function TargetControls({ item }: { item: Item }) {
         />
         ×
       </span>
+      {/*
+        Objective, not advice: past the cap an extra copy does nothing. Stated as the
+        fact ("caps at N") rather than a recommendation ("take N") — see PLAN §5.9.
+      */}
+      {cap !== null && (
+        <span
+          className={cn(
+            "rounded px-1 py-0.5 text-[10px]",
+            overCap ? "bg-amber-400/20 text-amber-300" : "text-muted-foreground",
+          )}
+          title={
+            overCap
+              ? `Stacks past ${cap} have no effect at all — a goal of ${entry.goal} wastes ${entry.goal! - cap}.`
+              : `Hard cap: stacks past ${cap} have no effect.`
+          }
+        >
+          {overCap ? `caps at ${cap}` : `cap ${cap}`}
+        </span>
+      )}
     </div>
   );
 }

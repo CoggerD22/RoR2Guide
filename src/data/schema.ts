@@ -45,11 +45,25 @@ export const stackingEntrySchema = z
     formula: z.string().min(1).optional(),
     /** Human note on any hard cap, e.g. "100% crit at 10 stacks". */
     cap: z.string().min(1).optional(),
+    /**
+     * Machine-readable hard ceiling: the stack count past which further copies do
+     * NOTHING. Set only when a single fixed number is genuinely correct, because the
+     * planner uses it to warn that a goal is wasted (PLAN §5.8b).
+     *
+     * Deliberately absent when a cap SCALES with stacks — Hiker's Boots caps its buff
+     * at 10 × item count, so no single number exists and claiming one would be false.
+     * Such items keep the prose `cap` only.
+     */
+    capStacks: z.number().int().positive().optional(),
   })
   .strict()
   .refine((e) => e.type !== "special" || !!e.formula, {
     message: 'stacking entries of type "special" must include a `formula`',
     path: ["formula"],
+  })
+  .refine((e) => !e.capStacks || !!e.cap, {
+    message: "capStacks requires the human-readable `cap` note explaining it",
+    path: ["cap"],
   });
 export type StackingEntry = z.infer<typeof stackingEntrySchema>;
 
