@@ -351,6 +351,26 @@ test("every challenge-locked item renders a lock, across all tiers", async ({ pa
   expect(locks).toBeGreaterThan(30);
 });
 
+test("planner lock badge sits INSIDE its card, not in the grid gap", async ({ page }) => {
+  // Regression: the badge was `bottom`-anchored and the grid cell stretches to the
+  // tallest card in the row, so it rendered ~8px BELOW the card — present in the DOM,
+  // counted by every existing assertion, and invisible as a marker. Only geometry
+  // catches this class of bug.
+  await page.goto("/planner");
+  const card = page.getByRole("button", { name: /^Crowbar/ }).first();
+  await card.scrollIntoViewIfNeeded();
+  const cardBox = (await card.boundingBox())!;
+  const badgeBox = (await page
+    .getByLabel(/Locked behind challenge: The Basics/)
+    .first()
+    .boundingBox())!;
+
+  expect(badgeBox.y).toBeGreaterThanOrEqual(cardBox.y);
+  expect(badgeBox.y + badgeBox.height).toBeLessThanOrEqual(cardBox.y + cardBox.height);
+  expect(badgeBox.x).toBeGreaterThanOrEqual(cardBox.x);
+  expect(badgeBox.x + badgeBox.width).toBeLessThanOrEqual(cardBox.x + cardBox.width);
+});
+
 test("locked items surface their unlock in the planner and on hover", async ({ page }) => {
   // The planner shows locks too — planning around an item you can't obtain is wasted.
   await page.goto("/planner");

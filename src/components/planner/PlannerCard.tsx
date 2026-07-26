@@ -28,7 +28,12 @@ export function PlannerCard({ item, state, onCycle, onInfo }: PlannerCardProps) 
         aria-pressed={!!state}
         aria-label={`${item.name}: ${state ?? "neutral"}. Click to cycle target/avoid.`}
         className={cn(
-          "flex w-full flex-col items-center gap-2 rounded-lg border bg-surface p-3 text-center transition",
+          // `relative` is load-bearing: absolutely-positioned children must anchor to
+          // the CARD, not to the grid cell. The cell stretches to the tallest card in
+          // its row (a 2-line name makes it ~16px taller), so a bottom-anchored badge
+          // was rendering in the gap *below* the card — visible in a screenshot, and
+          // reported as "no indicator on the planner". Top-anchored badges hid the bug.
+          "relative flex w-full flex-col items-center gap-2 rounded-lg border bg-surface p-3 text-center transition",
           isTargeted && "border-emerald-400 shadow-[0_0_18px_rgba(52,211,153,0.35)]",
           isAvoided && "border-red-500/50 opacity-40 grayscale",
           !state && "border-border hover:border-primary/50",
@@ -38,13 +43,13 @@ export function PlannerCard({ item, state, onCycle, onInfo }: PlannerCardProps) 
         <img src={asset(item.icon)} alt={item.name} loading="lazy" className="size-14 object-contain" />
         <span className="line-clamp-2 text-xs font-medium text-foreground">{item.name}</span>
         {/*
-          Bottom-left: top-left is the ⓘ button and top-right the target/avoid badge.
-          Planning around an item you haven't unlocked is wasted planning, so the
-          lock has to be visible here too, not only in the codex (PLAN §5.8).
+          TOP-left, matching the codex exactly (PLAN §5.8). Consistent placement is the
+          point: a marker that moves between pages has to be relearned. The ⓘ button
+          moves to bottom-right to make room; it's hover-only, so that costs nothing.
         */}
         {item.unlock && (
           <span
-            className="pointer-events-none absolute bottom-1 left-1 flex size-5 items-center justify-center rounded-full bg-amber-400 text-black shadow-sm ring-1 ring-black/30"
+            className="pointer-events-none absolute left-1 top-1 flex size-5 items-center justify-center rounded-full bg-amber-400 text-black shadow-sm ring-1 ring-black/30"
             title={`Unlocked by ${item.unlock.challenge}${item.unlock.requirement ? ` — ${item.unlock.requirement}` : ""}`}
           >
             <Lock
@@ -76,7 +81,7 @@ export function PlannerCard({ item, state, onCycle, onInfo }: PlannerCardProps) 
           onInfo();
         }}
         aria-label={`Details for ${item.name}`}
-        className="absolute left-1.5 top-1.5 rounded-full bg-black/40 p-1 text-muted-foreground opacity-0 transition hover:text-foreground focus-visible:opacity-100 group-hover:opacity-100"
+        className="absolute bottom-1.5 right-1.5 rounded-full bg-black/60 p-1 text-muted-foreground opacity-0 transition hover:text-foreground focus-visible:opacity-100 group-hover:opacity-100"
       >
         <Info className="size-3.5" />
       </button>
