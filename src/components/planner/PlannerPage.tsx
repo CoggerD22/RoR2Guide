@@ -69,7 +69,7 @@ export function PlannerPage() {
             renderCard={(item) => (
               <PlannerCard
                 item={item}
-                state={plan[item.id]}
+                state={plan[item.id]?.state}
                 onCycle={() => cycle(item.id)}
                 onInfo={() => setSelected(item)}
               />

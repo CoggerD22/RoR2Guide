@@ -583,11 +583,29 @@ player set *how many* of an item they want, and — if it can be mathematically 
 show an "ideal" number, possibly per survivor. These are two very different asks and
 the plan must not blur them.
 
-**Part 1 — Stack goals (build this; no truth risk).** The planner’s three-state cycle
-becomes an optional **target count** per item: "I want 3 Crowbars." Purely the player's
-own intent, so it asserts nothing about the game. Extends the existing Zustand plan
-(`Record<id, PlanState>` → adds an optional `goal`), the rail groups by remaining need,
-and the shareable URL (§4.4) carries goals so co-op partners see them.
+**Part 1 — Stack goals AND priority (build this; no truth risk).** Two requests, one
+data-model change, because both express *the player's own intent* and assert nothing
+about the game:
+
+- **Target count** — "I want 3 Crowbars."
+- **Priority** — "I want Soldier's Syringes and Lens-Maker's Glasses *more than*
+  Repulsion Armor Plate, but that's good too." This is the actual decision a printer
+  or cauldron forces: not *whether* an item is wanted but *which one first*. A flat
+  targeted/avoided list can't express it, so the rail can't help at the moment it
+  matters most.
+
+Model: `plan: Record<id, PlanState>` becomes `Record<id, { state, priority?, goal? }>`
+with **High / Medium / Low** priority (deliberately plain — any RoR2-flavoured naming
+would need explaining). The rail sorts by priority *within* tier, since printers trade
+within a tier and that is the real question being asked. The click-cycle stays
+neutral → targeted → avoided → neutral so existing muscle memory is untouched;
+priority and goal are set in the rail, where you can see the whole list to rank it.
+
+**This is a persisted-state migration, not just a feature.** Plans live in
+localStorage; a naive shape change silently wipes anyone's saved run. Bump the Zustand
+persist `version` and write a `migrate` that lifts the old `Record<id, PlanState>` into
+the new shape, defaulting priority to Medium. Also extend the share URL (§4.4) so
+priorities and goals travel to co-op partners, and keep decoding old links.
 
 **Part 2 — "Ideal" count.** A single recommended number is **opinion**, and rule #7
 keeps it out of the codex. But three genuinely objective things sit underneath it, and

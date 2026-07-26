@@ -59,7 +59,7 @@ export function StatLabPage() {
     setItems((prev) => {
       const next = { ...prev };
       for (const id of STAT_ITEM_IDS) {
-        if (plan[id] === "targeted" && !next[id]) next[id] = 1;
+        if (plan[id]?.state === "targeted" && !next[id]) next[id] = 1;
       }
       return next;
     });

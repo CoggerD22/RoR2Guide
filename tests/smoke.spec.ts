@@ -384,6 +384,50 @@ test("locked items surface their unlock in the planner and on hover", async ({ p
   await expect(page.getByText("Discover 10 unique white items.").first()).toBeVisible();
 });
 
+test("planner: priority and goal are settable and ranked within tier", async ({ page }) => {
+  await page.goto("/planner");
+  const rail = page.getByRole("complementary");
+
+  // Target two whites; the rail lists them under their tier.
+  await page.getByRole("button", { name: /^Soldier's Syringe: neutral/ }).click();
+  await page.getByRole("button", { name: /^Crowbar: neutral/ }).click();
+  await expect(rail.getByText("Soldier's Syringe")).toBeVisible();
+
+  // Rank Soldier's Syringe High and give it a goal — the real printer question is
+  // "which white do I want most?", so ranking is per tier.
+  await rail.getByRole("group", { name: /Priority for Soldier's Syringe/ }).getByRole("button", { name: "H" }).click();
+  await rail.getByLabel("Goal stack count for Soldier's Syringe").fill("4");
+  await expect(rail.getByText("×4")).toBeVisible();
+
+  // High-priority item sorts above the medium-priority one inside the tier.
+  const names = await rail.locator("li span.truncate").allTextContents();
+  expect(names.indexOf("Soldier's Syringe")).toBeLessThan(names.indexOf("Crowbar"));
+
+  // Survives a reload (persisted).
+  await page.reload();
+  const rail2 = page.getByRole("complementary");
+  await expect(rail2.getByText("×4")).toBeVisible();
+  await expect(
+    rail2.getByRole("group", { name: /Priority for Soldier's Syringe/ }).getByRole("button", { name: "H" }),
+  ).toHaveAttribute("aria-pressed", "true");
+});
+
+test("shared links carry priority and goal, and old links still work", async ({ page }) => {
+  // New-format link.
+  await page.goto("/planner?t=soldiers-syringe!h*4,crowbar!l");
+  const rail = page.getByRole("complementary");
+  await expect(rail.getByText("×4")).toBeVisible();
+  await expect(
+    rail.getByRole("group", { name: /Priority for Soldier's Syringe/ }).getByRole("button", { name: "H" }),
+  ).toHaveAttribute("aria-pressed", "true");
+
+  // Old-format link (bare ids) must still load — shared plans predate this feature.
+  await page.goto("/planner?t=crowbar&a=tri-tip-dagger");
+  const rail2 = page.getByRole("complementary");
+  await expect(rail2.getByText("Crowbar")).toBeVisible();
+  await expect(rail2.getByText("Tri-Tip Dagger")).toBeVisible();
+});
+
 test("run plans are shareable and loadable via URL", async ({ page }) => {
   // Opening a shared link loads that plan into the rail...
   await page.goto("/planner?t=crowbar&a=tri-tip-dagger");

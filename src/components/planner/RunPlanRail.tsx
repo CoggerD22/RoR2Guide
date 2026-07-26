@@ -2,7 +2,14 @@ import { useState } from "react";
 import { Check, Link2, RotateCcw, X } from "lucide-react";
 import type { Item } from "@/data/schema";
 import { items as allItems, PRESENT_TIERS, TIER_META } from "@/data/items";
-import { usePlanner, type PlanState } from "@/store/planner";
+import {
+  usePlanner,
+  PRIORITIES,
+  PRIORITY_LABEL,
+  PRIORITY_RANK,
+  type PlanState,
+  type Priority,
+} from "@/store/planner";
 import { encodePlan } from "@/lib/planUrl";
 import { copyText } from "@/lib/clipboard";
 import { cn } from "@/lib/utils";
@@ -12,11 +19,67 @@ interface RunPlanRailProps {
   onSelect: (item: Item) => void;
 }
 
+/**
+ * Muted → bright as priority rises, so the ranking reads at a glance. Every level must
+ * still be unmistakably *selected*: "low" originally reused the muted resting style and
+ * was indistinguishable from an unset control.
+ */
+const PRIORITY_STYLE: Record<Priority, string> = {
+  high: "bg-emerald-400 text-black",
+  medium: "bg-emerald-400/25 text-emerald-200",
+  low: "bg-foreground/20 text-foreground",
+};
+
 function groupByTier(list: Item[]) {
   return PRESENT_TIERS.map((tier) => ({
     tier,
     list: list.filter((it) => it.tier === tier),
   })).filter((g) => g.list.length > 0);
+}
+
+/** Priority + goal controls for one targeted item. */
+function TargetControls({ item }: { item: Item }) {
+  const entry = usePlanner((s) => s.plan[item.id]);
+  const setPriority = usePlanner((s) => s.setPriority);
+  const setGoal = usePlanner((s) => s.setGoal);
+  if (!entry) return null;
+
+  return (
+    <div className="flex items-center gap-1 pl-8">
+      <div className="flex overflow-hidden rounded border border-border" role="group" aria-label={`Priority for ${item.name}`}>
+        {PRIORITIES.map((p) => (
+          <button
+            key={p}
+            type="button"
+            onClick={() => setPriority(item.id, p)}
+            aria-pressed={entry.priority === p}
+            title={`${PRIORITY_LABEL[p]} priority`}
+            className={cn(
+              "px-1.5 py-0.5 text-[10px] font-medium transition-colors",
+              entry.priority === p ? PRIORITY_STYLE[p] : "text-muted-foreground hover:text-foreground",
+            )}
+          >
+            {PRIORITY_LABEL[p][0]}
+          </button>
+        ))}
+      </div>
+      {/* aria-label on the input is the whole accessible name; an extra sr-only span
+          would duplicate the item name and make text queries ambiguous. */}
+      <span className="flex items-center gap-1 text-[10px] text-muted-foreground">
+        <input
+          type="number"
+          min={1}
+          max={99}
+          value={entry.goal ?? ""}
+          placeholder="—"
+          onChange={(e) => setGoal(item.id, e.target.value === "" ? null : Number(e.target.value))}
+          aria-label={`Goal stack count for ${item.name}`}
+          className="w-10 rounded border border-border bg-surface-2 px-1 py-0.5 text-center text-[10px] text-foreground placeholder:text-muted-foreground focus:border-primary/60 focus:outline-none"
+        />
+        ×
+      </span>
+    </div>
+  );
 }
 
 function PlanSection({
@@ -31,7 +94,9 @@ function PlanSection({
   onSelect: (item: Item) => void;
 }) {
   const set = usePlanner((s) => s.set);
+  const plan = usePlanner((s) => s.plan);
   const accent = state === "targeted" ? "text-emerald-400" : "text-red-400";
+  const ranked = state === "targeted";
 
   return (
     <div>
@@ -50,24 +115,45 @@ function PlanSection({
                 {TIER_META[tier].label}
               </div>
               <ul className="flex flex-col gap-0.5">
-                {tierList.map((item) => (
-                  <li key={item.id} className="group flex items-center gap-1.5">
-                    <button
-                      type="button"
-                      onClick={() => onSelect(item)}
-                      className="flex min-w-0 flex-1 items-center gap-2 rounded px-1 py-0.5 text-left hover:bg-surface-2"
-                    >
-                      <img src={asset(item.icon)} alt="" className="size-6 shrink-0 object-contain" />
-                      <span className="truncate text-xs text-foreground">{item.name}</span>
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => set(item.id, null)}
-                      aria-label={`Remove ${item.name} from plan`}
-                      className="shrink-0 rounded p-0.5 text-muted-foreground opacity-0 hover:text-foreground focus-visible:opacity-100 group-hover:opacity-100"
-                    >
-                      <X className="size-3.5" />
-                    </button>
+                {/*
+                  Sorted by priority WITHIN the tier: printers and cauldrons trade
+                  inside a tier, so "which white do I want most?" is the actual
+                  question being asked at the machine (PLAN §5.8b).
+                */}
+                {(ranked
+                  ? [...tierList].sort(
+                      (a, b) =>
+                        PRIORITY_RANK[plan[a.id]?.priority ?? "medium"] -
+                          PRIORITY_RANK[plan[b.id]?.priority ?? "medium"] ||
+                        a.name.localeCompare(b.name),
+                    )
+                  : tierList
+                ).map((item) => (
+                  <li key={item.id} className="group flex flex-col gap-0.5">
+                    <div className="flex items-center gap-1.5">
+                      <button
+                        type="button"
+                        onClick={() => onSelect(item)}
+                        className="flex min-w-0 flex-1 items-center gap-2 rounded px-1 py-0.5 text-left hover:bg-surface-2"
+                      >
+                        <img src={asset(item.icon)} alt="" className="size-6 shrink-0 object-contain" />
+                        <span className="truncate text-xs text-foreground">{item.name}</span>
+                        {ranked && plan[item.id]?.goal ? (
+                          <span className="shrink-0 rounded bg-surface-2 px-1 text-[10px] text-muted-foreground">
+                            ×{plan[item.id]!.goal}
+                          </span>
+                        ) : null}
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => set(item.id, null)}
+                        aria-label={`Remove ${item.name} from plan`}
+                        className="shrink-0 rounded p-0.5 text-muted-foreground opacity-0 hover:text-foreground focus-visible:opacity-100 group-hover:opacity-100"
+                      >
+                        <X className="size-3.5" />
+                      </button>
+                    </div>
+                    {ranked && <TargetControls item={item} />}
                   </li>
                 ))}
               </ul>
@@ -84,8 +170,8 @@ export function RunPlanRail({ onSelect }: RunPlanRailProps) {
   const reset = usePlanner((s) => s.reset);
   const [shareLabel, setShareLabel] = useState<"idle" | "copied" | "failed">("idle");
 
-  const targeted = allItems.filter((it) => plan[it.id] === "targeted");
-  const avoided = allItems.filter((it) => plan[it.id] === "avoided");
+  const targeted = allItems.filter((it) => plan[it.id]?.state === "targeted");
+  const avoided = allItems.filter((it) => plan[it.id]?.state === "avoided");
   const total = targeted.length + avoided.length;
 
   const share = async () => {
@@ -130,8 +216,10 @@ export function RunPlanRail({ onSelect }: RunPlanRailProps) {
       {total === 0 && (
         <p className="text-xs leading-relaxed text-muted-foreground">
           Click a card to mark it <span className="text-emerald-400">targeted</span>, click again to{" "}
-          <span className="text-red-400">avoid</span> it, once more to clear. Your plan is saved
-          across refreshes.
+          <span className="text-red-400">avoid</span> it, once more to clear. Set{" "}
+          <span className="text-foreground">H/M/L priority</span> and a{" "}
+          <span className="text-foreground">goal count</span> on anything you target. Your plan is
+          saved across refreshes.
         </p>
       )}
 

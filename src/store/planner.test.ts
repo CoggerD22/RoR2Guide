@@ -1,0 +1,87 @@
+import { describe, expect, it } from "vitest";
+import { usePlanner, DEFAULT_PRIORITY, migratePlannerState } from "./planner";
+
+/**
+ * The v1→v2 migration is the risky part of PLAN §5.8b: plans live in localStorage, so
+ * a shape change without a migration silently wipes a run someone is mid-way through.
+ * It's exported as a pure function precisely so it can be tested without standing up
+ * the store or a localStorage shim.
+ */
+const migrate = migratePlannerState;
+
+describe("planner persistence migration", () => {
+  it("lifts a v1 plan (bare state strings) into the v2 entry shape", () => {
+    const v1 = { plan: { crowbar: "targeted", "tri-tip-dagger": "avoided" } };
+    expect(migrate(v1, 1)).toEqual({
+      plan: {
+        crowbar: { state: "targeted", priority: DEFAULT_PRIORITY },
+        "tri-tip-dagger": { state: "avoided", priority: DEFAULT_PRIORITY },
+      },
+    });
+  });
+
+  it("drops unrecognised v1 values instead of importing garbage", () => {
+    const v1 = { plan: { crowbar: "targeted", weird: "somethingElse" } };
+    expect(migrate(v1, 1)).toEqual({
+      plan: { crowbar: { state: "targeted", priority: DEFAULT_PRIORITY } },
+    });
+  });
+
+  it("passes a v2 plan through untouched", () => {
+    const v2 = { plan: { crowbar: { state: "targeted", priority: "high", goal: 3 } } };
+    expect(migrate(v2, 2)).toEqual(v2);
+  });
+
+  it("survives empty or missing persisted state", () => {
+    expect(migrate({}, 1)).toEqual({ plan: {} });
+    expect(migrate(undefined, 1)).toEqual({ plan: {} });
+  });
+});
+
+describe("planner actions", () => {
+  it("cycles neutral → targeted → avoided → neutral, keeping the default priority", () => {
+    usePlanner.getState().reset();
+    const { cycle } = usePlanner.getState();
+    cycle("crowbar");
+    expect(usePlanner.getState().plan.crowbar).toEqual({
+      state: "targeted",
+      priority: DEFAULT_PRIORITY,
+    });
+    cycle("crowbar");
+    expect(usePlanner.getState().plan.crowbar.state).toBe("avoided");
+    cycle("crowbar");
+    expect(usePlanner.getState().plan.crowbar).toBeUndefined();
+  });
+
+  it("preserves priority and goal when the state changes", () => {
+    usePlanner.getState().reset();
+    const s = usePlanner.getState();
+    s.cycle("crowbar");
+    s.setPriority("crowbar", "high");
+    s.setGoal("crowbar", 4);
+    s.cycle("crowbar"); // → avoided
+    const entry = usePlanner.getState().plan.crowbar;
+    expect(entry.state).toBe("avoided");
+    expect(entry.priority).toBe("high");
+    expect(entry.goal).toBe(4);
+  });
+
+  it("clamps goals to whole numbers ≥ 1 and clears on null", () => {
+    usePlanner.getState().reset();
+    const s = usePlanner.getState();
+    s.cycle("crowbar");
+    s.setGoal("crowbar", 0);
+    expect(usePlanner.getState().plan.crowbar.goal).toBe(1);
+    s.setGoal("crowbar", 3.7);
+    expect(usePlanner.getState().plan.crowbar.goal).toBe(3);
+    s.setGoal("crowbar", null);
+    expect(usePlanner.getState().plan.crowbar.goal).toBeUndefined();
+  });
+
+  it("ignores priority/goal changes for items not in the plan", () => {
+    usePlanner.getState().reset();
+    usePlanner.getState().setPriority("not-planned", "high");
+    usePlanner.getState().setGoal("not-planned", 2);
+    expect(usePlanner.getState().plan["not-planned"]).toBeUndefined();
+  });
+});
