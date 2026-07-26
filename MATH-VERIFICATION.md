@@ -690,3 +690,33 @@ double application much less likely to be a decompiler artifact.
 **41 / 212 code-verified.** Corrections so far: Tougher Times, Bandolier, Shrine of Blood,
 Stone Flux, Purity (missing effect), Elusive Antlers ×3, Hiker's Boots, Egocentrism,
 Zoea — roughly **one in five** of everything examined.
+
+### 3j.7 Formula prose is now audited — and a documented `base` convention
+
+Following §3j.6, the remaining non-linear formula strings were audited arithmetically.
+Most check out (Tougher Times, Old Guillotine, Meat Hook, Bandolier, Gesture, Stealthkit,
+Faulty Conductor, Light Flux, Neutronium Weight all reproduce their stated values). Two
+did not:
+
+| Item | Finding |
+|---|---|
+| **Safer Spaces** | `HealthComponent`: `15f × Mathf.Pow(0.9f, itemCount)` — the exponent applies from the **first** stack, so one stack recharges in **13.5s**, not the described 15s. `base` corrected 15 → 13.5. |
+| **Mercurial Rachis** | `16f × Mathf.Pow(1.5f, stack − 1)` → 16 / 24 / 36 / 54 m. Correct as recorded; citation added. |
+
+**`data:audit` now cross-checks formula prose against `base`.** Where a formula states a
+"<x> at 1 stack" value, it must agree with the recorded `base`. Verified to fire by
+deliberately corrupting Egocentrism's formula (`9s at 1 stack` vs `base 3`) and
+confirming the warning, then restoring.
+
+Building that check surfaced an **undocumented convention** that had been carried
+implicitly and is a genuine trap:
+
+- **Hyperbolic** `base` is the *amplification input*, not the displayed value — Tougher
+  Times stores `base: 15` and blocks **13.04%** at one stack. The divergence is the
+  point of the type, so the audit deliberately skips hyperbolic entries.
+- **Exponential / reciprocal / special** `base` is the *actual value at one stack*, which
+  is often **not** the number in the game's description (Safer Spaces 15 → 13.5,
+  Bandolier 18 → 20.4).
+
+Both are now written into `schema.ts` at the field definition, where the requirement is
+visible at the point of use rather than living in someone's memory. **42 / 212.**

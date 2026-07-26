@@ -32,11 +32,25 @@ export const stackingEntrySchema = z
     /** Human label for the stat, e.g. "Damage bonus", "Cooldown reduction". */
     stat: z.string().min(1),
     /**
-     * The per-stack numbers exactly as written in the in-game description
-     * (Crowbar: base 75, perStack 75). For LINEAR effects these fully describe
-     * the curve: value(n) = base + perStack*(n-1). For non-linear types the
-     * numbers are the game's displayed nominal and `formula` is authoritative
-     * (e.g. Tougher Times shows "15% (+15% per stack)" but is hyperbolic).
+     * For LINEAR effects these fully describe the curve:
+     *   value(n) = base + perStack*(n-1)
+     *
+     * For non-linear types `formula` is authoritative and `base` means different
+     * things by type — a distinction worth stating, because conflating them has
+     * already produced real bugs:
+     *
+     * - HYPERBOLIC: `base` is the **amplification input**, not the value a player
+     *   sees. Tougher Times stores base 15 and blocks **13.04%** at one stack
+     *   (`ConvertAmplificationPercentageIntoReductionPercentage(15n)`). The gap is
+     *   the entire point of the type. `data:audit` therefore skips hyperbolic when
+     *   cross-checking formula prose against `base`.
+     * - EXPONENTIAL / RECIPROCAL / SPECIAL: `base` is the **actual value at one
+     *   stack**, which is NOT always the number in the game's description —
+     *   Safer Spaces is described as "15 seconds" but recharges in 13.5s at one
+     *   stack, and Bandolier is described as 18% but rolls 20.4%.
+     *
+     * The in-game wording is preserved separately in `description`; where the two
+     * disagree, `formula` says so explicitly rather than silently overriding it.
      */
     base: z.number(),
     perStack: z.number(),

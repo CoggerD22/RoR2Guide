@@ -3950,7 +3950,7 @@
         "base": 16,
         "perStack": 50,
         "type": "exponential",
-        "formula": "radius increased 50% per stack (multiplicative)"
+        "formula": "radius = 16 x 1.5^(n-1) metres (RandomDamageZoneBodyBehavior: baseWardRadius 16, wardRadiusMultiplierPerStack 1.5). Exponential: 16m, 24m, 36m, 54m."
       }
     ],
     "tags": [
@@ -3960,7 +3960,7 @@
     "icon": "/icons/mercurial-rachis.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Mercurial_Rachis",
     "verified": true,
-    "confidence": "langfile"
+    "confidence": "code"
   },
   {
     "id": "stone-flux-pauldron",
@@ -4223,10 +4223,10 @@
     "stacking": [
       {
         "stat": "Recharge cooldown (s)",
-        "base": 15,
+        "base": 13.5,
         "perStack": -10,
         "type": "exponential",
-        "formula": "recharge = 15 × 0.9^stacks: 13.5s at 1 stack, 12.15s at 2, … (multiplicative, never reaches 0)"
+        "formula": "recharge = 15 x 0.9^n seconds, where n is the FULL item count (HealthComponent: AddTimedBuff(BearVoidCooldown, 15f * Mathf.Pow(0.9f, itemCountEffective))). Code-verified: 13.5s at 1, 12.15s at 2, 10.94s at 3, 9.84s at 4. Note the exponent applies from the very first stack, so one Safer Spaces already recharges in 13.5s - the in-game description (\"Recharges after 15 seconds (-10% per stack)\") reads as though a single stack were the full 15."
       }
     ],
     "tags": [

@@ -128,6 +128,36 @@ function main(): number {
     }
   }
 
+  // --- Formula prose vs the recorded base (PLAN §6A / MATH-VERIFICATION §3j.6) ---
+  // For NON-LINEAR entries the sparkline deliberately refuses to plot, so the formula
+  // STRING is the only thing the UI shows — it is data, not documentation. Two real
+  // bugs lived there undetected: Egocentrism/Zoea listed values from a different curve,
+  // and Safer Spaces' `base` (15) contradicted its own formula (13.5 at one stack).
+  // Heuristic, warn-only: if a formula states a "<x> at 1 stack" style value, it must
+  // agree with `base`.
+  //
+  // HYPERBOLIC is excluded by design. For those entries `base` is the *amplification
+  // input* fed to ConvertAmplificationPercentageIntoReductionPercentage, not the value
+  // the player sees: Tougher Times stores base 15 and blocks 13.04% at one stack. That
+  // divergence is the whole point of the type, so comparing the two is meaningless.
+  const ONE_STACK = /([0-9]+(?:\.[0-9]+)?)\s*(?:%|s|m)?\s*(?:at|@)\s*(?:1|one)\s*stack/i;
+  for (const it of items) {
+    for (const entry of it.stacking) {
+      if (entry.type !== "exponential" && entry.type !== "special" && entry.type !== "reciprocal") {
+        continue;
+      }
+      if (!entry.formula) continue;
+      const m = ONE_STACK.exec(entry.formula);
+      if (!m) continue;
+      const stated = Number(m[1]);
+      if (Number.isFinite(stated) && Math.abs(stated - entry.base) > 0.51) {
+        warnings.push(
+          `"${it.id}" (${entry.stat}): formula says ${stated} at 1 stack but base is ${entry.base}`,
+        );
+      }
+    }
+  }
+
   // --- Unlock gating vs the game's own defs (PLAN §6A.7) -------------------
   // An item the game gates but we show as free is false information by omission —
   // the player is told it's obtainable when it isn't. Verified against the chain
