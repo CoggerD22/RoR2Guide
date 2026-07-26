@@ -554,3 +554,39 @@ the planner's warning) is set **only where a single fixed number is genuinely tr
 Hiker's Boots gets the prose `cap` but no `capStacks`, because no single number is
 correct — a scaling ceiling asserted as a fixed one would be exactly the kind of
 confident-and-wrong claim this programme exists to prevent. **32 / 212 code-verified.**
+
+### 3j.3 Stone Flux Pauldron — the description is wrong, confirmed at IL level
+
+Recorded (from the description): *"Reduce movement speed by 50% (+50% per stack)."*
+The decompiled `RecalculateStats` adds the item count to the speed **divisor twice**:
+
+```csharp
+num99 += (float)num46;          // num46 = Stone Flux count
+...
+num99 += (float)num46 * 1f;
+num97 *= num98 / num99;         // speed = base × bonuses / penalties
+```
+
+Divisor `1 + 2n` gives **66.7%** slower at one stack, not 50%. Since `1 + n` would
+give exactly the described 50%, the duplicate looked like a decompiler artifact — and
+ILSpy *does* reuse local slots, which had already produced false attributions in the
+cap sweep (§3j.2). Guessing either way was unacceptable, so this was settled in **IL**:
+
+```
+IL_03ef: stloc.s 46          // ← the only non-zero store: HalfSpeedDoubleHealth count
+IL_11a6: ldloc.s 46 ; conv.r4 ; add ; stloc.s 112          // divisor += n
+IL_11e5: ldloc.s 46 ; conv.r4 ; ldc.r4 1 ; mul ; add       // divisor += n × 1
+```
+
+Local 46 is stored exactly twice — a zero-init and the item count — so it is **not** a
+reused slot, and both additions genuinely target the same divisor (local 112). The
+double application is real.
+
+Corrected to the code-verified curve (66.7% / 80% / 85.7% at 1 / 2 / 3 stacks), with the
+formula stating plainly that the in-game description disagrees. **33 / 212 code-verified.**
+
+**Method note:** when the C# reading and the description disagree *and* the discrepancy
+could plausibly be a decompiler artifact, the C# is not sufficient evidence. IL settles
+it, and it is cheap (`ilspycmd -il`). This is now the escalation path for any conflict
+of this shape — three of the corrections so far (Tougher Times, Bandolier, this) came
+from exactly the pattern "the description sounds right, the code says otherwise".

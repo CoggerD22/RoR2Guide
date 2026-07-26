@@ -3955,14 +3955,15 @@
         "stat": "Maximum health (%)",
         "base": 100,
         "perStack": 100,
-        "type": "linear"
+        "type": "linear",
+        "formula": "maxHealth multiplier += 1.0 x n (CharacterBody.RecalculateStats). Linear: +100% per stack, matching the description."
       },
       {
         "stat": "Movement speed reduction (%)",
-        "base": 50,
-        "perStack": -50,
+        "base": 66.7,
+        "perStack": 0,
         "type": "reciprocal",
-        "formula": "speed penalty stacks reciprocally, approaching but never reaching a full stop"
+        "formula": "moveSpeed x= 1/(1 + 2n) — the count is added to the speed divisor TWICE in RecalculateStats, confirmed at IL level (two separate `ldloc 46; add` into the divisor local; the local is stored only twice, a zero-init and the item count, so it is not a reused slot). Code-verified reduction: 66.7% at 1 stack, 80% at 2, 85.7% at 3. The in-game description says 50% (+50% per stack), which does not match the code."
       }
     ],
     "tags": [
@@ -3972,7 +3973,7 @@
     "icon": "/icons/stone-flux-pauldron.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Stone_Flux_Pauldron",
     "verified": true,
-    "confidence": "langfile"
+    "confidence": "code"
   },
   {
     "id": "light-flux-pauldron",

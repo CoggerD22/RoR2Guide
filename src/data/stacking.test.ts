@@ -60,3 +60,40 @@ describe("code-verified stacking values", () => {
     expect(a.confidence).toBe("code");
   });
 });
+
+describe("code-verified corrections where the game's own description is wrong", () => {
+  const byId2 = new Map(items.map((i) => [i.id, i]));
+
+  it("Stone Flux Pauldron slows by 66.7% at one stack, not the described 50%", () => {
+    const s = byId2.get("stone-flux-pauldron")!;
+    // RecalculateStats adds the item count to the speed DIVISOR twice — verified at IL
+    // level (two `ldloc 46; add` into the divisor; local 46 is stored only twice, a
+    // zero-init and the item count, so it is not a reused slot).
+    const speed = (n: number) => 1 / (1 + 2 * n);
+    expect((1 - speed(1)) * 100).toBeCloseTo(66.7, 1);
+    expect((1 - speed(2)) * 100).toBeCloseTo(80, 1);
+
+    const entry = s.stacking.find((e) => e.type === "reciprocal")!;
+    expect(entry.base).toBeCloseTo(66.7, 1);
+    expect(s.confidence).toBe("code");
+    // The game still says 50% — we quote it and flag the difference.
+    expect(s.description).toContain("50%");
+    expect(entry.formula).toMatch(/description says 50%/i);
+  });
+
+  it("Hiker's Boots' ceiling scales with stacks, so it carries no fixed capStacks", () => {
+    const h = byId2.get("hikers-boots")!;
+    const entry = h.stacking[0];
+    // GlobalEventManager: num = 10 * itemCountEffective — +10% at 1 stack, +20% at 2.
+    expect(entry.cap).toMatch(/10 x item count/i);
+    expect(entry.capStacks).toBeUndefined();
+    expect(h.confidence).toBe("code");
+  });
+
+  it("items with a fixed ceiling do carry capStacks, so the planner can warn", () => {
+    expect(byId2.get("focused-convergence")!.stacking.every((e) => e.capStacks === 3)).toBe(true);
+    expect(
+      byId2.get("lens-makers-glasses")!.stacking.some((e) => e.capStacks === 10),
+    ).toBe(true);
+  });
+});
