@@ -621,3 +621,35 @@ effective chance = 1 − (1 − p)^(1 + L)     for L > 0
 So a 10% proc becomes 19.0% with one Clover and 27.1% with two — and drops to ~1% with
 one Purity. This is precisely the "marginal value of the next stack" arithmetic §5.8b
 Part 2 calls for: objective, derived, and stated with its assumptions. **38 / 212.**
+
+### 3j.5 Elusive Antlers — three errors in a single item
+
+The worst record found so far, and a good argument for checking every entry rather than
+spot-checking an item and moving on.
+
+| Entry | Recorded | Code / prefab |
+|---|---|---|
+| Orb spawn interval | "reduced 10% per stack (multiplicative), min 2s" → 10, **9**, 8.1 | `10 − (1 − 3/(n+2))·8` → 10, **8**, 6.8, 6, asymptotic to 2s |
+| Max orbs | 3 (+3/stack) ✅ | `GetElusiveAntlersCurrentMaxStack`: `3 + 3(n−1)` |
+| Speed per orb | 12%, flat ✅ | `RecalculateStats`: `num98 += 0.12f × buffCount` |
+| **Barrier per orb** | **absent** | prefab: `10 + 7(n−1)` |
+
+Two things worth separating out:
+
+**The interval was wrong at every stack above one.** "10% multiplicative" is a plausible
+*shape* — it is how several other RoR2 items behave — which is exactly why it survived:
+a wrong model that looks like a familiar one is far harder to notice than a wrong number.
+
+**The barrier is a second Purity-class omission** (§3j.4): an effect the dataset simply
+did not have, and one the in-game description never mentions either. It only surfaced by
+reading the pickup prefab. Note the escalation this required — code gave the *shape*
+(`baseBarrierAmount + additionalBarrierAmountPerAdditionalItemStack × (n−1)`) but the
+*values* live in the asset, exactly as §5.0.2 says: **code for the formula, prefab for
+the constants; neither alone is sufficient.**
+
+One discrepancy is recorded but not "corrected", because it is the game's own text that
+disagrees: the description says the speed buff lasts **12s**, while the prefab sets
+`shardPickupBuffTimeSeconds = 7.0` (single component instance, verified). The verified
+7s is stated in the formula; the description is still quoted verbatim.
+
+**39 / 212 code-verified.**

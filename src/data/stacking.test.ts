@@ -134,3 +134,38 @@ describe("luck — the shared mechanic behind 57 Leaf Clover and Purity", () => 
     expect(purity.stacking.some((s) => /luck/i.test(s.stat))).toBe(true);
   });
 });
+
+describe("Elusive Antlers — three separate errors in one item", () => {
+  const antlers = items.find((i) => i.id === "elusive-antlers")!;
+
+  it("spawn interval is hyperbolic, not -10% per stack", () => {
+    // ElusiveAntlersBehavior: spawnTimer = 10f - (1f - 3f/(3f + n - 1f)) * 8f
+    const interval = (n: number) => 10 - (1 - 3 / (n + 2)) * 8;
+    expect(interval(1)).toBeCloseTo(10, 5);
+    expect(interval(2)).toBeCloseTo(8, 5); // the old "-10%/stack" model said 9s
+    expect(interval(3)).toBeCloseTo(6.8, 5);
+    expect(interval(1000)).toBeGreaterThan(2); // asymptotic, never reaches 2s
+
+    const entry = antlers.stacking.find((s) => /interval/i.test(s.stat))!;
+    expect(entry.formula).toMatch(/10 - \(1 - 3\/\(n\+2\)\) x 8/);
+  });
+
+  it("records the barrier effect the in-game description omits entirely", () => {
+    // ElusiveAntlersPickup prefab: baseBarrierAmount 10, +7 per additional stack.
+    const barrier = antlers.stacking.find((s) => /barrier/i.test(s.stat));
+    expect(barrier, "barrier effect must be recorded").toBeDefined();
+    expect(barrier!.base).toBe(10);
+    expect(barrier!.perStack).toBe(7);
+    expect(antlers.description).not.toMatch(/barrier/i); // the game never mentions it
+  });
+
+  it("max orbs is 3 per stack and speed per orb is flat 12%", () => {
+    // GetElusiveAntlersCurrentMaxStack: 3 + 3(n-1); RecalculateStats: 0.12f * buffCount
+    const orbs = antlers.stacking.find((s) => /orbs/i.test(s.stat) && s.type === "linear")!;
+    expect(orbs.base).toBe(3);
+    expect(orbs.perStack).toBe(3);
+    const speed = antlers.stacking.find((s) => s.type === "none")!;
+    expect(speed.base).toBe(12);
+    expect(speed.formula).toMatch(/7s/); // prefab says the buff lasts 7s, not the described 12s
+  });
+});
