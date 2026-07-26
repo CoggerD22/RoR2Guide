@@ -38,3 +38,7 @@ pnpm-debug.log*
 tools/**/bin/
 tools/**/obj/
 proc-dump.csv
+
+# Personal Claude Code overrides (machine-specific permission posture).
+# Never commit: this repo is public and settings.local.json can relax permissions.
+.claude/settings.local.json
