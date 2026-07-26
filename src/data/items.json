@@ -3621,14 +3621,15 @@
         "stat": "Healing bonus (%)",
         "base": 100,
         "perStack": 100,
-        "type": "linear"
+        "type": "linear",
+        "formula": "healing stored = amount x (1 + n) (HealthComponent.repeatHealComponent.AddReserve). Linear: +100% per stack."
       },
       {
         "stat": "Max heal per second (% of health)",
         "base": 10,
         "perStack": -50,
         "type": "reciprocal",
-        "formula": "heal-per-second cap divides reciprocally: 10% at 1 stack, ~6.7% at 2, 5% at 3, …"
+        "formula": "restore rate = 0.1 / n of max health per second (HealthComponent). Reciprocal, so MORE stacks heal SLOWER: 10%/s at 1 stack, 5% at 2, 3.3% at 3, 2.5% at 4."
       }
     ],
     "tags": [
@@ -3637,7 +3638,7 @@
     "icon": "/icons/corpsebloom.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Corpsebloom",
     "verified": true,
-    "confidence": "langfile"
+    "confidence": "code"
   },
   {
     "id": "gesture-of-the-drowned",
@@ -3652,7 +3653,7 @@
         "base": 50,
         "perStack": 15,
         "type": "exponential",
-        "formula": "cooldown = base x 0.5 x 0.85^(stacks-1) (multiplicative)"
+        "formula": "cooldownScale = 0.5 x 0.85^(n-1) (Inventory.CalculateEquipmentCooldownScale). Code-verified: -50% at 1 stack, then a further -15% per extra stack."
       }
     ],
     "tags": [
@@ -3666,7 +3667,7 @@
     "icon": "/icons/gesture-of-the-drowned.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Gesture_of_the_Drowned",
     "verified": true,
-    "confidence": "langfile"
+    "confidence": "code"
   },
   {
     "id": "purity",
@@ -4071,25 +4072,28 @@
         "base": 30,
         "perStack": 10,
         "type": "exponential",
-        "formula": "each stat penalty stacks multiplicatively (-10% per stack)"
+        "formula": "multiplier = 0.7 x 0.9^(n-1) (CharacterBody.RecalculateStats, TransferDebuffOnHit buff). Code-verified: -30% at 1 stack, then a further -10% per extra stack."
       },
       {
         "stat": "Attack speed reduction (%)",
         "base": 30,
         "perStack": 10,
-        "type": "exponential"
+        "type": "exponential",
+        "formula": "multiplier = 0.7 x 0.9^(n-1) (CharacterBody.RecalculateStats, TransferDebuffOnHit buff). Code-verified: -30% at 1 stack, then a further -10% per extra stack."
       },
       {
         "stat": "Movement speed reduction (%)",
         "base": 30,
         "perStack": 10,
-        "type": "exponential"
+        "type": "exponential",
+        "formula": "multiplier = 0.7 x 0.9^(n-1) (CharacterBody.RecalculateStats, TransferDebuffOnHit buff). Code-verified: -30% at 1 stack, then a further -10% per extra stack."
       },
       {
         "stat": "Armor reduction",
         "base": 35,
         "perStack": 15,
-        "type": "linear"
+        "type": "linear",
+        "formula": "armor reduction = 35 + 15(n-1) (CharacterBody.RecalculateStats). Linear."
       }
     ],
     "tags": [
@@ -4098,7 +4102,7 @@
     "icon": "/icons/neutronium-weight.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Neutronium_Weight",
     "verified": true,
-    "confidence": "langfile"
+    "confidence": "code"
   },
   {
     "id": "eulogy-zero",
@@ -4353,7 +4357,7 @@
         "base": 5,
         "perStack": 5,
         "type": "hyperbolic",
-        "formula": "proc chance stacks hyperbolically, approaching but never reaching 100%"
+        "formula": "chance = ConvertAmplificationPercentageIntoReductionPercentage(5n x procCoefficient) (GlobalEventManager). Hyperbolic: approaches but never reaches 100%."
       },
       {
         "stat": "Root duration (s)",
@@ -4373,7 +4377,7 @@
     "icon": "/icons/tentabauble.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Tentabauble",
     "verified": true,
-    "confidence": "langfile"
+    "confidence": "code"
   },
   {
     "id": "singularity-band",

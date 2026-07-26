@@ -311,6 +311,13 @@ export interface ShrineRef {
    * then the UI must present this as a quote, never as "the mechanic".
    */
   description: string;
+  /**
+   * The VERIFIED mechanic — code formula + prefab constants (PLAN §5.0.4). This is the
+   * layer the in-game description often omits, and it is the one the UI presents as
+   * fact. Absent until that shrine has been traced; absent means "not yet verified",
+   * never "nothing more to say".
+   */
+  mechanic?: string;
 }
 
 /**
@@ -331,8 +338,17 @@ export const SHRINES: ShrineRef[] = [
   },
   {
     name: "Shrine of Blood",
-    cost: "A percentage of current health",
+    cost: "50% → 75% → 93.75% of max health",
     description: "When activated by a survivor the Shrine of Blood consumes a percentage of the survivors health in exchange for gold equal to half the amount of HP taken.",
+    // ShrineBloodBehavior (code) + the shrineblood prefab (constants):
+    //   maxPurchaseCount = 3, goldToPaidHpRatio = 0.5, costMultiplierPerPurchase = 2,
+    //   PurchaseInteraction.cost = 50, costType = PercentHealth
+    //   Networkcost = 100 * (1 - (1 - cost/100)^costMultiplierPerPurchase)
+    mechanic:
+      "Costs a percentage of MAXIMUM health, and that cost compounds after each use: " +
+      "50%, then 75%, then 93.75%. Limited to 3 uses, after which the shrine is spent. " +
+      "Gold gained is half the health paid — 25%, 37.5%, then 46.9% of your max health " +
+      "converted to gold. The in-game description mentions neither the escalation nor the cap.",
   },
   {
     name: "Shrine of Combat",

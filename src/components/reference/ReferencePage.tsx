@@ -117,6 +117,18 @@ function Shrines() {
           <p className="mt-1 text-[10px] uppercase tracking-widest text-muted-foreground/70">
             In-game description
           </p>
+          {/*
+            The verified layer, shown separately and given the visual weight — this is
+            the fact, while the quote above is only what the game says (PLAN §5.0.4).
+          */}
+          {s.mechanic && (
+            <div className="mt-3 rounded-lg border border-emerald-400/25 bg-emerald-400/5 p-3">
+              <p className="mb-1 text-[10px] font-semibold uppercase tracking-widest text-emerald-300/90">
+                Verified mechanic — from game code + prefab values
+              </p>
+              <p className="text-sm leading-relaxed text-foreground/90">{s.mechanic}</p>
+            </div>
+          )}
         </div>
       ))}
     </div>

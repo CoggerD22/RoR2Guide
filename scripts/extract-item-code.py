@@ -50,12 +50,25 @@ def main():
         sys.exit("Missing .gamedata/itemdefs.json — run extract-itemdefs.py first")
     defs = json.load(open(defs_path, encoding="utf-8"))
 
-    # display name -> cachedName (the token the code uses: RoR2Content.Items.<cachedName>)
+    # display name -> cachedName (the token the code uses: RoR2Content.Items.<cachedName>).
+    #
+    # Keyed by (kind, name), NOT name alone: "Faulty Conductor" exists as BOTH a Boss
+    # item (ShockDamageAura) and a drone equipment (DroneShockDamage). A name-only map
+    # silently resolves one to the other's code, which would "verify" an item against
+    # the wrong implementation — the exact failure data:roster already had to fix.
+    # Unlocalized internal defs all share the name "?" and are skipped for the same
+    # reason (~50 of them would collapse onto one key).
     name_to_def = {}
     for kind in ("items", "equipment"):
         for d in defs.get(kind, []):
-            if d.get("name") and d.get("cachedName"):
-                name_to_def[d["name"]] = d["cachedName"]
+            if d.get("name") and d.get("cachedName") and d["name"] != "?":
+                name_to_def[(kind, d["name"])] = d["cachedName"]
+
+    def resolve_def(item):
+        """Match an items.json entry to the game def OF ITS OWN KIND."""
+        kind = "equipment" if item["tier"] in ("equipment", "lunar-equipment") else "items"
+        return name_to_def.get((kind, item["name"])) or name_to_def.get(
+            ("items" if kind == "equipment" else "equipment", item["name"]))
 
     items = json.load(open(os.path.join(ROOT, "src/data/items.json"), encoding="utf-8"))
 
@@ -77,7 +90,7 @@ def main():
     no_def = []
     no_sites = []
     for item in items:
-        cached = name_to_def.get(item["name"])
+        cached = resolve_def(item)
         if not cached:
             no_def.append(item["name"])
             continue

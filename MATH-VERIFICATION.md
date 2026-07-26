@@ -258,6 +258,16 @@ and prefabs. All correct as written; no corrections needed.
   `costType = PercentHealth` (extracted from ror2-base-shrineblood bundle). Exactly 50%.
 Remaining shrine copy is intentionally qualitative prose (no hard numbers to verify).
 
+> **CORRECTION (see §3j).** The two claims above are wrong, and the error is
+> instructive. "Exactly 50%" is only the **first** purchase: `ShrineBloodBehavior`
+> recomputes the cost after every use via
+> `Networkcost = 100 · (1 − (1 − cost/100)^costMultiplierPerPurchase)`, and the prefab
+> sets `costMultiplierPerPurchase = 2`, `maxPurchaseCount = 3` — so the real sequence is
+> **50% → 75% → 93.75% of MAX health, capped at 3 uses**. And "no hard numbers to
+> verify" was false: the numbers were in the prefab all along, just not looked for.
+> Reading one field (`cost`) and stopping is how a partial check becomes a confident
+> wrong answer.
+
 ## 3e. Phase 6 (provenance) — done
 
 Every item/survivor record now carries a `confidence` tag (code > asset > langfile
@@ -410,3 +420,57 @@ Bands — were already exact. `data:roster` now fails on any corruption drift (t
 
 `Phase 0` → `Phase 1` (biggest correctness win) → `Phase 3` (cheap, feeds the engine)
 → `Phase 2` (rebuild engine to code) → `Phase 4` (empirical lock) → `Phase 5` → `Phase 6`.
+
+## 3j. Code-verifying item stacking — the 192 (PLAN §6A)
+
+The `verified: true` flag on all 212 items was never the guarantee it read as. Splitting
+it by what was actually checked: **20 `code`** (numbers and curve traced to decompiled
+C#) versus **192 `langfile`** (numbers *and stacking curve* read out of the description
+prose). `data:diff`'s "0 numeric mismatches" compares items.json to the language file,
+so it proves transcription, not truth — a circular check.
+
+**Tooling.** `scripts/extract-item-code.py`. Every item effect is gated on reading its
+count — `GetItemCountEffective(RoR2Content.Items.<X>)` — so the reference sites are
+exactly where the curve lives. 204/212 items resolve to code (449 sites); the other 8
+implement their effect in a prefab behaviour with no direct count read.
+
+It deliberately does **not** infer curves by regex. A pattern guessing at arithmetic
+produces precisely the plausible-but-unchecked answer this whole effort exists to
+remove. It extracts evidence; a human classifies.
+
+Two traps found while building it, both now handled:
+- **Second hop.** Many items read their count into a local or an `ItemCounts` field and
+  apply it much later (Alien Head → `num16` → `cooldown *= 0.75f` 700 lines on;
+  Corpsebloom → `itemCounts.repeatHeal`). The reference site alone shows nothing.
+- **Name collision.** "Faulty Conductor" is *both* a Boss item (`ShockDamageAura`) and a
+  drone equipment (`DroneShockDamage`). A name-keyed map silently verifies one against
+  the other's implementation. Now keyed by `(kind, name)` — the same bug `data:roster`
+  had to fix earlier.
+
+### Corrections found
+
+| Item | Recorded | Code says |
+|---|---|---|
+| **Bandolier** | 18% at 1 stack (from the description) | `(1 − 1/(n+1)^0.33)·100` → **20.4%** (30.4 / 36.7 / 54.7 at 2 / 3 / 10) |
+| **Shrine of Blood** | "Exactly 50%" (§3d) | **50% → 75% → 93.75%** of max HP, **capped at 3 uses** |
+
+### Verified this pass (langfile → code)
+
+| Item | Evidence |
+|---|---|
+| Crowbar | `HealthComponent`: `num4 *= 1f + 0.75f·n`, gated on `num >= fullCombinedHealth * 0.9f` |
+| Fuel Cell | `Inventory`: charges `1 + n`; `CalculateEquipmentCooldownScale` `Mathf.Pow(0.85f, n)` |
+| Alien Head | `CharacterBody.RecalculateStats`: `cooldown *= 0.75f` per stack |
+| Bandolier | `GlobalEventManager`: formula above |
+| Gesture of the Drowned | `Inventory`: `0.5f · Mathf.Pow(0.85f, n−1)` |
+| Tentabauble | `GlobalEventManager`: `ConvertAmplificationPercentageIntoReductionPercentage(5n · procCoefficient)` |
+| Corpsebloom | `HealthComponent`: reserve `amount · (1 + n)`; restore rate `0.1f / n` — reciprocal, so more stacks heal **slower** |
+| Neutronium Weight | `CharacterBody.RecalculateStats`: `0.7f · Mathf.Pow(0.9f, n−1)`; armor `35 + 15(n−1)` |
+
+**28 / 212 code-verified.** The remaining 184 are honestly labelled `langfile`, which now
+means "transcribed correctly, curve unconfirmed" rather than "verified".
+
+Sequencing is by blast radius (PLAN §6A.4): non-linear curves first, because the
+sparkline only auto-plots `linear` entries and non-linear ones rely on their `formula`
+string — a wrong curve there is a wrong claim with nothing to correct it. Two of the
+first handful examined were wrong, so the expectation is that more remain.
