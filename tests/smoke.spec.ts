@@ -325,9 +325,30 @@ test("locked items show how to unlock and can be filtered", async ({ page }) => 
 
   // "Locked only" keeps locked items and drops unlocked ones (Bison Steak is free).
   await page.goto("/items");
-  await page.getByRole("checkbox", { name: "Locked only" }).check();
+  await page.getByRole("checkbox", { name: "Challenge-locked only" }).check();
   await expect(page.getByRole("button", { name: /Fuel Cell/ })).toBeVisible();
   await expect(page.getByRole("button", { name: /Bison Steak/ })).toHaveCount(0);
+});
+
+test("every challenge-locked item renders a lock, across all tiers", async ({ page }) => {
+  await page.goto("/items");
+  // Reported missing in real use. Both are code-verified as gated, and they sit in
+  // tiers (lunar / legendary) whose card styling differs from the commons — so this
+  // pins that the lock isn't lost for a subset of tiers.
+  for (const { name, challenge } of [
+    { name: "Gesture of the Drowned", challenge: "The Demons And The Crabs" },
+    { name: "N'kuhana's Opinion", challenge: "Her Concepts" },
+    { name: "Crowbar", challenge: "The Basics" },
+  ]) {
+    await expect(
+      page.getByLabel(`Locked behind challenge: ${challenge}`),
+      `${name} should show a lock badge`,
+    ).toHaveCount(1);
+  }
+
+  // Count check: the number of lock badges equals the number of locked items shown.
+  const locks = await page.getByLabel(/^Locked behind challenge:/).count();
+  expect(locks).toBeGreaterThan(30);
 });
 
 test("locked items surface their unlock in the planner and on hover", async ({ page }) => {

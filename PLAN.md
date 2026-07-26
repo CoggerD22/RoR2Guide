@@ -558,6 +558,20 @@ the card tooltip that did carry it. Both surfaces now state the full requirement
 The lesson generalises: **correct-but-unfindable is indistinguishable from missing**,
 so lock work is judged by whether a player can answer "how do I get this?" unaided.
 
+**Reported a second time** — Gesture of the Drowned and N'kuhana's Opinion "have no
+lock symbol". They did: a Playwright check confirms both render one, across tiers. But
+a marker reported as absent *twice by a user who knows the game* is a failed marker, so
+the treatment was rebuilt rather than defended:
+- The badge was a **12px faint amber outline** at grid density across 212 cards. It is
+  now a solid amber disc — readable at a glance, and it doesn't touch the card border,
+  because tier colour is reserved for item identity (design tokens).
+- **A legend was added.** A symbol nobody can decode is the same as no symbol.
+- **Wording corrected, and this is a truth issue, not a style one:** the site says
+  *"Unlocked by <challenge>"*, never *"Locked"*. It cannot know what **this player**
+  has earned — only that the item is challenge-gated in general. Saying "Locked"
+  asserts something about someone's save file that we have no basis for. The filter is
+  likewise "Challenge-locked only".
+
 Remaining, to strengthen the *visual* language:
 a clearly distinct treatment for locked cards (dimmed/desaturated art with the lock
 overlaid, in the spirit of the in-game logbook), a legend so the state is

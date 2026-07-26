@@ -44,10 +44,14 @@ export function PlannerCard({ item, state, onCycle, onInfo }: PlannerCardProps) 
         */}
         {item.unlock && (
           <span
-            className="pointer-events-none absolute bottom-1.5 left-1.5 rounded-full bg-black/50 p-0.5 text-amber-400/80"
-            title={`Locked — ${item.unlock.challenge}${item.unlock.requirement ? `: ${item.unlock.requirement}` : ""}`}
+            className="pointer-events-none absolute bottom-1 left-1 flex size-5 items-center justify-center rounded-full bg-amber-400 text-black shadow-sm ring-1 ring-black/30"
+            title={`Unlocked by ${item.unlock.challenge}${item.unlock.requirement ? ` — ${item.unlock.requirement}` : ""}`}
           >
-            <Lock className="size-3" aria-label={`Locked behind challenge: ${item.unlock.challenge}`} />
+            <Lock
+              className="size-3"
+              strokeWidth={2.5}
+              aria-label={`Locked behind challenge: ${item.unlock.challenge}`}
+            />
           </span>
         )}
       </button>

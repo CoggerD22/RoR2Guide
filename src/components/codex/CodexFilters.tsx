@@ -1,5 +1,5 @@
 import { useState, type ReactNode } from "react";
-import { Search, X, SlidersHorizontal, ChevronDown } from "lucide-react";
+import { Search, X, SlidersHorizontal, ChevronDown, Lock } from "lucide-react";
 import type { Tier, Dlc, StackingType } from "@/data/schema";
 import { PRESENT_TIERS, TIER_META, DLC_ORDER, DLC_META, ALL_TAGS } from "@/data/items";
 import { stackingLabel } from "@/lib/stacking";
@@ -168,8 +168,19 @@ export function CodexFilters(props: CodexFiltersProps) {
               onChange={props.onToggleLockedOnly}
               className="size-3.5 accent-[var(--color-primary)]"
             />
-            Locked only
+            Challenge-locked only
           </label>
+          {/*
+            Legend (PLAN §5.8). The badge was reported as unnoticed twice; a symbol
+            nobody can decode is the same as no symbol. "Unlocked by" — not "locked" —
+            because the site knows the item is gated, not what this player has earned.
+          */}
+          <span className="flex items-center gap-1.5 text-xs text-muted-foreground">
+            <span className="flex size-4 items-center justify-center rounded-full bg-amber-400 text-black">
+              <Lock className="size-2.5" strokeWidth={2.5} />
+            </span>
+            = unlocked by a challenge; hover a card for how
+          </span>
         </div>
         {(props.anyFilter || props.query) && (
           <button
