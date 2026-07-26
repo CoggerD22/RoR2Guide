@@ -28,9 +28,22 @@ export interface PlanEntry {
   goal?: number;
 }
 
+/**
+ * How the rail is rendered (PLAN §5.8c).
+ * - `plan` — full editing affordances, for building a plan before a run.
+ * - `run`  — read-only and dense, for glancing at mid-run with a game in the way.
+ */
+export type RailMode = "plan" | "run";
+
 interface PlannerState {
   /** itemId → entry. Absent means neutral. */
   plan: Record<string, PlanEntry>;
+  /**
+   * A UI preference, deliberately NOT part of `plan`: it must never travel in a share
+   * link, and importing someone else's plan must not change how you view yours.
+   */
+  railMode: RailMode;
+  setRailMode: (mode: RailMode) => void;
   /** Cycle neutral → targeted → avoided → neutral (unchanged muscle memory). */
   cycle: (id: string) => void;
   /** Set (or clear, with null) a specific state, preserving priority/goal. */
@@ -70,6 +83,8 @@ export const usePlanner = create<PlannerState>()(
   persist(
     (set) => ({
       plan: {},
+      railMode: "plan",
+      setRailMode: (railMode) => set({ railMode }),
       cycle: (id) =>
         set((s) => {
           const next = { ...s.plan };

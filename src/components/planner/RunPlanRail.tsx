@@ -112,11 +112,13 @@ function PlanSection({
   list,
   state,
   onSelect,
+  runMode,
 }: {
   title: string;
   list: Item[];
   state: PlanState;
   onSelect: (item: Item) => void;
+  runMode: boolean;
 }) {
   const set = usePlanner((s) => s.set);
   const setPriority = usePlanner((s) => s.setPriority);
@@ -178,7 +180,19 @@ function PlanSection({
                         <span className="truncate text-xs text-foreground">{item.name}</span>
                       </button>
 
-                      {ranked && <GoalField item={item} goal={entry?.goal} />}
+                      {/* Run mode is read-only: the goal is plain text, not a control.
+                          Mid-run you are reading, and an editable affordance is both
+                          noise and an accidental-edit risk (PLAN §5.8c). */}
+                      {ranked &&
+                        (runMode ? (
+                          entry?.goal ? (
+                            <span className="shrink-0 px-1 text-[11px] tabular-nums text-muted-foreground">
+                              ×{entry.goal}
+                            </span>
+                          ) : null
+                        ) : (
+                          <GoalField item={item} goal={entry?.goal} />
+                        ))}
 
                       {/* Objective, not advice: past the cap an extra copy does nothing.
                           Stated as the ceiling, never as "take N" — see PLAN §5.9.
@@ -192,7 +206,7 @@ function PlanSection({
                         </span>
                       )}
 
-                      {ranked && entry && (
+                      {!runMode && ranked && entry && (
                         <button
                           type="button"
                           onClick={() => setPriority(item.id, NEXT_PRIORITY[entry.priority])}
@@ -203,14 +217,16 @@ function PlanSection({
                         </button>
                       )}
 
-                      <button
-                        type="button"
-                        onClick={() => set(item.id, null)}
-                        aria-label={`Remove ${item.name} from plan`}
-                        className="shrink-0 rounded p-0.5 text-muted-foreground opacity-0 hover:text-foreground focus-visible:opacity-100 group-hover:opacity-100"
-                      >
-                        <X className="size-3.5" />
-                      </button>
+                      {!runMode && (
+                        <button
+                          type="button"
+                          onClick={() => set(item.id, null)}
+                          aria-label={`Remove ${item.name} from plan`}
+                          className="shrink-0 rounded p-0.5 text-muted-foreground opacity-0 hover:text-foreground focus-visible:opacity-100 group-hover:opacity-100"
+                        >
+                          <X className="size-3.5" />
+                        </button>
+                      )}
                     </li>
                   );
                 })}
@@ -226,7 +242,10 @@ function PlanSection({
 export function RunPlanRail({ onSelect }: RunPlanRailProps) {
   const plan = usePlanner((s) => s.plan);
   const reset = usePlanner((s) => s.reset);
+  const railMode = usePlanner((s) => s.railMode);
+  const setRailMode = usePlanner((s) => s.setRailMode);
   const [shareLabel, setShareLabel] = useState<"idle" | "copied" | "failed">("idle");
+  const runMode = railMode === "run";
 
   const targeted = allItems.filter((it) => plan[it.id]?.state === "targeted");
   const avoided = allItems.filter((it) => plan[it.id]?.state === "avoided");
@@ -252,6 +271,35 @@ export function RunPlanRail({ onSelect }: RunPlanRailProps) {
           Run Plan
         </h2>
         <div className="flex items-center gap-3">
+          {/*
+            Plan / Run (PLAN §5.8c). Run mode strips every editing affordance: mid-run
+            you are reading with a game in the way, and a control you might hit by
+            accident is worse than no control. The choice persists, since a player who
+            switches to Run mode wants it to still be there next session.
+          */}
+          <div className="flex overflow-hidden rounded border border-border text-[10px]">
+            {(["plan", "run"] as const).map((m) => (
+              <button
+                key={m}
+                type="button"
+                onClick={() => setRailMode(m)}
+                aria-pressed={railMode === m}
+                title={
+                  m === "plan"
+                    ? "Plan mode — full editing"
+                    : "Run mode — read-only, for glancing at mid-run"
+                }
+                className={cn(
+                  "px-1.5 py-0.5 font-medium capitalize transition-colors",
+                  railMode === m
+                    ? "bg-primary/20 text-foreground"
+                    : "text-muted-foreground hover:text-foreground",
+                )}
+              >
+                {m}
+              </button>
+            ))}
+          </div>
           <button
             type="button"
             onClick={share}
@@ -265,14 +313,16 @@ export function RunPlanRail({ onSelect }: RunPlanRailProps) {
             {shareLabel === "copied" ? <Check className="size-3.5" /> : <Link2 className="size-3.5" />}
             {shareLabel === "copied" ? "Copied!" : shareLabel === "failed" ? "Copy failed" : "Copy link"}
           </button>
-          <button
-            type="button"
-            onClick={reset}
-            disabled={total === 0}
-            className="inline-flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground disabled:opacity-40"
-          >
-            <RotateCcw className="size-3.5" /> New run
-          </button>
+          {!runMode && (
+            <button
+              type="button"
+              onClick={reset}
+              disabled={total === 0}
+              className="inline-flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground disabled:opacity-40"
+            >
+              <RotateCcw className="size-3.5" /> New run
+            </button>
+          )}
         </div>
       </div>
 
@@ -286,8 +336,8 @@ export function RunPlanRail({ onSelect }: RunPlanRailProps) {
         </p>
       )}
 
-      <PlanSection title="Targeted" list={targeted} state="targeted" onSelect={onSelect} />
-      <PlanSection title="Avoided" list={avoided} state="avoided" onSelect={onSelect} />
+      <PlanSection title="Targeted" list={targeted} state="targeted" onSelect={onSelect} runMode={runMode} />
+      <PlanSection title="Avoided" list={avoided} state="avoided" onSelect={onSelect} runMode={runMode} />
     </aside>
   );
 }

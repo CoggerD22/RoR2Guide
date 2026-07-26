@@ -78,6 +78,17 @@ describe("planner actions", () => {
     expect(usePlanner.getState().plan.crowbar.goal).toBeUndefined();
   });
 
+  it("keeps railMode out of the plan, so it never travels in a share link", () => {
+    usePlanner.getState().reset();
+    usePlanner.getState().setRailMode("run");
+    // The mode is a view preference. If it leaked into `plan`, importing someone
+    // else’s shared plan would silently change how you view your own.
+    expect(usePlanner.getState().railMode).toBe("run");
+    expect(Object.keys(usePlanner.getState().plan)).toHaveLength(0);
+    usePlanner.getState().importPlan({ crowbar: { state: "targeted", priority: "high" } });
+    expect(usePlanner.getState().railMode).toBe("run");
+  });
+
   it("ignores priority/goal changes for items not in the plan", () => {
     usePlanner.getState().reset();
     usePlanner.getState().setPriority("not-planned", "high");

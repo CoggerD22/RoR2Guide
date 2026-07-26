@@ -481,6 +481,35 @@ test("a long run plan stays reachable — the rail scrolls instead of overflowin
   expect(scrolled.scrollTop, "rail must scroll internally").toBeGreaterThan(0);
 });
 
+test("Run mode is read-only and persists; Plan mode keeps the controls", async ({ page }) => {
+  await page.goto("/planner?t=soldiers-syringe!h*4,crowbar&a=tri-tip-dagger");
+  const rail = page.getByRole("complementary");
+
+  // Plan mode: the editing affordances exist.
+  await expect(rail.getByRole("button", { name: /Priority for Soldier.s Syringe/ })).toHaveCount(1);
+  await expect(rail.getByRole("button", { name: /New run/ })).toHaveCount(1);
+
+  await rail.getByRole("button", { name: "run", exact: true }).click();
+
+  // Run mode: every editing affordance is gone. Mid-run a control you can hit by
+  // accident is worse than no control (PLAN §5.8c).
+  await expect(rail.getByRole("button", { name: /Priority for/ })).toHaveCount(0);
+  await expect(rail.getByRole("button", { name: /Remove/ })).toHaveCount(0);
+  await expect(rail.getByRole("button", { name: /goal/i })).toHaveCount(0);
+  await expect(rail.getByRole("button", { name: /New run/ })).toHaveCount(0);
+
+  // …but the information survives: items, goals and priority order are all still shown.
+  await expect(rail.getByText("Soldier's Syringe")).toBeVisible();
+  await expect(rail.getByText("×4")).toBeVisible();
+  await expect(rail.getByText("Tri-Tip Dagger")).toBeVisible();
+
+  // The choice sticks — someone who switches to Run mode wants it next session too.
+  await page.reload();
+  await expect(
+    page.getByRole("complementary").getByRole("button", { name: "run", exact: true }),
+  ).toHaveAttribute("aria-pressed", "true");
+});
+
 test("shared links carry priority and goal, and old links still work", async ({ page }) => {
   // New-format link.
   await page.goto("/planner?t=soldiers-syringe!h*4,crowbar!l");
