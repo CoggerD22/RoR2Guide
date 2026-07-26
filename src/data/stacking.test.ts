@@ -97,3 +97,40 @@ describe("code-verified corrections where the game's own description is wrong", 
     ).toBe(true);
   });
 });
+
+describe("luck — the shared mechanic behind 57 Leaf Clover and Purity", () => {
+  const byId3 = new Map(items.map((i) => [i.id, i]));
+
+  // Util.CheckRoll: rolls 1 + ceil(|luck|) times, keeping Mathf.Min (best) when luck
+  // is positive and Mathf.Max (worst) when negative.
+  const effective = (p: number, luck: number) =>
+    luck >= 0 ? 1 - Math.pow(1 - p, 1 + luck) : Math.pow(p, 1 - luck);
+
+  it("positive luck is best-of-N: a 10% proc becomes 19% at one Clover", () => {
+    expect(effective(0.1, 0) * 100).toBeCloseTo(10, 5);
+    expect(effective(0.1, 1) * 100).toBeCloseTo(19, 5);
+    expect(effective(0.1, 2) * 100).toBeCloseTo(27.1, 5);
+  });
+
+  it("negative luck is worst-of-N: Purity drops a 10% proc to ~1%", () => {
+    expect(effective(0.1, -1) * 100).toBeCloseTo(1, 5);
+  });
+
+  it("both items are code-verified and document the shared luck formula", () => {
+    const clover = byId3.get("57-leaf-clover")!;
+    const purity = byId3.get("purity")!;
+    expect(clover.confidence).toBe("code");
+    expect(purity.confidence).toBe("code");
+    for (const it of [clover, purity]) {
+      expect(it.stacking.some((s) => /Util\.CheckRoll/.test(s.formula ?? ""))).toBe(true);
+    }
+  });
+
+  it("Purity records its luck PENALTY, not just its cooldown reduction", () => {
+    // The description states both effects; the dataset originally carried only the
+    // cooldown one, so the downside was invisible on a Lunar item that is all downside.
+    const purity = byId3.get("purity")!;
+    expect(purity.stacking).toHaveLength(2);
+    expect(purity.stacking.some((s) => /luck/i.test(s.stat))).toBe(true);
+  });
+});

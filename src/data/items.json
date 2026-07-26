@@ -2140,7 +2140,7 @@
         "base": 1,
         "perStack": 1,
         "type": "special",
-        "formula": "each random proc is rolled +1 extra time per stack, keeping the favorable result"
+        "formula": "+1 luck per stack (CharacterBody.RecalculateStats: luck += Clover count). Luck L = (57 Leaf Clover stacks - Purity stacks). Util.CheckRoll rolls 1 + ceil(|L|) times and keeps the BEST result when L > 0, the WORST when L < 0. Effective chance = 1 - (1-p)^(1+L) for positive luck: a 10% proc becomes 19.0% at L=1 and 27.1% at L=2."
       }
     ],
     "tags": [
@@ -2154,7 +2154,7 @@
     "icon": "/icons/57-leaf-clover.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/57_Leaf_Clover",
     "verified": true,
-    "confidence": "langfile"
+    "confidence": "code"
   },
   {
     "id": "dios-best-friend",
@@ -2197,13 +2197,14 @@
         "base": 20,
         "perStack": 20,
         "type": "hyperbolic",
-        "formula": "proc chance stacks hyperbolically, approaching but never reaching 100%"
+        "formula": "chance = (1 - 100/(100 + 20n)) x 100 (GlobalEventManager). Hyperbolic: 16.7% at 1 stack, 28.6% at 2, 37.5% at 3 - approaches but never reaches 100%."
       },
       {
         "stat": "Enemies hooked",
         "base": 10,
         "perStack": 5,
-        "type": "linear"
+        "type": "linear",
+        "formula": "maxTargets = 5 + 5n (GlobalEventManager). Linear: 10 enemies at 1 stack, 15 at 2, 20 at 3."
       }
     ],
     "tags": [
@@ -2217,7 +2218,7 @@
     "icon": "/icons/sentient-meat-hook.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Sentient_Meat_Hook",
     "verified": true,
-    "confidence": "langfile"
+    "confidence": "code"
   },
   {
     "id": "happiest-mask",
@@ -2644,14 +2645,15 @@
         "stat": "Drone attack speed (%)",
         "base": 25,
         "perStack": 25,
-        "type": "linear"
+        "type": "linear",
+        "formula": "Grants n DroneWeaponsBoost to your drones; each adds attackSpeedPerStack = 0.25 (CharacterBody.RecalculateStats). Linear +25% per stack."
       },
       {
         "stat": "Drone cooldown reduction (%)",
         "base": 25,
         "perStack": 25,
         "type": "exponential",
-        "formula": "drone cooldown multiplied by 0.75 per stack (multiplicative)"
+        "formula": "cooldown x= 0.75 per stack, applied in a per-stack loop (DroneWeaponsBoostBehavior.cooldownReductionPerStack = 0.75). Exponential: x0.75, x0.5625, x0.4219."
       }
     ],
     "tags": [
@@ -2661,7 +2663,7 @@
     "icon": "/icons/spare-drone-parts.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Spare_Drone_Parts",
     "verified": true,
-    "confidence": "langfile"
+    "confidence": "code"
   },
   {
     "id": "interstellar-desk-plant",
@@ -3416,7 +3418,7 @@
         "base": 15,
         "perStack": -20,
         "type": "exponential",
-        "formula": "interval multiplied by 0.8 per stack (multiplicative, so it shortens but never hits zero)"
+        "formula": "interval = 15 x 0.8^(n-1) seconds (DroneShockDamageBodyBehavior: durationBase 15, durationStack 0.8). Exponential: 15s, 12s, 9.6s, 7.68s."
       }
     ],
     "tags": [
@@ -3427,7 +3429,7 @@
     "icon": "/icons/faulty-conductor.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Faulty_Conductor",
     "verified": true,
-    "confidence": "langfile",
+    "confidence": "code",
     "corruptedBy": "newly-hatched-zoea"
   },
   {
@@ -3683,7 +3685,15 @@
         "stat": "Skill cooldown reduction (s)",
         "base": 2,
         "perStack": 1,
-        "type": "linear"
+        "type": "linear",
+        "formula": "cooldown reduction = 2 + 1(n-1) seconds (CharacterBody.RecalculateStats). Linear."
+      },
+      {
+        "stat": "Unlucky rerolls",
+        "base": 1,
+        "perStack": 1,
+        "type": "special",
+        "formula": "-1 luck per stack (CharacterBody.RecalculateStats: luck -= Purity count). Luck L = (57 Leaf Clover stacks - Purity stacks). Util.CheckRoll rolls 1 + ceil(|L|) times and keeps the BEST result when L > 0, the WORST when L < 0. Effective chance = 1 - (1-p)^(1+L) for positive luck: a 10% proc becomes 19.0% at L=1 and 27.1% at L=2. With negative luck the worst roll is kept, so a 10% proc drops to ~1.0% at L=-1."
       }
     ],
     "tags": [
@@ -3696,7 +3706,7 @@
     "icon": "/icons/purity.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Purity",
     "verified": true,
-    "confidence": "langfile"
+    "confidence": "code"
   },
   {
     "id": "visions-of-heresy",

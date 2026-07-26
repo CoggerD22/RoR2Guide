@@ -590,3 +590,34 @@ could plausibly be a decompiler artifact, the C# is not sufficient evidence. IL 
 it, and it is cheap (`ilspycmd -il`). This is now the escalation path for any conflict
 of this shape — three of the corrections so far (Tougher Times, Bandolier, this) came
 from exactly the pattern "the description sounds right, the code says otherwise".
+
+### 3j.4 Second batch — and a missing effect on Purity
+
+Verified langfile → code (all correct as recorded; formulas added citing the source):
+
+| Item | Evidence |
+|---|---|
+| Sentient Meat Hook | `GlobalEventManager`: chance `(1 − 100/(100 + 20n))·100`; `maxTargets = 5 + 5n` |
+| Faulty Conductor | `DroneShockDamageBodyBehavior`: `15f × Mathf.Pow(0.8f, stack − 1)` |
+| Spare Drone Parts | Grants n `DroneWeaponsBoost` to minions; `attackSpeedPerStack = 0.25f` (linear) and `cooldownReductionPerStack = 0.75f` applied per-stack (exponential) |
+| 57 Leaf Clover | `RecalculateStats`: `luck += Clover` |
+| Purity | `RecalculateStats`: cooldown `2 + 1(n−1)`; `luck −= Purity` |
+
+**Purity was missing an entire effect.** Its description states two: a cooldown reduction
+*and* "all random effects are rolled +1 times for an unfavorable outcome". The dataset
+carried only the cooldown — so on a Lunar item whose whole point is a trade-off, the
+**downside was invisible**. Added as a second stacking entry. Worth noting the failure
+mode: this is not a wrong number, it's an absent one, which no numeric diff can catch
+because there was nothing to compare. `data:diff` reported 0 mismatches throughout.
+
+**The luck mechanic is now exact.** `Util.CheckRoll` rolls `1 + ceil(|luck|)` times and
+keeps `Mathf.Min` (best) when luck > 0, `Mathf.Max` (worst) when negative:
+
+```
+effective chance = 1 − (1 − p)^(1 + L)     for L > 0
+                 = p^(1 − L)               for L < 0
+```
+
+So a 10% proc becomes 19.0% with one Clover and 27.1% with two — and drops to ~1% with
+one Purity. This is precisely the "marginal value of the next stack" arithmetic §5.8b
+Part 2 calls for: objective, derived, and stated with its assumptions. **38 / 212.**
