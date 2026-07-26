@@ -607,6 +607,48 @@ persist `version` and write a `migrate` that lifts the old `Record<id, PlanState
 the new shape, defaulting priority to Medium. Also extend the share URL (§4.4) so
 priorities and goals travel to co-op partners, and keep decoding old links.
 
+**Part 1 revision — the controls are wrong, and the measurements say so.**
+*(Shipped, then rejected on review. Recorded rather than quietly replaced, because the
+mistake is instructive.)*
+
+The first implementation put a three-button H/M/L segmented control **and** a number
+input on **every** row, permanently. Measured:
+
+- **41% of each row is editing chrome** — a 51px row for 16px of item name.
+- **17 buttons + 3 inputs to display three items.** At a realistic 26-item plan that is
+  ~135 buttons and 26 inputs: a punishing tab order, and a wall of widgets where a
+  player wanted a list.
+- The goal count is rendered **twice** (as a `×4` badge and again in the input).
+
+The error was treating the rail as a *form*. It is a **plan** — read far more often
+than edited, and read under time pressure with a game running. Editing affordances must
+therefore be secondary to the content, not co-equal with it.
+
+Direction, in preference order:
+
+1. **Priority as visual weight, editing on demand.** Keep the three tiers (they match how
+   the request was actually phrased — *"I want these more than that, but that's good
+   too"* is tiers, not a strict ranking) but express them as **rank order plus a subtle
+   weight cue** — a colour-coded left edge or type weight — with the control revealed
+   only on hover/focus/tap, exactly as the remove (`×`) button already behaves. Resting
+   chrome drops to zero; the information stays.
+2. **Goal as inline text, not a spinner.** A number input is a heavy control for "3".
+   Render the goal as part of the row (`Crowbar ×3`) and make it click-to-edit. Removes
+   the duplicate display and one focusable element per row.
+3. **Drag to rank** *(follow-on, not a replacement)*. Making list position the priority
+   is the most self-evident model of all and needs no legend — but it must not be the
+   only path: keyboard reordering and a tap-friendly fallback are required, and absolute
+   tiers still need to exist so a player can mark four items "high" without ranking them
+   against each other.
+
+Naming: `H` / `M` / `L` are cryptic in isolation — the legend exists precisely because
+the control could not explain itself. Whatever replaces it should be legible without one.
+
+This shares a root cause with §5.8c (density while playing): both come from the rail
+carrying full editing capability in a context where the player is mostly *reading*. The
+two should be designed together — **Plan mode** owns the editing affordances, **Run
+mode** shows none.
+
 **Part 2 — "Ideal" count.** A single recommended number is **opinion**, and rule #7
 keeps it out of the codex. But three genuinely objective things sit underneath it, and
 those the site can state as fact:
@@ -656,7 +698,9 @@ happily while content sits somewhere unreachable, the same failure as the planne
 badge (§5.8). **Layout claims need geometry assertions.**
 
 **The design gap — density.** Each rail row now carries a name, a priority strip, a goal
-input and a cap note: informative while *planning*, far too heavy while *playing*. A
+input and a cap note — 41% of the row height is editing chrome (§5.8b Part 1 revision,
+which addresses the same root cause): informative while *planning*, far too heavy while
+*playing*. A
 player alt-tabbing mid-run wants one thing — "what am I looking for right now?" — and
 should get it in a glance, without scrolling a 26-item list of controls. So the rail
 needs two modes:
