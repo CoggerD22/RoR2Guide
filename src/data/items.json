@@ -21,7 +21,7 @@
     "icon": "/icons/crowbar.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Crowbar",
     "verified": true,
-    "confidence": "langfile",
+    "confidence": "code",
     "unlock": {
       "challenge": "The Basics",
       "requirement": "Discover 10 unique white items."
@@ -1207,7 +1207,7 @@
     "icon": "/icons/fuel-cell.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Fuel_Cell",
     "verified": true,
-    "confidence": "langfile"
+    "confidence": "code"
   },
   {
     "id": "infusion",
@@ -1254,10 +1254,10 @@
     "stacking": [
       {
         "stat": "Chance on kill to drop ammo pack (%)",
-        "base": 18,
+        "base": 20.4,
         "perStack": 10,
         "type": "special",
-        "formula": "chance = 1 - 1/(1 + n)^0.33 (n = stacks); ~18% at 1 stack, diminishing per stack"
+        "formula": "chance = (1 - 1/(n+1)^0.33) x 100, n = stacks (GlobalEventManager). Code-verified: 20.4% at 1, 30.4% at 2, 36.7% at 3, 54.7% at 10. The in-game description says 18% (+10% per stack); the real 1-stack value is 20.4%."
       }
     ],
     "tags": [
@@ -1267,7 +1267,7 @@
     "icon": "/icons/bandolier.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Bandolier",
     "verified": true,
-    "confidence": "langfile"
+    "confidence": "code"
   },
   {
     "id": "berzerkers-pauldron",
@@ -2123,7 +2123,7 @@
     "icon": "/icons/alien-head.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Alien_Head",
     "verified": true,
-    "confidence": "langfile"
+    "confidence": "code"
   },
   {
     "id": "57-leaf-clover",
