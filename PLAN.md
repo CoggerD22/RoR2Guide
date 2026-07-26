@@ -578,6 +578,48 @@ overlaid, in the spirit of the in-game logbook), a legend so the state is
 self-explanatory, and the challenge surfaced in the hover tooltip rather than only
 in the drawer.
 
+**5.8b Stack goals, and the honest version of an "ideal" count.** Requested: let the
+player set *how many* of an item they want, and — if it can be mathematically backed —
+show an "ideal" number, possibly per survivor. These are two very different asks and
+the plan must not blur them.
+
+**Part 1 — Stack goals (build this; no truth risk).** The planner’s three-state cycle
+becomes an optional **target count** per item: "I want 3 Crowbars." Purely the player's
+own intent, so it asserts nothing about the game. Extends the existing Zustand plan
+(`Record<id, PlanState>` → adds an optional `goal`), the rail groups by remaining need,
+and the shareable URL (§4.4) carries goals so co-op partners see them.
+
+**Part 2 — "Ideal" count.** A single recommended number is **opinion**, and rule #7
+keeps it out of the codex. But three genuinely objective things sit underneath it, and
+those the site can state as fact:
+
+1. **Hard caps — fully objective, and we now have them.** Beyond the cap an extra copy
+   does *literally nothing*: Focused Convergence stops at 3, Longstanding Solitude's
+   free unlocks at 3, Lens-Maker's Glasses hits guaranteed crit at 10. This is not a
+   recommendation, it is the code. **This is the highest-value part of the request**
+   and should ship first: a cap is the one number that is unambiguously "don't take
+   more than this". It also implies finishing the §3j.1 cap sweep — only 5 of 212 items
+   currently record one, which is certainly an undercount.
+2. **Marginal value per stack — objective under stated assumptions.** For a known
+   curve, "what does the *next* copy buy me?" is arithmetic: the 11th Lens-Maker's adds
+   0, the 10th Tougher Times adds ~2pp of block, the 4th Focused Convergence adds
+   nothing. Show the *curve and its deltas*, not a verdict.
+3. **Diminishing-returns thresholds — objective only once a threshold is chosen.**
+   "Where does a stack stop being worth a slot?" needs a cut-off, and choosing it is
+   judgement. Presentable as "marginal gain falls below X%" **with X shown and
+   adjustable** — never as a bare "ideal: 6".
+
+**Per survivor.** Legitimate for the subset where survivor stats actually change the
+math — proc-coefficient and attack-rate dependent items (on-hit procs), and anything
+the Stat Lab already models. It is *not* legitimate to imply per-survivor precision for
+items whose behaviour is survivor-independent (Tougher Times blocks identically for
+everyone). Any per-survivor figure must name the assumptions it was computed under.
+
+**The line, stated once:** the site may say *"a 4th does nothing"* (code) and *"the 6th
+adds 1.8%"* (arithmetic). It may not say *"take 6"* without the §4.2 Opinion badge,
+because that depends on what else you're holding, the stage, the difficulty, and how
+you play. See §5.9.
+
 **5.9 Objective build guidance — what is and isn't honestly possible.** Sites like
 Rogueranker publish per-survivor item lists with no stated methodology, no math, and
 no sourcing. The instinct to distrust them is correct. Three tiers of claim, of which
