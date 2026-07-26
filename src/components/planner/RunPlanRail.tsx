@@ -4,7 +4,6 @@ import type { Item } from "@/data/schema";
 import { items as allItems, PRESENT_TIERS, TIER_META } from "@/data/items";
 import {
   usePlanner,
-  PRIORITIES,
   PRIORITY_LABEL,
   PRIORITY_RANK,
   type PlanState,
@@ -20,14 +19,18 @@ interface RunPlanRailProps {
 }
 
 /**
- * Muted → bright as priority rises, so the ranking reads at a glance. Every level must
- * still be unmistakably *selected*: "low" originally reused the muted resting style and
- * was indistinguishable from an unset control.
+ * Priority is shown as a coloured left edge, not a control (PLAN §5.8b Part 1 revision).
+ *
+ * The first version put a three-button H/M/L strip plus a number input on every row —
+ * 41% of the row height was editing chrome, and three items cost 17 buttons. The rail
+ * is READ far more than it is edited, and read with a game running, so priority is now
+ * carried by rank order plus this weight cue, and the control only appears on
+ * hover/focus.
  */
-const PRIORITY_STYLE: Record<Priority, string> = {
-  high: "bg-emerald-400 text-black",
-  medium: "bg-emerald-400/25 text-emerald-200",
-  low: "bg-foreground/20 text-foreground",
+const PRIORITY_EDGE: Record<Priority, string> = {
+  high: "border-l-emerald-400",
+  medium: "border-l-emerald-400/40",
+  low: "border-l-border",
 };
 
 function groupByTier(list: Item[]) {
@@ -52,70 +55,55 @@ function hardCap(item: Item): number | null {
   return caps.length ? Math.min(...caps) : null;
 }
 
-/** Priority + goal controls for one targeted item. */
-function TargetControls({ item }: { item: Item }) {
-  const entry = usePlanner((s) => s.plan[item.id]);
-  const setPriority = usePlanner((s) => s.setPriority);
+/** Cycles high → medium → low. One button instead of a three-button group. */
+const NEXT_PRIORITY: Record<Priority, Priority> = {
+  high: "medium",
+  medium: "low",
+  low: "high",
+};
+
+/**
+ * Goal shown as inline text ("×3"), click to edit. A number input per row was a heavy
+ * control for a single digit, and it duplicated the badge that already showed the same
+ * number (PLAN §5.8b Part 1 revision).
+ */
+function GoalField({ item, goal }: { item: Item; goal?: number }) {
   const setGoal = usePlanner((s) => s.setGoal);
-  if (!entry) return null;
+  const [editing, setEditing] = useState(false);
 
-  const cap = hardCap(item);
-  const overCap = cap !== null && entry.goal !== undefined && entry.goal > cap;
-
+  if (editing) {
+    return (
+      <input
+        autoFocus
+        type="number"
+        min={1}
+        max={99}
+        defaultValue={goal ?? ""}
+        aria-label={`Goal stack count for ${item.name}`}
+        onBlur={(e) => {
+          setGoal(item.id, e.target.value === "" ? null : Number(e.target.value));
+          setEditing(false);
+        }}
+        onKeyDown={(e) => {
+          if (e.key === "Enter") (e.target as HTMLInputElement).blur();
+          if (e.key === "Escape") setEditing(false);
+        }}
+        className="w-10 rounded border border-primary/60 bg-surface-2 px-1 text-center text-[11px] text-foreground focus:outline-none"
+      />
+    );
+  }
   return (
-    <div className="flex flex-wrap items-center gap-1 pl-8">
-      <div className="flex overflow-hidden rounded border border-border" role="group" aria-label={`Priority for ${item.name}`}>
-        {PRIORITIES.map((p) => (
-          <button
-            key={p}
-            type="button"
-            onClick={() => setPriority(item.id, p)}
-            aria-pressed={entry.priority === p}
-            title={`${PRIORITY_LABEL[p]} priority`}
-            className={cn(
-              "px-1.5 py-0.5 text-[10px] font-medium transition-colors",
-              entry.priority === p ? PRIORITY_STYLE[p] : "text-muted-foreground hover:text-foreground",
-            )}
-          >
-            {PRIORITY_LABEL[p][0]}
-          </button>
-        ))}
-      </div>
-      {/* aria-label on the input is the whole accessible name; an extra sr-only span
-          would duplicate the item name and make text queries ambiguous. */}
-      <span className="flex items-center gap-1 text-[10px] text-muted-foreground">
-        <input
-          type="number"
-          min={1}
-          max={99}
-          value={entry.goal ?? ""}
-          placeholder="—"
-          onChange={(e) => setGoal(item.id, e.target.value === "" ? null : Number(e.target.value))}
-          aria-label={`Goal stack count for ${item.name}`}
-          className="w-10 rounded border border-border bg-surface-2 px-1 py-0.5 text-center text-[10px] text-foreground placeholder:text-muted-foreground focus:border-primary/60 focus:outline-none"
-        />
-        ×
-      </span>
-      {/*
-        Objective, not advice: past the cap an extra copy does nothing. Stated as the
-        fact ("caps at N") rather than a recommendation ("take N") — see PLAN §5.9.
-      */}
-      {cap !== null && (
-        <span
-          className={cn(
-            "rounded px-1 py-0.5 text-[10px]",
-            overCap ? "bg-amber-400/20 text-amber-300" : "text-muted-foreground",
-          )}
-          title={
-            overCap
-              ? `Stacks past ${cap} have no effect at all — a goal of ${entry.goal} wastes ${entry.goal! - cap}.`
-              : `Hard cap: stacks past ${cap} have no effect.`
-          }
-        >
-          {overCap ? `caps at ${cap}` : `cap ${cap}`}
-        </span>
+    <button
+      type="button"
+      onClick={() => setEditing(true)}
+      aria-label={goal ? `Goal: ${goal}. Edit.` : `Set a goal count for ${item.name}`}
+      className={cn(
+        "rounded px-1 text-[11px] tabular-nums transition-colors hover:bg-surface-2",
+        goal ? "text-muted-foreground" : "text-muted-foreground/0 group-hover:text-muted-foreground/60",
       )}
-    </div>
+    >
+      {goal ? `×${goal}` : "+goal"}
+    </button>
   );
 }
 
@@ -131,6 +119,7 @@ function PlanSection({
   onSelect: (item: Item) => void;
 }) {
   const set = usePlanner((s) => s.set);
+  const setPriority = usePlanner((s) => s.setPriority);
   const plan = usePlanner((s) => s.plan);
   const accent = state === "targeted" ? "text-emerald-400" : "text-red-400";
   const ranked = state === "targeted";
@@ -165,9 +154,21 @@ function PlanSection({
                         a.name.localeCompare(b.name),
                     )
                   : tierList
-                ).map((item) => (
-                  <li key={item.id} className="group flex flex-col gap-0.5">
-                    <div className="flex items-center gap-1.5">
+                ).map((item) => {
+                  const entry = plan[item.id];
+                  const cap = hardCap(item);
+                  const overCap = cap !== null && entry?.goal !== undefined && entry.goal > cap;
+                  return (
+                    // ONE row per item. Priority is the left edge, the goal is inline
+                    // text, and the two buttons only surface on hover/focus — so at rest
+                    // the row is just the item, which is what a plan should be.
+                    <li
+                      key={item.id}
+                      className={cn(
+                        "group flex items-center gap-1.5 rounded-r border-l-2 pl-1.5",
+                        ranked ? PRIORITY_EDGE[entry?.priority ?? "medium"] : "border-l-transparent",
+                      )}
+                    >
                       <button
                         type="button"
                         onClick={() => onSelect(item)}
@@ -175,12 +176,33 @@ function PlanSection({
                       >
                         <img src={asset(item.icon)} alt="" className="size-6 shrink-0 object-contain" />
                         <span className="truncate text-xs text-foreground">{item.name}</span>
-                        {ranked && plan[item.id]?.goal ? (
-                          <span className="shrink-0 rounded bg-surface-2 px-1 text-[10px] text-muted-foreground">
-                            ×{plan[item.id]!.goal}
-                          </span>
-                        ) : null}
                       </button>
+
+                      {ranked && <GoalField item={item} goal={entry?.goal} />}
+
+                      {/* Objective, not advice: past the cap an extra copy does nothing.
+                          Stated as the ceiling, never as "take N" — see PLAN §5.9.
+                          Only shown when it actually matters: a goal that exceeds it. */}
+                      {ranked && cap !== null && overCap && (
+                        <span
+                          className="shrink-0 rounded bg-amber-400/20 px-1 text-[10px] text-amber-300"
+                          title={`Stacks past ${cap} have no effect at all — a goal of ${entry!.goal} wastes ${entry!.goal! - cap}.`}
+                        >
+                          caps at {cap}
+                        </span>
+                      )}
+
+                      {ranked && entry && (
+                        <button
+                          type="button"
+                          onClick={() => setPriority(item.id, NEXT_PRIORITY[entry.priority])}
+                          aria-label={`Priority for ${item.name}: ${PRIORITY_LABEL[entry.priority]}. Change to ${PRIORITY_LABEL[NEXT_PRIORITY[entry.priority]]}.`}
+                          className="shrink-0 rounded px-1 text-[10px] font-medium text-muted-foreground opacity-0 transition hover:bg-surface-2 hover:text-foreground focus-visible:opacity-100 group-hover:opacity-100"
+                        >
+                          {PRIORITY_LABEL[entry.priority]}
+                        </button>
+                      )}
+
                       <button
                         type="button"
                         onClick={() => set(item.id, null)}
@@ -189,10 +211,9 @@ function PlanSection({
                       >
                         <X className="size-3.5" />
                       </button>
-                    </div>
-                    {ranked && <TargetControls item={item} />}
-                  </li>
-                ))}
+                    </li>
+                  );
+                })}
               </ul>
             </div>
           ))}

@@ -395,8 +395,16 @@ test("planner: priority and goal are settable and ranked within tier", async ({ 
 
   // Rank Soldier's Syringe High and give it a goal — the real printer question is
   // "which white do I want most?", so ranking is per tier.
-  await rail.getByRole("group", { name: /Priority for Soldier's Syringe/ }).getByRole("button", { name: "H" }).click();
-  await rail.getByLabel("Goal stack count for Soldier's Syringe").fill("4");
+  // Priority is one cycling button (high → medium → low) starting at medium, so two
+  // clicks reach high. The goal is inline click-to-edit, not a permanent input.
+  const prio = rail.getByRole("button", { name: /Priority for Soldier.s Syringe/ });
+  await prio.click();
+  await prio.click();
+  await expect(prio).toHaveAccessibleName(/: High\./);
+  await rail.getByRole("button", { name: /Set a goal count for Soldier.s Syringe/ }).click();
+  const goalInput = rail.getByLabel("Goal stack count for Soldier's Syringe");
+  await goalInput.fill("4");
+  await goalInput.press("Enter");
   await expect(rail.getByText("×4")).toBeVisible();
 
   // High-priority item sorts above the medium-priority one inside the tier.
@@ -408,18 +416,20 @@ test("planner: priority and goal are settable and ranked within tier", async ({ 
   const rail2 = page.getByRole("complementary");
   await expect(rail2.getByText("×4")).toBeVisible();
   await expect(
-    rail2.getByRole("group", { name: /Priority for Soldier's Syringe/ }).getByRole("button", { name: "H" }),
-  ).toHaveAttribute("aria-pressed", "true");
+    rail2.getByRole("button", { name: /Priority for Soldier.s Syringe/ }),
+  ).toHaveAccessibleName(/: High\./);
 });
 
 test("planner states hard caps as fact, and flags a goal that exceeds one", async ({ page }) => {
   // Focused Convergence is code-verified capped at 3 (HoldoutZoneController cap = 3).
   await page.goto("/planner?t=focused-convergence");
   const rail = page.getByRole("complementary");
-  await expect(rail.getByText("cap 3")).toBeVisible();
-
-  // A goal past the cap is flagged — extra copies do literally nothing.
-  await rail.getByLabel("Goal stack count for Focused Convergence").fill("5");
+  // The cap now surfaces only when it changes a decision — i.e. when a goal exceeds it —
+  // rather than sitting on every capped row as permanent noise.
+  await rail.getByRole("button", { name: /Set a goal count for Focused Convergence/ }).click();
+  const capGoal = rail.getByLabel("Goal stack count for Focused Convergence");
+  await capGoal.fill("5");
+  await capGoal.press("Enter");
   await expect(rail.getByText("caps at 3")).toBeVisible();
 
   // An item whose cap SCALES with stacks must show no fixed number: Hiker's Boots
@@ -437,12 +447,20 @@ test("a long run plan stays reachable — the rail scrolls instead of overflowin
   // viewport its bottom became unreachable — page scroll ends, rail doesn't scroll.
   // 26 targeted items measured 1541px in a 900px viewport. Count assertions passed
   // the whole time; only geometry catches it.
+  // Enough items to overflow. The count went UP when the rail was redesigned: rows
+  // dropped from 51px to 28px (PLAN §5.8b Part 1 revision), so 18 items no longer
+  // overflow at all — which is the improvement working, not the test being wrong.
   await page.setViewportSize({ width: 1280, height: 900 });
   const ids = [
     "crowbar", "soldiers-syringe", "lens-makers-glasses", "tougher-times", "bison-steak",
     "pauls-goat-hoof", "monster-tooth", "gasoline", "medkit", "sticky-bomb",
     "stun-grenade", "topaz-brooch", "tri-tip-dagger", "roll-of-pennies", "power-elixir",
     "personal-shield-generator", "repulsion-armor-plate", "backup-magazine",
+    "armor-piercing-rounds", "bundle-of-fireworks", "cautious-slug", "energy-drink",
+    "focus-crystal", "warbanner", "paul-s-goat-hoof", "delicate-watch", "rusted-key",
+    "atg-missile-mk-1", "ukulele", "will-o-the-wisp", "infusion", "harvesters-scythe",
+    "predatory-instincts", "leeching-seed", "red-whip", "fuel-cell", "hopoo-feather",
+    "berzerkers-pauldron", "old-guillotine", "war-horn", "brainstalks", "wax-quail",
   ];
   await page.goto(`/planner?t=${ids.join(",")}`);
   const rail = page.getByRole("complementary");
@@ -469,8 +487,8 @@ test("shared links carry priority and goal, and old links still work", async ({ 
   const rail = page.getByRole("complementary");
   await expect(rail.getByText("×4")).toBeVisible();
   await expect(
-    rail.getByRole("group", { name: /Priority for Soldier's Syringe/ }).getByRole("button", { name: "H" }),
-  ).toHaveAttribute("aria-pressed", "true");
+    rail.getByRole("button", { name: /Priority for Soldier.s Syringe/ }),
+  ).toHaveAccessibleName(/: High\./);
 
   // Old-format link (bare ids) must still load — shared plans predate this feature.
   await page.goto("/planner?t=crowbar&a=tri-tip-dagger");
