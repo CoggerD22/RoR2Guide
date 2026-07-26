@@ -638,6 +638,51 @@ adds 1.8%"* (arithmetic). It may not say *"take 6"* without the §4.2 Opinion ba
 because that depends on what else you're holding, the stage, the difficulty, and how
 you play. See §5.9.
 
+**5.8c The planner has to work *during* a run, not just before one.**
+
+Reported from real use: *"it's not very intuitive to try to play and look at the build.
+I can't even scroll down through it, and it's hard to see all the things I need
+together."* Two distinct problems behind that, one a defect and one a design gap.
+
+**The defect — a sticky rail taller than the viewport has an unreachable bottom.**
+`RunPlanRail` is `position: sticky` with no height constraint, so once the plan grows
+past the screen it pins at `top-16` and everything below the fold is simply cut off:
+the page scroll has ended, and the rail itself doesn't scroll. Measured with 26 targeted
+items: **1541px of rail in a 900px viewport**, `overflow-y: visible`, `max-height:
+none`. Fixed by constraining to the viewport and scrolling internally at `lg` (where
+it's sticky); on mobile the rail is in normal flow and stays full height. This is a
+whole class of bug the test suite could not see — existence and count assertions pass
+happily while content sits somewhere unreachable, the same failure as the planner lock
+badge (§5.8). **Layout claims need geometry assertions.**
+
+**The design gap — density.** Each rail row now carries a name, a priority strip, a goal
+input and a cap note: informative while *planning*, far too heavy while *playing*. A
+player alt-tabbing mid-run wants one thing — "what am I looking for right now?" — and
+should get it in a glance, without scrolling a 26-item list of controls. So the rail
+needs two modes:
+- **Plan mode** (today's): full controls, for building the plan before a run.
+- **Run mode**: read-only and dense — icon + name + goal only, grouped by tier and
+  ordered by priority, several times more per screen. No controls, because during a run
+  you are reading, not editing.
+
+Run mode is also the natural home for a **compact/overlay-friendly layout** (narrow,
+high-contrast, minimal chrome) for players who keep the site on a second monitor.
+
+**5.8d Plan durability.** Plans already persist across sessions — `localStorage` via
+Zustand `persist`, verified end-to-end including the v1→v2 migration: a plan saved by
+the old build survives the upgrade and a fresh browser session intact. What is *not*
+yet true is that this is **evident or portable**:
+- Nothing on screen says the plan is saved, so a player has no reason to trust it.
+- `localStorage` is per-browser and per-device, and is cleared by "clear site data" or
+  private browsing, with no warning and no recovery.
+- The share URL (§4.4) is already a complete serialisation of a plan — so
+  **export/import is nearly free**: a "copy plan" / "restore from link" pair gives a
+  real backup and cross-device transfer without a server (rule #5 holds).
+
+Scope note: no accounts, no cloud sync — §4.9 parks those deliberately. The goal is
+that a plan is *durable and movable*, not that it lives anywhere but the player's
+own machine.
+
 **5.9 Objective build guidance — what is and isn't honestly possible.** Sites like
 Rogueranker publish per-survivor item lists with no stated methodology, no math, and
 no sourcing. The instinct to distrust them is correct. Three tiers of claim, of which

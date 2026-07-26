@@ -219,8 +219,13 @@ export function RunPlanRail({ onSelect }: RunPlanRailProps) {
     setTimeout(() => setShareLabel("idle"), 2000);
   };
 
+  // The rail is `sticky` on desktop, and a sticky box TALLER than the viewport has an
+  // unreachable bottom: it pins at top-16 and the rest is simply cut off, with no way to
+  // scroll to it. A realistic plan hits this fast — 26 targeted items is ~1540px in a
+  // 900px viewport. So constrain it to the viewport and scroll internally, but only at
+  // `lg` where it's sticky; on mobile it sits in normal flow and should stay full height.
   return (
-    <aside className="flex flex-col gap-4 rounded-xl border border-border bg-surface p-4 lg:sticky lg:top-16">
+    <aside className="flex flex-col gap-4 rounded-xl border border-border bg-surface p-4 lg:sticky lg:top-16 lg:max-h-[calc(100vh-5rem)] lg:overflow-y-auto lg:overscroll-contain">
       <div className="flex items-center justify-between gap-2">
         <h2 className="font-display text-sm font-semibold uppercase tracking-widest text-foreground">
           Run Plan

@@ -430,6 +430,39 @@ test("planner states hard caps as fact, and flags a goal that exceeds one", asyn
   await expect(rail2.getByText(/^cap \d/)).toHaveCount(0);
 });
 
+test("a long run plan stays reachable — the rail scrolls instead of overflowing", async ({
+  page,
+}) => {
+  // Regression (PLAN §5.8c): the rail is sticky, so once it grew taller than the
+  // viewport its bottom became unreachable — page scroll ends, rail doesn't scroll.
+  // 26 targeted items measured 1541px in a 900px viewport. Count assertions passed
+  // the whole time; only geometry catches it.
+  await page.setViewportSize({ width: 1280, height: 900 });
+  const ids = [
+    "crowbar", "soldiers-syringe", "lens-makers-glasses", "tougher-times", "bison-steak",
+    "pauls-goat-hoof", "monster-tooth", "gasoline", "medkit", "sticky-bomb",
+    "stun-grenade", "topaz-brooch", "tri-tip-dagger", "roll-of-pennies", "power-elixir",
+    "personal-shield-generator", "repulsion-armor-plate", "backup-magazine",
+  ];
+  await page.goto(`/planner?t=${ids.join(",")}`);
+  const rail = page.getByRole("complementary");
+  await expect(rail).toBeVisible();
+
+  const fitsViewport = await rail.evaluate(
+    (el) => el.getBoundingClientRect().height <= window.innerHeight,
+  );
+  expect(fitsViewport, "rail must not exceed the viewport height").toBe(true);
+
+  // And its content is reachable by scrolling the rail itself.
+  const scrolled = await rail.evaluate((el) => {
+    const overflows = el.scrollHeight > el.clientHeight;
+    el.scrollTop = el.scrollHeight;
+    return { overflows, scrollTop: el.scrollTop };
+  });
+  expect(scrolled.overflows, "this plan should overflow the rail").toBe(true);
+  expect(scrolled.scrollTop, "rail must scroll internally").toBeGreaterThan(0);
+});
+
 test("shared links carry priority and goal, and old links still work", async ({ page }) => {
   // New-format link.
   await page.goto("/planner?t=soldiers-syringe!h*4,crowbar!l");
