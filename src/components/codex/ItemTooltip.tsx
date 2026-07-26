@@ -1,4 +1,5 @@
 import type { CSSProperties } from "react";
+import { Lock } from "lucide-react";
 import type { Item } from "@/data/schema";
 import { TIER_META } from "@/data/items";
 import { highlightNumbers } from "@/lib/highlight";
@@ -38,6 +39,22 @@ export function ItemTooltip({ item }: { item: Item }) {
           {types.map((t) => (
             <StackingBadge key={t} type={t} />
           ))}
+        </div>
+      )}
+      {/*
+        Unlock surfaced on hover, not just in the drawer (PLAN §5.8): "can I even get
+        this?" is the first question a locked item raises, and the tooltip is where
+        people look. Challenge + requirement are code-verified (§6A.7).
+      */}
+      {item.unlock && (
+        <div className="mt-2 flex items-start gap-1.5 border-t border-border pt-2">
+          <Lock className="mt-0.5 size-3 shrink-0 text-amber-400/80" aria-hidden />
+          <div className="min-w-0 text-[11px] leading-snug">
+            <span className="font-medium text-amber-400/90">{item.unlock.challenge}</span>
+            {item.unlock.requirement && (
+              <span className="text-muted-foreground"> — {item.unlock.requirement}</span>
+            )}
+          </div>
         </div>
       )}
     </div>

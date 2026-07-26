@@ -30,7 +30,7 @@ export function ItemCard({ item, onSelect }: ItemCardProps) {
         <span className="line-clamp-2 text-xs font-medium text-foreground">{item.name}</span>
         {item.unlock && (
           <span
-            className="absolute left-1.5 top-1.5 rounded-full bg-black/40 p-0.5 text-muted-foreground"
+            className="absolute left-1.5 top-1.5 rounded-full bg-black/50 p-0.5 text-amber-400/80"
             title={`Locked — unlock challenge: ${item.unlock.challenge}`}
           >
             <Lock className="size-3" aria-label={`Locked behind challenge: ${item.unlock.challenge}`} />

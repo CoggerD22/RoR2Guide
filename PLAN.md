@@ -660,7 +660,190 @@ Ship publicly after M4; M5/M6 iterate on a live site.
 
 ---
 
-## 7. What actually requires a human (and what only looked like it did)
+## 6A. Data Truth Programme — guaranteeing every claim on the site is sourced
+
+> **Standing requirement:** Risk of Rain 2 is a game where a wrong number changes how
+> someone plays. **No false information, in either direction** — not a wrong value, and
+> not a confident claim where we only have a guess. A field we cannot source is shown
+> as unknown, never filled with something plausible.
+
+§5.0 established *how* to verify a claim. This section is the programme that applies it
+to **every claim on the site**, with measurable coverage and CI gates so it cannot
+silently regress. It supersedes the informal "verified" flag, which conflated three
+very different things: *we transcribed it correctly*, *we found it in a game file*, and
+*we know it is true*.
+
+### 6A.1 Why the current `verified` flag is not a guarantee
+
+`items.json` reports 212/212 `verified: true` and 0 unverified. That number is
+misleading. Breaking it down by what was actually checked:
+
+| | Count | What "verified" currently means |
+|---|---|---|
+| `confidence: "code"` | 20 | Numbers and curve checked against decompiled C#. **A real guarantee.** |
+| `confidence: "langfile"` | 192 | Numbers **and stacking curve** read out of the description prose. **Transcription fidelity only.** |
+
+`data:diff` reports "0 numeric mismatches", but it compares `items.json` numbers to the
+*language file* numbers — i.e. it proves we copied the blurb correctly, not that the
+blurb is right. That is a circular check, and it is currently our main evidence.
+
+**Tougher Times is the proof this is not hypothetical.** Its description reads
+"15% (+15% per stack) chance to block". The code-verified behaviour is *hyperbolic*:
+13% at one stack, ~60% at ten, asymptotic to 100%. Had it stayed `langfile` we would be
+publishing "linear 15%/stack" — confidently, and wrongly. **153 items are currently
+marked `linear` on exactly that basis**, and a further **22 `langfile` items assert a
+non-linear curve** (Bandolier, Alien Head, 57 Leaf Clover, H3AD-5T v2, Fuel Cell,
+Rusted Key, …) with no code behind the assertion.
+
+### 6A.2 Source hierarchy — including where the internet is and isn't allowed
+
+Sources are ranked by **authority**, and the required rank depends on the claim kind
+(§5.0.2). Higher tiers override lower ones; a lower tier may never contradict a higher.
+
+| Tier | Source | Authoritative for | Notes |
+|---|---|---|---|
+| **T0** | **Decompiled C#** (`RoR2.dll`) | Behaviour, formulas, curve shape, order of operations | The game *is* its code. Highest authority for what happens. |
+| **T1** | **Serialized asset fields** (prefabs, ScriptableObjects, `*Def`s) | Numeric constants, existence, identity, relationships | The values that actually ship. Code shows the formula; assets supply its inputs. |
+| **T2** | **Language files** (`Language/en`) | Quoted text **only** — names, tooltips, flavour, the game's own stated descriptions | **Never** authoritative for behaviour or constants. |
+| **T3** | **Runtime observation** (BepInEx/ProcDumper) | Values genuinely computed at runtime from external state | Last resort; must record method + build. |
+| **T4** | **Community wiki / internet** | **Nothing, on its own.** | Permitted only as a *lead* or a *cross-check*, and only visibly labelled. See below. |
+
+**The internet's role, stated precisely.** The wiki is a legitimate *research aid* and an
+illegitimate *source of record*:
+- ✅ **Allowed:** to discover that a thing exists so we can go verify it in T0–T2; to
+  sanity-check a T0/T1 result and, on disagreement, trigger investigation; for art
+  assets (icons) where the file is the artefact and no factual claim is involved.
+- ❌ **Forbidden:** as the sole basis of any number, formula, curve, unlock condition, or
+  mechanic that ships as fact.
+- ⚠️ **Conditional:** where a fact is genuinely absent from all game files, it may ship
+  **only** flagged `confidence: "wiki"`, rendered with a visible "community-sourced,
+  unverified" badge, and listed in the coverage report as an outstanding gap.
+- **Disagreement rule:** wiki vs. T0/T1 conflict is always resolved for T0/T1, and the
+  discrepancy is recorded — those are exactly the cases where the site adds value
+  (Tougher Times, Old Guillotine's real 11.5%, Shrine of Blood's escalation).
+
+### 6A.3 Per-field provenance model
+
+`confidence` moves from the record to the **field**, and becomes a citation rather than
+a label. A claim without a resolvable citation is not verified — full stop.
+
+```ts
+type Tier = "code" | "asset" | "langfile" | "runtime" | "wiki";
+interface Provenance {
+  tier: Tier;
+  ref: string;      // "ShrineBloodBehavior.AddShrineStack" | "ItemDef:Bear.deprecatedTier"
+                    // | "ITEM_BEAR_DESC" — must be machine-checkable, not prose
+  checkedOn: string;      // ISO date
+  gameBuild: string;      // Steam buildid the check ran against
+  note?: string;          // e.g. "description says linear; code is hyperbolic"
+}
+```
+
+Rules:
+1. Every **Behaviour** or **Numeric constant** field carries a `code` or `asset`
+   citation. `langfile` is a schema error for these kinds.
+2. Every **Quoted text** field carries a `langfile` citation naming its token.
+3. `wiki` is legal only with the visible badge, and is counted as a gap.
+4. **A field with no provenance renders as unknown.** Never as a value.
+
+### 6A.4 Closing the 192 — extraction strategy
+
+The stacking data is not one problem but four, and each has a different mechanical fix:
+
+1. **Stat items** (~30): already solved for 14 via `RecalculateStats`. Extend the same
+   decompile-driven check to every item that touches a survivor stat.
+2. **On-hit / proc items** (~60): constants live on the item's behaviour in
+   `GlobalEventManager` / `CharacterBody` hooks plus the projectile prefab. Extract
+   both; the coefficient is an **asset** claim, the trigger condition a **code** claim.
+3. **Curve classification** (all 203 stacking entries): the `type` field is a
+   *behaviour* claim and must be derived from the code's arithmetic, not inferred from
+   whether the blurb says "per stack". Any entry whose curve cannot be located in code
+   is downgraded to `unknown`, and the UI stops drawing a sparkline for it rather than
+   drawing a wrong one.
+4. **Genuinely bespoke** (Rusted Key, 57 Leaf Clover, Bandolier, …): decompile the
+   specific behaviour class; record the real formula and its constants.
+
+Sequencing is by **blast radius**, not by convenience: items whose curve is
+non-linear or whose value the Stat Lab consumes are corrected first, because those
+already feed computed output.
+
+### 6A.5 Enforcement — the part that makes it stick
+
+Verification that depends on remembering to verify will fail. Gates:
+
+- **Schema-level:** `provenance` becomes required. A behaviour/numeric field whose
+  provenance tier is `langfile` or `wiki` **fails the build**, not the audit.
+- **`pnpm data:audit`** gains a **coverage report** — per dataset, per claim kind, the
+  percentage with a T0/T1 citation — printed on every run and asserted in CI so it can
+  only go up. This is the number that answers "is everything verified?" honestly.
+- **`pnpm data:verify`** re-resolves every citation against a fresh extraction: a
+  `ref` pointing at a class or field that no longer exists fails. This is what catches
+  a patch silently invalidating us (§4.6).
+- **Existence cross-check:** every token-derived record must map to a registered def
+  (`RoR2Content.*`, a behaviour class, a catalog entry). This is what caught the cut
+  Artifact of Spirit and Shrine of Warding, and it runs automatically.
+- **UI honesty:** provenance is surfaced per field, and where the game's own description
+  disagrees with verified behaviour, **both** are shown — the in-game text as a quote,
+  the mechanic as the fact. The discrepancy is a feature, not an embarrassment.
+
+### 6A.6 Coverage ledger (updated as work lands)
+
+| Dataset | Claim kinds | T0/T1 coverage | Status |
+|---|---|---|---|
+| `survivors.json` | Numeric constants | 19/19 body prefabs | ✅ |
+| `statItems.ts` | Numeric + behaviour | 13 coefficients / 11 items | ✅ |
+| `skills.json` procs | Numeric | 104/125 | ⚠️ 21 open (§5.7) |
+| `items.json` identity + quoted text | Identity, Quoted | 212/212 | ✅ |
+| **`items.json` stacking** | **Behaviour + Numeric** | **20/212** | ❌ **192 open — largest gap** |
+| `ARTIFACTS` effects | Behaviour | 0/20 | ❌ (§5.0.3) |
+| `SHRINES` effects/costs | Behaviour + Numeric | 0/12 | ❌ (§5.0.3) |
+| Ambry codes | Numeric/identity | 0/19 | ❌ wiki-sourced, extractable |
+| `BAZAAR_DREAMS` | Quoted + structural | 31/31 | ✅ |
+| `LOADOUT_UNLOCKS` | Quoted | 45/45 | ⚠️ valid as *stated* requirement only |
+| **Item unlock gating** | Existence + Quoted | **49/49 resolved** | ✅ §6A.7 — chain verified, audit-gated |
+
+### 6A.7 Worked example of the standard: item unlock gating
+
+`ItemDef.unlockableDef` / `EquipmentDef.unlockableDef` is the authoritative "is this
+earned?" pointer. Extracting it (`scripts/extract-unlockables.py`) finds **50 gated defs**
+against the **30** the site marks — but the gap must **not** be closed naively, because
+the pointer is ambiguous: several resolve to unlockables whose token is simply the
+item's own name (`Items.Crowbar`, `Items.Bear`), which may be **Logbook discovery
+entries rather than drop-pool gates**. Marking Crowbar "locked" on that basis would
+*introduce* false information while trying to remove some.
+
+The standard therefore required resolving `AchievementDef.unlockableRewardIdentifier` —
+the actual achievement→unlockable link — before changing a single record. **An
+unresolved question stays visibly unresolved; it is never settled by assumption.**
+
+**Resolved.** A full decompile (`ilspycmd -p`) exposes the `[RegisterAchievement]`
+attributes, giving the complete chain and settling the ambiguity: these *are* genuine
+drop-pool gates, not Logbook entries —
+
+```
+[RegisterAchievement("Discover10UniqueTier1", "Items.Crowbar", …)]  -> "The Basics"
+[RegisterAchievement("Die5Times",             "Items.Bear",    …)]  -> "Learning Process"
+[RegisterAchievement("FailShrineChance",      "Items.Hoof",    …)]  -> "Is This Bugged?"
+```
+
+Outcome: 342 attributes parsed, 171 grant an unlockable, **49 of 50 gated defs fully
+resolved**. Our existing 30 were all correct (0 mismatches) and **19 items were
+gated in-game while the site showed them as freely available** — Crowbar, Tougher
+Times, Paul's Goat Hoof, Backup Magazine, Medkit, Rusted Key, Preon Accumulator,
+The Crowdfunder, and others. Every one now carries its code-verified challenge and
+the game's own requirement text.
+
+The single unresolved gate (`Items.CrippleWardOnLevel`, no granting achievement and an
+unresolved name token) is left **unmarked and reported** rather than guessed.
+
+Locked state is now surfaced everywhere it matters — codex card, planner card, hover
+tooltip, and detail drawer — and `data:audit` **fails the build** on any drift between
+`items.json` and the extracted chain, in both directions (a missing lock *and* a lock
+we assert that the game doesn't). The gate was verified by deliberately removing
+Crowbar's unlock and confirming the audit errors.
+
+Scripts: `extract-unlockables.py` (T1) → `extract-achievements.py` (T0+T2) →
+`apply-unlocks.mjs`.
 
 This section previously listed five "maintainer-gated inputs." **Four of the five were
 wrong** — each was an assumption about where data lived, never tested. Re-checking them

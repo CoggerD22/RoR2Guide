@@ -287,10 +287,32 @@ test("locked items show how to unlock and can be filtered", async ({ page }) => 
     page.getByLabel(/Locked behind challenge: Experimenting/).first(),
   ).toBeVisible();
 
-  // "Locked only" narrows the grid to challenge-locked items (Crowbar is not one).
+  // Crowbar IS challenge-locked ("The Basics" — discover 10 unique white items),
+  // verified via ItemDef.unlockableDef -> [RegisterAchievement] -> ACHIEVEMENT_*.
+  // It was previously shown as freely available.
+  await page.goto("/items/crowbar");
+  const cb = page.getByRole("dialog", { name: "Crowbar" });
+  await expect(cb.getByText("The Basics")).toBeVisible();
+  await expect(cb.getByText("Discover 10 unique white items.")).toBeVisible();
+
+  // "Locked only" keeps locked items and drops unlocked ones (Bison Steak is free).
+  await page.goto("/items");
   await page.getByRole("checkbox", { name: "Locked only" }).check();
   await expect(page.getByRole("button", { name: /Fuel Cell/ })).toBeVisible();
-  await expect(page.getByRole("button", { name: /^Crowbar/ })).toHaveCount(0);
+  await expect(page.getByRole("button", { name: /Bison Steak/ })).toHaveCount(0);
+});
+
+test("locked items surface their unlock in the planner and on hover", async ({ page }) => {
+  // The planner shows locks too — planning around an item you can't obtain is wasted.
+  await page.goto("/planner");
+  await expect(
+    page.getByLabel(/Locked behind challenge: The Basics/).first(),
+  ).toBeVisible();
+
+  // Hovering a locked card surfaces the challenge + requirement in the tooltip.
+  await page.goto("/items");
+  await page.getByRole("button", { name: /^Crowbar/ }).first().hover();
+  await expect(page.getByText("Discover 10 unique white items.").first()).toBeVisible();
 });
 
 test("run plans are shareable and loadable via URL", async ({ page }) => {

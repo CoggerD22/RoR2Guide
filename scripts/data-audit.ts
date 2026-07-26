@@ -128,6 +128,40 @@ function main(): number {
     }
   }
 
+  // --- Unlock gating vs the game's own defs (PLAN §6A.7) -------------------
+  // An item the game gates but we show as free is false information by omission —
+  // the player is told it's obtainable when it isn't. Verified against the chain
+  // ItemDef.unlockableDef -> [RegisterAchievement] -> ACHIEVEMENT_* tokens.
+  // Runs only when the extraction is present, so contributors without a game
+  // install aren't blocked; CI has the extraction and enforces it.
+  const achPath = resolve(root, ".gamedata/achievements.json");
+  if (existsSync(achPath)) {
+    const ach = JSON.parse(readFileSync(achPath, "utf8")) as {
+      items: Record<string, { challenge: string | null; requirement: string | null }>;
+      equipment: Record<string, { challenge: string | null; requirement: string | null }>;
+    };
+    const gated = new Map<string, { challenge: string | null; requirement: string | null }>();
+    for (const kind of ["items", "equipment"] as const) {
+      for (const [name, v] of Object.entries(ach[kind])) gated.set(name, v);
+    }
+    for (const it of items) {
+      const g = gated.get(it.name);
+      if (g?.challenge) {
+        if (!it.unlock) {
+          errors.push(`"${it.id}" is gated in-game (challenge "${g.challenge}") but has no unlock — the site shows it as freely available`);
+        } else if (it.unlock.challenge !== g.challenge) {
+          errors.push(`"${it.id}" unlock challenge is "${it.unlock.challenge}", game says "${g.challenge}"`);
+        } else if (g.requirement && it.unlock.requirement !== g.requirement) {
+          errors.push(`"${it.id}" unlock requirement does not match the game's achievement text`);
+        }
+      } else if (it.unlock && !gated.has(it.name)) {
+        errors.push(`"${it.id}" is marked locked but no ItemDef/EquipmentDef gates it`);
+      }
+    }
+  } else {
+    warnings.push("unlock gating not cross-checked (.gamedata/achievements.json absent — run extract-unlockables.py + extract-achievements.py)");
+  }
+
   // --- Artifact icons (PLAN §4.8) -----------------------------------------
   for (const a of ARTIFACTS) {
     const iconPath = resolve(root, "public" + a.icon);

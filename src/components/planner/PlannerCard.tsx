@@ -1,5 +1,5 @@
 import { type CSSProperties } from "react";
-import { Check, Info, X } from "lucide-react";
+import { Check, Info, Lock, X } from "lucide-react";
 import type { Item } from "@/data/schema";
 import { TIER_META } from "@/data/items";
 import { cn } from "@/lib/utils";
@@ -37,6 +37,19 @@ export function PlannerCard({ item, state, onCycle, onInfo }: PlannerCardProps) 
       >
         <img src={asset(item.icon)} alt={item.name} loading="lazy" className="size-14 object-contain" />
         <span className="line-clamp-2 text-xs font-medium text-foreground">{item.name}</span>
+        {/*
+          Bottom-left: top-left is the ⓘ button and top-right the target/avoid badge.
+          Planning around an item you haven't unlocked is wasted planning, so the
+          lock has to be visible here too, not only in the codex (PLAN §5.8).
+        */}
+        {item.unlock && (
+          <span
+            className="pointer-events-none absolute bottom-1.5 left-1.5 rounded-full bg-black/50 p-0.5 text-amber-400/80"
+            title={`Locked — unlock challenge: ${item.unlock.challenge}`}
+          >
+            <Lock className="size-3" aria-label={`Locked behind challenge: ${item.unlock.challenge}`} />
+          </span>
+        )}
       </button>
 
       {/* State badge (top-right). */}

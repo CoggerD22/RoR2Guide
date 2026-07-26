@@ -21,7 +21,11 @@
     "icon": "/icons/crowbar.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Crowbar",
     "verified": true,
-    "confidence": "langfile"
+    "confidence": "langfile",
+    "unlock": {
+      "challenge": "The Basics",
+      "requirement": "Discover 10 unique white items."
+    }
   },
   {
     "id": "soldiers-syringe",
@@ -99,7 +103,11 @@
     "icon": "/icons/tougher-times.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Tougher_Times",
     "verified": true,
-    "confidence": "code"
+    "confidence": "code",
+    "unlock": {
+      "challenge": "Learning Process",
+      "requirement": "Die 5 times."
+    }
   },
   {
     "id": "tri-tip-dagger",
@@ -149,7 +157,11 @@
     "icon": "/icons/pauls-goat-hoof.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Paul%27s_Goat_Hoof",
     "verified": true,
-    "confidence": "code"
+    "confidence": "code",
+    "unlock": {
+      "challenge": "\"Is This Bugged?\"",
+      "requirement": "Fail the Shrine of Chance 3 times in a row."
+    }
   },
   {
     "id": "armor-piercing-rounds",
@@ -172,7 +184,11 @@
     "icon": "/icons/armor-piercing-rounds.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Armor-Piercing_Rounds",
     "verified": true,
-    "confidence": "langfile"
+    "confidence": "langfile",
+    "unlock": {
+      "challenge": "Advancement",
+      "requirement": "Complete a Teleporter event."
+    }
   },
   {
     "id": "backup-magazine",
@@ -195,7 +211,11 @@
     "icon": "/icons/backup-magazine.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Backup_Magazine",
     "verified": true,
-    "confidence": "langfile"
+    "confidence": "langfile",
+    "unlock": {
+      "challenge": "Flawless",
+      "requirement": "Fully charge a Teleporter without getting hit."
+    }
   },
   {
     "id": "bison-steak",
@@ -319,7 +339,11 @@
     "icon": "/icons/bundle-of-fireworks.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Bundle_of_Fireworks",
     "verified": true,
-    "confidence": "langfile"
+    "confidence": "langfile",
+    "unlock": {
+      "challenge": "...Maybe One More.",
+      "requirement": "Duplicate the same item 7 times in a row with a 3D Printer."
+    }
   },
   {
     "id": "delicate-watch",
@@ -443,7 +467,11 @@
     "icon": "/icons/medkit.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Medkit",
     "verified": true,
-    "confidence": "langfile"
+    "confidence": "langfile",
+    "unlock": {
+      "challenge": "Elite Slayer",
+      "requirement": "Defeat an Elite-type monster."
+    }
   },
   {
     "id": "personal-shield-generator",
@@ -817,7 +845,11 @@
     "icon": "/icons/rusted-key.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Rusted_Key",
     "verified": true,
-    "confidence": "langfile"
+    "confidence": "langfile",
+    "unlock": {
+      "challenge": "Keyed Up",
+      "requirement": "Defeat the Teleporter boss under 15 seconds."
+    }
   },
   {
     "id": "hikers-boots",
@@ -1570,7 +1602,11 @@
     "icon": "/icons/squid-polyp.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Squid_Polyp",
     "verified": true,
-    "confidence": "langfile"
+    "confidence": "langfile",
+    "unlock": {
+      "challenge": "Automation Activation",
+      "requirement": "Activate 6 turrets in a single run."
+    }
   },
   {
     "id": "death-mark",
@@ -3811,7 +3847,11 @@
     "icon": "/icons/beads-of-fealty.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Beads_of_Fealty",
     "verified": true,
-    "confidence": "langfile"
+    "confidence": "langfile",
+    "unlock": {
+      "challenge": "True Respite",
+      "requirement": "Obliterate yourself at the Obelisk.."
+    }
   },
   {
     "id": "focused-convergence",
@@ -4552,7 +4592,11 @@
     "icon": "/icons/preon-accumulator.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Preon_Accumulator",
     "verified": true,
-    "confidence": "langfile"
+    "confidence": "langfile",
+    "unlock": {
+      "challenge": "[REDACTED]",
+      "requirement": "Open the Timed Security Chest on Rallypoint Delta."
+    }
   },
   {
     "id": "the-back-up",
@@ -4570,7 +4614,11 @@
     "icon": "/icons/the-back-up.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/The_Back-up",
     "verified": true,
-    "confidence": "langfile"
+    "confidence": "langfile",
+    "unlock": {
+      "challenge": "Mechanic",
+      "requirement": "Repair 30 drones or turrets."
+    }
   },
   {
     "id": "ocular-hud",
@@ -4627,7 +4675,11 @@
     "icon": "/icons/the-crowdfunder.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/The_Crowdfunder",
     "verified": true,
-    "confidence": "langfile"
+    "confidence": "langfile",
+    "unlock": {
+      "challenge": "Funded!",
+      "requirement": "Collect $30,480 total gold."
+    }
   },
   {
     "id": "milky-chrysalis",
@@ -4663,7 +4715,11 @@
     "icon": "/icons/gnarled-woodsprite.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Gnarled_Woodsprite",
     "verified": true,
-    "confidence": "langfile"
+    "confidence": "langfile",
+    "unlock": {
+      "challenge": "One with the Woods",
+      "requirement": "Fully upgrade a Shrine of the Woods."
+    }
   },
   {
     "id": "primordial-cube",
@@ -4721,7 +4777,11 @@
     "icon": "/icons/eccentric-vase.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Eccentric_Vase",
     "verified": true,
-    "confidence": "langfile"
+    "confidence": "langfile",
+    "unlock": {
+      "challenge": "Blackout",
+      "requirement": "Defeat the unique guardian of Gilded Coast without any beacons deactivating."
+    }
   },
   {
     "id": "blast-shower",
@@ -4739,7 +4799,11 @@
     "icon": "/icons/blast-shower.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Blast_Shower",
     "verified": true,
-    "confidence": "langfile"
+    "confidence": "langfile",
+    "unlock": {
+      "challenge": "Warm For Life",
+      "requirement": "Die three times while burning."
+    }
   },
   {
     "id": "volcanic-egg",
@@ -4868,7 +4932,11 @@
     "icon": "/icons/forgive-me-please.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Forgive_Me_Please",
     "verified": true,
-    "confidence": "langfile"
+    "confidence": "langfile",
+    "unlock": {
+      "challenge": "I Love Dying!",
+      "requirement": "Die 20 times."
+    }
   },
   {
     "id": "fuel-array",
@@ -4974,7 +5042,11 @@
     "icon": "/icons/seed-of-life.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Seed_of_Life",
     "verified": true,
-    "confidence": "langfile"
+    "confidence": "langfile",
+    "unlock": {
+      "challenge": "King of the Hill",
+      "requirement": "Journey to the Prime Meridian and defeat the False Son."
+    }
   },
   {
     "id": "deus-ex-machina",
@@ -5045,7 +5117,11 @@
     "icon": "/icons/glowing-meteorite.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Glowing_Meteorite",
     "verified": true,
-    "confidence": "langfile"
+    "confidence": "langfile",
+    "unlock": {
+      "challenge": "Moon Worshipper",
+      "requirement": "Carry 5 Lunar items in a single run."
+    }
   },
   {
     "id": "helfire-tincture",
