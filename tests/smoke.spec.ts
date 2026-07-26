@@ -103,13 +103,20 @@ test("stat lab shows verified proc coefficients and marks unverified honestly", 
   await expect(panel.locator("tr", { hasText: "Laser Glaive" })).toContainText("0.8");
 });
 
-test("codex item detail shows a provenance badge", async ({ page }) => {
-  await page.goto("/items");
-  // Crowbar's numbers come from the game's language files.
-  await page.getByRole("button", { name: /Crowbar/ }).first().click();
-  const drawer = page.getByRole("dialog");
-  await expect(drawer).toBeVisible();
-  await expect(drawer.getByText("Game-text verified")).toBeVisible();
+test("codex item detail shows a provenance badge reflecting the real source", async ({ page }) => {
+  // Crowbar's stacking is traced to HealthComponent (1f + 0.75f * n), so it earns the
+  // stronger badge. This assertion is the point of the provenance system: upgrading an
+  // item's sourcing must visibly change what the site claims about it.
+  await page.goto("/items/crowbar");
+  const crowbar = page.getByRole("dialog", { name: "Crowbar" });
+  await expect(crowbar).toBeVisible();
+  await expect(crowbar.getByText("Code-verified")).toBeVisible();
+
+  // An item still sourced only from the game's text shows the weaker badge — the two
+  // must remain distinguishable, never collapsed into a single "verified".
+  await page.goto("/items/tri-tip-dagger");
+  const triTip = page.getByRole("dialog", { name: "Tri-Tip Dagger" });
+  await expect(triTip.getByText("Game-text verified")).toBeVisible();
 });
 
 test("codex secondary filters are collapsed by default and expand on demand", async ({ page }) => {
