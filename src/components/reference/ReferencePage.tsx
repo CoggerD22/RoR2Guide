@@ -127,17 +127,19 @@ function LoadoutUnlocks() {
   return (
     <div className="flex flex-col gap-6">
       <p className="text-xs leading-relaxed text-muted-foreground">
-        Challenge-unlocked alternate skills for every survivor. Skins aren&rsquo;t listed — each
-        survivor&rsquo;s three follow the same pattern (a Prime Meridian clear, a Monsoon mastery
-        run, and the Alloyed Collective accept/reject choice). Some newer challenges&rsquo; exact
-        requirements are still being verified.
+        Challenge-unlocked alternate skills for every survivor, generated from the game&rsquo;s
+        own <code className="text-foreground/80">SkillFamily</code> variants and each
+        skill&rsquo;s unlock achievement — challenge names and requirements are the game&rsquo;s
+        exact text. Skins aren&rsquo;t listed. A survivor shown as having no alternates has
+        been <em>verified</em> to have none, rather than simply not recorded.
       </p>
       {LOADOUT_UNLOCKS.map((s) => (
         <section key={s.survivor}>
           <h3 className="mb-2 font-display text-sm font-semibold text-foreground">{s.survivor}</h3>
           {s.skills.length === 0 ? (
             <p className="rounded-xl border border-border bg-surface px-4 py-3 text-xs text-muted-foreground">
-              Fixed kit — no challenge-locked alternate skills.
+              Fixed kit — verified against the game&rsquo;s skill families: this survivor has no
+              alternate skills.
             </p>
           ) : (
             <div className="overflow-hidden rounded-xl border border-border">
@@ -148,13 +150,24 @@ function LoadoutUnlocks() {
                       <td className="w-1/3 px-4 py-2 align-top">
                         <div className="font-medium text-foreground">{sk.skill}</div>
                         <div className="text-[11px] uppercase tracking-wide text-muted-foreground">
-                          {sk.slot}
+                          {/* No slot = not a loadout-slot variant (Captain's beacons). */}
+                          {sk.slot ?? "Supply Drop option"}
                         </div>
                       </td>
                       <td className="px-4 py-2 align-top">
-                        <div className="text-primary">{sk.challenge}</div>
-                        {sk.requirement && (
-                          <div className="mt-0.5 text-xs text-muted-foreground">{sk.requirement}</div>
+                        {sk.noUnlockRequired ? (
+                          <div className="text-xs text-muted-foreground">
+                            Available from the start — no unlock required.
+                          </div>
+                        ) : (
+                          <>
+                            <div className="text-primary">{sk.challenge}</div>
+                            {sk.requirement && (
+                              <div className="mt-0.5 text-xs text-muted-foreground">
+                                {sk.requirement}
+                              </div>
+                            )}
+                          </>
                         )}
                       </td>
                     </tr>

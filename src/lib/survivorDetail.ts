@@ -1,6 +1,6 @@
 import { survivors } from "@/data/survivors";
 import { skillsBySurvivor } from "@/data/skills";
-import { LOADOUT_UNLOCKS } from "@/data/reference";
+import { LOADOUT_UNLOCKS, type SkillUnlock } from "@/data/reference";
 import type { Survivor, Skill } from "@/data/schema";
 
 /**
@@ -21,7 +21,12 @@ export interface SurvivorDetail {
   survivor: Survivor;
   slots: Array<{ slot: Skill["slot"]; label: string; skills: SkillRow[] }>;
   /** Loadout variants we have an unlock for but couldn't match to a skill. */
-  unmatchedUnlocks: Array<{ skill: string; slot: string; challenge: string; requirement: string }>;
+  /**
+   * Unlockable skills that didn't match a loadout-slot skill. `slot` is optional
+   * because some are not slot variants at all (Captain's Supply Drop beacons) — the
+   * game gives them no slot, so we don't invent one (PLAN §5.1).
+   */
+  unmatchedUnlocks: SkillUnlock[];
 }
 
 const SLOT_ORDER: Array<{ slot: Skill["slot"]; label: string }> = [

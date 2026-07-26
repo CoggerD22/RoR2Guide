@@ -118,10 +118,20 @@ export const BAZAAR_DREAMS: DreamRef[] = [
 
 export interface SkillUnlock {
   skill: string;
-  slot: "Primary" | "Secondary" | "Utility" | "Special" | "Passive";
+  /**
+   * The loadout slot, from SkillFamily.variants. Omitted for skills that are
+   * unlockable but are NOT variants of the four slots — Captain's Supply Drop
+   * beacons. Omitting is deliberate: inventing a slot would be false information.
+   */
+  slot?: "Primary" | "Secondary" | "Utility" | "Special" | "Passive";
   challenge: string;
   /** Verbatim ACHIEVEMENT_*_DESCRIPTION. Empty only if the game defines none. */
   requirement: string;
+  /**
+   * True when the variant carries no unlockableDef — an alternate that is selectable
+   * from the start (e.g. MUL-T's Rebar Puncher). Distinct from "we don't know".
+   */
+  noUnlockRequired?: boolean;
 }
 
 export interface SurvivorLoadout {
@@ -139,135 +149,149 @@ export const LOADOUT_UNLOCKS: SurvivorLoadout[] = [
   {
     survivor: "Commando",
     skills: [
-      { skill: "Tactical Slide", slot: "Utility", challenge: "Godspeed", requirement: "As Commando, fully charge the first-stage teleporter before the timer hits 5 minutes." },
-      { skill: "Frag Grenade", slot: "Special", challenge: "Incorruptible", requirement: "As Commando, clear 20 stages in a single run without picking up any Lunar items." },
-      { skill: "Phase Blast", slot: "Secondary", challenge: "Rolling Thunder", requirement: "As Commando, land the killing blow on an Overloading Worm." },
+      { skill: "Phase Blast", slot: "Secondary", challenge: "Commando: Rolling Thunder", requirement: "As Commando, land the killing blow on an Overloading Worm." },
+      { skill: "Tactical Slide", slot: "Utility", challenge: "Commando: Godspeed", requirement: "As Commando, fully charge the first-stage teleporter before the timer hits 5 minutes." },
+      { skill: "Frag Grenade", slot: "Special", challenge: "Commando: Incorruptible", requirement: "As Commando, clear 20 stages in a single run without picking up any Lunar items." },
     ],
   },
   {
     survivor: "Huntress",
     skills: [
-      { skill: "Flurry", slot: "Primary", challenge: "Finishing Touch", requirement: "As Huntress, land a killing blow with every possible hit of a single glaive." },
-      { skill: "Phase Blink", slot: "Utility", challenge: "One Shot, One Kill", requirement: "As Huntress, collect and carry 12 Crowbars at once." },
-      { skill: "Ballista", slot: "Special", challenge: "Piercing Wind", requirement: "As Huntress, start and finish either Rallypoint Delta or Scorched Acres without falling below 100% health." },
+      { skill: "Flurry", slot: "Primary", challenge: "Huntress: Finishing Touch", requirement: "As Huntress, land a killing blow with every possible hit of a single glaive." },
+      { skill: "Phase Blink", slot: "Utility", challenge: "Huntress: One Shot, One Kill", requirement: "As Huntress, collect and carry 12 Crowbars at once." },
+      { skill: "Ballista", slot: "Special", challenge: "Huntress: Piercing Wind", requirement: "As Huntress, start and finish either Rallypoint Delta or Scorched Acres without falling below 100% health." },
     ],
   },
   {
     survivor: "MUL-T",
     skills: [
-      { skill: "Power-Saw", slot: "Primary", challenge: "Gotcha!", requirement: "As MUL-T, land the killing blow on an Imp Overlord with the Preon Accumulator." },
-      { skill: "Scrap Launcher", slot: "Primary", challenge: "Pest Control", requirement: "As MUL-T, defeat two Beetle Queens without leaving the teleporter zone." },
-      { skill: "Power Mode", slot: "Special", challenge: "Seventh Day", requirement: "As MUL-T, clear the Void Fields on Stage 7 or later." },
+      { skill: "Power-Saw", slot: "Primary", challenge: "MUL-T: Gotcha!", requirement: "As MUL-T, land the killing blow on an Imp Overlord with the Preon Accumulator." },
+      { skill: "Rebar Puncher", slot: "Primary", challenge: "", requirement: "", noUnlockRequired: true },
+      { skill: "Scrap Launcher", slot: "Primary", challenge: "MUL-T: Pest Control", requirement: "As MUL-T, defeat two Beetle Queens without leaving the teleporter zone." },
+      { skill: "Power Mode", slot: "Special", challenge: "MUL-T: Seventh Day", requirement: "As MUL-T, clear the Void Fields on Stage 7 or later." },
     ],
   },
   {
     survivor: "Engineer",
     skills: [
-      { skill: "Spider Mines", slot: "Secondary", challenge: "100% Calculated", requirement: "As Engineer, defeat the teleporter boss in less than 5 seconds after it spawns." },
-      { skill: "TR58 Carbonizer Turret", slot: "Special", challenge: "Better With Friends", requirement: "As Engineer, recruit 12 minions at one time." },
-      { skill: "Thermal Harpoons", slot: "Utility", challenge: "Zero Sum", requirement: "As Engineer, finish charging the teleporter with zero monsters remaining on the stage." },
+      { skill: "Spider Mines", slot: "Secondary", challenge: "Engineer: 100% Calculated", requirement: "As Engineer, defeat the teleporter boss in less than 5 seconds after it spawns." },
+      { skill: "Thermal Harpoons", slot: "Utility", challenge: "Engineer: Zero Sum", requirement: "As Engineer, finish charging the teleporter with zero monsters remaining on the stage." },
+      { skill: "TR58 Carbonizer Turret", slot: "Special", challenge: "Engineer: Better With Friends", requirement: "As Engineer, recruit 12 minions at one time." },
     ],
   },
   {
     survivor: "Artificer",
     skills: [
-      { skill: "Plasma Bolt", slot: "Primary", challenge: "Massacre", requirement: "As Artificer, perform a multikill of 20 enemies." },
-      { skill: "Cast Nano-Spear", slot: "Secondary", challenge: "Chunked!", requirement: "As Artificer, fully defeat the teleporter boss in a one-second burst of damage." },
-      { skill: "Ion Surge", slot: "Special", challenge: "Orbital Bombardment", requirement: "As Artificer, kill 15 enemies before touching the ground." },
+      { skill: "Plasma Bolt", slot: "Primary", challenge: "Artificer: Massacre", requirement: "As Artificer, perform a multikill of 20 enemies." },
+      { skill: "Cast Nano-Spear", slot: "Secondary", challenge: "Artificer: Chunked!", requirement: "As Artificer, fully defeat the teleporter boss in a one-second burst of damage." },
+      { skill: "Ion Surge", slot: "Special", challenge: "Artificer: Orbital Bombardment", requirement: "As Artificer, kill 15 enemies before touching the ground." },
     ],
   },
   {
     survivor: "Mercenary",
     skills: [
-      { skill: "Rising Thunder", slot: "Secondary", challenge: "Demon of the Skies", requirement: "As Mercenary, don't touch the ground for 30 seconds." },
-      { skill: "Slicing Winds", slot: "Special", challenge: "Ethereal", requirement: "As Mercenary, complete a Prismatic Trial without falling below 100% health." },
-      { skill: "Focused Assault", slot: "Utility", challenge: "Flash of Blades", requirement: "As Mercenary, use 20 abilities in 10 seconds." },
+      { skill: "Rising Thunder", slot: "Secondary", challenge: "Mercenary: Demon of the Skies", requirement: "As Mercenary, don't touch the ground for 30 seconds." },
+      { skill: "Focused Assault", slot: "Utility", challenge: "Mercenary: Flash of Blades", requirement: "As Mercenary, use 20 abilities in 10 seconds." },
+      { skill: "Slicing Winds", slot: "Special", challenge: "Mercenary: Ethereal", requirement: "As Mercenary, complete a Prismatic Trial without falling below 100% health." },
     ],
   },
   {
     survivor: "Bandit",
     skills: [
-      { skill: "Desperado", slot: "Special", challenge: "B&E", requirement: "As Bandit, kill the final boss with 'Lights Out'." },
-      { skill: "Blast", slot: "Primary", challenge: "Classic Man", requirement: "As Bandit, successfully use 'Lights Out' to reset your cooldowns 15 times in a row." },
-      { skill: "Serrated Shiv", slot: "Secondary", challenge: "Sadist", requirement: "As Bandit, kill a monster with 20 stacks of Hemorrhage." },
+      { skill: "Blast", slot: "Primary", challenge: "Bandit: Classic Man", requirement: "As Bandit, successfully use 'Lights Out' to reset your cooldowns 15 times in a row." },
+      { skill: "Serrated Shiv", slot: "Secondary", challenge: "Bandit: Sadist", requirement: "As Bandit, kill a monster with 20 stacks of Hemorrhage." },
+      { skill: "Desperado", slot: "Special", challenge: "Bandit: B&E", requirement: "As Bandit, kill the final boss with 'Lights Out'." },
     ],
   },
   {
     survivor: "Loader",
     skills: [
-      { skill: "Thunder Gauntlet", slot: "Utility", challenge: "Earthshatter", requirement: "As Loader, land a Charged Gauntlet hit at 300mph or higher." },
-      { skill: "Spiked Fist", slot: "Secondary", challenge: "Swing By", requirement: "As Loader, reach and proceed through the Celestial Portal in 25 minutes or less." },
-      { skill: "Thunderslam", slot: "Special", challenge: "The Thunderdome", requirement: "As Loader, kill three other Loaders in the Bulwark's Ambry." },
+      { skill: "Spiked Fist", slot: "Secondary", challenge: "Loader: Swing By", requirement: "As Loader, reach and proceed through the Celestial Portal in 25 minutes or less." },
+      { skill: "Thunder Gauntlet", slot: "Utility", challenge: "Loader: Earthshatter", requirement: "As Loader, land a Charged Gauntlet hit at 300mph or higher." },
+      { skill: "Thunderslam", slot: "Special", challenge: "Loader: The Thunderdome", requirement: "As Loader, kill three other Loaders in the Bulwark's Ambry." },
     ],
   },
   {
     survivor: "Acrid",
     skills: [
-      { skill: "Ravenous Bite", slot: "Secondary", challenge: "Bad Medicine", requirement: "As Acrid, land the final blow on a Scavenger." },
-      { skill: "Blight", slot: "Secondary", challenge: "Easy Prey", requirement: "As Acrid, land the killing blow on 50 total enemies that have 1 hit point left." },
-      { skill: "Frenzied Leap", slot: "Utility", challenge: "Pandemic", requirement: "As Acrid, inflict Poison 1000 total times." },
+      { skill: "Ravenous Bite", slot: "Secondary", challenge: "Acrid: Bad Medicine", requirement: "As Acrid, land the final blow on a Scavenger." },
+      { skill: "Frenzied Leap", slot: "Utility", challenge: "Acrid: Pandemic", requirement: "As Acrid, inflict Poison 1000 total times." },
+      { skill: "Blight", slot: "Passive", challenge: "Acrid: Easy Prey", requirement: "As Acrid, land the killing blow on 50 total enemies that have 1 hit point left." },
     ],
   },
   {
     survivor: "Captain",
     skills: [
-      { skill: "OGM-72 'DIABLO' Strike", slot: "Utility", challenge: "Smushed", requirement: "As Captain, kill the final boss using a Supply Beacon." },
-      { skill: "Beacon: Resupply", slot: "Secondary", challenge: "Wanderlust", requirement: "As Captain, visit 10 different environments in a single run." },
-      { skill: "Beacon: Hacking", slot: "Utility", challenge: "Worth Every Penny", requirement: "As Captain, repair and recruit a TC-280 Prototype." },
+      { skill: "OGM-72 'DIABLO' Strike", slot: "Utility", challenge: "Captain: Smushed", requirement: "As Captain, kill the final boss using a Supply Beacon." },
+      { skill: "Beacon: Hacking", challenge: "Captain: Worth Every Penny", requirement: "As Captain, repair and recruit a TC-280 Prototype." },
+      { skill: "Beacon: Resupply", challenge: "Captain: Wanderlust", requirement: "As Captain, visit 10 different environments in a single run." },
     ],
   },
   {
     survivor: "REX",
     skills: [
-      { skill: "DIRECTIVE: Drill", slot: "Secondary", challenge: "Bushwhacked", requirement: "As REX, complete an entire teleporter event while under 50% health." },
-      { skill: "DIRECTIVE: Harvest", slot: "Special", challenge: "Full of Life", requirement: "As REX, heal for 1000 health at once." },
-      { skill: "Bramble Volley", slot: "Utility", challenge: "Dunked", requirement: "As REX, kill a Clay Dunestrider on Abandoned Aqueduct by throwing it into a pit." },
+      { skill: "DIRECTIVE: Drill", slot: "Secondary", challenge: "REX: Bushwhacked", requirement: "As REX, complete an entire teleporter event while under 50% health." },
+      { skill: "Bramble Volley", slot: "Utility", challenge: "REX: Dunked", requirement: "As REX, kill a Clay Dunestrider on Abandoned Aqueduct by throwing it into a pit." },
+      { skill: "DIRECTIVE: Harvest", slot: "Special", challenge: "REX: Full of Life", requirement: "As REX, heal for 1000 health at once." },
     ],
+  },
+  {
+    survivor: "Heretic",
+    /** Verified against SkillFamily.variants: this survivor genuinely has no alternates. */
+    skills: [],
   },
   {
     survivor: "Railgunner",
     skills: [
-      { skill: "HH44 Marksman", slot: "Secondary", challenge: "Marksman", requirement: "As Railgunner, fire 30 consecutive sniper shots without missing a Weak Point." },
-      { skill: "Cryocharge", slot: "Special", challenge: "Trickshot", requirement: "As Railgunner, get 3 kills with a single Supercharge shot while airborne." },
+      { skill: "HH44 Marksman", slot: "Secondary", challenge: "Railgunner: Marksman", requirement: "As Railgunner, fire 30 consecutive sniper shots without missing a Weak Point." },
+      { skill: "Polar Field Device", slot: "Utility", challenge: "Railgunner: Annihilator", requirement: "As Railgunner, deal 1,000,000 damage in one shot." },
+      { skill: "Cryocharge", slot: "Special", challenge: "Railgunner: Trickshot", requirement: "As Railgunner, get 3 kills with a single Supercharge shot while airborne." },
     ],
   },
   {
     survivor: "Void Fiend",
+    /** Verified against SkillFamily.variants: this survivor genuinely has no alternates. */
     skills: [],
   },
   {
     survivor: "Seeker",
     skills: [
-      { skill: "Soul Spiral", slot: "Secondary", challenge: "Airborne Souls", requirement: "As Seeker, hit three or more airborne enemies with a single use of the exploding third hit of Spirit Punch." },
-      { skill: "Reprieve", slot: "Utility", challenge: "Scorched Earth", requirement: "Deal 500,000% damage with one use of Sojourn's explosion." },
-      { skill: "Palm Blast", slot: "Special", challenge: "Clear Mind", requirement: "As Seeker, meditate 20 times consecutively without missing an input in a single run." },
+      { skill: "Soul Spiral", slot: "Secondary", challenge: "Seeker: Airborne Souls", requirement: "As Seeker, hit three or more airborne enemies with a single use of the exploding third hit of Spirit Punch." },
+      { skill: "Reprieve", slot: "Utility", challenge: "Seeker: Scorched Earth", requirement: "Deal 500,000% damage with one use of Sojourn's explosion." },
+      { skill: "Palm Blast", slot: "Special", challenge: "Seeker: Clear Mind", requirement: "As Seeker, meditate 20 times consecutively without missing an input in a single run." },
     ],
   },
   {
     survivor: "Chef",
     skills: [
-      { skill: "Ice Box", slot: "Secondary", challenge: "It's Getting Hot In Here!", requirement: "As CHEF apply 20 stacks of Burn at once to the final boss." },
-      { skill: "Oil Spill", slot: "Utility", challenge: "You've Always Been Crazy", requirement: "As CHEF hit five airborne enemies with one instance of Roll." },
+      { skill: "Ice Box", slot: "Secondary", challenge: "CHEF: It's Getting Hot In Here!", requirement: "As CHEF apply 20 stacks of Burn at once to the final boss." },
+      { skill: "Oil Spill", slot: "Utility", challenge: "CHEF: You've Always Been Crazy", requirement: "As CHEF hit five airborne enemies with one instance of Roll." },
+      { skill: "Yes, CHEF!", slot: "Special", challenge: "CHEF: Barbecued Bison Recipe Complete", requirement: "As CHEF complete 10 recipes by searing an oiled bison with Sear." },
     ],
   },
   {
     survivor: "False Son",
     skills: [
-      { skill: "Lunar Stakes", slot: "Secondary", challenge: "Protein Heavy Diet", requirement: "As False Son, gain 40 additional Lunar Spikes through Growth." },
-      { skill: "Laser Burst", slot: "Special", challenge: "Stare Them Down", requirement: "As False Son, kill 15 enemies with one activation of Laser of the Father." },
+      { skill: "Lunar Stakes", slot: "Secondary", challenge: "False Son: Protein Heavy Diet", requirement: "As False Son, gain 40 additional Lunar Spikes through Growth." },
+      { skill: "Meridian's Will", slot: "Utility", challenge: "False Son: Family Bonding", requirement: "As False Son, have Aurelionite kill the final boss while the final boss is inflicted with at least one Lunar Ruin." },
+      { skill: "Laser Burst", slot: "Special", challenge: "False Son: Stare Them Down", requirement: "As False Son, kill 15 enemies with one activation of Laser of the Father." },
     ],
   },
   {
     survivor: "Operator",
     skills: [
-      { skill: "CMD-SWARM", slot: "Secondary", challenge: "That All You Got?", requirement: "As Operator, kill 4 different types of monsters with a single ricochet." },
-      { skill: "FIREWALL", slot: "Utility", challenge: "Not So Different", requirement: "As Operator, defeat the Teleporter boss on Conduit Canyon without touching the ground." },
-      { skill: "Amp Core", slot: "Special", challenge: "That Just Happened", requirement: "As Operator, keep an Elder Lemurian airborne for 10 seconds." },
+      { skill: "CMD-SWARM", slot: "Secondary", challenge: "Operator: That All You Got?", requirement: "As Operator, kill 4 different types of monsters with a single ricochet." },
+      { skill: "FIREWALL", slot: "Utility", challenge: "Operator: Not So Different", requirement: "As Operator, defeat the Teleporter boss on Conduit Canyon without touching the ground." },
+      { skill: "Amp Core", slot: "Special", challenge: "Operator: That Just Happened", requirement: "As Operator, keep an Elder Lemurian airborne for 10 seconds." },
     ],
   },
   {
     survivor: "Drifter",
-    skills: [],
+    skills: [
+      { skill: "Junk Cube", slot: "Secondary", challenge: "Drifter: Trash Compactor", requirement: "As Drifter, carry 20 temporary items at once." },
+      { skill: "Tornado Slam", slot: "Utility", challenge: "Drifter: In The Bag", requirement: "As Drifter, defeat a boss from the challenge of the Mountain by tossing a Shrine of the Mountain." },
+      { skill: "Tinker", slot: "Special", challenge: "Drifter: Leave No Trace", requirement: "As Drifter, claim the contents of the lost backpack in the vault of Solutional Haunt." },
+    ],
   },
 ];
 

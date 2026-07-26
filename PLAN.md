@@ -385,7 +385,7 @@ Anything where a description token was stored into a behaviour-typed field is
 | `SHRINES` (12) | `effect` | ❌ **Invalid** — description-as-behaviour. Redo from `Shrine*Behavior` + prefab constants. |
 | `SHRINES` (12) | `cost` | ❌ **Editorial, unlabelled** — hand-written, presented as fact. Either derive from prefab or mark as ours. |
 | `ARTIFACTS` (20) | `effect` | ❌ **Invalid** — same error. Redo against each artifact's manager/behaviour class. |
-| `LOADOUT_UNLOCKS` (45) | `requirement` | ⚠️ **Conditionally valid** — it is the game's own stated unlock contract, so it is legitimately *Quoted text*, but it must be **labelled as the game's description**, not as the verified trigger. The true trigger lives in each achievement class. |
+| `LOADOUT_UNLOCKS` (52) | `slot`, `challenge`, `requirement` | ✅ **Resolved** (§5.1). `slot` now comes from `SkillFamily.variants` (T1) instead of being hand-assigned — which is how Acrid's *Blight* was mislabelled Secondary when it is a Passive. `challenge` resolves through `[RegisterAchievement]` (T0). `requirement` remains *Quoted text*, correctly labelled as the game's stated condition. |
 | `BAZAAR_DREAMS` (31) | `dream` | ✅ **Valid** — the Seer literally speaks this line; it is Quoted text by nature. |
 | `BAZAAR_DREAMS` (31) | `stage`, `stageNumber` | ✅ **Valid** — structural, from the token name joined to `SceneDef.stageOrder`, not from prose. |
 | `items.json` (212) | `description`, `pickupText` | ✅ **Valid as Quoted text** — these are the in-game tooltips, and `data:diff` confirms transcription fidelity. Any *derived* number the site computes from them belongs to the stat engine, which is separately code-verified. |
@@ -419,10 +419,10 @@ Anything where a description token was stored into a behaviour-typed field is
 | `BAZAAR_DREAMS` (31) | ✅ Quoted text + structural mapping |
 | **`SHRINES` (12) effects/costs** | ❌ **Invalid — description-as-behaviour; redo** |
 | **`ARTIFACTS` (20) effects** | ❌ **Invalid — same; redo against behaviour classes** |
-| **`LOADOUT_UNLOCKS` (45)** | ⚠️ Valid only if relabelled as the game's stated description |
+| `LOADOUT_UNLOCKS` (52) | ✅ Regenerated from SkillFamily variants + RegisterAchievement (§5.1) |
 | **Ambry codes (19)** | ⚠️ Still wiki-sourced — extractable, not yet done |
 | **Proc coefficients (21/125)** | ⚠️ Still unresolved — statically recoverable (§5.7) |
-| **Loadout alt-skill coverage** | ⚠️ 5 survivors under-reported (§5.1) |
+| **Loadout alt-skill coverage** | ✅ regenerated from SkillFamily variants — 52 rows, slots + challenges verified (§5.1) |
 
 Work: re-derive every hand-entered `reference.ts` block from game text, transcribing
 **verbatim** — including the game's own typos (e.g. "cavernouse depths"); the site
@@ -431,7 +431,29 @@ way items and survivors already carry them, and extend `data:audit` to flag any
 reference row lacking provenance. Portals (§5.6) should be built from the `PORTAL_*`
 and interactable tokens for the same reason.
 
-**5.1 Loadout-table correctness pass — and an audit that makes it stick.**
+**5.1 Loadout-table correctness pass — RESOLVED.** ✅ Regenerated from game data by
+`extract-skill-unlocks.py` + `apply-skill-unlocks.mjs`. The hand-entered table was wrong
+in three distinct ways, all now fixed:
+- **Missing rows.** 5 survivors under-reported; **Drifter had none**, so the UI asserted
+  "Fixed kit" for a survivor with three alternates (Junk Cube / Tornado Slam / Tinker).
+- **Wrong slots.** Acrid's *Blight* was listed Secondary — `CROCO_PASSIVE_ALT_NAME`
+  shows it is a **Passive**. Captain's two beacons are **Supply Drop options**, not
+  Secondary/Utility variants, so they now carry no slot rather than an invented one.
+- **Paraphrased requirements**, replaced with the game's own achievement text.
+
+Sourcing chain: `SkillLocator → SkillFamily.variants` (slot, T1) →
+`variant.unlockableDef` → `[RegisterAchievement]` (T0) → `ACHIEVEMENT_*` tokens (T2).
+The legacy `unlockableName` string is empty in shipped data (`SkillFamily` still carries
+`UpgradeUnlockableNameToUnlockableDef()`), so the pointer is resolved through a global
+path_id index — cross-bundle, like the void-corruption pairs.
+
+Result: **52 rows across 19 survivors**, 48/49 slot variants with a resolved challenge.
+Two states are now *distinguishable* rather than collapsed:
+- **Genuinely fixed-kit** — Heretic and Void Fiend only, verified to have zero variants.
+- **No unlock required** — MUL-T's *Rebar Puncher* is an alternate with no
+  `unlockableDef`, i.e. selectable from the start. Shown as such, not as a challenge.
+
+**5.1b Original (retained for the record).**
 `LOADOUT_UNLOCKS` uses an empty skill list to mean two different things: *"this
 survivor genuinely has no challenge-locked alternates"* (Void Fiend — correct) and
 *"we never entered the data"* (Drifter — wrong). The UI renders both as the positive
@@ -524,7 +546,19 @@ Work to do:
 
 **5.8 Make the locked-item state unmissable.** §4.7 shipped a lock badge, a
 "How to unlock" block, and a "Locked only" filter, but the badge is deliberately
-subtle and reads as invisible at grid density. Strengthen the *visual* language:
+subtle and reads as invisible at grid density.
+
+**Reported from real use:** a player saw the lock on Harvester's Scythe and *could not
+find how to unlock it*. The data was correct and code-verified the whole time
+(`CompletePrismaticTrial` → "Prismatically Aligned" → "Complete a Prismatic Trial."),
+and the UI was deployed — so this was purely a **discoverability** failure, the kind
+that no data audit can catch. Two causes, both now fixed: the lock's native tooltip
+named only the *challenge* and not the *requirement*, and hovering the badge suppressed
+the card tooltip that did carry it. Both surfaces now state the full requirement.
+The lesson generalises: **correct-but-unfindable is indistinguishable from missing**,
+so lock work is judged by whether a player can answer "how do I get this?" unaided.
+
+Remaining, to strengthen the *visual* language:
 a clearly distinct treatment for locked cards (dimmed/desaturated art with the lock
 overlaid, in the spirit of the in-game logbook), a legend so the state is
 self-explanatory, and the challenge surfaced in the hover tooltip rather than only
@@ -799,7 +833,7 @@ Verification that depends on remembering to verify will fail. Gates:
 | `SHRINES` effects/costs | Behaviour + Numeric | 0/12 | ❌ (§5.0.3) |
 | Ambry codes | Numeric/identity | 0/19 | ❌ wiki-sourced, extractable |
 | `BAZAAR_DREAMS` | Quoted + structural | 31/31 | ✅ |
-| `LOADOUT_UNLOCKS` | Quoted | 45/45 | ⚠️ valid as *stated* requirement only |
+| `LOADOUT_UNLOCKS` (52) | Identity + Quoted | 52/52 | ✅ slots from SkillFamily (T1), challenge via RegisterAchievement (T0), requirement verbatim (T2) |
 | **Item unlock gating** | Existence + Quoted | **49/49 resolved** | ✅ §6A.7 — chain verified, audit-gated |
 
 ### 6A.7 Worked example of the standard: item unlock gating

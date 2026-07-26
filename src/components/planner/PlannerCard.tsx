@@ -45,7 +45,7 @@ export function PlannerCard({ item, state, onCycle, onInfo }: PlannerCardProps) 
         {item.unlock && (
           <span
             className="pointer-events-none absolute bottom-1.5 left-1.5 rounded-full bg-black/50 p-0.5 text-amber-400/80"
-            title={`Locked — unlock challenge: ${item.unlock.challenge}`}
+            title={`Locked — ${item.unlock.challenge}${item.unlock.requirement ? `: ${item.unlock.requirement}` : ""}`}
           >
             <Lock className="size-3" aria-label={`Locked behind challenge: ${item.unlock.challenge}`} />
           </span>

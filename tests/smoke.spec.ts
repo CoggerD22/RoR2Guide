@@ -175,6 +175,27 @@ test("survivor page joins base stats, skills, procs and unlock challenges", asyn
   await expect(page.getByText(/No survivor called/)).toBeVisible();
 });
 
+test("Drifter's alternate skills are listed, not falsely reported as a fixed kit", async ({ page }) => {
+  await page.goto("/reference");
+  await page.getByRole("button", { name: "Loadout Unlocks" }).click();
+
+  // Drifter has 3 alternates in the game's SkillFamily data; the table previously
+  // showed "Fixed kit" for him, which was a false positive claim.
+  const drifter = page.locator("section", { has: page.getByRole("heading", { name: "Drifter" }) });
+  await expect(drifter.getByText("Junk Cube")).toBeVisible();
+  await expect(drifter.getByText("Tornado Slam")).toBeVisible();
+  await expect(drifter.getByText("Tinker")).toBeVisible();
+  await expect(drifter.getByText("Drifter: Trash Compactor")).toBeVisible();
+  await expect(drifter.getByText("As Drifter, carry 20 temporary items at once.")).toBeVisible();
+  await expect(drifter.getByText(/Fixed kit/)).toHaveCount(0);
+
+  // Void Fiend genuinely has none — "fixed kit" must still be sayable when it's true.
+  const voidFiend = page.locator("section", {
+    has: page.getByRole("heading", { name: "Void Fiend" }),
+  });
+  await expect(voidFiend.getByText(/Fixed kit/)).toBeVisible();
+});
+
 test("Heretic shows her real item-granted kit, not the placeholder", async ({ page }) => {
   await page.goto("/survivors/heretic");
   await expect(page.getByRole("heading", { name: "Heretic" })).toBeVisible();

@@ -118,6 +118,14 @@ def main():
     with open(f"{OUT_DIR}/unlockables.json", "w", encoding="utf-8") as fh:
         json.dump(out, fh, indent=1, ensure_ascii=False, sort_keys=True)
 
+    # Global path_id -> cachedName index. Addressables path_ids are unique across
+    # bundles, so this lets other extractors resolve an unlockableDef PPtr that points
+    # outside their own bundle — which is how SkillFamily.Variant references them
+    # (extract-skill-unlocks.py).
+    with open(f"{OUT_DIR}/unlockable-index.json", "w", encoding="utf-8") as fh:
+        json.dump({str(pid): u["cachedName"] for pid, u in unlockables.items()},
+                  fh, indent=1, ensure_ascii=False, sort_keys=True)
+
     locked_i = sum(1 for v in out["items"].values() if v.get("unlockable"))
     locked_e = sum(1 for v in out["equipment"].values() if v.get("unlockable"))
     print(f"{len(out['items'])} ItemDefs ({locked_i} locked), "
