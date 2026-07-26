@@ -720,3 +720,49 @@ implicitly and is a genuine trap:
 
 Both are now written into `schema.ts` at the field definition, where the requirement is
 visible at the point of use rather than living in someone's memory. **42 / 212.**
+
+### 3j.8 The linear block — triage tooling, and Brilliant Behemoth
+
+153 entries were marked `linear` on the strength of "the description says +X (+X per
+stack)". Reading all of them by hand is slow and error-prone, so
+`scripts/scan-linear-coefficients.py` narrows the field: for each entry it derives the
+literals the code would plausibly use for the recorded value (`20`, `20f`, `0.2f`) and
+searches the item's implementation for that literal applied to the item's own count —
+including the **second hop** through the local the count is stored in, which is what hid
+Alien Head's `0.75f` and Corpsebloom's `0.1f`.
+
+**113 unverified linear items triaged: 60 with a coefficient match in code, 53 needing a
+manual read.** It reports candidates, never conclusions — the match still has to be read
+in context, which is exactly how the one error in this batch surfaced.
+
+First batch confirmed (all correct as recorded):
+
+| Item | Code |
+|---|---|
+| Armor-Piercing Rounds | `num4 *= 1f + 0.2f * n` |
+| AtG Missile Mk. 1 | `damageCoefficient = 3f * n` |
+| Brainstalks | `AddTimedBuff(NoCooldowns, n * 4f)` |
+| Brittle Crown | `n * 2f * Run.difficultyCoefficient` |
+| Ceremonial Dagger | `1.5f * n` |
+| Charged Perforator | `5f * n` |
+| Bundle of Fireworks | `4 + n * 4` |
+| Berzerker's Pauldron | `2f + 4f * n` |
+
+Two of those carry a nuance the flat number hides, now recorded in their formulas:
+**Brittle Crown**'s gold also multiplies by `Run.difficultyCoefficient`, so "2 gold" is
+only the stage-1 value; **Bundle of Fireworks** is `4 + 4n`, i.e. 8 at one stack.
+
+**Brilliant Behemoth was wrong.**
+
+```csharp
+float num = (1.5f + 2.5f * (float)itemCountEffective) * damageInfo.procCoefficient;
+… BlastAttack { radius = num }
+```
+
+The description says "4m (+1.5m per stack)". The first number is right and the second is
+not: the code adds **2.5m** per stack — 4 / 6.5 / 9m, where the description implies
+4 / 5.5 / 7m. Corrected. The same line also shows the radius is multiplied by the
+triggering attack's **proc coefficient**, so a 0.5-proc hit explodes at half size — a
+dependency the dataset had no way to express and now states in the formula.
+
+**51 / 212 code-verified.**

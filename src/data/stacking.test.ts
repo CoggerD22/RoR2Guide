@@ -169,3 +169,39 @@ describe("Elusive Antlers — three separate errors in one item", () => {
     expect(speed.formula).toMatch(/7s/); // prefab says the buff lasts 7s, not the described 12s
   });
 });
+
+describe("linear coefficients confirmed against code", () => {
+  const byId4 = new Map(items.map((i) => [i.id, i]));
+
+  it("Brilliant Behemoth adds 2.5m per stack, not the described 1.5m", () => {
+    // GlobalEventManager: radius = (1.5f + 2.5f * count) * damageInfo.procCoefficient
+    const radius = (n: number, proc = 1) => (1.5 + 2.5 * n) * proc;
+    expect(radius(1)).toBe(4); // matches the description's 4m at one stack…
+    expect(radius(2)).toBe(6.5); // …but +1.5/stack would predict 5.5m
+    expect(radius(1, 0.5)).toBe(2); // and proc coefficient scales it
+
+    const bb = byId4.get("brilliant-behemoth")!;
+    expect(bb.stacking[0].base).toBe(4);
+    expect(bb.stacking[0].perStack).toBe(2.5);
+    expect(bb.confidence).toBe("code");
+    expect(bb.stacking[0].formula).toMatch(/procCoefficient/);
+  });
+
+  it("spot-checks linear items whose coefficient was traced to code", () => {
+    const expected: Record<string, [number, number]> = {
+      "armor-piercing-rounds": [20, 20], // num4 *= 1f + 0.2f * n
+      "atg-missile-mk-1": [300, 300], // damageCoefficient = 3f * n
+      brainstalks: [4, 4], // AddTimedBuff(NoCooldowns, n * 4f)
+      "ceremonial-dagger": [150, 150], // 1.5f * n
+      "charged-perforator": [500, 500], // 5f * n
+      "bundle-of-fireworks": [8, 4], // 4 + n * 4
+    };
+    for (const [id, [base, perStack]] of Object.entries(expected)) {
+      const it = byId4.get(id)!;
+      expect(it, `${id} should exist`).toBeDefined();
+      expect(it.stacking[0].base, `${id} base`).toBe(base);
+      expect(it.stacking[0].perStack, `${id} perStack`).toBe(perStack);
+      expect(it.confidence, `${id} confidence`).toBe("code");
+    }
+  });
+});

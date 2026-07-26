@@ -176,7 +176,8 @@
         "stat": "Bonus damage vs. bosses",
         "base": 20,
         "perStack": 20,
-        "type": "linear"
+        "type": "linear",
+        "formula": "damage x= 1 + 0.2n against bosses (HealthComponent). Linear +20% per stack."
       }
     ],
     "tags": [
@@ -185,7 +186,7 @@
     "icon": "/icons/armor-piercing-rounds.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Armor-Piercing_Rounds",
     "verified": true,
-    "confidence": "langfile",
+    "confidence": "code",
     "unlock": {
       "challenge": "Advancement",
       "requirement": "Complete a Teleporter event."
@@ -331,7 +332,8 @@
         "stat": "Fireworks launched",
         "base": 8,
         "perStack": 4,
-        "type": "linear"
+        "type": "linear",
+        "formula": "fireworks = 4 + 4n (GlobalEventManager). Linear: 8 at 1 stack, 12 at 2, 16 at 3."
       }
     ],
     "tags": [
@@ -340,7 +342,7 @@
     "icon": "/icons/bundle-of-fireworks.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Bundle_of_Fireworks",
     "verified": true,
-    "confidence": "langfile",
+    "confidence": "code",
     "unlock": {
       "challenge": "...Maybe One More.",
       "requirement": "Duplicate the same item 7 times in a row with a 3D Printer."
@@ -952,7 +954,8 @@
         "stat": "Missile damage (% TOTAL)",
         "base": 300,
         "perStack": 300,
-        "type": "linear"
+        "type": "linear",
+        "formula": "missile damageCoefficient = 3f x n (GlobalEventManager). Linear: 300% TOTAL per stack."
       }
     ],
     "tags": [
@@ -963,7 +966,7 @@
     "icon": "/icons/atg-missile-mk-1.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/AtG_Missile_Mk._1",
     "verified": true,
-    "confidence": "langfile"
+    "confidence": "code"
   },
   {
     "id": "will-o-the-wisp",
@@ -1292,7 +1295,8 @@
         "stat": "Frenzy duration (s)",
         "base": 6,
         "perStack": 4,
-        "type": "linear"
+        "type": "linear",
+        "formula": "frenzy duration = 2 + 4n seconds (CharacterBody: AddTimedBuff(WarCryBuff, 2f + 4f * n)). Linear: 6s at 1 stack, 10s at 2."
       }
     ],
     "tags": [
@@ -1308,7 +1312,7 @@
     "icon": "/icons/berzerkers-pauldron.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Berzerker%27s_Pauldron",
     "verified": true,
-    "confidence": "langfile"
+    "confidence": "code"
   },
   {
     "id": "rose-buckler",
@@ -2075,8 +2079,9 @@
       {
         "stat": "Explosion radius (m)",
         "base": 4,
-        "perStack": 1.5,
-        "type": "linear"
+        "perStack": 2.5,
+        "type": "linear",
+        "formula": "blast radius = (1.5 + 2.5n) x procCoefficient metres (GlobalEventManager). Code-verified at proc 1.0: 4m at 1, 6.5m at 2, 9m at 3, 11.5m at 4. Two things the in-game description omits: it says +1.5m per stack but the code adds 2.5m, and the radius is multiplied by the triggering attack’s proc coefficient, so a 0.5-proc hit explodes at half size."
       }
     ],
     "tags": [
@@ -2086,7 +2091,7 @@
     "icon": "/icons/brilliant-behemoth.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Brilliant_Behemoth",
     "verified": true,
-    "confidence": "langfile"
+    "confidence": "code"
   },
   {
     "id": "ceremonial-dagger",
@@ -2100,7 +2105,8 @@
         "stat": "Dagger damage (% base)",
         "base": 150,
         "perStack": 150,
-        "type": "linear"
+        "type": "linear",
+        "formula": "dagger damageCoefficient = 1.5f x n (GlobalEventManager). Linear: 150% base per stack."
       }
     ],
     "tags": [
@@ -2110,7 +2116,7 @@
     "icon": "/icons/ceremonial-dagger.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Ceremonial_Dagger",
     "verified": true,
-    "confidence": "langfile"
+    "confidence": "code"
   },
   {
     "id": "alien-head",
@@ -2449,7 +2455,8 @@
         "stat": "Frenzy duration (s)",
         "base": 4,
         "perStack": 4,
-        "type": "linear"
+        "type": "linear",
+        "formula": "frenzy duration = 4n seconds (GlobalEventManager: AddTimedBuff(NoCooldowns, count * 4f)). Linear."
       }
     ],
     "tags": [
@@ -2463,7 +2470,7 @@
     "icon": "/icons/brainstalks.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Brainstalks",
     "verified": true,
-    "confidence": "langfile"
+    "confidence": "code"
   },
   {
     "id": "rejuvenation-rack",
@@ -3274,7 +3281,8 @@
         "stat": "Lightning strike damage (%)",
         "base": 500,
         "perStack": 500,
-        "type": "linear"
+        "type": "linear",
+        "formula": "lightning damageCoefficient = 5f x n (GlobalEventManager). Linear: 500% per stack."
       }
     ],
     "tags": [
@@ -3284,7 +3292,7 @@
     "icon": "/icons/charged-perforator.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Charged_Perforator",
     "verified": true,
-    "confidence": "langfile",
+    "confidence": "code",
     "corruptedBy": "newly-hatched-zoea"
   },
   {
@@ -3585,7 +3593,8 @@
         "stat": "Gold on hit",
         "base": 2,
         "perStack": 2,
-        "type": "linear"
+        "type": "linear",
+        "formula": "gold = 2n x Run.difficultyCoefficient (GlobalEventManager). Linear per stack, but ALSO scales with the run difficulty coefficient, so the flat 2 is only the stage-1 value."
       }
     ],
     "tags": [
@@ -3595,7 +3604,7 @@
     "icon": "/icons/brittle-crown.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Brittle_Crown",
     "verified": true,
-    "confidence": "langfile"
+    "confidence": "code"
   },
   {
     "id": "transcendence",
