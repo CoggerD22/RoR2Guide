@@ -668,10 +668,11 @@ needs two modes:
 Run mode is also the natural home for a **compact/overlay-friendly layout** (narrow,
 high-contrast, minimal chrome) for players who keep the site on a second monitor.
 
-**5.8d Plan durability.** Plans already persist across sessions — `localStorage` via
-Zustand `persist`, verified end-to-end including the v1→v2 migration: a plan saved by
-the old build survives the upgrade and a fresh browser session intact. What is *not*
-yet true is that this is **evident or portable**:
+**5.8d Plan durability.** *(Superseded and expanded by §5.11.1 — kept for the finding.)*
+Plans already persist across sessions — `localStorage` via Zustand `persist`, verified
+end-to-end including the v1→v2 migration: a plan saved by the old build survives the
+upgrade and a fresh browser session intact. What is *not* yet true is that this is
+**evident or portable**:
 - Nothing on screen says the plan is saved, so a player has no reason to trust it.
 - `localStorage` is per-browser and per-device, and is cleared by "clear site data" or
   private browsing, with no warning and no recovery.
@@ -712,6 +713,114 @@ math** — and the math is the part nobody has built. That is the version worth 
 a card can briefly render without its art while scrolling (observed on Shuriken; the
 asset is present and intact — this is a loading artifact, not missing data). Reserve
 the icon box and decode asynchronously so cards never reflow or flash empty.
+
+### 5.11 Personal state — local-first, no accounts
+
+Requested: track which items *you* have unlocked, save and lock run plans, a prettier
+share link, a local history of what changed, and possibly a pop-out build view — all
+without an account, because a sign-up wall makes a reference site less inviting.
+
+**That instinct is right, and it is also the architecture rule (#5).** No accounts, no
+backend, no telemetry: everything here stays on the player's machine, which is both the
+simplest design and a genuine privacy property worth stating in the UI. But local-first
+has one real weakness that must be engineered around rather than hoped away — so the
+sections below fix the storage layer *first*, then build the features on it.
+
+#### 5.11.1 The one honest problem with local-only, and how to solve it
+
+`localStorage` is a ~5 MB synchronous string store, scoped to one browser on one device,
+and it is **silently cleared** by "clear site data", private browsing, and browser
+storage-pressure eviction. That is acceptable for a single run plan; it is not
+acceptable once it holds unlock progress and a library of saved builds. Four fixes, none
+requiring a server:
+
+1. **Move structured state to IndexedDB.** Saved plans, unlock state, and history are
+   growing, structured records — not a single string. IndexedDB has orders of magnitude
+   more room and no synchronous main-thread cost. Keep a `localStorage` shim only for
+   the migration path.
+2. **Ask the browser to keep it.** `navigator.storage.persist()` requests *persistent*
+   storage, exempting the origin from routine eviction. Pair with
+   `navigator.storage.estimate()` so the UI can show how much is stored. Directly
+   answers "will this still be here tomorrow?" — which today the site simply hopes.
+3. **Export / import as a file.** A `.json` download and matching import is the real
+   backup, and the only true cross-device transfer without a server. This is the answer
+   to "what if I get a new PC" that accounts would otherwise be needed for.
+4. **Say it on screen.** Persistence is currently invisible, so the player has no reason
+   to trust it (§5.8d). A quiet "saved on this device" indicator, plus an explicit
+   warning that clearing site data erases it, is the difference between a feature and a
+   trap.
+
+#### 5.11.2 Unlock tracking — and a hard line about whose fact it is
+
+Let the player mark which items they have unlocked. This finally makes the lock badge
+*personal*: §5.8 had to word it "Unlocked by <challenge>" precisely because the site
+**cannot** know what any given player has earned. Once the player tells us, it can
+honestly say "you haven't unlocked this yet" — and the "Challenge-locked only" filter
+becomes the far more useful "hide what I've already unlocked".
+
+**The line, and it is not negotiable:** this is *the player's* data, not the game's. It
+must never mix into the verified dataset, never affect `data:audit`, never be exported
+as if it were fact, and must be visually distinguishable from code-verified information.
+It is the same facts-vs-opinions separation as rule #7, applied to a third category:
+**personal state**. Concretely — the dataset says "this item is gated behind *The
+Basics*"; the player's local state says "I have that one". Only the first is a claim
+about Risk of Rain 2.
+
+Entry should be low-friction (one click from the codex or the lock badge itself), with a
+bulk "mark all in this tier" for players who are far into the game, since demanding 49
+individual clicks would guarantee nobody uses it.
+
+#### 5.11.3 Saved and locked plans
+
+Today there is exactly one plan and "New run" destroys it. Needed: **named plans** (a
+library), each with a **lock** that prevents accidental edits — the requested
+"lock/save" — and an explicit "duplicate" so a locked plan can seed a new one. This also
+retires the destructive-`New run` problem in §5.2 by making the previous plan a saved
+artifact rather than something to undo.
+
+#### 5.11.4 Shorter share links — without giving up resilience
+
+A 20-item plan currently produces a **372-character** URL, because ids are spelled out
+(`crowbar!h*3,soldiers-syringe,…`). That was a deliberate trade (§4.4): id-based links
+survive `items.json` growing or being reordered, and a stale id degrades to "dropped"
+rather than silently resolving to the *wrong item* — which an index-based scheme would
+do, and which is the worst possible failure for a facts site.
+
+The way to get both is a **stable numeric id per item**, assigned once, never reused,
+stored in `items.json` and enforced by `data:audit` (an id may be retired, never
+re-pointed). Links then use the number instead of the slug: **~114 characters for the
+same 20-item plan, a 69% reduction**, with the resilience property preserved *by
+contract* rather than by spelling. Decoding must keep accepting the current slug format
+indefinitely, since those links are already shared.
+
+Deliberately rejected: compressing the payload to base64. It shortens the URL but makes
+it opaque, undebuggable, and fragile across format changes — and it would still need the
+stable-id contract underneath to be safe.
+
+#### 5.11.5 Local activity log
+
+A capped, local, append-only log — plan saved, plan locked, link copied, items marked
+unlocked, data imported/exported. Useful for "what did I change?", and genuinely useful
+to *us*: it is the only way to see how the tools are actually used without adding
+telemetry, which this project will not do. Must be viewable, exportable, and **clearable
+in one action**; capped (a few hundred entries, oldest evicted) so it cannot grow
+without bound.
+
+#### 5.11.6 Pop-out companion window
+
+The natural home for Run mode (§5.8c). Two mechanisms, in preference order:
+
+1. **Document Picture-in-Picture** (`documentPictureInPicture.requestWindow()`) — an
+   always-on-top, chrome-less window designed for exactly this. A player alt-tabbed into
+   a run keeps the plan floating over the game.
+2. **`window.open` fallback** — a small named popup for browsers without Document PiP.
+
+Both render the same dense read-only view and share state live through the existing
+store, so the popout and the tab never disagree.
+
+**Explicitly still parked (§4.9):** accounts, cloud sync, and any server-side storage.
+Nothing above needs them, and adding them would cost exactly the accessibility this
+section exists to protect.
 
 ---
 
