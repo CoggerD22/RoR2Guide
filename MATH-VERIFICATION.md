@@ -474,3 +474,34 @@ Sequencing is by blast radius (PLAN §6A.4): non-linear curves first, because th
 sparkline only auto-plots `linear` entries and non-linear ones rely on their `formula`
 string — a wrong curve there is a wrong claim with nothing to correct it. Two of the
 first handful examined were wrong, so the expectation is that more remain.
+
+### 3j.1 Second pass — hard caps are the dangerous omission
+
+Verified this pass (all correct as recorded; formulas added citing the source):
+
+| Item | Evidence |
+|---|---|
+| H3AD-5T v2 | `HeadstompersCooldown.OnEnter`: `duration /= n` — reciprocal, 10s / 5s / 3.3s |
+| Old War Stealthkit | `PhasingBodyBehavior`: `30 × Mathf.Pow(0.5f, n−1)` — exponential, 30 / 15 / 7.5 |
+| Focused Convergence | `HoldoutZoneController`: `rate ×= 1 + 0.3n`; `radius /= 2n` |
+
+**31 / 212 code-verified.**
+
+**The finding that matters: hard caps.** Only three items recorded a `cap`, and a hard
+cap is the single most actionable fact a stacking table can carry — past it, every
+further copy of the item is wasted. Scanning all 449 extracted code sites for
+`Mathf.Min` / `Clamp` / `cap` / `maxStacks` against item counts surfaced two real ones:
+
+- **Focused Convergence — `cap = 3`.** A 4th stack does nothing, for either the charge
+  rate or the zone shrink. Now recorded.
+- **Longstanding Solitude — free unlocks capped at 3.**
+  `CharacterBody.AddFreeChestBuff` grants the buff in a loop bounded by `i < 3`, while
+  the item description reads "+1 per stack" with no limit implied. A 4th stack grants
+  no extra unlock. Separately `CharacterMaster.GiveMoneyWithOnLevelUpFreeUnlock` clamps
+  the stack count to `maxStacks = 8` for the gold→XP factor `0.12 + 0.0125(n−1)`.
+
+Longstanding Solitude is also a worked example of **not over-claiming**: its
+"gold costs +50% per stack" entry has *not* been traced, so the record keeps
+`confidence: "langfile"` even though its cap is now code-sourced. Confidence is
+per-record while claims are per-field — the tension §6A.3 exists to resolve. Until
+that lands, the rule is: **the record's confidence reflects its weakest field.**
