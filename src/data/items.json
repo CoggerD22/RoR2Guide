@@ -4007,14 +4007,14 @@
         "base": 50,
         "perStack": 50,
         "type": "exponential",
-        "formula": "cooldown multiplied by 0.5 per stack (multiplicative)"
+        "formula": "cooldown x= 0.5 per stack, applied in a per-stack loop (CharacterBody.RecalculateStats). Exponential: 50%, 75%, 87.5% reduction."
       },
       {
         "stat": "Attack speed reduction (%)",
         "base": 50,
         "perStack": -50,
         "type": "reciprocal",
-        "formula": "attack speed penalty stacks reciprocally, approaching but never reaching zero"
+        "formula": "attackSpeed /= (n + 1) (CharacterBody.RecalculateStats, applied ONCE - contrast Stone Flux Pauldron, which adds to its divisor twice). Reciprocal: 50% at 1, 66.7% at 2, 75% at 3, 80% at 4 - approaches but never reaches a full stop."
       }
     ],
     "tags": [
@@ -4071,13 +4071,14 @@
         "base": 3,
         "perStack": -50,
         "type": "reciprocal",
-        "formula": "spawn interval divides reciprocally per stack (3s, ~2s, 1.5s, …)"
+        "formula": "interval = 3 / n seconds (LunarSunBehavior: projectileTimer > 3f / stack). Reciprocal: 1 stack = 3s, 2 stacks = 1.5s, 3 stacks = 1s, 4 stacks = 0.75s. The previously recorded example values (3s, ~2s, 1.5s) were wrong - 2 stacks is 1.5s, not 2s."
       },
       {
         "stat": "Max orbiting bombs",
         "base": 3,
         "perStack": 1,
-        "type": "linear"
+        "type": "linear",
+        "formula": "max bombs = 2 + n (LunarSunBehavior: return 2 + itemCount). Linear: 3 at 1 stack, 4 at 2, 5 at 3."
       }
     ],
     "tags": [
@@ -4087,7 +4088,7 @@
     "icon": "/icons/egocentrism.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Egocentrism",
     "verified": true,
-    "confidence": "langfile"
+    "confidence": "code"
   },
   {
     "id": "neutronium-weight",
@@ -4538,13 +4539,14 @@
         "base": 60,
         "perStack": -50,
         "type": "reciprocal",
-        "formula": "interval divides reciprocally per stack (60s, ~40s, 30s, …)"
+        "formula": "interval = 60 / n seconds (VoidMegaCrabItemBehavior: spawnTimer > 60f / stack). Reciprocal: 1 stack = 60s, 2 stacks = 30s, 3 stacks = 20s, 4 stacks = 15s. The previously recorded example values (60s, ~40s, 30s) were wrong - 2 stacks is 30s, not 40s."
       },
       {
         "stat": "Max Void allies",
         "base": 1,
         "perStack": 1,
-        "type": "linear"
+        "type": "linear",
+        "formula": "max Void allies = n (VoidMegaCrabItemBehavior: baseMaxAllies 1, maxAlliesPerStack 1). Linear."
       }
     ],
     "tags": [
@@ -4555,7 +4557,7 @@
     "icon": "/icons/newly-hatched-zoea.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Newly_Hatched_Zoea",
     "verified": true,
-    "confidence": "langfile",
+    "confidence": "code",
     "corrupts": [
       "titanic-knurl",
       "shatterspleen",

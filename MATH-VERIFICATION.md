@@ -653,3 +653,40 @@ disagrees: the description says the speed buff lasts **12s**, while the prefab s
 7s is stated in the formula; the description is still quoted verbatim.
 
 **39 / 212 code-verified.**
+
+### 3j.6 Reciprocal sweep — a systematic error in the formula strings
+
+Egocentrism and Newly Hatched Zoea shared a defect that was *not* in their numbers but in
+their **prose**: both are correctly typed `reciprocal` with the correct `base`, but their
+formula strings listed example values from a different curve.
+
+| Item | Code | Recorded examples | Real |
+|---|---|---|---|
+| Egocentrism | `projectileTimer > 3f / stack` | "3s, ~2s, 1.5s" | 3, **1.5**, 1, 0.75s |
+| Newly Hatched Zoea | `spawnTimer > 60f / stack` | "60s, ~40s, 30s" | 60, **30**, 20, 15s |
+
+The `~40s` and `~2s` are the tell: nothing in `base/n` produces them. The type and base
+were right, so every schema check and numeric diff passed — the wrong values lived only
+in human-readable text, which nothing validates. **Prose is unverified data too**, and
+for non-linear entries it is the *only* thing the UI shows, since the sparkline
+deliberately refuses to plot non-linear curves.
+
+Auditing all 8 reciprocal entries at once surfaced this pattern immediately and also
+flagged **Light Flux Pauldron**, marked `code` but carrying a formula with no citation
+and no values. Re-checked because it is Stone Flux Pauldron's sibling and Stone Flux had
+just turned out to apply its penalty twice (§3j.3):
+
+```csharp
+num110 /= (float)(num45 + 1);          // Light Flux: attack speed, divided ONCE
+for (int j = 0; j < num45; j++)        // cooldown x0.5 per stack
+    num113 *= 0.5f;
+```
+
+Light Flux is correct as recorded — 50% / 66.7% / 75% attack-speed reduction — and
+applies its divisor **once**. That asymmetry is useful evidence in both directions: it
+confirms the sibling items use genuinely different code paths, and it makes Stone Flux's
+double application much less likely to be a decompiler artifact.
+
+**41 / 212 code-verified.** Corrections so far: Tougher Times, Bandolier, Shrine of Blood,
+Stone Flux, Purity (missing effect), Elusive Antlers ×3, Hiker's Boots, Egocentrism,
+Zoea — roughly **one in five** of everything examined.
