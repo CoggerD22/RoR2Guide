@@ -1040,3 +1040,65 @@ The honest bottom line: of 139 unverified items, roughly **131 are limited by th
 of my tooling, not by the data being unknowable.** Only the 8 with no code site need a
 different source entirely. That is a much better position than "139 unknown", and it is
 also a reason not to describe the remaining gap as inherent.
+
+### 3j.16 The def-use tracer, and the first batch it unlocked (§6B.6)
+
+`scripts/extract-item-defuse.py` implements the correction from §3j.15: instead of
+reporting where an item's count is *read*, it follows that local forward to every line
+where the value participates in arithmetic, then follows aliases up to three hops.
+
+Two details are what make it correct rather than merely plausible:
+
+- **Scope comes from the declaration, not the assignment.** The first version got this
+  wrong and found nothing for two of its three test items. In `RecalculateStats` every
+  count is declared once at the top (`int num21 = 0;`) and assigned much later inside
+  `if (inventory) { … }`; bounding the walk by the *assignment's* block stops it at the
+  end of that if-block, hundreds of lines before the value is used. Bounding by the
+  declaration's block gives the real lifetime — and still cannot leak across methods,
+  which is the failure §3j.7 had to fix.
+- **It does not require a numeric literal.** Arithmetic *participation* is the signal.
+
+Validated against the three items traced by hand in §3j.15 before being trusted: it
+reproduces all three at exactly +647, +216 and +1133 lines. Across the corpus it finds
+**408 use sites for 133 items, 186 of them more than 12 lines from the count read** —
+i.e. invisible to the previous extractor by construction.
+
+**16 items verified from the first review pass, all matching what was already recorded:**
+
+| Item | Code |
+| --- | --- |
+| Monster Tooth | `flatHealing 8f`, `fractionalHealing = 0.02f * n` |
+| Medkit | `Heal(20f + maxHealth * 0.05f * n)` |
+| Warbanner | `Networkradius = 8f + 8f * n` |
+| War Horn | `AddTimedBuff(Energized, 8 + 4 * (n - 1))` |
+| Razorwire | `5 + 2(n-1)` targets, `25f + 10f(n-1)` radius |
+| Will-o'-the-wisp | `3.5f * (1f + (n-1) * 0.8f)`, radius `12f + 2.4f(n-1)` |
+| Runald's Band | `2.5f * n` damage, `Slow80` for `3f * n` |
+| Death Mark | `7f * n`, gated `if (num >= 4)` debuffs |
+| Infusion | `maxHpValue = n`, cap `n * 100` |
+| Delicate Watch | `damage *= 1f + n * 0.2f` |
+| Focus Crystal | same, gated `sqrMagnitude <= 169f` |
+| Squid Polyp | `10 * (n-1)` BoostAttackSpeed items, `+0.1f` each |
+| Hunter's Harpoon | `1f + (n-1) * 0.5f` |
+| Ignition Tank | `1 + 3 * n` on damageMultiplier and totalDamage |
+| Happiest Mask | `TryToCreateGhost(…, n * 30)` |
+| Rejuvenation Rack | `amount *= 1f + n` |
+
+**73 -> 89 of 212.** Three of these also resolved or added a fact:
+
+- **Monster Tooth's open question is closed.** The `Mathf.Pow(n, 0.25f)` sitting beside
+  its heal is the orb's `transform.localScale` — a visual size curve, not a healing one.
+  It had been flagged as possibly meaning the heal scaled with a fourth root. It does not.
+- **Ignition Tank**: the Oiled debuff (DLC2) counts as an extra stack *and* triggers the
+  burn upgrade at **zero** Ignition Tanks (`if (itemCountEffective > 0 || flag)`). Neither
+  appears in the description.
+- **Focus Crystal**: `169f` confirms the 13m range exactly (compared squared, no sqrt).
+
+**Not upgraded — Wax Quail.** Its trace is
+`Mathf.Sqrt(10f * n / (acceleration * airControl))`, used as a *velocity* multiplier on
+the jump, not a distance. The `10f * n` strongly suggests the description's "10m per
+stack" is the designed input, but the conversion from that velocity to a travelled
+distance depends on the air-drag model and I could not derive it from this snippet. The
+claim may well be right; it is not *verified*, so it stays `langfile`. Recording it as an
+open question rather than rounding up to a graduation is the point of the exercise —
+the tracer's job is to produce evidence, not to convert reach into confidence.

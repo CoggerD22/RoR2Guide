@@ -313,7 +313,8 @@
         "stat": "Heal per orb (% of max health)",
         "base": 2,
         "perStack": 2,
-        "type": "linear"
+        "type": "linear",
+        "formula": "HealthPickup.flatHealing = 8f, fractionalHealing = 0.02f * n (GlobalEventManager). Linear. Resolves a standing open question: the Mathf.Pow(n, 0.25f) beside it is the orb's VISUAL SCALE (transform.localScale), not a healing curve."
       }
     ],
     "tags": [
@@ -323,7 +324,7 @@
     "icon": "/icons/monster-tooth.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Monster_Tooth",
     "verified": true,
-    "confidence": "langfile"
+    "confidence": "code"
   },
   {
     "id": "bundle-of-fireworks",
@@ -365,7 +366,8 @@
         "stat": "Damage bonus",
         "base": 20,
         "perStack": 20,
-        "type": "linear"
+        "type": "linear",
+        "formula": "damage *= 1f + n * 0.2f (HealthComponent). Linear."
       }
     ],
     "tags": [
@@ -374,7 +376,7 @@
     "icon": "/icons/delicate-watch.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Delicate_Watch",
     "verified": true,
-    "confidence": "langfile"
+    "confidence": "code"
   },
   {
     "id": "energy-drink",
@@ -413,7 +415,8 @@
         "stat": "Bonus damage to enemies within 13m",
         "base": 20,
         "perStack": 20,
-        "type": "linear"
+        "type": "linear",
+        "formula": "damage *= 1f + n * 0.2f, gated on sqrMagnitude <= 169f (HealthComponent) — 169 = 13^2, so the 13m range is exact, measured squared to avoid a square root."
       }
     ],
     "tags": [
@@ -422,7 +425,7 @@
     "icon": "/icons/focus-crystal.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Focus_Crystal",
     "verified": true,
-    "confidence": "langfile"
+    "confidence": "code"
   },
   {
     "id": "gasoline",
@@ -467,7 +470,8 @@
         "stat": "Delayed heal (% of max health)",
         "base": 5,
         "perStack": 5,
-        "type": "linear"
+        "type": "linear",
+        "formula": "Heal(20f + maxHealth * 0.05f * n) (CharacterBody). Flat 20 does not stack; only the fractional part does. Gated on not already having the MedkitHeal buff, so it cannot re-trigger while active."
       }
     ],
     "tags": [
@@ -476,7 +480,7 @@
     "icon": "/icons/medkit.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Medkit",
     "verified": true,
-    "confidence": "langfile",
+    "confidence": "code",
     "unlock": {
       "challenge": "Elite Slayer",
       "requirement": "Defeat an Elite-type monster."
@@ -658,7 +662,8 @@
         "stat": "Banner radius (m)",
         "base": 16,
         "perStack": 8,
-        "type": "linear"
+        "type": "linear",
+        "formula": "BuffWard.Networkradius = 8f + 8f * n (TeleporterInteraction and WardOnLevelManager, identically). 16m at one stack, +8m per stack."
       }
     ],
     "tags": [
@@ -669,7 +674,7 @@
     "icon": "/icons/warbanner.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Warbanner",
     "verified": true,
-    "confidence": "langfile"
+    "confidence": "code"
   },
   {
     "id": "mocha",
@@ -992,13 +997,15 @@
         "stat": "Explosion radius (m)",
         "base": 12,
         "perStack": 2.4,
-        "type": "linear"
+        "type": "linear",
+        "formula": "radius = 12f + 2.4f * (n - 1) (GlobalEventManager). Linear."
       },
       {
         "stat": "Explosion damage (% base)",
         "base": 350,
         "perStack": 280,
-        "type": "linear"
+        "type": "linear",
+        "formula": "damageCoefficient = 3.5f * (1f + (n - 1) * 0.8f) (GlobalEventManager). Written multiplicatively but linear in n: 350% at 1 stack, then +280% (= 350% x 0.8) per stack."
       }
     ],
     "tags": [
@@ -1010,7 +1017,7 @@
     "icon": "/icons/will-o-the-wisp.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Will-o%27-the-wisp",
     "verified": true,
-    "confidence": "langfile"
+    "confidence": "code"
   },
   {
     "id": "hopoo-feather",
@@ -1250,13 +1257,15 @@
         "stat": "Max health per kill",
         "base": 1,
         "perStack": 1,
-        "type": "linear"
+        "type": "linear",
+        "formula": "InfusionOrb.maxHpValue = n (GlobalEventManager) — +1 max health per kill per stack."
       },
       {
         "stat": "Max health cap",
         "base": 100,
         "perStack": 100,
-        "type": "linear"
+        "type": "linear",
+        "formula": "cap = n * 100 (GlobalEventManager); the orb only spawns while inventory.infusionBonus is below it."
       }
     ],
     "tags": [
@@ -1271,7 +1280,7 @@
     "icon": "/icons/infusion.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Infusion",
     "verified": true,
-    "confidence": "langfile"
+    "confidence": "code"
   },
   {
     "id": "bandolier",
@@ -1366,13 +1375,15 @@
         "stat": "Slow duration (s)",
         "base": 3,
         "perStack": 3,
-        "type": "linear"
+        "type": "linear",
+        "formula": "AddTimedBuff(Buffs.Slow80, 3f * n) (GlobalEventManager). Linear; the slow itself is the fixed 80% Slow80 buff."
       },
       {
         "stat": "Ice blast damage (% TOTAL)",
         "base": 250,
         "perStack": 250,
-        "type": "linear"
+        "type": "linear",
+        "formula": "damageCoefficient = 2.5f * n via Util.OnHitProcDamage (GlobalEventManager). Linear from the first stack."
       }
     ],
     "tags": [
@@ -1388,7 +1399,7 @@
     "icon": "/icons/runalds-band.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Runald%27s_Band",
     "verified": true,
-    "confidence": "langfile"
+    "confidence": "code"
   },
   {
     "id": "kjaros-band",
@@ -1517,7 +1528,8 @@
         "stat": "Attack speed buff duration (s)",
         "base": 8,
         "perStack": 4,
-        "type": "linear"
+        "type": "linear",
+        "formula": "AddTimedBuff(Buffs.Energized, 8 + 4 * (n - 1)) (EquipmentSlot). Linear from 8s."
       }
     ],
     "tags": [
@@ -1532,7 +1544,7 @@
     "icon": "/icons/war-horn.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/War_Horn",
     "verified": true,
-    "confidence": "langfile"
+    "confidence": "code"
   },
   {
     "id": "lepton-daisy",
@@ -1570,13 +1582,15 @@
         "stat": "Targets hit",
         "base": 5,
         "perStack": 2,
-        "type": "linear"
+        "type": "linear",
+        "formula": "targets = 5 + 2 * (n - 1) (HealthComponent). Linear."
       },
       {
         "stat": "Burst radius (m)",
         "base": 25,
         "perStack": 10,
-        "type": "linear"
+        "type": "linear",
+        "formula": "radius = 25f + 10f * (n - 1) (HealthComponent). Linear."
       }
     ],
     "tags": [
@@ -1586,7 +1600,7 @@
     "icon": "/icons/razorwire.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Razorwire",
     "verified": true,
-    "confidence": "langfile"
+    "confidence": "code"
   },
   {
     "id": "ghors-tome",
@@ -1625,7 +1639,8 @@
         "stat": "Turret attack speed (%)",
         "base": 100,
         "perStack": 100,
-        "type": "linear"
+        "type": "linear",
+        "formula": "The turret is given 10 * (n - 1) BoostAttackSpeed items (GlobalEventManager), each worth +10% attack speed (CharacterBody: attackSpeed += count * 0.1f) — exactly +100% per stack over the turret's own 100%."
       }
     ],
     "tags": [
@@ -1635,7 +1650,7 @@
     "icon": "/icons/squid-polyp.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Squid_Polyp",
     "verified": true,
-    "confidence": "langfile",
+    "confidence": "code",
     "unlock": {
       "challenge": "Automation Activation",
       "requirement": "Activate 6 turrets in a single run."
@@ -1653,7 +1668,8 @@
         "stat": "Mark duration (s)",
         "base": 7,
         "perStack": 7,
-        "type": "linear"
+        "type": "linear",
+        "formula": "AddTimedBuff(Buffs.DeathMark, 7f * n) (GlobalEventManager). Linear. The 4-debuff threshold is a literal `if (num >= 4)` counted over BuffCatalog.debuffBuffIndices, and the mark cannot refresh while already applied."
       }
     ],
     "tags": [
@@ -1663,7 +1679,7 @@
     "icon": "/icons/death-mark.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Death_Mark",
     "verified": true,
-    "confidence": "langfile"
+    "confidence": "code"
   },
   {
     "id": "shuriken",
@@ -1789,7 +1805,8 @@
         "stat": "Movement speed burst duration (s)",
         "base": 1,
         "perStack": 0.5,
-        "type": "linear"
+        "type": "linear",
+        "formula": "duration = 1f + (n - 1) * 0.5f (GlobalEventManager), applied as a series of KillMoveSpeed buffs so the speed fades rather than dropping off."
       }
     ],
     "tags": [
@@ -1800,7 +1817,7 @@
     "icon": "/icons/hunters-harpoon.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Hunter%27s_Harpoon",
     "verified": true,
-    "confidence": "langfile"
+    "confidence": "code"
   },
   {
     "id": "ignition-tank",
@@ -1814,7 +1831,8 @@
         "stat": "Ignite damage bonus (%)",
         "base": 300,
         "perStack": 300,
-        "type": "linear"
+        "type": "linear",
+        "formula": "multiplier = 1 + 3 * n on both damageMultiplier and totalDamage (StrengthenBurnUtils). Linear. Two things the description omits: the Oiled debuff (DLC2) counts as one extra stack, and it triggers the upgrade even at ZERO Ignition Tanks."
       }
     ],
     "tags": [
@@ -1823,7 +1841,7 @@
     "icon": "/icons/ignition-tank.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Ignition_Tank",
     "verified": true,
-    "confidence": "langfile"
+    "confidence": "code"
   },
   {
     "id": "regenerating-scrap",
@@ -2275,7 +2293,8 @@
         "stat": "Ghost duration (s)",
         "base": 30,
         "perStack": 30,
-        "type": "linear"
+        "type": "linear",
+        "formula": "Util.TryToCreateGhost(victim, attacker, n * 30) (GlobalEventManager). Linear."
       }
     ],
     "tags": [
@@ -2285,7 +2304,7 @@
     "icon": "/icons/happiest-mask.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Happiest_Mask",
     "verified": true,
-    "confidence": "langfile"
+    "confidence": "code"
   },
   {
     "id": "frost-relic",
@@ -2512,7 +2531,8 @@
         "stat": "Healing bonus (%)",
         "base": 100,
         "perStack": 100,
-        "type": "linear"
+        "type": "linear",
+        "formula": "amount *= 1f + n (HealthComponent.Heal). Linear, +100% per stack."
       }
     ],
     "tags": [
@@ -2525,7 +2545,7 @@
     "icon": "/icons/rejuvenation-rack.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Rejuvenation_Rack",
     "verified": true,
-    "confidence": "langfile"
+    "confidence": "code"
   },
   {
     "id": "aegis",
