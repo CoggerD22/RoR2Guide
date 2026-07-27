@@ -801,3 +801,47 @@ not be presented as co-equal claims: `pickupText` is flavour/summary, `descripti
 mechanical, and the code-verified layer outranks both (PLAN §6B.4).
 
 **52 / 212 code-verified.**
+
+### 3j.10 Whole-path extraction — verifying by mechanism instead of by item (§6B.1)
+
+`scripts/extract-recalculate-stats.py` reads `CharacterBody.RecalculateStats` **once**
+(933 lines) and extracts every item constant in it: 64 single-item locals, **41 items
+with a stat contribution across 56 sites**. Diffed wholesale against `items.json`
+instead of item-by-item.
+
+Three passes: item→local (locals holding two different items are dropped, not
+mis-attributed), local→coefficient→accumulator, and accumulator→stat by walking back
+from the final `maxHealth = num78` / `attackSpeed = num109` assignments.
+
+**Getting the accumulator→stat walk right took two corrections, both caught by a sanity
+check against known assignments** — worth recording because a mislabelling tool is worse
+than no tool:
+
+- Propagating *forward* (an RHS stat leaking to an unrelated LHS) labelled `num110`, the
+  attack-speed accumulator, as `maxHealth`. Backward-only fixed it.
+- Following only `=` then lost the chain entirely, because attack speed is composed as
+  `num109 *= num110`. Following `=`, `*=`, `/=` — while never labelling a known
+  item-count local — gives 38/56 sites labelled with **zero** false labels.
+
+**Result: 19 of 26 codex-matched items agreed on the first pass**, and all 7 flagged
+turned out to be representation or attribution differences rather than errors:
+
+- Laser Scope's `2f` is the *base* crit multiplier, not its own coefficient.
+- Shaped Glass's `2`/`0.5` multipliers are our `100%`/`50%`.
+- Hopoo Feather, Light Flux and Stone Flux add the count with no literal.
+- Item Scrap Red/White's `0.3f`/`0.06f` belong to **`StatsFromScrap`** — a `NoTier`
+  item with an unresolved name token, i.e. hidden internal content, correctly outside
+  the codex. Our scrap entries having no stacking is right.
+
+Eight langfile items were then confirmed and upgraded — Tri-Tip Dagger, Red Whip, Energy
+Drink, Rose Buckler, Personal Shield Generator, Growth Nectar, Bolstering Lantern,
+Kinetic Dampener — taking the total to **60 / 212**. That is **more items verified in one
+pass than the previous several sessions combined**, which is the whole argument for
+§6B.1.
+
+**A third missing effect.** Kinetic Dampener's description states it "Grants a shield for
+4% of your max health", and the dataset had no entry for it. The code confirms the shape
+matters: `(n > 0) ? 0.04f * maxHealth : 0f` is **flat**, not per-stack, so a second copy
+adds armour but no further shield. Added as a `none`-type entry. Purity, Elusive Antlers,
+and now this: **missing effects are the most common defect class found so far**, and no
+numeric diff can see them.

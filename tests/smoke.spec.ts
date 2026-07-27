@@ -114,9 +114,13 @@ test("codex item detail shows a provenance badge reflecting the real source", as
 
   // An item still sourced only from the game's text shows the weaker badge — the two
   // must remain distinguishable, never collapsed into a single "verified".
-  await page.goto("/items/tri-tip-dagger");
-  const triTip = page.getByRole("dialog", { name: "Tri-Tip Dagger" });
-  await expect(triTip.getByText("Game-text verified")).toBeVisible();
+  //
+  // NOTE: this deliberately uses an item that is still `langfile`. As verification
+  // progresses items graduate to `code`, so this assertion is expected to need a new
+  // subject periodically — that churn is the coverage metric working, not a flaky test.
+  await page.goto("/items/bustling-fungus");
+  const fungus = page.getByRole("dialog", { name: "Bustling Fungus" });
+  await expect(fungus.getByText("Game-text verified")).toBeVisible();
 });
 
 test("codex secondary filters are collapsed by default and expand on demand", async ({ page }) => {

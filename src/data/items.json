@@ -122,7 +122,8 @@
         "stat": "Bleed chance on hit",
         "base": 10,
         "perStack": 10,
-        "type": "linear"
+        "type": "linear",
+        "formula": "bleedChance = 10 x n (CharacterBody.RecalculateStats). Linear: 10% per stack."
       }
     ],
     "tags": [
@@ -134,7 +135,7 @@
     "icon": "/icons/tri-tip-dagger.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Tri-Tip_Dagger",
     "verified": true,
-    "confidence": "langfile"
+    "confidence": "code"
   },
   {
     "id": "pauls-goat-hoof",
@@ -383,7 +384,8 @@
         "stat": "Sprint speed",
         "base": 25,
         "perStack": 25,
-        "type": "linear"
+        "type": "linear",
+        "formula": "moveSpeed multiplier += 0.25 x n / sprintingSpeedMultiplier while sprinting (RecalculateStats). Linear +25% per stack."
       }
     ],
     "tags": [
@@ -393,7 +395,7 @@
     "icon": "/icons/energy-drink.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Energy_Drink",
     "verified": true,
-    "confidence": "langfile"
+    "confidence": "code"
   },
   {
     "id": "focus-crystal",
@@ -488,7 +490,8 @@
         "stat": "Shield (% of max health)",
         "base": 8,
         "perStack": 8,
-        "type": "linear"
+        "type": "linear",
+        "formula": "shield += 0.08 x n x maxHealth (RecalculateStats). Linear: 8% of max health per stack."
       }
     ],
     "tags": [
@@ -498,7 +501,7 @@
     "icon": "/icons/personal-shield-generator.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Personal_Shield_Generator",
     "verified": true,
-    "confidence": "langfile"
+    "confidence": "code"
   },
   {
     "id": "power-elixir",
@@ -902,7 +905,8 @@
         "stat": "Attack speed per nearby unit (%)",
         "base": 10,
         "perStack": 3.5,
-        "type": "linear"
+        "type": "linear",
+        "formula": "attack speed per nearby unit = 0.065 + 0.035(n-1) (RecalculateStats: buffCount x (n x 0.035f + 0.065f)). Linear: 10% at 1 stack, then +3.5% per extra stack."
       },
       {
         "stat": "Max nearby units counted",
@@ -918,7 +922,7 @@
     "icon": "/icons/bolstering-lantern.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Bolstering_Lantern",
     "verified": true,
-    "confidence": "langfile"
+    "confidence": "code"
   },
   {
     "id": "eclipse-lite",
@@ -1122,7 +1126,8 @@
         "stat": "Movement speed out of combat",
         "base": 30,
         "perStack": 30,
-        "type": "linear"
+        "type": "linear",
+        "formula": "moveSpeed multiplier += 0.3 x n out of combat (RecalculateStats). Linear +30% per stack."
       }
     ],
     "tags": [
@@ -1132,7 +1137,7 @@
     "icon": "/icons/red-whip.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Red_Whip",
     "verified": true,
-    "confidence": "langfile"
+    "confidence": "code"
   },
   {
     "id": "old-war-stealthkit",
@@ -1327,7 +1332,8 @@
         "stat": "Armor while sprinting",
         "base": 30,
         "perStack": 30,
-        "type": "linear"
+        "type": "linear",
+        "formula": "armor += 30n while isSprinting (RecalculateStats, guarded by `if (isSprinting && n > 0)`). Linear."
       }
     ],
     "tags": [
@@ -1337,7 +1343,7 @@
     "icon": "/icons/rose-buckler.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Rose_Buckler",
     "verified": true,
-    "confidence": "langfile"
+    "confidence": "code"
   },
   {
     "id": "runalds-band",
@@ -2050,13 +2056,21 @@
         "stat": "Armor while shielded",
         "base": 30,
         "perStack": 30,
-        "type": "linear"
+        "type": "linear",
+        "formula": "armor += 30n while healthComponent.shield > 0 (RecalculateStats, guarded by `if (shield > 0f && n > 0)`). Linear."
       },
       {
         "stat": "Pulse damage from max shield (%)",
         "base": 100,
         "perStack": 10,
         "type": "linear"
+      },
+      {
+        "stat": "Shield granted (% of max health)",
+        "base": 4,
+        "perStack": 0,
+        "type": "none",
+        "formula": "shield += 0.04 x maxHealth if you hold ANY Kinetic Dampener (RecalculateStats: (n > 0) ? 0.04f * maxHealth : 0f). Flat - it does NOT scale with stacks. Stated in the in-game description but absent from this dataset until now."
       }
     ],
     "tags": [
@@ -2067,7 +2081,7 @@
     "icon": "/icons/kinetic-dampener.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Kinetic_Dampener",
     "verified": true,
-    "confidence": "langfile"
+    "confidence": "code"
   },
   {
     "id": "brilliant-behemoth",
@@ -2820,7 +2834,8 @@
         "stat": "Max buffs counted",
         "base": 4,
         "perStack": 4,
-        "type": "linear"
+        "type": "linear",
+        "formula": "maxGrowthNectarBuffCount = 4n (RecalculateStats). Linear."
       }
     ],
     "tags": [
@@ -2829,7 +2844,7 @@
     "icon": "/icons/growth-nectar.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Growth_Nectar",
     "verified": true,
-    "confidence": "langfile"
+    "confidence": "code"
   },
   {
     "id": "runic-lens",
