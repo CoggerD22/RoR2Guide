@@ -118,16 +118,16 @@ test("codex item detail shows a provenance badge reflecting the real source", as
   // NOTE: this deliberately uses an item that is still `langfile`. As verification
   // progresses items graduate to `code`, so this assertion is expected to need a new
   // subject periodically — that churn is the coverage metric working, not a flaky test.
-  await page.goto("/items/bustling-fungus");
-  const fungus = page.getByRole("dialog", { name: "Bustling Fungus" });
+  await page.goto("/items/cautious-slug");
+  const fungus = page.getByRole("dialog", { name: "Cautious Slug" });
   await expect(fungus.getByText("Game-text verified")).toBeVisible();
 });
 
 test("unverified stacking data is labelled as such, verified data is not", async ({ page }) => {
   // Fail closed (PLAN §6B.3). ~1 in 5 records examined has been wrong in a way
   // transcription cannot catch, so an untraced record must not look like a traced one.
-  await page.goto("/items/bustling-fungus"); // still langfile
-  const unverified = page.getByRole("dialog", { name: "Bustling Fungus" });
+  await page.goto("/items/cautious-slug"); // still langfile
+  const unverified = page.getByRole("dialog", { name: "Cautious Slug" });
   await expect(unverified.getByText(/not yet code-verified/i)).toBeVisible();
 
   // A code-verified item carries no such warning — the distinction has to be visible,

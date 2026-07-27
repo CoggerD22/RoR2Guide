@@ -256,13 +256,15 @@
         "stat": "Heal per second (% of health)",
         "base": 4.5,
         "perStack": 2.25,
-        "type": "linear"
+        "type": "linear",
+        "formula": "healFraction = 0.045 + 0.0225(n-1) per second (MushroomBodyBehavior: baseHealFractionPerSecond 0.045, healFractionPerSecondPerStack 0.0225). Linear."
       },
       {
         "stat": "Zone radius (m)",
         "base": 3,
         "perStack": 1.5,
-        "type": "linear"
+        "type": "linear",
+        "formula": "ward radius = body.radius + 1.5 + 1.5n (MushroomBodyBehavior). The recorded 3/1.5 is the ITEM’s contribution; the survivor’s own body radius is added on top."
       }
     ],
     "tags": [
@@ -272,7 +274,7 @@
     "icon": "/icons/bustling-fungus.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Bustling_Fungus",
     "verified": true,
-    "confidence": "langfile"
+    "confidence": "code"
   },
   {
     "id": "cautious-slug",
@@ -2030,13 +2032,15 @@
         "stat": "Discharge damage (% base)",
         "base": 400,
         "perStack": 280,
-        "type": "linear"
+        "type": "linear",
+        "formula": "discharge damage = 4 + 2.8(n-1) as a base-damage coefficient (JumpDamageStrikeBodyBehavior: 4f + 2.8f * (stack - 1)). Linear: 400%, 680%, 960%."
       },
       {
         "stat": "Max discharge radius (m)",
         "base": 32.3,
         "perStack": 7.5,
-        "type": "linear"
+        "type": "linear",
+        "formula": "radius = 0.2 x (charge - 1) + 5 + 7.5n (GetRadius). At the 100 charge limit that is 19.8 + 5 + 7.5n, i.e. 32.3m at 1 stack, 39.8m at 2. Note the (charge - 1): the max is 19.8, not 20. Radius is 0 below 25 charge."
       }
     ],
     "tags": [
@@ -2048,7 +2052,7 @@
     "icon": "/icons/faraday-spur.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Faraday_Spur",
     "verified": true,
-    "confidence": "langfile"
+    "confidence": "code"
   },
   {
     "id": "kinetic-dampener",
@@ -2949,7 +2953,8 @@
         "stat": "Max infected enemies",
         "base": 4,
         "perStack": 2,
-        "type": "linear"
+        "type": "linear",
+        "formula": "maxTargets = 4 + 2(n-1) (SharedSufferingItemBehaviour: baseMaxTargets 4, stackMaxTargets 2). Linear."
       }
     ],
     "tags": [
@@ -2959,7 +2964,7 @@
     "icon": "/icons/networked-suffering.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Networked_Suffering",
     "verified": true,
-    "confidence": "langfile"
+    "confidence": "code"
   },
   {
     "id": "orphaned-core",
@@ -3070,7 +3075,8 @@
         "stat": "Max Beetle Guards",
         "base": 1,
         "perStack": 1,
-        "type": "linear"
+        "type": "linear",
+        "formula": "maxGuards = stack (BeetleGlandBodyBehavior: int num = stack). Linear: 1 Guard per stack. Resummon timer is a flat 30s (timeBetweenGuardResummons), not per-stack."
       }
     ],
     "tags": [
@@ -3080,7 +3086,7 @@
     "icon": "/icons/queens-gland.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Queen%27s_Gland",
     "verified": true,
-    "confidence": "langfile",
+    "confidence": "code",
     "corruptedBy": "newly-hatched-zoea"
   },
   {
@@ -3159,7 +3165,8 @@
         "stat": "Wisp damage (%)",
         "base": 300,
         "perStack": 300,
-        "type": "linear"
+        "type": "linear",
+        "formula": "wisp damage = body.damage x 3 x n (SprintWispBodyBehavior: damageCoefficient 3). Linear: 300% per stack."
       }
     ],
     "tags": [
@@ -3169,7 +3176,7 @@
     "icon": "/icons/little-disciple.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Little_Disciple",
     "verified": true,
-    "confidence": "langfile",
+    "confidence": "code",
     "corruptedBy": "newly-hatched-zoea"
   },
   {

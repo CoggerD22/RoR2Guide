@@ -923,3 +923,42 @@ confirming the error, then restoring:
 This is the part that addresses *future* data rather than past: without it, an import or
 refactor can silently downgrade records and nothing notices — which is precisely how 161
 items came to be displayed with the same confidence as the verified ones.
+
+### 3j.13 Behaviour-class sweep — the third mechanism path (§6B.5)
+
+`scripts/extract-item-behaviours.py` covers the ~60 `BaseItemBodyBehavior` /
+`CharacterBody.ItemBehavior` subclasses, where an item's own logic lives. This is where
+Old War Stealthkit's `rechargeReductionMultiplierPerStack`, Faulty Conductor's
+`durationStack` and Egocentrism's `secondsPerProjectile` were each found *individually*;
+doing all of them at once is the point.
+
+These classes are unusually safe to attribute — each declares its own item via
+`[ItemDefAssociation] GetItemDef()`, so **the class is the item** and there is no
+local-reuse ambiguity to guard against. 19 classes with 96 named constants.
+
+All five unverified items with a constant match were confirmed correct and upgraded —
+**70 / 212**:
+
+| Item | Evidence |
+|---|---|
+| Queen's Gland | `int num = stack` — 1 Guard per stack; the 30s resummon is flat, not per-stack |
+| Faraday Spur | `4f + 2.8f × (stack − 1)`; radius `0.2 × (charge − 1) + 5 + 7.5n` |
+| Bustling Fungus | `baseHealFractionPerSecond 0.045` + `0.0225` per stack |
+| Networked Suffering | `baseMaxTargets 4`, `stackMaxTargets 2` |
+| Little Disciple | `body.damage × damageCoefficient(3) × stack` |
+
+**Faraday Spur is the useful one, because I was wrong about it.** The constants read
+`auraRadiusStartSize 5`, `maxRadiusGrowth 20`, `radiusGrowthPerStack 7.5`, which implies
+`5 + 20 + 7.5 = 32.5` at one stack against a recorded **32.3** — so I expected another
+correction. The formula is `auraRadiusPerCharge × (charge − 1f)`, and at the 100 charge
+limit that is `0.2 × 99 = 19.8`, **not** 20. `19.8 + 5 + 7.5 = 32.3`, exactly as recorded.
+
+That is worth recording as a caution in the other direction: **constants alone are not
+the formula**. An off-by-one inside the expression moved the answer by 0.2m, and reading
+only the named values — which is precisely what an automated matcher does — would have
+produced a confident "correction" that broke correct data.
+
+Bustling Fungus makes the same point more gently: its ward radius is
+`body.radius + 1.5 + 1.5n`, and the recorded `3/1.5` is the **item's** contribution, with
+the survivor's own hitbox added on top. Both records are right; both would look wrong to
+a naive comparison.
