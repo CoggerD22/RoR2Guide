@@ -962,3 +962,35 @@ Bustling Fungus makes the same point more gently: its ward radius is
 `body.radius + 1.5 + 1.5n`, and the recorded `3/1.5` is the **item's** contribution, with
 the survivor's own hitbox added on top. Both records are right; both would look wrong to
 a naive comparison.
+
+### 3j.14 Prefab sweep — a low-yield path, recorded as such
+
+`scripts/extract-item-prefabs.py` covers §6B.5 step 4: constants that live in assets
+rather than code. Bundles are named after their item (`ror2-dlc2-items-speedboostpickup_*`
+→ `SpeedBoostPickup`), giving a clean prefab→item mapping with no guessing. 81 item
+bundles scanned, 42 items with serialized constants.
+
+**It produced zero upgrades, and that is the finding.**
+
+The first pass matched eight items, all falsely: item bundles are overwhelmingly *visual*
+assets, so excluding known Unity noise still let hundreds of rendering fields through and
+`vfxPriority: 2`, `boldSpacing: 7` and `curveInterpolation: 4` collided with recorded
+values by coincidence. Inverting the filter — requiring a *tuning* vocabulary
+(`damage|duration|radius|chance|stack|cooldown|…`) minus presentation words — cut 435
+fields to 118 and removed every false match.
+
+What remains is genuine but almost entirely **effect** tuning: VFX durations of 0.2s,
+particle radii of 30–70. None of it is the per-stack arithmetic the codex records.
+
+The conclusion is worth stating plainly: **an item's bundle is not where its tuning
+constants live.** The two prefab findings that mattered came from elsewhere —
+Elusive Antlers' barrier from a *pickup* component (`ElusiveAntlersPickup`), and Shrine
+of Blood's escalation from a *shrine* prefab, neither of which is an `items-*` bundle.
+Electric Boomerang makes the point exactly: its item bundle holds `radius`, `travelSpeed`
+and `distanceMultiplier`, while the damage coefficients that would settle its open
+question sit in `StunAndPierceBoomerang` under the **Projectiles** bundle.
+
+So the next step for asset-backed constants is **following `projectilePrefab` and
+component references from the code**, not scanning bundles by name. The tool is kept
+because that traversal will reuse its extraction, and because a documented negative
+result stops the same ground being re-covered later.
