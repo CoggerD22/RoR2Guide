@@ -966,6 +966,101 @@ Ship publicly after M4; M5/M6 iterate on a live site.
 
 ---
 
+## 6B. Method correction — from discovery-first to coverage-first
+
+**The problem with how this has been going.** Verification has been *discovery-first*:
+look at an item, check it, fix what's wrong, move on. It works — roughly **one in five**
+records examined has been wrong — but it has three fatal properties:
+
+1. **It is unbounded.** 161 of 212 items remain unverified. At the observed rate of
+   5–10 items per session that is twenty-plus sessions, with no guarantee of finishing.
+2. **The user finds errors before the process does.** Oddly-shaped Opal, Drifter's kit,
+   the planner lock badge — each was reported, not caught. A verification method whose
+   fastest detector is the person you're building for is not a method.
+3. **Unverified data is invisible.** A `langfile` record renders identically to a
+   `code` one everywhere except a small badge in the drawer. The site therefore
+   presents 161 unconfirmed records with the same confidence as the 51 confirmed ones.
+
+The fix is to invert all three.
+
+### 6B.1 Verify by MECHANISM, not by item
+
+The single biggest efficiency error has been reading one item at a time. Items are not
+independent — they share code paths:
+
+- every hyperbolic proc goes through `Util.ConvertAmplificationPercentageIntoReductionPercentage`
+- every flat armour/health/speed add is a line in `RecalculateStats`
+- every on-hit proc is a block in `GlobalEventManager.OnHitEnemy`
+- every buff duration is an `AddTimedBuff` call
+
+Reading `RecalculateStats` **once** and extracting *every* item constant it contains
+verifies dozens of records in a single pass — and, crucially, catches **systematic**
+errors that item-by-item review cannot see. Both such bugs found so far were only
+visible in aggregate: the reciprocal formula strings that listed values from the wrong
+curve (§3j.6), and Stone Flux's double application, which was only recognisable as
+anomalous because Light Flux's sibling code path applied once (§3j.3).
+
+**Deliverable:** extend `pnpm data:verify` from the 13 coefficients it checks today to a
+whole-code-path extraction — pull every item constant out of the known mechanism
+functions into JSON, then diff the *entire set* against `items.json` at once. Reading is
+for the residue that doesn't fit a known path.
+
+### 6B.2 Enumerate every claim; make coverage the metric
+
+Stop counting "items verified" and start counting **claims**. Generate the full inventory
+as a build artifact — every `(record, field)` the UI can render, with its source tier —
+and report coverage per surface. The number that matters is *"what percentage of what we
+display is code- or asset-backed?"*, and it must only go up. CI asserts it.
+
+That number today, honestly stated: **51 / 212 records** and **70 / 205 stacking
+entries**. Everything else is transcription-fidelity only.
+
+### 6B.3 Fail closed — unverified data must LOOK unverified
+
+A record we have not confirmed should not render like one we have. Not a subtle badge in
+a drawer: a visible, consistent marker wherever the number appears — codex card,
+tooltip, Stat Lab, planner. This is the property that makes the remaining gap
+self-correcting rather than invisible, because a user seeing "unconfirmed" on an item
+they know is a *report*, and reports have been the fastest detector so far. Turn that
+from an accident into a feature.
+
+The public **data-provenance page** (§6A.5's coverage ledger, rendered) is the same idea
+at the dataset level: publish what is verified, what is not, and how each was checked.
+A site that documents its own gaps is trustworthy in a way that a site claiming
+uniform confidence is not.
+
+### 6B.4 Cross-field consistency checks
+
+Oddly-shaped Opal exposed a class no existing check covers: the game ships **two
+strings** for each item, and they can contradict each other.
+
+- `ITEM_OUTOFCOMBATARMOR_PICKUP`: "Reduce damage the first time you are hit."
+- `ITEM_OUTOFCOMBATARMOR_DESC`: "Increase armor by 100 (+100 per stack) while out of danger."
+
+Our transcription of both is verbatim and correct; the *game* is inconsistent, and the
+code settles it — `armor += HasBuff(OutOfCombatArmorBuff) ? 100f × n : 0f`, with the buff
+tracking `body.outOfDanger`. The description is accurate and the pickup line is stale
+legacy text.
+
+Both are worth showing, but not as co-equal claims. `pickupText` is a **flavour/summary
+line**, `description` is the **mechanical statement**, and the code-verified layer
+outranks both. Where they materially disagree, say so rather than presenting two
+contradictory sentences and letting the reader choose.
+
+### 6B.5 Order of work
+
+1. Whole-path extraction for `RecalculateStats` — the densest single source of item
+   constants, and it also feeds the Stat Lab.
+2. `GlobalEventManager.OnHitEnemy` / `OnCharacterDeath` — every proc item.
+3. `BaseItemBodyBehavior` subclasses — the per-item behaviour classes.
+4. Prefab constant sweep for anything whose values live in assets (§5.0.2).
+5. Manual reading for the residue, which should be small.
+
+Only after coverage is complete does per-field provenance (§6A.3) become mechanical
+rather than a large retrofit.
+
+---
+
 ## 6A. Data Truth Programme — guaranteeing every claim on the site is sourced
 
 > **Standing requirement:** Risk of Rain 2 is a game where a wrong number changes how

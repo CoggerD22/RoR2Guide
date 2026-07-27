@@ -704,7 +704,8 @@
         "stat": "Armor while out of danger",
         "base": 100,
         "perStack": 100,
-        "type": "linear"
+        "type": "linear",
+        "formula": "armor += 100 x n while body.outOfDanger (CharacterBody.RecalculateStats + OutOfCombatArmorBehavior, which adds/removes OutOfCombatArmorBuff from body.outOfDanger each FixedUpdate). Linear, and it is a persistent armour bonus - NOT the one-shot effect the game’s own pickup line (\"Reduce damage the first time you are hit.\") describes. That pickup text is stale; the description is accurate."
       }
     ],
     "tags": [
@@ -714,7 +715,7 @@
     "icon": "/icons/oddly-shaped-opal.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Oddly-shaped_Opal",
     "verified": true,
-    "confidence": "langfile"
+    "confidence": "code"
   },
   {
     "id": "elusive-antlers",

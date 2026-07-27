@@ -766,3 +766,38 @@ triggering attack's **proc coefficient**, so a 0.5-proc hit explodes at half siz
 dependency the dataset had no way to express and now states in the formula.
 
 **51 / 212 code-verified.**
+
+### 3j.9 Oddly-shaped Opal — the game contradicts itself
+
+Reported as possibly wrong. It is not our error, and the investigation is worth keeping
+because it identifies a class of problem no existing check covered.
+
+The game ships **two** strings per item, and here they describe **different mechanics**:
+
+| Token | Text |
+|---|---|
+| `ITEM_OUTOFCOMBATARMOR_PICKUP` | "Reduce damage the first time you are hit." |
+| `ITEM_OUTOFCOMBATARMOR_DESC` | "Increase armor by 100 (+100 per stack) while out of danger." |
+
+Our transcription of both is verbatim and correct — `data:diff` was right to pass. The
+code settles which is true:
+
+```csharp
+// CharacterBody.RecalculateStats
+armor += (HasBuff(DLC1Content.Buffs.OutOfCombatArmorBuff) ? (100f * (float)num51) : 0f);
+
+// OutOfCombatArmorBehavior — the buff simply tracks outOfDanger
+private void FixedUpdate() { SetProvidingBuff(body.outOfDanger); }
+```
+
+A persistent +100 armour per stack while out of danger. **The description is accurate;
+the pickup line is stale legacy text** from an earlier version of the item.
+
+Scanning all 212 items for pickup/description concept overlap found Opal as the one
+genuine contradiction — the other low-overlap pairs are flavour text ("…and his music
+was electric") or the same mechanic reworded ("Double the strength of healing" vs
+"Heal +100% more"). So this is rare, but it is real, and it means the two strings must
+not be presented as co-equal claims: `pickupText` is flavour/summary, `description` is
+mechanical, and the code-verified layer outranks both (PLAN §6B.4).
+
+**52 / 212 code-verified.**
