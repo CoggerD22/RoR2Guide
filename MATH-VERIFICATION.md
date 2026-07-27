@@ -1313,3 +1313,50 @@ no local to follow. The tracer only recognised reads that were *assigned* to som
 it missed this entirely and the cap had to be found by hand. Reads that participate in
 arithmetic on their own line are now emitted directly, taking the corpus from 133 traced
 items to **143**.
+
+### 3j.22 Def-use batch 6 — four undocumented caps, and a party-wide effect
+
+| Item | Code | Result |
+| --- | --- | --- |
+| Runic Lens | `3f + overspill * (3f + 3f(n-1))`; `20f + overspill * (1.5f + 0.5f(n-1))` | confirmed + 2 caps |
+| Hooks of Heresy | `3f * n` root; `n * baseRechargeInterval` x asset `= 5` | confirmed |
+| Longstanding Solitude | `i < n && i < 3`; `1f + partyCount * 0.5f` | confirmed + party-wide |
+| Eulogy Zero | `rng < 0.05f * n` | confirmed |
+| Functional Coupler | inventory array grown by the count | confirmed |
+| Empathy Cores | `damageMultiplier += (allies) * n * 1f` | confirmed |
+
+**122 -> 128 of 212.** Every recorded number was right; what was missing were limits.
+
+**Runic Lens has two hard caps, neither documented.** The activation chance is clamped to
+**75%** (`meteorChanceThreshold`) and the damage multiplier to **75x** — so the meteor can
+never exceed 7500% base damage no matter how much overspill feeds it. The blast also has
+`procCoefficient = 0.5` and a 10m radius. For an item whose entire design is "the harder
+you hit, the bigger the meteor", a ceiling on both halves is exactly the kind of fact a
+player needs and the description withholds.
+
+**Longstanding Solitude's cost increase is party-wide.**
+`GetLongstandingSolitudeItemCostScale = 1f + LongstandingSolitudesInParty() * 0.5f`, and
+`LongstandingSolitudesInParty` sums the item across **every player on the team**. The
++50%/stack figure is right, but it applies to *everyone*, driven by *everyone's* stacks —
+so one player taking three of these raises the whole lobby's prices by 150%. Its free
+purchases are separately capped at 3 (`i < n && i < 3`), which our `capStacks` already had,
+and the gold-to-experience conversion caps at 8 effective stacks.
+
+Finding this is also a small process lesson. The cost code lives in `TeamManager`, and my
+first sweep grep for `OnLevelUpFreeUnlock` "found nothing", because I read the hits and
+skipped the one that mattered — the def-use trace had surfaced `TeamManager:367` all along.
+The evidence was correct; I was the bottleneck.
+
+#### Hooks of Heresy — the first claim settled by code AND asset together
+
+`LunarSecondaryReplacementSkill.GetRechargeInterval` returns
+`GetItemCountEffective(LunarSecondaryReplacement) * baseRechargeInterval`. The code proves
+the shape (`n x interval`) and nothing else; the constant is a serialized field on the
+SkillDef. New extractor `scripts/extract-skilldefs.py` pulls those (483 SkillDefs), giving
+`LunarSecondaryReplacement.baseRechargeInterval = 5` — hence 5s, +5s per stack. This is
+§5.0.2 exactly: neither source alone was sufficient.
+
+The extractor repeated a mistake already solved once: Unity ships
+`baseRechargeInterval: Infinity` for skills that never recharge, which `json.dump` writes
+as bare `Infinity` — valid Python, invalid JSON. `extract-item-prefabs.py` had already been
+fixed for this and the guard should have been carried over.

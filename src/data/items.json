@@ -2923,13 +2923,15 @@
         "stat": "Bonus chance per 100% damage (%)",
         "base": 3,
         "perStack": 3,
-        "type": "linear"
+        "type": "linear",
+        "formula": "chance = 3f + overspill * (3f + 3f * (n - 1)), where overspill = (int)(hitDamage / bodyDamage) (GlobalEventManager). UNDOCUMENTED: the result is hard-capped at 75% (meteorChanceThreshold), and the whole roll is multiplied by the hit's proc coefficient."
       },
       {
         "stat": "Bonus damage per 100% damage (%)",
         "base": 150,
         "perStack": 50,
-        "type": "linear"
+        "type": "linear",
+        "formula": "MeteorAttackOnHighDamageBodyBehavior.CalculateDamage: multiplier = 20f + overspill * (1.5f + 0.5f * (n - 1)), i.e. a 2000% base meteor plus 150% (+50% per stack) per 100% of overspill damage. UNDOCUMENTED: the multiplier is hard-capped at 75f, so the meteor can never exceed 7500% base damage. The blast has radius 10m and procCoefficient 0.5."
       }
     ],
     "tags": [
@@ -2940,7 +2942,7 @@
     "icon": "/icons/runic-lens.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Runic_Lens",
     "verified": true,
-    "confidence": "langfile"
+    "confidence": "code"
   },
   {
     "id": "sonorous-whispers",
@@ -3421,7 +3423,8 @@
         "stat": "Probe damage per ally (%)",
         "base": 100,
         "perStack": 100,
-        "type": "linear"
+        "type": "linear",
+        "formula": "The probe is given n TeamSizeDamageBonus items; RecalculateStats does `damageMultiplier += (teamMembers - 1) * n * 1f` (CharacterBody). +100% damage per ally per stack, where allies excludes the probe's owner."
       }
     ],
     "tags": [
@@ -3431,7 +3434,7 @@
     "icon": "/icons/empathy-cores.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Empathy_Cores",
     "verified": true,
-    "confidence": "langfile",
+    "confidence": "code",
     "corruptedBy": "newly-hatched-zoea"
   },
   {
@@ -3498,7 +3501,8 @@
         "stat": "Extra equipment slots",
         "base": 1,
         "perStack": 1,
-        "type": "linear"
+        "type": "linear",
+        "formula": "Inventory grows the equipment array by the item count, adding/removing slots as the count changes. Linear, +1 per stack."
       }
     ],
     "tags": [
@@ -3508,7 +3512,7 @@
     "icon": "/icons/functional-coupler.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Functional_Coupler",
     "verified": true,
-    "confidence": "langfile",
+    "confidence": "code",
     "corruptedBy": "newly-hatched-zoea"
   },
   {
@@ -3896,13 +3900,15 @@
         "stat": "Root duration (s)",
         "base": 3,
         "perStack": 3,
-        "type": "linear"
+        "type": "linear",
+        "formula": "AddTimedBuff(Buffs.LunarSecondaryRoot, 3f * n) (GlobalEventManager). Linear."
       },
       {
         "stat": "Recharge time (s)",
         "base": 5,
         "perStack": 5,
-        "type": "linear"
+        "type": "linear",
+        "formula": "LunarSecondaryReplacementSkill.GetRechargeInterval returns `n * baseRechargeInterval`, and the LunarSecondaryReplacement SkillDef asset has baseRechargeInterval = 5 — so 5s at one stack, +5s per stack. Code gives the shape, the asset gives the constant; neither alone settles it (PLAN 5.0.2)."
       }
     ],
     "tags": [
@@ -3917,7 +3923,7 @@
     "icon": "/icons/hooks-of-heresy.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Hooks_of_Heresy",
     "verified": true,
-    "confidence": "langfile"
+    "confidence": "code"
   },
   {
     "id": "essence-of-heresy",
@@ -4138,14 +4144,15 @@
         "perStack": 1,
         "type": "linear",
         "cap": "Hard cap at 3 (CharacterBody.AddFreeChestBuff: the grant loop runs while i < 3). A 4th stack grants NO extra free unlock, despite the description reading +1 per stack.",
-        "formula": "1 free unlock per stack, capped at 3 per level up (AddFreeChestBuff). Separately, the gold->XP conversion factor is 0.12 + 0.0125(n-1) with the stack count clamped to 8 (CharacterMaster.GiveMoneyWithOnLevelUpFreeUnlock).",
+        "formula": "AddFreeChestBuff: `for (i = 0; i < n && i < 3; i++)` (CharacterBody) — CAPPED AT 3. Each buff stack zeroes the cost of one purchase and is then consumed (PurchaseInteraction). Stacks beyond the third grant no further free purchases.",
         "capStacks": 3
       },
       {
         "stat": "Gold cost increase (%)",
         "base": 50,
         "perStack": 50,
-        "type": "linear"
+        "type": "linear",
+        "formula": "TeamManager.GetLongstandingSolitudeItemCostScale = 1f + LongstandingSolitudesInParty() * 0.5f, applied by AdjustCostForLongstandingSolitude to every Money-type cost. +50% per stack. TWO undocumented consequences: the count is summed across the WHOLE PARTY, and the increase applies to every player, so one person's stacks raise everyone's prices. The separate gold-to-experience conversion caps at 8 effective stacks and converts at (0.12 + 0.0125(n-1)) of a level per small-chest-cost of gold earned."
       }
     ],
     "tags": [
@@ -4155,7 +4162,7 @@
     "icon": "/icons/longstanding-solitude.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Longstanding_Solitude",
     "verified": true,
-    "confidence": "langfile"
+    "confidence": "code"
   },
   {
     "id": "egocentrism",
@@ -4246,7 +4253,8 @@
         "stat": "Chance to become a Lunar item (%)",
         "base": 5,
         "perStack": 5,
-        "type": "linear"
+        "type": "linear",
+        "formula": "rng.nextNormalizedFloat < 0.05f * n (RandomlyLunarUtils). Linear, +5% per stack. Uses the GLOBAL item count, so it is a party-wide effect."
       }
     ],
     "tags": [
@@ -4255,7 +4263,7 @@
     "icon": "/icons/eulogy-zero.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Eulogy_Zero",
     "verified": true,
-    "confidence": "langfile"
+    "confidence": "code"
   },
   {
     "id": "needletick",
