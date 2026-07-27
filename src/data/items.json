@@ -1873,7 +1873,8 @@
         "stat": "Max airborne re-launches",
         "base": 2,
         "perStack": 1,
-        "type": "linear"
+        "type": "linear",
+        "formula": "SetBuffCount(KnockUpHitEnemies, 2 + (n - 1)) (HealthComponent). Linear."
       }
     ],
     "tags": [
@@ -1884,7 +1885,7 @@
     "icon": "/icons/breaching-fin.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Breaching_Fin",
     "verified": true,
-    "confidence": "langfile"
+    "confidence": "code"
   },
   {
     "id": "chance-doll",
@@ -1951,13 +1952,15 @@
         "stat": "Enemies debuffs transfer to",
         "base": 1,
         "perStack": 1,
-        "type": "linear"
+        "type": "linear",
+        "formula": "targets = n, decremented once per vine chain created (CharacterBody). Linear."
       },
       {
         "stat": "Transfer range (m)",
         "base": 20,
         "perStack": 5,
-        "type": "linear"
+        "type": "linear",
+        "formula": "sphereSearch.radius = 20f + 5f * (n - 1) (CharacterBody). Linear."
       }
     ],
     "tags": [
@@ -1968,7 +1971,7 @@
     "icon": "/icons/noxious-thorn.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Noxious_Thorn",
     "verified": true,
-    "confidence": "langfile"
+    "confidence": "code"
   },
   {
     "id": "prayer-beads",
@@ -2559,7 +2562,8 @@
         "stat": "Barrier from overheal (%)",
         "base": 50,
         "perStack": 50,
-        "type": "linear"
+        "type": "linear",
+        "formula": "barrier = overheal x (n * 0.5f) (HealthComponent). Linear, +50% per stack."
       }
     ],
     "tags": [
@@ -2569,7 +2573,7 @@
     "icon": "/icons/aegis.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Aegis",
     "verified": true,
-    "confidence": "langfile"
+    "confidence": "code"
   },
   {
     "id": "shattering-justice",
@@ -2583,7 +2587,8 @@
         "stat": "Armor-break duration (s)",
         "base": 8,
         "perStack": 8,
-        "type": "linear"
+        "type": "linear",
+        "formula": "AddTimedBuff(Buffs.Pulverized, 8f * n) (HealthComponent). Linear. The -60 armor is the fixed Pulverized buff and does not scale."
       }
     ],
     "tags": [
@@ -2593,7 +2598,7 @@
     "icon": "/icons/shattering-justice.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Shattering_Justice",
     "verified": true,
-    "confidence": "langfile"
+    "confidence": "code"
   },
   {
     "id": "resonance-disc",
@@ -2686,7 +2691,8 @@
         "stat": "Missile damage bonus (%)",
         "base": 0,
         "perStack": 50,
-        "type": "linear"
+        "type": "linear",
+        "formula": "MissileUtils.GetMoreMissileDamageMultiplier: Mathf.Max(1f, 1f + 0.5f * (n - 1)). The first stack gives NO damage bonus - it is +50% per stack beyond the first, exactly as the description's unusual '0%' base says. The extra missiles are separate: the fire count becomes `(n <= 0) ? 1 : 3`, i.e. +2, and does not scale further with stacks."
       }
     ],
     "tags": [
@@ -2695,7 +2701,7 @@
     "icon": "/icons/pocket-icbm.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Pocket_I.C.B.M.",
     "verified": true,
-    "confidence": "langfile"
+    "confidence": "code"
   },
   {
     "id": "spare-drone-parts",
@@ -2920,9 +2926,10 @@
     "stacking": [
       {
         "stat": "Elite item-drop chance (%)",
-        "base": 4,
+        "base": 5,
         "perStack": 1,
-        "type": "linear"
+        "type": "linear",
+        "formula": "LocalCheckRoll(4f + 1f * n) (GlobalEventManager), inside a `count > 0` guard. The increment applies from the FIRST stack, so the real chance is 5% at one stack, 6% at two, 7% at three. The in-game description's '4% (+1% per stack)' states the constant rather than the value you actually get - the same defect seen in Bandolier, Ukulele and Safer Spaces. Large monsters are a separate, unconditional 100% roll."
       }
     ],
     "tags": [
@@ -2932,7 +2939,7 @@
     "icon": "/icons/sonorous-whispers.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Sonorous_Whispers",
     "verified": true,
-    "confidence": "langfile"
+    "confidence": "code"
   },
   {
     "id": "war-bonds",
@@ -3124,13 +3131,15 @@
         "stat": "Explosion damage (% base)",
         "base": 400,
         "perStack": 400,
-        "type": "linear"
+        "type": "linear",
+        "formula": "damageCoefficient = 4f * (1 + (n - 1)) (GlobalEventManager) - algebraically 4n. Linear."
       },
       {
         "stat": "Explosion bonus (% of enemy max HP)",
         "base": 15,
         "perStack": 15,
-        "type": "linear"
+        "type": "linear",
+        "formula": "0.15f * (1 + (n - 1)) of victimBody.maxHealth, added to the base damage (GlobalEventManager). Linear."
       }
     ],
     "tags": [
@@ -3142,7 +3151,7 @@
     "icon": "/icons/shatterspleen.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Shatterspleen",
     "verified": true,
-    "confidence": "langfile",
+    "confidence": "code",
     "corruptedBy": "newly-hatched-zoea"
   },
   {
@@ -3307,7 +3316,8 @@
         "stat": "Magma ball damage (%)",
         "base": 300,
         "perStack": 300,
-        "type": "linear"
+        "type": "linear",
+        "formula": "damageCoefficient = 3f * n via Util.OnHitProcDamage (GlobalEventManager). Linear from the first stack."
       }
     ],
     "tags": [
@@ -3318,7 +3328,7 @@
     "icon": "/icons/molten-perforator.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Molten_Perforator",
     "verified": true,
-    "confidence": "langfile",
+    "confidence": "code",
     "corruptedBy": "newly-hatched-zoea"
   },
   {
@@ -3410,7 +3420,8 @@
         "stat": "Heal on taking damage (health)",
         "base": 15,
         "perStack": 15,
-        "type": "linear"
+        "type": "linear",
+        "formula": "Heal(n * 15f) (HealthComponent), applied on incoming damage. Linear."
       }
     ],
     "tags": [
@@ -3420,7 +3431,7 @@
     "icon": "/icons/planula.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Planula",
     "verified": true,
-    "confidence": "langfile",
+    "confidence": "code",
     "corruptedBy": "newly-hatched-zoea"
   },
   {
@@ -3987,7 +3998,8 @@
         "stat": "Summoned enemy strength (%)",
         "base": 40,
         "perStack": 40,
-        "type": "linear"
+        "type": "linear",
+        "formula": "monsterCredit = 40f * Stage.entryDifficultyCoefficient * n (GlobalEventManager). Linear in stacks, and the difficulty coefficient is what the description means by 'scales over time'."
       }
     ],
     "tags": [
@@ -3996,7 +4008,7 @@
     "icon": "/icons/defiant-gouge.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Defiant_Gouge",
     "verified": true,
-    "confidence": "langfile"
+    "confidence": "code"
   },
   {
     "id": "mercurial-rachis",
@@ -4231,7 +4243,8 @@
         "stat": "Chance to collapse on hit (%)",
         "base": 10,
         "perStack": 10,
-        "type": "linear"
+        "type": "linear",
+        "formula": "LocalCheckRoll(procCoefficient * n * 10f) (GlobalEventManager). Linear, and it scales with the hit's proc coefficient. Undocumented: carrying the Void elite buff adds 10 to the effective stack count outright (`n += HasBuff(EliteVoid) ? 10 : 0`), which is why Void elites collapse so reliably."
       }
     ],
     "tags": [
@@ -4244,7 +4257,7 @@
     "icon": "/icons/needletick.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Needletick",
     "verified": true,
-    "confidence": "langfile"
+    "confidence": "code"
   },
   {
     "id": "lost-seers-lenses",
@@ -4421,7 +4434,8 @@
         "stat": "Lightning hits",
         "base": 3,
         "perStack": 3,
-        "type": "linear"
+        "type": "linear",
+        "formula": "voidLightningOrb.totalStrikes = 3 * n (GlobalEventManager). Linear."
       }
     ],
     "tags": [
@@ -4434,7 +4448,7 @@
     "icon": "/icons/polylute.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Polylute",
     "verified": true,
-    "confidence": "langfile"
+    "confidence": "code"
   },
   {
     "id": "tentabauble",
@@ -4483,7 +4497,8 @@
         "stat": "Black hole damage (% TOTAL)",
         "base": 100,
         "perStack": 100,
-        "type": "linear"
+        "type": "linear",
+        "formula": "damageCoefficient = 1f * n via Util.OnHitProcDamage (GlobalEventManager). Linear."
       }
     ],
     "tags": [
@@ -4499,7 +4514,7 @@
     "icon": "/icons/singularity-band.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Singularity_Band",
     "verified": true,
-    "confidence": "langfile"
+    "confidence": "code"
   },
   {
     "id": "voidsent-flame",
@@ -4547,7 +4562,8 @@
         "stat": "Items upgraded per stage",
         "base": 3,
         "perStack": 3,
-        "type": "linear"
+        "type": "linear",
+        "formula": "count = n * 3, consumed by the upgrade loop (CharacterMaster). Linear."
       }
     ],
     "tags": [
@@ -4559,7 +4575,7 @@
     "icon": "/icons/benthic-bloom.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Benthic_Bloom",
     "verified": true,
-    "confidence": "langfile"
+    "confidence": "code"
   },
   {
     "id": "pluripotent-larva",

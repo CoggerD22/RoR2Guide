@@ -1102,3 +1102,42 @@ distance depends on the air-drag model and I could not derive it from this snipp
 claim may well be right; it is not *verified*, so it stays `langfile`. Recording it as an
 open question rather than rounding up to a graduation is the point of the exercise —
 the tracer's job is to produce evidence, not to convert reach into confidence.
+
+### 3j.17 Def-use batch 2 — 14 more items, and a fourth instance of the same defect
+
+| Item | Code | Result |
+| --- | --- | --- |
+| Shattering Justice | `AddTimedBuff(Pulverized, 8f * n)` | confirmed |
+| Aegis | `overheal x (n * 0.5f)` | confirmed |
+| Pocket I.C.B.M. | `Mathf.Max(1f, 1f + 0.5f * (n-1))` | confirmed |
+| Shatterspleen | `4f * (1 + (n-1))`, `0.15f * (1 + (n-1))` of max HP | confirmed |
+| Molten Perforator | `3f * n` | confirmed |
+| Planula | `Heal(n * 15f)` | confirmed |
+| Needletick | `procCoefficient * n * 10f` | confirmed |
+| Polylute | `totalStrikes = 3 * n` | confirmed |
+| Singularity Band | `1f * n` | confirmed |
+| Benthic Bloom | `n * 3` | confirmed |
+| **Sonorous Whispers** | `LocalCheckRoll(4f + 1f * n)` | **CORRECTED 4% -> 5%** |
+| Noxious Thorn | `targets = n`, radius `20f + 5f(n-1)` | confirmed |
+| Breaching Fin | `SetBuffCount(KnockUpHitEnemies, 2 + (n-1))` | confirmed |
+| Defiant Gouge | `40f * entryDifficultyCoefficient * n` | confirmed |
+
+**89 -> 103 of 212.**
+
+**Sonorous Whispers is the fourth instance of defect class (d)** — the increment applying
+from the first stack while the description reads as though it does not. The roll is
+`4f + 1f * n` inside a `count > 0` guard, so one stack is **5%**, not 4%; two is 6%. The
+description states the constant, not the value you get. Bandolier, Ukulele and Safer
+Spaces were the same shape. Four independent occurrences is no longer a coincidence:
+**`base` should be treated as suspect whenever a description reads `X (+Y per stack)` and
+the code is `X + Y*n` rather than `X + Y*(n-1)`.** Both forms are common — Warbanner is
+`8f + 8f * n` (16m at one stack, description agrees), Razorwire is `5 + 2*(n-1)`
+(description agrees) — so the only way to know is to read the expression.
+
+Two undocumented facts also surfaced:
+
+- **Needletick**: the Void elite buff adds **10 to the effective stack count**
+  (`n += HasBuff(EliteVoid) ? 10 : 0`), which is why Void elites collapse so reliably.
+- **Pocket I.C.B.M.**: the extra missiles are `(n <= 0) ? 1 : 3` — a flat +2 that does
+  **not** scale with stacks, while only the damage multiplier does. The description's
+  odd-looking "+0%" base is literally correct.
