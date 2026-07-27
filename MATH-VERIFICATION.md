@@ -1231,3 +1231,48 @@ The general lesson, and it applies to the whole remaining backlog: **"I cannot d
 from this snippet" is a statement about how far I read, not about what is knowable.** The
 decompile contains the whole engine. An item is only genuinely unverifiable when the
 information is absent from every source, which is far rarer than my first pass assumed.
+
+### 3j.20 Def-use batch 4 — Plasma Shrimp corrected, and a tracer bug that could have caused a FALSE verification
+
+| Item | Code | Result |
+| --- | --- | --- |
+| Gasoline | `8f + 4f*n + victimBody.radius`; burn `(1+n) * 0.75f * damage` | confirmed |
+| Roll of Pennies | `(n * 3) * difficultyCoefficient` | confirmed |
+| Eclipse Lite | `maxHealth * (0.01f + 0.0025f*(n-1)) * baseRechargeInterval` | confirmed |
+| **Plasma Shrimp** | `damageCoefficient = 0.4f * n` | **CORRECTED +50% -> +40%** |
+| Voidsent Flame | `2.6f * (1f + (n-1) * 0.6f)`, radius `12f + 2.4f(n-1)` | confirmed |
+| Lysate Cell | `SetBonusStockFromBody(n + extraSpecialFromSkill)` | confirmed + new effect |
+
+**110 -> 116 of 212.**
+
+**Plasma Shrimp** is `0.4f * n` — 40%, 80%, 120%. Both our data and the in-game
+description claimed +50% per stack. The code is unambiguous, and unlike Sonorous Whispers
+this is not an off-by-one in the base: the *increment itself* was wrong.
+
+**Lysate Cell raises Engineer's turret limit from 2 to 3** —
+`CharacterMaster.GetDeployableSameSlotLimit`, `DeployableSlot.EngiTurret`:
+`(GetItemCountEffective(EquipmentMagazineVoid) <= 0) ? 2 : 3`. Any single stack does it and
+further stacks do nothing, so it is recorded as a `special` entry. It is in neither the
+description nor our data, and it is **not** shared with Fuel Cell, which Lysate Cell
+corrupts — Fuel Cell has no deployable-limit entry at all.
+
+**Gasoline** turned out to have an undocumented term too: the ignite radius is
+`8f + 4f*n + victimBody.radius`, so the burst is genuinely larger around big enemies. The
+150% impact blast is a fixed `damage * 1.5f` and does not stack; only the burn does.
+
+#### The tracer bug
+
+Finding Lysate Cell's turret effect also exposed a real defect in the tracer. Its count is
+read into `result` inside `case DeployableSlot.EngiTurret:`, and `result` is reassigned in
+a dozen **unrelated** cases below — Beetle Gland, Incubator, Lunar Sun. Brace depth does
+not separate switch cases, so the walk happily reported *other items' code* under Lysate
+Cell's name.
+
+That is the most dangerous class of failure this programme can have: not a missing
+verification, but a **false** one. Had I trusted the trace instead of reading the lines,
+Lysate Cell would now claim Beetle Gland's formula with a `code` badge on it.
+
+Fixed by stopping the walk at `break;` / `case` / `default:` / `goto` at or below the
+read's own depth. Corpus-wide this removed 13 use sites (408 -> 395) — all of them false.
+The lesson is the one already written into these extractors' docstrings and now paid for:
+**a tracer produces evidence, not verdicts, and every line still gets read by a human.**

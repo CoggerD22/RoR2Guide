@@ -113,8 +113,16 @@ def trace_local(lines, depths, start, name, scope_from=None):
     lo, hi = block_scope(depths, scope_from if scope_from is not None else start)
     tracked = {name: 0}          # identifier -> hop count
     uses = []
+    read_depth = depths[start]
     for i in range(start + 1, hi + 1):
         line = lines[i]
+        # Stop at the end of the read's own switch case. Lysate Cell exposed this: its
+        # count is read into `result` inside `case DeployableSlot.EngiTurret:`, and
+        # `result` is reassigned in a dozen *unrelated* cases below. Brace depth does not
+        # separate them, so without this the trace reports another item's code as if it
+        # were this one's — a false verification, the worst possible failure here.
+        if re.match(rf"^\s*(?:break;|case\s|default:|goto\s)", line) and depths[i] <= read_depth:
+            break
         hit = next((v for v in tracked if re.search(rf"\b{re.escape(v)}\b", line)), None)
         if hit is None:
             continue

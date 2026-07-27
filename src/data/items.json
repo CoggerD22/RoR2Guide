@@ -439,13 +439,15 @@
         "stat": "Ignite radius (m)",
         "base": 12,
         "perStack": 4,
-        "type": "linear"
+        "type": "linear",
+        "formula": "radius = 8f + 4f * n + victimBody.radius (GlobalEventManager.ProcIgniteOnKill). 12m at one stack, +4m per stack, PLUS the killed enemy's own collider radius — so the burst is measurably larger around big targets, which the description does not mention."
       },
       {
         "stat": "Burn damage (% base)",
         "base": 150,
         "perStack": 75,
-        "type": "linear"
+        "type": "linear",
+        "formula": "burn totalDamage = (1 + n) * 0.75f * attackerBody.damage (ProcIgniteOnKill) - 150% at one stack, +75% per stack. The separate 150% impact blast is a fixed `damage * 1.5f` and does NOT stack."
       }
     ],
     "tags": [
@@ -456,7 +458,7 @@
     "icon": "/icons/gasoline.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Gasoline",
     "verified": true,
-    "confidence": "langfile"
+    "confidence": "code"
   },
   {
     "id": "medkit",
@@ -563,7 +565,8 @@
         "stat": "Gold on taking damage",
         "base": 3,
         "perStack": 3,
-        "type": "linear"
+        "type": "linear",
+        "formula": "goldAmount = (n * 3) * Run.instance.difficultyCoefficient (HealthComponent). Linear in stacks; the difficulty coefficient is what 'scales over time' means. Only triggers when the attacker is another entity."
       }
     ],
     "tags": [
@@ -573,7 +576,7 @@
     "icon": "/icons/roll-of-pennies.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Roll_of_Pennies",
     "verified": true,
-    "confidence": "langfile"
+    "confidence": "code"
   },
   {
     "id": "sticky-bomb",
@@ -948,7 +951,8 @@
         "stat": "Barrier per second of base cooldown (% max health)",
         "base": 1,
         "perStack": 0.25,
-        "type": "linear"
+        "type": "linear",
+        "formula": "barrier = maxHealth * (0.01f + 0.0025f * (n - 1)) * skill.baseRechargeInterval, multiplied by the number of charges restocked (CharacterBody). Linear."
       }
     ],
     "tags": [
@@ -957,7 +961,7 @@
     "icon": "/icons/eclipse-lite.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Eclipse_Lite",
     "verified": true,
-    "confidence": "langfile"
+    "confidence": "code"
   },
   {
     "id": "atg-missile-mk-1",
@@ -4393,8 +4397,9 @@
       {
         "stat": "Missile damage (% TOTAL)",
         "base": 40,
-        "perStack": 50,
-        "type": "linear"
+        "perStack": 40,
+        "type": "linear",
+        "formula": "damageCoefficient = 0.4f * n via Util.OnHitProcDamage (GlobalEventManager) - a flat 40% per stack: 40%, 80%, 120%. Both our data and the in-game description said +50% per stack; the code is unambiguous. Gated on currently having shield. Pocket I.C.B.M.'s multiplier is applied on top."
       }
     ],
     "tags": [
@@ -4408,7 +4413,7 @@
     "icon": "/icons/plasma-shrimp.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Plasma_Shrimp",
     "verified": true,
-    "confidence": "langfile"
+    "confidence": "code"
   },
   {
     "id": "lysate-cell",
@@ -4422,7 +4427,15 @@
         "stat": "Special skill charges",
         "base": 1,
         "perStack": 1,
-        "type": "linear"
+        "type": "linear",
+        "formula": "specialBonusStockSkill.SetBonusStockFromBody(n + extraSpecialFromSkill) (CharacterBody) - +1 charge per stack, carried with no numeric literal."
+      },
+      {
+        "stat": "Engineer turret limit",
+        "base": 3,
+        "perStack": 0,
+        "type": "special",
+        "formula": "CharacterMaster.GetDeployableSameSlotLimit, DeployableSlot.EngiTurret: `(GetItemCountEffective(EquipmentMagazineVoid) <= 0) ? 2 : 3`. Holding ANY Lysate Cell raises Engineer's turret limit from 2 to 3; further stacks do nothing. Undocumented, and NOT shared with Fuel Cell, which it corrupts — Fuel Cell has no deployable-limit entry at all."
       }
     ],
     "tags": [
@@ -4434,7 +4447,7 @@
     "icon": "/icons/lysate-cell.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Lysate_Cell",
     "verified": true,
-    "confidence": "langfile"
+    "confidence": "code"
   },
   {
     "id": "polylute",
@@ -4542,13 +4555,15 @@
         "stat": "Explosion radius (m)",
         "base": 12,
         "perStack": 2.4,
-        "type": "linear"
+        "type": "linear",
+        "formula": "radius = 12f + 2.4f * (n - 1) (HealthComponent). Linear."
       },
       {
         "stat": "Explosion damage (% base)",
         "base": 260,
         "perStack": 156,
-        "type": "linear"
+        "type": "linear",
+        "formula": "damageCoefficient = 2.6f * (1f + (n - 1) * 0.6f) (HealthComponent). Linear in n: 260% at one stack, +156% (= 260% x 0.6) per stack."
       }
     ],
     "tags": [
@@ -4562,7 +4577,7 @@
     "icon": "/icons/voidsent-flame.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Voidsent_Flame",
     "verified": true,
-    "confidence": "langfile"
+    "confidence": "code"
   },
   {
     "id": "benthic-bloom",
