@@ -1141,3 +1141,45 @@ Two undocumented facts also surfaced:
 - **Pocket I.C.B.M.**: the extra missiles are `(n <= 0) ? 1 : 3` — a flat +2 that does
   **not** scale with stacks, while only the damage multiplier does. The description's
   odd-looking "+0%" base is literally correct.
+
+### 3j.18 Def-use batch 3 — Frost Relic was wrong in both directions
+
+| Item | Code | Result |
+| --- | --- | --- |
+| Leeching Seed | `Heal(n * procCoefficient)` | confirmed + proc scaling |
+| Symbiotic Scorpion | `for j<n` stacks, `armor -= buffCount * 2f` | confirmed |
+| Soulbound Catalyst | `DeductActiveEquipmentCooldown(2f + n * 2f)` | confirmed |
+| Wake of Vultures | `duration = 3f + 5f * n` | confirmed |
+| Hardlight Afterburner | `SetBonusStockFromBody(n * 2)` | confirmed |
+| **Frost Relic** | see below | **CORRECTED, restructured** |
+
+**103 -> 109 of 212.**
+
+**Frost Relic** recorded a max storm radius of "18m (+12m per stack)". Neither number is
+right, and this one could not be caught by comparing against a literal because the real
+value is assembled from four constants in a different class:
+
+```
+maxIcicleCount = baseIcicleMax + (n-1) * icicleMaxPerStack   = 6 + 3(n-1)
+radius         = characterBody.radius + icicleBaseRadius(10f) + icicleRadiusPerIcicle(2f) * icicles
+```
+
+At the cap that is **22m + the survivor's collider radius, and +6m per stack** — three
+extra icicles at 2m each, not the 12m claimed. The description's "grows the radius by 2m"
+is the one part that was exactly right.
+
+The record is now split into `Max icicles` (6, +3 — exact and character-independent) and
+`Max storm radius (m)` (22, +6). The listed radius deliberately **excludes** the collider
+term: `characterBody.radius` is read from each body's CapsuleCollider (`radius = 1f` then
+overridden, CharacterBody:3454), so it genuinely differs per survivor and there is no one
+true number. Stating 22 and naming the missing term is honest; inventing 22.5 by assuming
+a hull would not be — `HullDef` exists with radii 0.5/1.8/5, but it is not what feeds this
+field, and asserting otherwise would have been exactly the kind of plausible-sounding
+value this programme exists to prevent.
+
+Two undocumented proc-coefficient dependencies also surfaced, both of which make the item
+weaker than its description implies:
+
+- **Leeching Seed** heals `n x procCoefficient`, so a 0-proc hit heals nothing.
+- **Symbiotic Scorpion** rolls `100f * procCoefficient` per stack, so despite "100% chance
+  on hit" a low-proc hit applies fewer than n stacks.

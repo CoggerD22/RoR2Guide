@@ -1089,7 +1089,8 @@
         "stat": "Heal on hit (health)",
         "base": 1,
         "perStack": 1,
-        "type": "linear"
+        "type": "linear",
+        "formula": "Heal(n * damageInfo.procCoefficient) (GlobalEventManager). Linear in stacks, but also multiplied by the hit's PROC COEFFICIENT — the description does not say this, so low-proc attacks heal proportionally less and a 0-proc hit heals nothing."
       }
     ],
     "tags": [
@@ -1099,7 +1100,7 @@
     "icon": "/icons/leeching-seed.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Leeching_Seed",
     "verified": true,
-    "confidence": "langfile"
+    "confidence": "code"
   },
   {
     "id": "predatory-instincts",
@@ -2318,10 +2319,18 @@
     "description": "Killing an enemy surrounds you with an ice storm that deals 1200% damage per second and slows enemies by 80% for 1.5s. Each kill grows the radius by 2m, up to 18m (+12m per stack).",
     "stacking": [
       {
+        "stat": "Max icicles",
+        "base": 6,
+        "perStack": 3,
+        "type": "linear",
+        "formula": "maxIcicleCount = baseIcicleMax + (n - 1) * icicleMaxPerStack = 6 + 3(n-1) (IcicleAuraController). The live count is min(2 + kills, maxIcicleCount), so 2 icicles appear on the first kill."
+      },
+      {
         "stat": "Max storm radius (m)",
-        "base": 18,
-        "perStack": 12,
-        "type": "linear"
+        "base": 22,
+        "perStack": 6,
+        "type": "linear",
+        "formula": "radius = characterBody.radius + icicleBaseRadius (10f) + icicleRadiusPerIcicle (2f) x icicles (IcicleAuraController.UpdateRadius). At the 6-icicle cap that is 22m PLUS the survivor's own collider radius, and +6m per stack (3 more icicles x 2m). The listed number excludes the collider term because it is read from each body's CapsuleCollider and so differs per survivor."
       }
     ],
     "tags": [
@@ -2333,7 +2342,7 @@
     "icon": "/icons/frost-relic.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Frost_Relic",
     "verified": true,
-    "confidence": "langfile"
+    "confidence": "code"
   },
   {
     "id": "h3ad-5t-v2",
@@ -2429,7 +2438,8 @@
         "stat": "Equipment cooldown reduction per kill (s)",
         "base": 4,
         "perStack": 2,
-        "type": "linear"
+        "type": "linear",
+        "formula": "DeductActiveEquipmentCooldown(2f + n * 2f) (GlobalEventManager). 4s at one stack, +2s per stack."
       }
     ],
     "tags": [
@@ -2444,7 +2454,7 @@
     "icon": "/icons/soulbound-catalyst.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Soulbound_Catalyst",
     "verified": true,
-    "confidence": "langfile"
+    "confidence": "code"
   },
   {
     "id": "hardlight-afterburner",
@@ -2458,7 +2468,8 @@
         "stat": "Utility skill charges",
         "base": 2,
         "perStack": 2,
-        "type": "linear"
+        "type": "linear",
+        "formula": "utilityBonusStockSkill.SetBonusStockFromBody(n * 2) (CharacterBody). Linear, +2 charges per stack."
       }
     ],
     "tags": [
@@ -2467,7 +2478,7 @@
     "icon": "/icons/hardlight-afterburner.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Hardlight_Afterburner",
     "verified": true,
-    "confidence": "langfile"
+    "confidence": "code"
   },
   {
     "id": "wake-of-vultures",
@@ -2481,7 +2492,8 @@
         "stat": "Stolen elite power duration (s)",
         "base": 8,
         "perStack": 5,
-        "type": "linear"
+        "type": "linear",
+        "formula": "duration = 3f + 5f * n (GlobalEventManager). 8s at one stack, +5s per stack."
       }
     ],
     "tags": [
@@ -2491,7 +2503,7 @@
     "icon": "/icons/wake-of-vultures.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Wake_of_Vultures",
     "verified": true,
-    "confidence": "langfile"
+    "confidence": "code"
   },
   {
     "id": "brainstalks",
@@ -2771,7 +2783,8 @@
         "stat": "Permanent armor reduction on hit",
         "base": 2,
         "perStack": 2,
-        "type": "linear"
+        "type": "linear",
+        "formula": "Each hit runs `for (j = 0; j < n; j++)` applying one PermanentDebuff stack per roll, and RecalculateStats does `armor -= buffCount * 2f` — so 2 armor per stack, permanently. The roll is `100f * procCoefficient`, so despite the description's '100% chance' a low-proc hit can apply fewer than n stacks."
       }
     ],
     "tags": [
@@ -2781,7 +2794,7 @@
     "icon": "/icons/symbiotic-scorpion.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Symbiotic_Scorpion",
     "verified": true,
-    "confidence": "langfile"
+    "confidence": "code"
   },
   {
     "id": "bens-raincoat",
