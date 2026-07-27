@@ -1469,9 +1469,10 @@
     "stacking": [
       {
         "stat": "Forward boost (m)",
-        "base": 10,
-        "perStack": 10,
-        "type": "linear"
+        "base": 5,
+        "perStack": 5,
+        "type": "linear",
+        "formula": "Derived from code and confirmed by replaying CharacterMotor.PreMove. GenericCharacterMain sets horizontalBonus = (sqrt(10n/a) + moveSpeed/a) / (moveSpeed/a) where a = acceleration x airControl (0.25), so the launch speed is moveSpeed + sqrt(10na) - an excess of sqrt(10na) over the walk target. PreMove bleeds that excess off with Vector3.MoveTowards at exactly a m/s^2, so the extra ground covered is excess^2 / 2a = 5n metres, INDEPENDENT of both moveSpeed and acceleration. The game's '10m' is the 10f constant inside the square root, not a distance. Caveat: the boost needs sqrt(10n/a) seconds to bleed off, and a standard jump is airborne 1.0s (jumpPower 15, gravity -30) - so low-acceleration survivors such as MUL-T (a = 7.5) land before the boost has fully bled off and gain less at high stacks."
       }
     ],
     "tags": [
@@ -1485,7 +1486,7 @@
     "icon": "/icons/wax-quail.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Wax_Quail",
     "verified": true,
-    "confidence": "langfile"
+    "confidence": "code"
   },
   {
     "id": "old-guillotine",

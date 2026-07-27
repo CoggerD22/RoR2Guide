@@ -1183,3 +1183,51 @@ weaker than its description implies:
 - **Leeching Seed** heals `n x procCoefficient`, so a 0-proc hit heals nothing.
 - **Symbiotic Scorpion** rolls `100f * procCoefficient` per stack, so despite "100% chance
   on hit" a low-proc hit applies fewer than n stacks.
+
+### 3j.19 Wax Quail — 10m is 5m. Retracting "unverifiable".
+
+§3j.16 left this item at `langfile` on the grounds that converting its velocity term into
+a distance "needs the air-drag model, which this snippet does not give". That reasoning
+was wrong: the air-drag model is `CharacterMotor.PreMove`, which is in the same
+decompile. Nothing was missing except the effort to go and read it.
+
+Having read it, the item's recorded value is **wrong by a factor of two**.
+
+```
+GenericCharacterMain:199   a  = acceleration * airControl (0.25f)
+                           n2 = Mathf.Sqrt(10f * n / a)
+                           n3 = moveSpeed / a
+                           horizontalBonus = (n2 + n3) / n3
+ApplyJumpVelocity          velocity.xz = moveDirection * moveSpeed * horizontalBonus
+CharacterMotor.PreMove     target = moveDirection * walkSpeed ; target.y = velocity.y
+                           velocity = MoveTowards(velocity, target, a * deltaTime)
+```
+
+Launch speed is `moveSpeed + a*sqrt(10n/a)` = `moveSpeed + sqrt(10na)`, i.e. an excess of
+`sqrt(10na)` over the target the motor immediately starts pulling back to. `MoveTowards`
+bleeds that off at exactly `a` m/s^2 — constant deceleration — so the extra ground covered
+is
+
+    excess^2 / (2a)  =  10na / (2a)  =  **5n metres**
+
+independent of both `moveSpeed` and `acceleration`. The "10" in the description is the
+literal inside the square root, not a distance. `disableAirControlUntilCollision` would
+zero the decay, but it is set only by specific leap/knockback states and never by a normal
+jump, and `Items.JumpBoost` has exactly one reference in the whole assembly, so there is no
+second path.
+
+Confirmed by replaying the motor loop at 60 Hz rather than trusting the algebra —
+`scripts/verify-wax-quail.mjs`, kept in the repo precisely because this claim contradicts
+the game's own text and therefore has to be checkable by someone else. It reproduces
++4.88m at one stack against a predicted 5m, and shows the delta is unchanged at sprint
+speed, as the derivation requires.
+
+**Corrected: base 10 -> 5, perStack 10 -> 5.** One genuine caveat is now recorded with it:
+the boost needs `sqrt(10n/a)` seconds to bleed off against a 1.0s standard jump
+(jumpPower 15, gravity -30), so low-acceleration survivors land early and get less —
+MUL-T (`a` = 7.5) gains 15.4m at five stacks where Commando gains 21.3m.
+
+The general lesson, and it applies to the whole remaining backlog: **"I cannot derive it
+from this snippet" is a statement about how far I read, not about what is knowable.** The
+decompile contains the whole engine. An item is only genuinely unverifiable when the
+information is absent from every source, which is far rarer than my first pass assumed.
