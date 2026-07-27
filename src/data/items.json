@@ -793,13 +793,15 @@
         "stat": "Damage per kill (%)",
         "base": 3.5,
         "perStack": 1,
-        "type": "linear"
+        "type": "linear",
+        "formula": "damage bonus = buffStacks * (0.035f + ((n > 1) ? 0.01f * (n - 1) : 0f)) (CharacterBody). 3.5% per kill-stack at one item, +1% per item."
       },
       {
         "stat": "Max damage stacks",
         "base": 10,
         "perStack": 5,
-        "type": "linear"
+        "type": "linear",
+        "formula": "cap = (int)(10f + (n - 1) * 5f) (CharacterBody). Linear, 10 at one stack, +5 per stack."
       }
     ],
     "tags": [
@@ -809,7 +811,7 @@
     "icon": "/icons/chronic-expansion.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Chronic_Expansion",
     "verified": true,
-    "confidence": "langfile"
+    "confidence": "code"
   },
   {
     "id": "warped-echo",
@@ -823,7 +825,8 @@
         "stat": "Echoed hits",
         "base": 3,
         "perStack": 1,
-        "type": "linear"
+        "type": "linear",
+        "formula": "hits = 2 + n (HealthComponent). The stored damage is `num5 * 0.9f` (the 10% reduction), split evenly as `damage / hits`, and only the last hit is lethal (`k == hits - 1`). If the reduced damage is smaller than the hit count, the count is lowered to match so no hit is fractional."
       }
     ],
     "tags": [
@@ -833,7 +836,7 @@
     "icon": "/icons/warped-echo.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Warped_Echo",
     "verified": true,
-    "confidence": "langfile"
+    "confidence": "code"
   },
   {
     "id": "item-scrap-white",
@@ -1905,7 +1908,8 @@
         "stat": "Higher-rarity chance at Shrine of Chance (%)",
         "base": 40,
         "perStack": 10,
-        "type": "linear"
+        "type": "linear",
+        "formula": "Util.CheckRoll(30 + n * 10) (ShrineChanceBehavior). 40% at one stack, +10% per stack - the increment applies from the first stack, and here the description's 40% base already accounts for it."
       }
     ],
     "tags": [
@@ -1914,7 +1918,7 @@
     "icon": "/icons/chance-doll.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Chance_Doll",
     "verified": true,
-    "confidence": "langfile"
+    "confidence": "code"
   },
   {
     "id": "luminous-shot",
@@ -1928,13 +1932,15 @@
         "stat": "Max stored charges",
         "base": 5,
         "perStack": 1,
-        "type": "linear"
+        "type": "linear",
+        "formula": "AddIncreasePrimaryDamageStack: cap = 4 + n, buff only added while buffCount < cap (CharacterBody). 5 at one stack, +1 per stack."
       },
       {
         "stat": "Lightning strike damage (% TOTAL)",
         "base": 175,
         "perStack": 50,
-        "type": "linear"
+        "type": "linear",
+        "formula": "baseDamage = damageInfo.damage * (1.75f + (n - 1) * 0.5f) (GlobalEventManager). Linear."
       }
     ],
     "tags": [
@@ -1944,7 +1950,7 @@
     "icon": "/icons/luminous-shot.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Luminous_Shot",
     "verified": true,
-    "confidence": "langfile"
+    "confidence": "code"
   },
   {
     "id": "noxious-thorn",
@@ -1991,7 +1997,8 @@
         "stat": "Stored bonus stats (%)",
         "base": 20,
         "perStack": 5,
-        "type": "linear"
+        "type": "linear",
+        "formula": "CalculateAppliedBeadStats: targetStat += beadLevels * levelStat * (0.2f + 0.05f * (n - 1)) (CharacterBody). 20% of the per-level stat at one stack, +5% per stack. Applied to FOUR stats - levelMaxHealth, levelMaxShield, levelRegen and levelDamage - so it also grants shield, which the description omits."
       }
     ],
     "tags": [
@@ -2000,7 +2007,7 @@
     "icon": "/icons/prayer-beads.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Prayer_Beads",
     "verified": true,
-    "confidence": "langfile"
+    "confidence": "code"
   },
   {
     "id": "box-of-dynamite",
@@ -2387,7 +2394,8 @@
         "stat": "Healing stored as Soul Energy (%)",
         "base": 100,
         "perStack": 100,
-        "type": "linear"
+        "type": "linear",
+        "formula": "devilOrbHealPool = Mathf.Min(devilOrbHealPool + healAmount * n, fullCombinedHealth) (HealthComponent.Heal). Linear, +100% per stack, and the pool is hard-capped at your combined health+shield."
       }
     ],
     "tags": [
@@ -2401,7 +2409,7 @@
     "icon": "/icons/nkuhanas-opinion.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/N%27kuhana%27s_Opinion",
     "verified": true,
-    "confidence": "langfile"
+    "confidence": "code"
   },
   {
     "id": "unstable-tesla-coil",

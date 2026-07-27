@@ -1276,3 +1276,40 @@ Fixed by stopping the walk at `break;` / `case` / `default:` / `goto` at or belo
 read's own depth. Corpus-wide this removed 13 use sites (408 -> 395) — all of them false.
 The lesson is the one already written into these extractors' docstrings and now paid for:
 **a tracer produces evidence, not verdicts, and every line still gets read by a human.**
+
+### 3j.21 Def-use batch 5 — six confirmed, plus an undocumented Prayer Beads stat
+
+| Item | Code | Result |
+| --- | --- | --- |
+| N'kuhana's Opinion | `Min(pool + heal * n, fullCombinedHealth)` | confirmed |
+| Prayer Beads | `levels * levelStat * (0.2f + 0.05f*(n-1))` | confirmed + extra stat |
+| Chronic Expansion | `stacks * (0.035f + 0.01f*(n-1))`, cap `(int)(10f + (n-1)*5f)` | confirmed |
+| Luminous Shot | cap `4 + n`; damage `1.75f + (n-1)*0.5f` | confirmed |
+| Warped Echo | `hits = 2 + n`, stored damage `num5 * 0.9f` | confirmed |
+| Chance Doll | `Util.CheckRoll(30 + n * 10)` | confirmed |
+
+**116 -> 122 of 212.**
+
+**Prayer Beads grants shield as well.** `CalculateAppliedBeadStats` is called four times —
+`levelMaxHealth`, **`levelMaxShield`**, `levelRegen`, `levelDamage` — while the description
+lists only "health, regeneration, and damage". The 20% / +5% figures are exactly right.
+
+Its XP path has a curiosity worth noting even though we publish no XP claim: the bonus
+experience is `amount * (ulong)(0.25f * (n - 1))`, and the **cast to `ulong` truncates**,
+so the multiplier is a step function — 0 extra at one *and* two stacks, and only from five
+stacks does it reach 1. Nothing is recorded about it because we make no claim there, but
+it is flagged here so a future reader does not "discover" it and record 25% per stack.
+
+**N'kuhana's Opinion** stores healing uncapped per-hit but the pool itself is clamped to
+`fullCombinedHealth`. **Warped Echo** splits `damage * 0.9f` evenly and marks only
+`k == hits - 1` lethal, matching its description exactly; if the reduced damage is smaller
+than the hit count the count is lowered so no hit is fractional.
+
+#### Tracer: inline reads
+
+Chronic Expansion's stack cap is
+`return (int)(10f + (GetItemCountEffective(X) - 1) * 5f);` — a count read used inline, with
+no local to follow. The tracer only recognised reads that were *assigned* to something, so
+it missed this entirely and the cap had to be found by hand. Reads that participate in
+arithmetic on their own line are now emitted directly, taking the corpus from 133 traced
+items to **143**.

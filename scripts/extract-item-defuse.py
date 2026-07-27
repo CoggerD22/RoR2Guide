@@ -211,6 +211,19 @@ def main():
                     reads.append({"file": relpath, "line": i + 1, "var": m.group(1),
                                   "kind": "local", "scope": scope, "uses": uses})
                     continue
+                # A count read used INLINE, with no local to follow, e.g.
+                #   return (int)(10f + (GetItemCountEffective(X) - 1) * 5f);
+                # There is nothing to trace — the arithmetic is on this very line — but it
+                # is still the answer. Chronic Expansion's stack cap lives exactly here and
+                # had to be found by hand because the first version only recognised reads
+                # that were assigned to something.
+                if ARITH.search(line) and not DECL.match(line) and not ASSIGN.match(line):
+                    reads.append({"file": relpath, "line": i + 1, "var": None,
+                                  "kind": "inline",
+                                  "uses": [{"line": i + 1, "code": line.strip()[:200],
+                                            "via": None, "distance": 0, "guard": False}]})
+                    continue
+
                 a = ASSIGN.match(line)
                 if a and "GetItemCount" in line:
                     name = a.group(1).split(".")[-1]
