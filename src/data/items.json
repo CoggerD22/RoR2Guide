@@ -578,7 +578,8 @@
         "stat": "Chance on hit to attach a bomb",
         "base": 5,
         "perStack": 5,
-        "type": "linear"
+        "type": "linear",
+        "formula": "LocalCheckRoll(5f x n x procCoefficient) (GlobalEventManager). Linear 5% per stack, scaled by the triggering attack’s proc coefficient."
       }
     ],
     "tags": [
@@ -588,7 +589,7 @@
     "icon": "/icons/sticky-bomb.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Sticky_Bomb",
     "verified": true,
-    "confidence": "langfile"
+    "confidence": "code"
   },
   {
     "id": "topaz-brooch",
@@ -602,7 +603,8 @@
         "stat": "Barrier on kill (health)",
         "base": 15,
         "perStack": 15,
-        "type": "linear"
+        "type": "linear",
+        "formula": "barrier = 15 x n on kill (GlobalEventManager: AddBarrier(15f * n)). Linear."
       }
     ],
     "tags": [
@@ -612,7 +614,7 @@
     "icon": "/icons/topaz-brooch.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Topaz_Brooch",
     "verified": true,
-    "confidence": "langfile"
+    "confidence": "code"
   },
   {
     "id": "stun-grenade",
@@ -1041,13 +1043,15 @@
         "stat": "Chain targets",
         "base": 3,
         "perStack": 2,
-        "type": "linear"
+        "type": "linear",
+        "formula": "bouncesRemaining = 2n (GlobalEventManager), so total targets = 1 + 2n. Linear: 3 at 1 stack, 5 at 2, 7 at 3 - matching the description."
       },
       {
         "stat": "Chain range (m)",
-        "base": 20,
+        "base": 22,
         "perStack": 2,
-        "type": "linear"
+        "type": "linear",
+        "formula": "range = 20 (LightningOrb default) + 2n (GlobalEventManager: lightningOrb.range += 2 * n). Code-verified: 22m at 1 stack, 24m at 2, 26m at 3. The description reads \"within 20m (+2m per stack)\", which implies 20m at one stack; the increment applies from the first stack, exactly as with Safer Spaces."
       }
     ],
     "tags": [
@@ -1059,7 +1063,7 @@
     "icon": "/icons/ukulele.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Ukulele",
     "verified": true,
-    "confidence": "langfile"
+    "confidence": "code"
   },
   {
     "id": "leeching-seed",
@@ -1393,7 +1397,8 @@
         "stat": "Flame tornado damage (% TOTAL)",
         "base": 300,
         "perStack": 300,
-        "type": "linear"
+        "type": "linear",
+        "formula": "tornado damageCoefficient = 3f x n (GlobalEventManager). Linear: 300% TOTAL per stack."
       }
     ],
     "tags": [
@@ -1408,7 +1413,7 @@
     "icon": "/icons/kjaros-band.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Kjaro%27s_Band",
     "verified": true,
-    "confidence": "langfile"
+    "confidence": "code"
   },
   {
     "id": "chronobauble",
@@ -1422,7 +1427,8 @@
         "stat": "Slow duration (s)",
         "base": 2,
         "perStack": 2,
-        "type": "linear"
+        "type": "linear",
+        "formula": "AddTimedBuff(Slow60, 2f x n) (GlobalEventManager). Linear: 2s of 60% slow per stack."
       }
     ],
     "tags": [
@@ -1434,7 +1440,7 @@
     "icon": "/icons/chronobauble.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Chronobauble",
     "verified": true,
-    "confidence": "langfile"
+    "confidence": "code"
   },
   {
     "id": "wax-quail",

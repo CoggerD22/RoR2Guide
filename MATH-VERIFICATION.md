@@ -845,3 +845,42 @@ matters: `(n > 0) ? 0.04f * maxHealth : 0f` is **flat**, not per-stack, so a sec
 adds armour but no further shield. Added as a `none`-type entry. Purity, Elusive Antlers,
 and now this: **missing effects are the most common defect class found so far**, and no
 numeric diff can see them.
+
+### 3j.11 Proc paths — the second mechanism sweep (§6B.1)
+
+`scripts/extract-proc-paths.py` does for `GlobalEventManager` what §3j.10 did for
+`RecalculateStats`: reads `ProcessHitEnemy` (824 lines), `OnCharacterDeath` (565) and
+`OnHitAll` once and extracts every item constant — **33 items across 46 sites**. These
+have no stat accumulators, so sites are classified by the *kind* of quantity instead
+(chance / damage / duration / healing / count), which is what has to be checked.
+
+**27 of 31 codex-matched items agreed.** Verified and upgraded: Topaz Brooch
+(`AddBarrier(15f × n)`), Kjaro's Band (`3f × n`), Chronobauble (`AddTimedBuff(Slow60,
+2f × n)`), Sticky Bomb (`LocalCheckRoll(5f × n × procCoefficient)`), plus Ukulele below.
+**65 / 212.**
+
+**Ukulele's chain range was off by one stack.** `LightningOrb.range` defaults to `20f`
+and Ukulele does `range += 2 * n`, giving **22m at one stack**, not the 20 recorded. Its
+target count is right (`bouncesRemaining = 2n` → `1 + 2n` targets = 3/5/7). This is the
+same defect as Safer Spaces: the increment applies **from the first stack**, while the
+description ("within 20m (+2m per stack)") reads as though one stack were the bare base.
+That pattern has now produced three errors — Safer Spaces, Bandolier, this — and is
+worth treating as a standing suspicion whenever a description reads "X (+Y per stack)".
+
+**Two left open rather than guessed:**
+
+- **Electric Boomerang.** `damage6 = characterBody.damage × 0.4f × n` is only a scalar
+  handed to the projectile; the `StunAndPierceBoomerang` prefab carries *two* damage
+  components (`damageCoefficient` 3.1 and 1.0). `0.4 × 3.1 = 124%` against a recorded
+  120%, which is suggestive — but mapping those two components onto the described
+  "impact" and "damage over time" is not something the evidence settles, so the record
+  is unchanged and stays `langfile`.
+- **Monster Tooth.** The healing (`fractionalHealing = 0.02f × n`) matches, but the same
+  block computes `Mathf.Pow(n, 0.25f)` — an unrecorded term whose role is untraced.
+
+**A near-miss worth recording.** An ad-hoc display script printed one item's sites under
+another's heading, which looked exactly like a mis-attribution bug in the extractor. It
+was the throwaway script, not the tool — but chasing it surfaced something real:
+`itemCountEffective16` means **LightningStrikeOnHit** in `ProcessHitEnemy` and
+**BleedOnHitAndExplode** in `OnCharacterDeath`. Scoping the local→item map per method,
+rather than per file, is what keeps that from becoming a genuine false verification.
