@@ -4,6 +4,7 @@ import { ARTIFACTS, BAZAAR_DREAMS, SHRINES, LOADOUT_UNLOCKS } from "@/data/refer
 import { asset } from "@/lib/asset";
 import { cn } from "@/lib/utils";
 import { Breakpoints } from "./Breakpoints";
+import { SourceNote } from "./SourceNote";
 
 const TABS = ["Artifacts", "Bazaar Dreams", "Shrines", "Loadout Unlocks", "Breakpoints"] as const;
 type Tab = (typeof TABS)[number];
@@ -31,7 +32,9 @@ function AmbryCode({ code }: { code: string | null }) {
 
 function Artifacts() {
   return (
-    <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+    <div className="flex flex-col gap-3">
+      <SourceNote dataset="artifacts" />
+      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
       {ARTIFACTS.map((a) => (
         <div key={a.name} className="flex flex-col gap-2 rounded-xl border border-border bg-surface p-4">
           <div className="flex items-start justify-between gap-2">
@@ -56,13 +59,16 @@ function Artifacts() {
           </div>
         </div>
       ))}
+      </div>
     </div>
   );
 }
 
 function Dreams() {
   return (
-    <div className="overflow-hidden rounded-xl border border-border">
+    <div className="flex flex-col gap-3">
+      <SourceNote dataset="dreams" />
+      <div className="overflow-hidden rounded-xl border border-border">
       <table className="w-full text-sm">
         <thead className="bg-surface-2 text-left text-xs uppercase tracking-wide text-muted-foreground">
           <tr>
@@ -81,6 +87,7 @@ function Dreams() {
           ))}
         </tbody>
       </table>
+      </div>
     </div>
   );
 }
@@ -95,11 +102,7 @@ function Shrines() {
         cost compounds per use or that uses are capped. Labelled as a quote until the
         code+prefab-verified mechanic layer lands.
       */}
-      <p className="rounded-lg border border-border bg-surface-2 px-3 py-2 text-xs leading-relaxed text-muted-foreground">
-        Text below is quoted from the game&rsquo;s own in-game description. These blurbs
-        can be incomplete — several omit escalating costs or use limits. Verified
-        mechanics are being added; the cost column is our own summary, not game data.
-      </p>
+      <SourceNote dataset="shrines" />
       {SHRINES.map((s) => (
         <div key={s.name} className="rounded-xl border border-border bg-surface p-4">
           <div className="flex flex-wrap items-baseline justify-between gap-2">
@@ -145,6 +148,7 @@ function LoadoutUnlocks() {
         exact text. Skins aren&rsquo;t listed. A survivor shown as having no alternates has
         been <em>verified</em> to have none, rather than simply not recorded.
       </p>
+      <SourceNote dataset="loadoutUnlocks" />
       {LOADOUT_UNLOCKS.map((s) => (
         <section key={s.survivor}>
           <h3 className="mb-2 font-display text-sm font-semibold text-foreground">{s.survivor}</h3>

@@ -305,6 +305,30 @@ function main(): number {
     }
   }
 
+  // --- Coverage ratchet (PLAN §6B.2) ---------------------------------------
+  // Verification must only ever go UP. Without this, a future import or refactor can
+  // silently downgrade records and nothing notices — which is exactly how 161 items
+  // came to be presented with the same confidence as the verified ones.
+  const verifiedCount = items.filter(
+    (it) => it.confidence === "code" || it.confidence === "asset",
+  ).length;
+  const floorPath = resolve(root, "src/data/coverage-floor.json");
+  const floor = existsSync(floorPath)
+    ? (JSON.parse(readFileSync(floorPath, "utf8")) as { items: number })
+    : { items: 0 };
+  if (verifiedCount < floor.items) {
+    errors.push(
+      `coverage regression: ${verifiedCount} items are code/asset-verified but the ` +
+        `floor is ${floor.items}. Verification must not go backwards — if a downgrade ` +
+        `is genuinely correct, lower src/data/coverage-floor.json deliberately and say why.`,
+    );
+  } else if (verifiedCount > floor.items) {
+    warnings.push(
+      `coverage rose to ${verifiedCount}/${items.length} (floor is ${floor.items}) — ` +
+        `raise src/data/coverage-floor.json to lock it in`,
+    );
+  }
+
   // --- Report --------------------------------------------------------------
   console.log(
     `data:audit — ${items.length} item(s), ${survivorCount} survivor(s), ` +

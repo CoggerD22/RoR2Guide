@@ -884,3 +884,42 @@ was the throwaway script, not the tool — but chasing it surfaced something rea
 `itemCountEffective16` means **LightningStrikeOnHit** in `ProcessHitEnemy` and
 **BleedOnHitAndExplode** in `OnCharacterDeath`. Scoping the local→item map per method,
 rather than per file, is what keeps that from becoming a genuine false verification.
+
+### 3j.12 Provenance for the reference datasets, and a coverage ratchet (§6B.2/§6B.3)
+
+An audit of *every* data surface — not just items — found the gap: `items.json`,
+`survivors.json` and `skills.json` all carried provenance, while the four reference
+datasets carried **none at all** and displayed none.
+
+| Surface | Records | Provenance before |
+|---|---|---|
+| `items.json` | 212 | per-record `confidence`, rendered |
+| `survivors.json` | 19 | `confidence: asset` |
+| `skills.json` | 125 procs | per-skill `verified` |
+| **ARTIFACTS / DREAMS / SHRINES / LOADOUT_UNLOCKS** | **123** | **none** |
+
+So a wiki-sourced Ambry code and a code-verified shrine mechanic rendered identically.
+
+`src/data/provenance.ts` declares provenance **per (dataset, field)** rather than per
+record, because within these datasets the sourcing genuinely is uniform — every artifact
+effect came from the same token family. Copying it onto 123 records would be churn
+without information. Each entry carries `tier`, a `ref` specific enough to re-check, and
+an **`adequate`** flag: a description token is a fine source for quoted text and an
+inadequate one for a mechanic, and that distinction is what drives the UI warning.
+
+Rendered by `SourceNote` on all four tabs. Artifacts and Shrines correctly show a
+"not yet verified" callout (artifact `effect` is description-as-mechanic, `code` is still
+wiki-sourced; shrine `cost` is our own editorial summary), while Dreams and Loadout
+Unlocks show none — the marker has to be absent somewhere or it carries no information.
+
+**The ratchet.** `data:audit` now **fails** if the count of code/asset-verified items
+drops below `src/data/coverage-floor.json`. Verified by downgrading two records and
+confirming the error, then restoring:
+
+```
+✗ coverage regression: 63 items are code/asset-verified but the floor is 65.
+```
+
+This is the part that addresses *future* data rather than past: without it, an import or
+refactor can silently downgrade records and nothing notices — which is precisely how 161
+items came to be displayed with the same confidence as the verified ones.

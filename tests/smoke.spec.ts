@@ -256,6 +256,30 @@ test("artifacts reference shows each artifact's icon alongside its code", async 
   await expect(icon).toBeVisible();
 });
 
+test("every reference dataset states where its data came from", async ({ page }) => {
+  // PLAN §6B.3 — these four surfaces previously rendered with NO provenance at all,
+  // so a wiki-sourced Ambry code looked identical to a code-verified shrine mechanic.
+  await page.goto("/reference");
+  for (const tab of ["Artifacts", "Bazaar Dreams", "Shrines", "Loadout Unlocks"]) {
+    await page.getByRole("button", { name: tab, exact: true }).click();
+    await expect(
+      page.getByText("Where this comes from"),
+      `${tab} must state its sources`,
+    ).toBeVisible();
+  }
+
+  // Fields whose source is too weak for the claim they make are called out, not just
+  // listed: artifact effects are description text presented as a mechanic, and the
+  // Ambry codes are still wiki-sourced.
+  await page.getByRole("button", { name: "Artifacts", exact: true }).click();
+  await expect(page.getByText(/Not yet verified:.*effect/)).toBeVisible();
+
+  // A dataset sourced adequately throughout carries no warning — otherwise the
+  // marker would be decoration rather than information.
+  await page.getByRole("button", { name: "Bazaar Dreams", exact: true }).click();
+  await expect(page.getByText(/Not yet verified:/)).toHaveCount(0);
+});
+
 test("breakpoints tab shows computed, code-verified milestones", async ({ page }) => {
   await page.goto("/reference");
   await page.getByRole("button", { name: "Breakpoints" }).click();
