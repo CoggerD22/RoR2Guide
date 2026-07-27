@@ -1,4 +1,25 @@
 import { test, expect } from "@playwright/test";
+import itemsJson from "../src/data/items.json" with { type: "json" };
+
+/**
+ * Pick a subject by provenance rather than naming one.
+ *
+ * These assertions used to hardcode an item ("Crowbar is code, Cautious Slug is
+ * langfile"), which broke twice — once when Crowbar graduated to `code`, once when
+ * Cautious Slug did. The churn is the coverage metric working (PLAN §6B.2), so the test
+ * should follow the data instead of pinning it. Deterministic: first match in file order.
+ */
+function itemWithConfidence(confidence: "code" | "langfile") {
+  const all = itemsJson as unknown as Array<{
+    id: string;
+    name: string;
+    confidence: string;
+    stacking?: unknown[];
+  }>;
+  const hit = all.find((i) => i.confidence === confidence && (i.stacking?.length ?? 0) > 0);
+  if (!hit) throw new Error(`no item with confidence=${confidence} and stacking data`);
+  return hit;
+}
 
 test("app shell renders, redirects to codex, and shows the disclaimer", async ({ page }) => {
   await page.goto("/");
@@ -104,36 +125,36 @@ test("stat lab shows verified proc coefficients and marks unverified honestly", 
 });
 
 test("codex item detail shows a provenance badge reflecting the real source", async ({ page }) => {
-  // Crowbar's stacking is traced to HealthComponent (1f + 0.75f * n), so it earns the
-  // stronger badge. This assertion is the point of the provenance system: upgrading an
-  // item's sourcing must visibly change what the site claims about it.
-  await page.goto("/items/crowbar");
-  const crowbar = page.getByRole("dialog", { name: "Crowbar" });
-  await expect(crowbar).toBeVisible();
-  await expect(crowbar.getByText("Code-verified")).toBeVisible();
+  // An item traced to the game's code earns the stronger badge. This assertion is the
+  // point of the provenance system: upgrading an item's sourcing must visibly change
+  // what the site claims about it.
+  const coded = itemWithConfidence("code");
+  await page.goto(`/items/${coded.id}`);
+  const codedDialog = page.getByRole("dialog", { name: coded.name });
+  await expect(codedDialog).toBeVisible();
+  await expect(codedDialog.getByText("Code-verified")).toBeVisible();
 
   // An item still sourced only from the game's text shows the weaker badge — the two
   // must remain distinguishable, never collapsed into a single "verified".
-  //
-  // NOTE: this deliberately uses an item that is still `langfile`. As verification
-  // progresses items graduate to `code`, so this assertion is expected to need a new
-  // subject periodically — that churn is the coverage metric working, not a flaky test.
-  await page.goto("/items/cautious-slug");
-  const fungus = page.getByRole("dialog", { name: "Cautious Slug" });
-  await expect(fungus.getByText("Game-text verified")).toBeVisible();
+  const langfile = itemWithConfidence("langfile");
+  await page.goto(`/items/${langfile.id}`);
+  const langfileDialog = page.getByRole("dialog", { name: langfile.name });
+  await expect(langfileDialog.getByText("Game-text verified")).toBeVisible();
 });
 
 test("unverified stacking data is labelled as such, verified data is not", async ({ page }) => {
   // Fail closed (PLAN §6B.3). ~1 in 5 records examined has been wrong in a way
   // transcription cannot catch, so an untraced record must not look like a traced one.
-  await page.goto("/items/cautious-slug"); // still langfile
-  const unverified = page.getByRole("dialog", { name: "Cautious Slug" });
+  const langfile = itemWithConfidence("langfile");
+  await page.goto(`/items/${langfile.id}`);
+  const unverified = page.getByRole("dialog", { name: langfile.name });
   await expect(unverified.getByText(/not yet code-verified/i)).toBeVisible();
 
   // A code-verified item carries no such warning — the distinction has to be visible,
   // otherwise the label is decoration rather than information.
-  await page.goto("/items/crowbar");
-  const verified = page.getByRole("dialog", { name: "Crowbar" });
+  const coded = itemWithConfidence("code");
+  await page.goto(`/items/${coded.id}`);
+  const verified = page.getByRole("dialog", { name: coded.name });
   await expect(verified.getByText("Code-verified")).toBeVisible();
   await expect(verified.getByText(/not yet code-verified/i)).toHaveCount(0);
 

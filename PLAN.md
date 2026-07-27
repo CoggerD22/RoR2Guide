@@ -1059,6 +1059,31 @@ contradictory sentences and letting the reader choose.
 Only after coverage is complete does per-field provenance (§6A.3) become mechanical
 rather than a large retrofit.
 
+### 6B.6 Def-use tracing — the correction step 1–3 exposed
+
+Steps 1–3 report where an item's **count is read**. That is the wrong anchor. RoR2 reads
+every item count in one block near the top of a method and consumes it hundreds of lines
+later, so a context window around the read site systematically misses the constant:
+Backup Magazine's is 647 lines away, Repulsion Armor Plate's 1,133 (see
+MATH-VERIFICATION §3j.15).
+
+The fix is a **def-use trace**: from the local that receives `GetItemCountEffective(X)`,
+follow it forward through assignments to every site where it participates in arithmetic,
+and report *those* lines. This is the same discipline §3j.7 already required in the other
+direction, so the analysis is not new — only its application.
+
+Two consequences worth stating in advance:
+
+- Some items have **no literal at all**. Backup Magazine is `+1 per stack` expressed
+  purely as `SetBonusStockFromBody(n + …)`. Any tool that hunts for numbers will score it
+  as unverifiable forever; a def-use trace reads it correctly.
+- **Position in the pipeline is itself a fact.** Repulsion Armor Plate subtracting after
+  the armor multiplier, rather than before, changes the result at high armor. Extraction
+  that captures only the constant loses this; capture the enclosing operation too.
+
+Do this before the projectile-reference work (§3j.14's conclusion): it addresses ~131 of
+the 139 open items, whereas the asset path addresses a handful.
+
 ---
 
 ## 6A. Data Truth Programme — guaranteeing every claim on the site is sourced

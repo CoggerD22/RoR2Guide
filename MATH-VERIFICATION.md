@@ -994,3 +994,49 @@ So the next step for asset-backed constants is **following `projectilePrefab` an
 component references from the code**, not scanning bundles by name. The tool is kept
 because that traversal will reuse its extraction, and because a documented negative
 result stops the same ground being re-covered later.
+
+### 3j.15 Why the remaining 139 are unverified — measured, not assumed
+
+"Unverified" had been carrying two very different meanings, and the distinction matters
+because only one of them is a limit on what is *knowable*. Classifying every unverified
+item by **cause** rather than by item:
+
+```
+   8  no code site at all
+  74  a code site exists, but no numeric literal near it
+  46  sits in a path already swept, not yet read line-by-line
+  12  has code sites in a path not yet swept
+```
+
+The 74-item bucket looked like the hard one. It is not. It is an artefact of how
+`extract-item-code.py` works: it records where an item's **count is read**, and takes a
+few lines of context. But RoR2 reads all item counts in one block near the top of a
+method and uses them hundreds of lines later, so the literal is routinely outside the
+window. Four probes, four resolutions:
+
+| Item | Count read | Value used | Result |
+| --- | --- | --- | --- |
+| Backup Magazine | `CharacterBody.cs:4128` | `:4775` | `SetBonusStockFromBody(n + extraSecondaryFromSkill)` — +1/stack, **no literal anywhere** |
+| Cautious Slug | `:4112` | `:4328` | `(outOfDanger ? 3n : 0) x (1 + 0.2(level-1))` |
+| Repulsion Armor Plate | `HealthComponent.cs:257` | `:1390` | `max(1, damage - 5n)`, applied **after** armor |
+| Gasoline | — | — | not in `GlobalEventManager`; genuinely elsewhere |
+
+All three recorded values were already correct, and each gained a fact its description
+omits: Cautious Slug's 3 hp/s is *item* regen and therefore scales with level (the
+description's "base health regeneration" wording is loose — it is not added to
+`baseRegen`); Repulsion Armor Plate subtracts after the armor multiplier, so the order
+matters at high armor, and its 1-damage floor is a real clamp. Backup Magazine is the
+instructive case: **+1 per stack carried entirely by variable arithmetic**, so no
+literal-hunting tool of any design would ever have found it.
+
+Upgraded to `code`: Backup Magazine, Cautious Slug, Repulsion Armor Plate. **73/212.**
+
+The correction to the method: an extractor must **follow the count variable to its use
+site**, not report the read site. That is a def-use trace over the decompiled locals —
+the same backward-propagation discipline §3j.7 already needed for `RecalculateStats` —
+and it is what the next sweep should build, ahead of the projectile-reference work.
+
+The honest bottom line: of 139 unverified items, roughly **131 are limited by the reach
+of my tooling, not by the data being unknowable.** Only the 8 with no code site need a
+different source entirely. That is a much better position than "139 unknown", and it is
+also a reason not to describe the remaining gap as inherent.

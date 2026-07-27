@@ -205,7 +205,8 @@
         "stat": "Secondary skill charges",
         "base": 1,
         "perStack": 1,
-        "type": "linear"
+        "type": "linear",
+        "formula": "charges = n. CharacterBody.RecalculateStats reads the count, then applies it 647 lines later as secondaryBonusStockSkill.SetBonusStockFromBody(n + extraSecondaryFromSkill) — exactly +1 per stack, carried with no numeric literal."
       }
     ],
     "tags": [
@@ -214,7 +215,7 @@
     "icon": "/icons/backup-magazine.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Backup_Magazine",
     "verified": true,
-    "confidence": "langfile",
+    "confidence": "code",
     "unlock": {
       "challenge": "Flawless",
       "requirement": "Fully charge a Teleporter without getting hit."
@@ -288,7 +289,8 @@
         "stat": "Health regen out of combat (hp/s)",
         "base": 3,
         "perStack": 3,
-        "type": "linear"
+        "type": "linear",
+        "formula": "regen += (outOfDanger ? 3n : 0) x (1 + 0.2(level-1)) (CharacterBody.RecalculateStats). Linear at 3 hp/s per stack, but it is item regen, so it scales with level like every other item regen source — the description's \"base health regeneration\" wording is loose; it is not added to baseRegen. outOfDanger requires 7s without taking damage."
       }
     ],
     "tags": [
@@ -297,7 +299,7 @@
     "icon": "/icons/cautious-slug.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Cautious_Slug",
     "verified": true,
-    "confidence": "langfile"
+    "confidence": "code"
   },
   {
     "id": "monster-tooth",
@@ -533,7 +535,8 @@
         "stat": "Flat damage reduction",
         "base": 5,
         "perStack": 5,
-        "type": "linear"
+        "type": "linear",
+        "formula": "damage = max(1, damage - 5n), applied in HealthComponent.TakeDamage AFTER the armor multiplier — so the flat 5 comes off the already-reduced number, and the 1-damage floor is a real clamp in code, not a rounding artefact."
       }
     ],
     "tags": [
@@ -542,7 +545,7 @@
     "icon": "/icons/repulsion-armor-plate.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Repulsion_Armor_Plate",
     "verified": true,
-    "confidence": "langfile"
+    "confidence": "code"
   },
   {
     "id": "roll-of-pennies",
