@@ -1,11 +1,13 @@
 import { CONTENT_VERSION, GAME_BUILD_ID, PATCH_VERSION, VERIFIED_ON } from "@/data/gameVersion";
-import { dataVerifiedAgainst } from "@/lib/dataProvenance";
+import { dataVerifiedAgainst, coverageSummary } from "@/lib/dataProvenance";
+import { items } from "@/data/items";
 
 /**
  * Non-affiliation disclaimer is a non-negotiable requirement
  * (CLAUDE.md rule #6 / PLAN intro). Do not remove.
  */
 export function Footer() {
+  const coverage = coverageSummary(items);
   const provenance = dataVerifiedAgainst({
     contentVersion: CONTENT_VERSION,
     buildId: GAME_BUILD_ID,
@@ -28,6 +30,9 @@ export function Footer() {
         </p>
         {/* Verification stamp (PLAN §4.6): the recorded date makes the data visibly age. */}
         <p className="text-muted-foreground/80">{provenance}</p>
+        {/* Publish the coverage gap rather than letting the stamp above imply the
+            whole dataset is code-verified (PLAN §6B.2). */}
+        <p className="text-muted-foreground/80">{coverage.sentence}</p>
       </div>
     </footer>
   );

@@ -21,3 +21,34 @@ export function dataVerifiedAgainst(p: Provenance): string {
     : `${p.contentVersion} (Steam build ${p.buildId})`;
   return `Data verified against ${against} on ${p.verifiedOn}.`;
 }
+
+/**
+ * How much of the item dataset has been traced to the game's code or assets, versus
+ * merely transcribed from its description text (PLAN §6B.2/§6B.3).
+ *
+ * Stated publicly and precisely because the difference is large and matters: about one
+ * in five records examined so far has been wrong in a way transcription could not
+ * catch. A site that publishes its own coverage is trustworthy in a way that one
+ * implying uniform confidence is not.
+ */
+export function coverageSummary(items: Array<{ confidence?: string }>): {
+  verified: number;
+  total: number;
+  percent: number;
+  sentence: string;
+} {
+  const total = items.length;
+  const verified = items.filter(
+    (i) => i.confidence === "code" || i.confidence === "asset",
+  ).length;
+  const percent = total ? Math.round((verified / total) * 100) : 0;
+  return {
+    verified,
+    total,
+    percent,
+    sentence:
+      `${verified} of ${total} items (${percent}%) have their stacking values traced to the ` +
+      `game's code or assets. The rest are transcribed from in-game text and are labelled ` +
+      `as unverified wherever their numbers appear.`,
+  };
+}

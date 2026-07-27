@@ -123,6 +123,24 @@ test("codex item detail shows a provenance badge reflecting the real source", as
   await expect(fungus.getByText("Game-text verified")).toBeVisible();
 });
 
+test("unverified stacking data is labelled as such, verified data is not", async ({ page }) => {
+  // Fail closed (PLAN §6B.3). ~1 in 5 records examined has been wrong in a way
+  // transcription cannot catch, so an untraced record must not look like a traced one.
+  await page.goto("/items/bustling-fungus"); // still langfile
+  const unverified = page.getByRole("dialog", { name: "Bustling Fungus" });
+  await expect(unverified.getByText(/not yet code-verified/i)).toBeVisible();
+
+  // A code-verified item carries no such warning — the distinction has to be visible,
+  // otherwise the label is decoration rather than information.
+  await page.goto("/items/crowbar");
+  const verified = page.getByRole("dialog", { name: "Crowbar" });
+  await expect(verified.getByText("Code-verified")).toBeVisible();
+  await expect(verified.getByText(/not yet code-verified/i)).toHaveCount(0);
+
+  // The coverage gap is published rather than left implicit.
+  await expect(page.getByText(/traced to the game's code or assets/i)).toBeVisible();
+});
+
 test("codex secondary filters are collapsed by default and expand on demand", async ({ page }) => {
   await page.goto("/items");
 

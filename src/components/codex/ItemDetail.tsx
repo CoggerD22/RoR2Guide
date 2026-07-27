@@ -118,6 +118,21 @@ export function ItemDetail({ item, onClose, onSelectItem }: ItemDetailProps) {
               <h3 className="mb-2 text-xs font-semibold uppercase tracking-widest text-muted-foreground">
                 Stacking
               </h3>
+              {/*
+                Fail closed (PLAN §6B.3). A record we have not traced to the game's code
+                or assets must not LOOK like one we have. Roughly one in five records
+                examined so far has been wrong, so presenting the untraced ones with the
+                same confidence as the verified ones is itself a false claim.
+              */}
+              {item.confidence !== "code" && item.confidence !== "asset" && (
+                <p className="mb-3 rounded-lg border border-amber-400/25 bg-amber-400/5 p-2.5 text-[11px] leading-relaxed text-amber-200/90">
+                  <strong className="font-semibold">Numbers below are not yet code-verified.</strong>{" "}
+                  They are transcribed exactly from the game&rsquo;s own description text, which is
+                  reliable for wording but has repeatedly proven wrong about the actual curve —
+                  Tougher Times reads &ldquo;15% per stack&rdquo; but blocks 13% at one stack.
+                  Treat the stacking values as the game&rsquo;s claim, not as measured behaviour.
+                </p>
+              )}
               <div className="flex flex-col gap-3">
                 {item.stacking.map((entry, i) => {
                   const points = sparklinePoints(entry);

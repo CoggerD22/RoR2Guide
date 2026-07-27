@@ -35,10 +35,24 @@ export function ItemTooltip({ item }: { item: Item }) {
         {highlightNumbers(item.description)}
       </p>
       {types.length > 0 && (
-        <div className="mt-2 flex flex-wrap gap-1">
+        <div className="mt-2 flex flex-wrap items-center gap-1">
           {types.map((t) => (
             <StackingBadge key={t} type={t} />
           ))}
+          {/*
+            Fail closed (PLAN §6B.3): the tooltip shows numbers with no provenance at
+            all, so an untraced curve reads exactly like a verified one. A single dot is
+            enough here — the drawer carries the full explanation.
+          */}
+          {item.confidence !== "code" && item.confidence !== "asset" && (
+            <span
+              className="ml-0.5 inline-flex items-center gap-1 text-[10px] text-amber-300/80"
+              title="Stacking curve not yet verified against the game's code — transcribed from the in-game description"
+            >
+              <span className="size-1.5 rounded-full bg-amber-400/80" />
+              curve unverified
+            </span>
+          )}
         </div>
       )}
       {/*
