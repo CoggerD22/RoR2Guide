@@ -2090,3 +2090,60 @@ defect class.
 session), and 14 others. Also outstanding and honestly flagged in the UI: 21/125 proc
 coefficients, artifact `effect` text presented as mechanics (`adequate: false`), and the
 Ambry codes, which §3j.36 established are **not extractable at all**.
+
+### 3j.38 The Ambry codes were crackable after all — and I had said they weren't
+
+§3j.36 established that `PortalDialerController` stores only SHA-256 digests, concluded the
+codes "cannot be datamined", and recorded brute-force as *possible but not attempted*. That
+was a correct fact used to justify stopping, which is a worse failure than being wrong —
+being wrong gets found, whereas "not attempted" quietly becomes permanent.
+
+The search space is fully determined by the game's own assets:
+
+```
+sequenceServer = new byte[portalDialer.buttons.Length]        -> the dialer prefab has 9
+sequenceServer[i] = (byte)buttons[i].currentDigitDef.value    -> ArtifactCompoundDef.value
+ArtifactCompoundDef: Circle 1, Triangle 3, Diamond 5, Square 7, Empty 11
+```
+
+5^9 = **1,953,125** candidates. `scripts/crack-ambry-codes.py` recovers **19 of 19** in a few
+seconds, matched against the digests the game itself validates against.
+
+**Result: all 19 published codes are confirmed, and zero game codes are unaccounted for.**
+An exact bidirectional match. These are no longer wiki-sourced — they are verified
+cryptographically against the game.
+
+#### The permutation nearly produced a catastrophic false conclusion
+
+The first comparison said **17 of 19 of our codes were wrong**. They were not. `sequenceServer`
+is indexed by position in the prefab's `buttons` array, and that array is scrambled relative
+to the buttons' own names — index [0..8] holds buttons 3, 6, 9, 2, 8, 5, 1, 4, 7 — while their
+transforms show the names run row-major, which is the order codes are written in. Un-permuting
+turned 2/19 into 19/19.
+
+Had I trusted the first run, I would have "corrected" 17 correct codes into 17 wrong ones and
+recorded it in this log as a triumph. The saving move was noticing our glyph *multisets* mostly
+matched the game's, which is not what genuinely wrong data looks like.
+
+#### Artifact icons now come from the artifact
+
+Icons were downloaded from the wiki, and nothing had ever checked that each depicted the right
+artifact. I tried to verify it perceptually and **it did not work** — a 1-bit hash over small,
+differently-rendered sprites gave 11/20 nearest-neighbour matches with six mismatches all
+pointing at the same artifact, which is a degenerate signature rather than six swapped icons.
+
+Rather than publish a fuzzy result, the need for it was removed: all 20 emblems are now
+extracted from each artifact's own `ArtifactDef.smallIconSelectedSprite`, keyed by its
+`nameToken`, so icon/artifact correspondence is **guaranteed by construction**. The trade is
+resolution (46–64px game sprites vs 64–128px wiki renders) for provenance, at a 36px display
+size.
+
+#### Provenance, and a permanent guard
+
+`REFERENCE_PROVENANCE.artifacts` now reads honestly: `code` is **`code`-tier, adequate**, and
+`icon` is **`asset`-tier**. Only `effect` remains `adequate: false` — the artifact descriptions
+are still quoted text presented as mechanics, which is the next real gap.
+
+`src/data/ambry-hashes.json` commits the 19 digests (32 bytes each — derived values, not game
+content) and `src/data/ambry.test.ts` re-derives every published code's digest in CI. Verified
+by corrupting a single glyph and watching the build fail.

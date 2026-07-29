@@ -58,11 +58,23 @@ export const REFERENCE_PROVENANCE: Record<string, DatasetSources> = {
       adequate: false,
     },
     code: {
-      tier: "wiki",
-      ref: "riskofrain2.wiki.gg. NOT extractable: PortalDialerController stores only Sha256HashAsset values and hashes the dialled sequence to compare, so the plaintext codes ship nowhere. Brute-forcing the sequence space against those hashes would recover them; not attempted.",
-      adequate: false,
+      tier: "code",
+      // The game ships only SHA-256 hashes of the dialled sequence, so the codes are not
+      // readable from the assets — but the search space is fully determined BY the assets:
+      // 9 buttons (dialer prefab) x 5 ArtifactCompoundDef values (1/3/5/7/11) = 1,953,125.
+      // scripts/crack-ambry-codes.py recovers all 19 and confirms every published code
+      // against the hash the game itself validates against. Cryptographic, not transcribed.
+      ref: "PortalDialerController.PerformActionServer -> Sha256HashAsset; all 19 recovered and matched by scripts/crack-ambry-codes.py",
+      adequate: true,
     },
-    icon: { tier: "wiki", ref: "wiki.gg artifact emblems (art asset, not a factual claim)", adequate: true },
+    icon: {
+      tier: "asset",
+      // Previously downloaded from the wiki. Now each emblem is the sprite from that
+      // artifact's OWN ArtifactDef.smallIconSelectedSprite, keyed by its nameToken — so
+      // icon/artifact correspondence is guaranteed by construction rather than trusted.
+      ref: "ArtifactDef.smallIconSelectedSprite, keyed by ArtifactDef.nameToken",
+      adequate: true,
+    },
   },
   dreams: {
     dream: { tier: "langfile", ref: "BAZAAR_SEER_<STAGE> — the Seer literally speaks this line", adequate: true },
