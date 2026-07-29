@@ -3836,13 +3836,15 @@
         "stat": "Max charges",
         "base": 12,
         "perStack": 12,
-        "type": "linear"
+        "type": "linear",
+        "formula": "LunarPrimaryReplacementSkill.GetMaxStock returns `n * baseMaxStock`, and the LunarPrimaryReplacement SkillDef asset has baseMaxStock = 12 — so 12 charges per stack."
       },
       {
         "stat": "Reload time (s)",
         "base": 2,
         "perStack": 2,
-        "type": "linear"
+        "type": "linear",
+        "formula": "GetRechargeInterval returns `n * baseRechargeInterval`, asset baseRechargeInterval = 2 — 2s per stack. Note this makes STACKING A DOWNSIDE for reload speed, as with every Heresy item."
       }
     ],
     "tags": [
@@ -3856,7 +3858,7 @@
     "icon": "/icons/visions-of-heresy.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Visions_of_Heresy",
     "verified": true,
-    "confidence": "langfile"
+    "confidence": "code"
   },
   {
     "id": "strides-of-heresy",
@@ -3864,19 +3866,21 @@
     "tier": "lunar",
     "dlc": "base",
     "pickupText": "Replace your Utility Skill with 'Shadowfade'.",
-    "description": "Fade away, becoming intangible and gaining +30% movement speed. Heal for 25% (+25% per stack) of your maximum health. Lasts 3 (+3 per stack) seconds.",
+    "description": "Fade away, becoming intangible and gaining +30% movement speed. Heals 1.3% of your maximum health every 0.2s while active — about 19.5% (+19.5% per stack) in total, not the 25% the in-game text claims. Lasts 3 (+3 per stack) seconds.",
     "stacking": [
       {
         "stat": "Heal (% of max health)",
-        "base": 25,
-        "perStack": 25,
-        "type": "linear"
+        "base": 19.5,
+        "perStack": 19.5,
+        "type": "linear",
+        "formula": "NOT a lump heal. GhostUtilitySkillState heals `healFractionPerTick` every `1 / healFrequency` seconds while the state runs; the asset gives 0.013 and 5, so 1.3% of max health every 0.2s. Over the 3n-second duration that is ~15n ticks = ~19.5% per stack. The in-game description's 25% is not attainable — there is exactly one EntityStateConfiguration for this state and its values are unambiguous. Ending the state early (it is interruptible) heals proportionally less."
       },
       {
         "stat": "Duration (s)",
         "base": 3,
         "perStack": 3,
-        "type": "linear"
+        "type": "linear",
+        "formula": "GhostUtilitySkillState.OnEnter: `duration = baseDuration; duration *= n` with asset baseDuration = 3 — 3s per stack."
       }
     ],
     "tags": [
@@ -3891,7 +3895,7 @@
     "icon": "/icons/strides-of-heresy.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Strides_of_Heresy",
     "verified": true,
-    "confidence": "langfile"
+    "confidence": "code"
   },
   {
     "id": "hooks-of-heresy",
@@ -3936,19 +3940,21 @@
     "tier": "lunar",
     "dlc": "base",
     "pickupText": "Replace your Special Skill with 'Ruin'.",
-    "description": "Dealing damage adds a stack of Ruin for 10 (+10 per stack) seconds. Activating the skill detonates all Ruin stacks at unlimited range for 300% damage plus 120% per stack of Ruin. Recharges after 8 (+8 per stack) seconds.",
+    "description": "Dealing damage adds a stack of Ruin for 10 seconds — a flat duration that does NOT increase with item stacks, despite the in-game text. Activating the skill detonates all Ruin stacks at unlimited range for 300% damage plus 120% per stack of Ruin. Recharges after 8 (+8 per stack) seconds.",
     "stacking": [
       {
         "stat": "Ruin duration (s)",
         "base": 10,
-        "perStack": 10,
-        "type": "linear"
+        "perStack": 0,
+        "type": "linear",
+        "formula": "LunarDetonatorPassiveAttachment: `AddTimedBuff(LunarDetonationCharge, 10f)` — a FLAT 10 seconds. The item count appears nowhere in that file and this is the only site that applies the buff, so the in-game description's '(+10 per stack)' is wrong: extra stacks do not lengthen Ruin, they only lengthen the cooldown. Application is also gated on the special skill having stock and rolls against `procCoefficient * 100`, so low-proc hits can fail to apply it."
       },
       {
         "stat": "Recharge time (s)",
         "base": 8,
         "perStack": 8,
-        "type": "linear"
+        "type": "linear",
+        "formula": "LunarDetonatorSkill.GetRechargeInterval returns `n * baseRechargeInterval`, asset baseRechargeInterval = 8 — 8s per stack, so stacking lengthens the cooldown."
       }
     ],
     "tags": [
@@ -3962,7 +3968,7 @@
     "icon": "/icons/essence-of-heresy.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Essence_of_Heresy",
     "verified": true,
-    "confidence": "langfile"
+    "confidence": "code"
   },
   {
     "id": "beads-of-fealty",

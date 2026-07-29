@@ -1695,3 +1695,47 @@ because `confidence` describes the record, not the individual sentence.
 `AffixHaunted` contributes `n = 2` where `AffixWhite` contributes 1 — so the Celestine slow
 lasts **3s, twice the Glacial one**, from a single shared line neither description hints at.
 The ally cloak is a `BuffWard` with `Networkradius = 30f + body.radius`.
+
+### 3j.30 Heresy items — two of the game's own numbers are wrong
+
+**156 -> 159 of 212.** All four Heresy items follow the pattern §3j.22 established with Hooks
+of Heresy: the skill class computes `n * X` and the asset supplies `X`. `skilldefs.json` and
+`state-fields.json` already had every constant needed.
+
+| Item | Claim | Source | Result |
+| --- | --- | --- | --- |
+| Visions of Heresy | 12 charges / 2s reload per stack | `baseMaxStock: 12`, `baseRechargeInterval: 2` | correct |
+| Essence of Heresy | 8s recharge per stack | `baseRechargeInterval: 8` | correct |
+| Essence of Heresy | 300% + 120% per Ruin | `baseDamageCoefficient: 3`, `damageCoefficientPerStack: 1.2` | correct |
+| Strides of Heresy | 3s duration, +30% move | `baseDuration: 3`, `moveSpeedCoefficient: 1.3` | correct |
+| **Strides of Heresy** | **heal 25% per stack** | see below | **~19.5%** |
+| **Essence of Heresy** | **Ruin 10s (+10 per stack)** | see below | **flat 10s** |
+
+**Strides of Heresy does not heal 25%.** It is not a lump heal at all:
+
+```csharp
+healTimer -= GetDeltaTime();
+if (healTimer <= 0f) { healthComponent.HealFraction(healFractionPerTick, ...);
+                       healTimer = 1f / healFrequency; }
+```
+
+with `healFractionPerTick = 0.013` and `healFrequency = 5` — 1.3% of max health every 0.2s.
+Over the `3n`-second duration that is ~15n ticks, **~19.5% per stack**. I checked for a second
+EntityStateConfiguration that might override the tick values and there is exactly one, so
+this is not an extraction artefact. Because it ticks, interrupting the state early heals
+proportionally less — a property no lump-sum description can express.
+
+**Essence of Heresy's Ruin does not scale with stacks.**
+`LunarDetonatorPassiveAttachment` applies `AddTimedBuff(LunarDetonationCharge, 10f)` — a flat
+literal, with the item count appearing **nowhere in the file**, and that is the only site in
+the assembly that applies the buff. The in-game "(+10 per stack)" is wrong. This matters more
+than it looks: every other Heresy stack effect is a *downside* (recharge is `8n`), so a player
+reading the description stacks the item expecting longer Ruin to offset a longer cooldown, and
+gets only the cooldown. Application is also gated on the special having stock and rolls
+against `procCoefficient * 100`, so low-proc hits can fail to apply Ruin at all.
+
+Both of these are the game's own text being wrong, not a transcription slip on our side —
+the fourth and fifth such cases after Sonorous Whispers, Plasma Shrimp and Wax Quail. The
+running tally is now clear enough to state as a finding in its own right: **the in-game
+description is wrong often enough that "it matches the language file" is worth nothing as
+evidence.**
