@@ -121,6 +121,11 @@ def extract():
                 tok = t.get("nameToken", "")
                 equipment.setdefault(cached, {
                     "name": tokens.get(tok, "?"), "token": tok, "cachedName": cached,
+                    # The cooldown was already being used to IDENTIFY an EquipmentDef but
+                    # then thrown away — while every equipment record in items.json
+                    # publishes a "Cooldown: Ns" claim sourced from description text. It is
+                    # the authoritative value and costs nothing to keep.
+                    "cooldown": t.get("cooldown"),
                     "isConsumed": bool(t.get("isConsumed")),
                     # canDrop = player-obtainable; isLunar = lunar equipment.
                     "canDrop": bool(t.get("canDrop")),

@@ -305,6 +305,41 @@ function main(): number {
     }
   }
 
+  // --- Equipment cooldown: field must agree with the sentence ---------------
+  // The cooldown used to live only inside `description`, where nothing could check it,
+  // and Seed of Life published "Cooldown: 60s" for an equipment whose EquipmentDef says
+  // 0 and whose in-game text mentions no cooldown at all. Now that `cooldown` is a real
+  // field sourced from the asset, prose that disagrees with it is a hard error.
+  for (const it of items) {
+    const isEquipment = it.tier === "equipment" || it.tier === "lunar-equipment";
+    if (!isEquipment) {
+      if (it.cooldown !== undefined) {
+        errors.push(`${it.name}: cooldown is set but the item is not equipment`);
+      }
+      continue;
+    }
+    const stated = /Cooldown: (\d+(?:\.\d+)?)s\./.exec(it.description);
+    if (it.cooldown === undefined) {
+      warnings.push(`${it.name}: equipment has no cooldown field (asset value not recorded)`);
+      // Tolerance, not equality: these come from float32 assets, so Executive Card's
+      // 0.1s deserializes as 0.10000000149011612.
+    } else if (stated && Math.abs(Number(stated[1]) - it.cooldown) > 1e-4) {
+      errors.push(
+        `${it.name}: description says "Cooldown: ${stated[1]}s" but the EquipmentDef ` +
+          `value is ${it.cooldown}s`,
+      );
+    } else if (!stated && it.cooldown > 0) {
+      warnings.push(
+        `${it.name}: has a ${it.cooldown}s cooldown but the description never states it`,
+      );
+    } else if (stated && it.cooldown === 0) {
+      errors.push(
+        `${it.name}: description states a cooldown but the EquipmentDef value is 0 ` +
+          `(consumed-on-use equipment has none)`,
+      );
+    }
+  }
+
   // --- Coverage ratchet (PLAN §6B.2) ---------------------------------------
   // Verification must only ever go UP. Without this, a future import or refactor can
   // silently downgrade records and nothing notices — which is exactly how 161 items

@@ -141,6 +141,20 @@ export const itemSchema = z
     description: z.string().min(1),
     /** Logbook flavour quote (optional; can be long). */
     flavor: z.string().min(1).optional(),
+    /**
+     * Equipment only: recharge time in seconds, straight from the EquipmentDef asset.
+     *
+     * A first-class field rather than prose, because the cooldown was previously stated
+     * only inside `description` and nothing could check it — which is how Seed of Life
+     * came to publish "Cooldown: 60s" for an equipment whose asset says 0 and whose own
+     * in-game description mentions no cooldown at all. `data:audit` now cross-checks the
+     * two, so the number can never drift from the sentence again.
+     *
+     * 0 is meaningful: consumed-on-use equipment (Seed of Life, Trophy Hunter's Tricorn)
+     * genuinely has no cooldown, so this is optional-but-not-nullable and omitted only
+     * for non-equipment.
+     */
+    cooldown: z.number().nonnegative().optional(),
     stacking: z.array(stackingEntrySchema),
     /** Search/category tags: "damage","on-hit","healing","drone", … */
     tags: z.array(z.string().min(1)),

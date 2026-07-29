@@ -1429,3 +1429,54 @@ description's "increases rarity chances per stack" undersells a quadratic term.
 
 Also team-wide, and undocumented as such: **Lepton Daisy** (pulse count summed over the
 team) and **Eulogy Zero** (§3j.22, global item count).
+
+### 3j.24 Equipment — a whole class the item tracer structurally could not see, and false data found
+
+61 items had "no code site at all", and **31 of them are equipment**. That was never a
+property of the data: the def-use tracer keys on `GetItemCountEffective`, and equipment
+does not stack, so it never appears in that read. Equipment lives behind a separate
+dispatch in `EquipmentSlot`:
+
+```csharp
+if (equipmentDef == RoR2Content.Equipment.Meteor) { func = FireMeteor; }
+...
+private bool FireMeteor() { ... }
+```
+
+which is as explicit as the `[ItemDefAssociation]` attribute that made the behaviour-class
+sweep reliable. `scripts/extract-equipment-code.py` reads that dispatch table and extracts
+each handler body: **38 equipment dispatched, 37 handler bodies located.**
+
+#### The cooldown was published from prose and nothing checked it
+
+Every equipment record states "Cooldown: Ns." inside its `description`. `EquipmentDef`
+carries the real value — and `extract-itemdefs.py` was already reading `cooldown` **to
+identify** an EquipmentDef and then throwing it away. Keeping it and cross-checking all 43
+found one outright falsehood:
+
+> **Seed of Life** published "Cooldown: 60s." Its `EquipmentDef.cooldown` is **0**, it is
+> consumed on use, and its in-game description mentions no cooldown at all. The number was
+> not in any game file — it came from prose.
+
+Corrected by deleting the sentence. Ten more equipment had a real cooldown their
+description never stated, now added from the asset: the nine elite Aspects (10s or 25s)
+and The Crowdfunder (5s).
+
+`cooldown` is now a **first-class schema field**, not a phrase, and `data:audit` fails the
+build if the field and the sentence disagree — in either direction, including "states a
+cooldown when the asset says 0". A claim nothing can check is a claim that will eventually
+be wrong.
+
+Two smaller things worth recording because both have now bitten twice:
+
+- **Name joins keep re-introducing the Faulty Conductor collision.** It is a Boss item
+  (`ShockDamageAura`) *and* a drone-only equipment (`DroneShockDamage`, `canDrop:false`,
+  60s). `extract-item-code.py` was fixed for this months ago; my first cross-check script
+  joined on display name and cheerfully attributed the drone's cooldown to the boss item.
+  The join is now on `cachedName`.
+- **Float32.** `Executive Card` deserializes 0.1s as `0.10000000149011612`. Stored values
+  are rounded to 4dp and the audit compares with tolerance rather than equality.
+
+The one remaining warning is honest: **Fuel Array** has a 60s cooldown the description does
+not state. It is a single-use objective item that kills you, so the cooldown is arguably
+meaningless — but rather than decide that silently, the audit says so out loud.
