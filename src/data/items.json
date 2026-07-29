@@ -2137,7 +2137,7 @@
         "base": 100,
         "perStack": 10,
         "type": "linear",
-        "formula": "shield += (n > 0) ? 0.04f * maxHealth : 0f (CharacterBody.RecalculateStats) - a flat 4% of max health as shield, granted once and NOT scaling with stacks."
+        "formula": "HealthComponent.GetShieldBoosterDamage: baseDamage = body.damage + body.maxShield * (1f + 0.1f * (n - 1)) — 100% base damage plus 100% of max shield at one stack, +10% of max shield per stack. The blast is 12.5m radius with procCoefficient 1 and 500 force, none of which the description mentions."
       },
       {
         "stat": "Shield granted (% of max health)",

@@ -185,6 +185,54 @@ function crossCheckBodies(): string[] {
   return drift;
 }
 
+/**
+ * Void corruption pairs, checked against the game rather than only against ourselves.
+ *
+ * `data:audit` already enforces that `corrupts` and `corruptedBy` agree (CLAUDE.md rule
+ * #4) — but that is internal consistency only. A pair could be mutually consistent and
+ * still not exist in the game, or the game could have a pair we never recorded, and
+ * nothing would notice. Both directions are compared here.
+ *
+ * Local-only, like the prefab cross-check: `.gamedata/` is git-ignored, so this is silent
+ * in CI and advisory on a dev machine.
+ */
+function crossCheckCorruption(): string[] {
+  const defsPath = resolve(root, ".gamedata/itemdefs.json");
+  if (!existsSync(defsPath)) return [];
+  const defs = JSON.parse(readFileSync(defsPath, "utf8")) as {
+    items: Array<{ cachedName: string; name: string }>;
+    corruption?: Array<Record<string, string>>;
+  };
+  const itemsRaw = JSON.parse(
+    readFileSync(resolve(root, "src/data/items.json"), "utf8"),
+  ) as Array<{ id: string; name: string; corrupts?: string[] }>;
+
+  const cachedToName = new Map(defs.items.map((d) => [d.cachedName, d.name]));
+  const pairKey = (voidName: string, origName: string) => `${voidName} -> ${origName}`;
+
+  const game = new Set<string>();
+  for (const p of defs.corruption ?? []) {
+    const vals = Object.values(p);
+    const orig = cachedToName.get(p.original ?? vals[0]);
+    const vd = cachedToName.get(p.void ?? vals[1]);
+    if (orig && vd) game.add(pairKey(vd, orig));
+  }
+
+  const byId = new Map(itemsRaw.map((i) => [i.id, i]));
+  const ours = new Set<string>();
+  for (const i of itemsRaw) {
+    for (const t of i.corrupts ?? []) {
+      const o = byId.get(t);
+      ours.add(pairKey(i.name, o ? o.name : t));
+    }
+  }
+
+  const drift: string[] = [];
+  for (const g of game) if (!ours.has(g)) drift.push(`missing pair the game has: ${g}`);
+  for (const o of ours) if (!game.has(o)) drift.push(`pair we assert, game does not: ${o}`);
+  return drift;
+}
+
 function main() {
   let mismatches = 0;
   const codeMiss: string[] = [];
@@ -241,6 +289,16 @@ function main() {
   } else {
     console.log("\n⚠ Live prefab cross-check — table differs from extraction (game patched?):");
     for (const d of drift) console.log(`  - ${d}`);
+  }
+
+  const corruptDrift = crossCheckCorruption();
+  if (!existsSync(resolve(root, ".gamedata/itemdefs.json"))) {
+    console.log("Void corruption cross-check: skipped (.gamedata/ absent).");
+  } else if (corruptDrift.length === 0) {
+    console.log("Void corruption cross-check: all pairs match the game, both ways. ✓");
+  } else {
+    console.log("\n⚠ Void corruption cross-check — our pairs differ from the game's:");
+    for (const d of corruptDrift) console.log(`  - ${d}`);
   }
 
   const total = mismatches + survivorBad;

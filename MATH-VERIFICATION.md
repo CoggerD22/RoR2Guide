@@ -1845,3 +1845,62 @@ in it is not evidence of being right.
 **160/212.** The lesson for the programme: a one-directional check is a check that will
 eventually be lied to. Every comparison this project makes should be asked in both
 directions before it is trusted.
+
+### 3j.33 Third audit pass — the same number stored three times
+
+Pass 1 asked whether each record carried its evidence. Pass 2 asked whether our text still
+matched the game's. This pass asked two new questions: **do my own formulas agree with the
+numbers beside them**, and **is the same fact stored in more than one place?**
+
+#### One formula was attached to the wrong stat — by the pass-1 backfill
+
+Of 186 stacking entries carrying a formula, one was wrong: **Kinetic Dampener's** "Pulse
+damage from max shield (%)" (100 / +10) had been given a formula describing its *4% shield
+grant*. I introduced that in §3j.31 while backfilling provenance — the script matched by
+stat name and I supplied the wrong text for that key.
+
+The number was right, so nothing downstream broke; the *evidence* was wrong, which is
+exactly the defect pass 1 existed to remove. Fixed against
+`HealthComponent.GetShieldBoosterDamage`:
+`body.damage + body.maxShield * (1f + 0.1f * (stack - 1))`, which confirms 100 / +10 and
+adds three undocumented figures — 12.5m radius, proc coefficient 1, 500 force.
+
+The check that found it: for every formula, does the recorded `base` or `perStack` appear
+in it in some form? Nine other entries flagged and all nine are legitimate derivations
+(`maxCharacterCount = 2 + n` giving base 3; `0.85` giving 15%; `0.75` giving 25%), and four
+formulas contain no numbers at all because the effect genuinely has none (`maxJumpCount =
+baseJumpCount + n`). One false positive on Elusive Antlers, where "hyperbolic" in the prose
+describes the curve's shape while `type: "special"` is correct because the expression is not
+the schema's hyperbolic form.
+
+#### The same coefficient lives in three files
+
+The Stat Lab does not read `items.json`. It reads `src/data/statItems.ts`, whose header says
+its values "mirror items.json" — and **nothing enforced that**. `data:verify` then checks
+`statItems.ts` against a third copy, `CODE_TRUTH`. So the chain was:
+
+```
+items.json   ——(nothing)——   statItems.ts   ——(data:verify)——   CODE_TRUTH
+```
+
+All twelve entries happen to agree today, and I verified the one claim not backed by a
+stacking row — Harvester's Scythe's 5% crit is real (`num14 = HealOnCrit`, `crit += 5f`).
+But this session moved Stone Flux Pauldron 50 → 66.7 and Plasma Shrimp 50 → 40; had either
+been a Stat Lab item, the calculator would have kept computing the old number while the
+codex displayed the new one. **Two numbers for the same fact on the same site** is the
+failure this whole programme exists to prevent, and it was one edit away.
+
+`src/data/statItems.test.ts` now closes the loop, verified by injecting a mismatch and
+watching it fail.
+
+#### Applying pass 2's lesson to the other comparisons
+
+§3j.32 concluded that a one-directional check will eventually be lied to, so every existing
+comparison was re-examined. Void corruption was checked **both ways internally** (rule #4) —
+but only against ourselves. A pair could be mutually consistent and still not exist in the
+game. `data:verify` now compares our 31 pairs against the game's extracted 31 in both
+directions; they match exactly, and the check fails correctly when a pair is bent.
+
+Nothing else was found wrong. The reason to record a pass that finds one real bug is that
+the bug was **mine, introduced by the previous audit** — which is the strongest argument
+available for why these passes have to keep happening rather than being declared done.
