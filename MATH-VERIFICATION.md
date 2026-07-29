@@ -1789,3 +1789,59 @@ the values agreeing is luck rather than proof.
 After the pass: **0** records claim `code` without provenance; the only entries with no
 stacking are the five scrap items, which are verified to do nothing (§3j.23); and no
 verified number is displayed alongside a contradicting description without a warning.
+
+### 3j.32 Second audit pass — an invented number, and why the first pass missed it
+
+The first audit (§3j.31) asked whether each record carried its evidence. This one asked a
+different question: **does our description still say what the game says?** That found things
+the first pass structurally could not.
+
+#### `data:diff` was only checking one direction
+
+It compares our description's numbers against the game's, but only reported *numbers the
+game has that we lack*, on the reasoning that extras are the "Cooldown: Ns" we append to
+equipment. So a number we state that exists **nowhere in any game file** was invisible to it.
+
+**Electric Boomerang published a 42% damage-over-time figure that appears in no game file.**
+The game's own text reads "deals an additional **120%** (+120% per stack) base damage per
+second". 42 is not in the language files, not in the code, not in the projectile prefab. It
+was almost certainly copied from a third-party source years ago, and the record nevertheless
+claimed `confidence: langfile` — an explicit assertion that it matched the game's text.
+
+This is the single worst defect found in the whole programme: not a misread curve, but a
+fabricated number presented as sourced. Corrected to the game's 120/+120 and left `langfile`,
+because the code path (`characterBody.damage * 0.4f * n` into a `StunAndPierceBoomerang`
+whose overlap component carries `damageCoefficient 3.1`, `fireFrequency 60`,
+`resetFrequency 10`) does not reconcile into a per-second figure without more work. That
+remains open rather than guessed.
+
+`data:diff` now reports the other direction for non-equipment items, and I verified the rule
+fires by re-injecting 42 and watching it fail — the first attempt at that test silently did
+nothing because my `replace()` target did not exist in the string, which is exactly the
+false-confidence trap this section keeps documenting.
+
+#### Two more description defects
+
+- **Brainstalks** said skills have "0.5s cooldowns". The frenzy sets
+  `cooldownScale` to **exactly 0** (`if (HasBuff(NoCooldowns)) num113 = 0f;`) — no cooldown
+  at all, matching the game's own wording, which we had "improved" into a falsehood. The one
+  caveat is real and now recorded: skills flagged `limitCooldown` clamp to their own
+  `minCooldownCoefficient` instead of reaching zero.
+- **Interstellar Desk Plant** — here **we were right and the game is wrong**, on three
+  counts. `DeskplantWard` has `healFraction 0.05` and `interval 0.5` (5% every half-second,
+  not 10% every second), and the radius is `healingRadius(5) + 5 x stacks` = **10m at one
+  stack**, not the 5m the game states. Upgraded to `code` with a note. The rate is the same
+  10%/s either way, but the tick granularity matters for a plant that lives 10 seconds.
+
+#### Claims the game omits that turned out true
+
+Four descriptions state numbers the game's text never mentions, and all four are correct:
+`crit += 5f` for both **Predatory Instincts** and **Shatterspleen**;
+`specialBonusStockSkill.cooldownScale *= 0.67f` for **Lysate Cell** (33%); and Unstable
+Transmitter's 60% barrier, verified in §3j.31. Being absent from the language file is not
+evidence of being wrong — which is the mirror of the §3j.30 finding that being *present*
+in it is not evidence of being right.
+
+**160/212.** The lesson for the programme: a one-directional check is a check that will
+eventually be lied to. Every comparison this project makes should be asked in both
+directions before it is trusted.

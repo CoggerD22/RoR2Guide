@@ -144,6 +144,24 @@ function main(): number {
           `${it.name}: missing ${missing.map((n) => `[${n}]`).join(" ")}  «${stripTags(g.desc)}»`,
         );
       }
+      // Numbers WE state that the game never does. This direction was ignored, on the
+      // reasoning that extras are just the "Cooldown: Ns" we add to equipment — and that
+      // blind spot let Electric Boomerang publish a 42% damage-over-time figure that
+      // appears in no game file anywhere. An invented number is the worst failure this
+      // project can have, so it is now reported for non-equipment items, which have no
+      // legitimate reason to carry a figure the game does not state unless it is
+      // code-verified (in which case `confidence` says so and the formula shows the work).
+      if (it.tier !== "equipment" && it.tier !== "lunar-equipment") {
+        const gameSet = new Set(game);
+        const invented = [...ours].filter((n) => !gameSet.has(n));
+        if (invented.length > 0 && it.confidence !== "code" && it.confidence !== "asset") {
+          numberDiffs.push(
+            `${it.name}: states ${invented.map((n) => `[${n}]`).join(" ")} which the game ` +
+              `never does, and is only \`${it.confidence}\`-sourced — either verify it ` +
+              `against code/assets or remove it  «${stripTags(g.desc)}»`,
+          );
+        }
+      }
     }
   }
 
