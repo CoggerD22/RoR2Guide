@@ -2147,3 +2147,50 @@ are still quoted text presented as mechanics, which is the next real gap.
 `src/data/ambry-hashes.json` commits the 19 digests (32 bytes each — derived values, not game
 content) and `src/data/ambry.test.ts` re-derives every published code's digest in CI. Verified
 by corrupting a single glyph and watching the build fail.
+
+### 3j.39 Artifact effects — closing the last `adequate: false` field
+
+The artifacts panel's `effect` was the last field on the site flagged as weakly sourced. It
+was the game's `ARTIFACT_*_DESCRIPTION` quoted verbatim and rendered as though it described
+behaviour — the exact §5.0.1 error, sitting in plain sight behind an honest warning label.
+
+New `scripts/extract-artifact-code.py`: artifacts have no per-item behaviour class, so it
+sweeps every `Artifacts.<name>ArtifactDef` reference (matching both casings, since
+`WeakAssKnees` is accessed as `weakAssKneesArtifactDef`). **20 artifacts, 92 code sites**,
+which led to the real home of the mechanics — the 13 `RoR2.Artifacts.*ArtifactManager`
+classes.
+
+Seven artifacts gained a code-verified `mechanic`, rendered beside the quote exactly as the
+shrines already do. **Four carried undocumented facts that change whether you enable them:**
+
+- **Artifact of Sacrifice** also **halves the stage's interactable budget** —
+  `sceneDirector.onPopulateCreditMultiplier *= 0.5f`. The description says only that chests
+  stop spawning; in fact *everything else* gets scarcer too.
+- **Artifact of Frailty** additionally sets **`BypassOneShotProtection`**, and the same
+  doubled, lethalised fall damage applies to players at **Eclipse 3+ with the artifact
+  off**. Neither is mentioned anywhere.
+- **Artifact of Evolution** grants monster items on a **fixed repeating 5-step pattern** —
+  Tier1, Tier1, Tier2, Tier2, Tier3 — not randomly. "Monsters gain items between stages"
+  hides a predictable schedule.
+- **Artifact of Glass** applies its health loss as **`cursePenalty *= 10f`**, not a direct
+  cut, so it composes *multiplicatively* with Shaped Glass rather than stacking additively.
+
+Also verified exactly: Spite's bombs (150% of the victim's damage, 7m blast, 8s fuse, up to
+30, scaling with victim radius), Swarms (`swarmSpawnCount = 2` plus a `CutHp` item making
+`maxHealth /= 2`), Vengeance (`invasionInterval = 600f`).
+
+Thirteen artifacts get no `mechanic` line, deliberately: their descriptions are purely
+qualitative ("Choose your items", "Friendly fire is enabled") and the code adds nothing a
+reader needs. Padding them with restated prose would make the verified layer meaningless.
+
+`effect` is now `adequate: true` — because it is finally *presented* as what it is, a quote,
+labelled "In-game description" with the fact beside it — and `mechanic` is a new `code`-tier
+field. **Every field on the artifacts panel is now adequately sourced.**
+
+#### The test that caught it
+
+The Playwright assertion for weakly-sourced fields hardcoded "artifacts warns about
+effect", and broke the moment this landed — correctly. It is now **derived** from
+`inadequateFields()` per dataset, with explicit guards that both the warning path and the
+clean path are exercised, so it can neither rot nor pass vacuously. That is the fourth test
+this programme has had to convert from naming data to following it.

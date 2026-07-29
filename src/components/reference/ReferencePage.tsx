@@ -53,8 +53,25 @@ function Artifacts() {
               </span>
             )}
           </div>
-          <p className="flex-1 text-xs leading-relaxed text-muted-foreground">{a.effect}</p>
-          <div className="mt-1 border-t border-border pt-2">
+          <p className="text-xs leading-relaxed text-muted-foreground">{a.effect}</p>
+          <p className="text-[10px] uppercase tracking-widest text-muted-foreground/70">
+            In-game description
+          </p>
+          {/*
+            The verified layer, given its own visual weight — same split as the shrines.
+            The quote above is what the game SAYS; this is what it does, and several of
+            these descriptions omit the number that decides whether you enable the
+            artifact at all (PLAN §5.0.1).
+          */}
+          {a.mechanic && (
+            <div className="rounded-lg border border-emerald-400/25 bg-emerald-400/5 p-3">
+              <p className="mb-1 text-[10px] font-semibold uppercase tracking-widest text-emerald-300/90">
+                Verified mechanic — from game code
+              </p>
+              <p className="text-xs leading-relaxed text-foreground/90">{a.mechanic}</p>
+            </div>
+          )}
+          <div className="mt-auto border-t border-border pt-2">
             <AmbryCode code={a.code} />
           </div>
         </div>

@@ -52,10 +52,15 @@ export const REFERENCE_PROVENANCE: Record<string, DatasetSources> = {
     name: { tier: "langfile", ref: "ARTIFACT_*_NAME", adequate: true },
     effect: {
       tier: "langfile",
-      ref: "ARTIFACT_*_DESCRIPTION",
-      // Quoted text presented as a mechanic — §5.0.3 marks this INVALID until each
-      // artifact is traced to its behaviour/manager class.
-      adequate: false,
+      // Now presented explicitly AS a quote, with the verified behaviour shown beside it
+      // in `mechanic` — so the field no longer asserts more than its source supports.
+      ref: "ARTIFACT_*_DESCRIPTION, quoted verbatim and labelled as the in-game description",
+      adequate: true,
+    },
+    mechanic: {
+      tier: "code",
+      ref: "RoR2.Artifacts.*ArtifactManager plus the inline IsArtifactEnabled sites (scripts/extract-artifact-code.py)",
+      adequate: true,
     },
     code: {
       tier: "code",

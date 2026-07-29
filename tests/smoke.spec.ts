@@ -1,5 +1,6 @@
 import { test, expect } from "@playwright/test";
 import itemsJson from "../src/data/items.json" with { type: "json" };
+import { inadequateFields } from "../src/data/provenance";
 
 /**
  * Pick a subject by provenance rather than naming one.
@@ -289,16 +290,39 @@ test("every reference dataset states where its data came from", async ({ page })
     ).toBeVisible();
   }
 
-  // Fields whose source is too weak for the claim they make are called out, not just
-  // listed: artifact effects are description text presented as a mechanic, and the
-  // Ambry codes are still wiki-sourced.
-  await page.getByRole("button", { name: "Artifacts", exact: true }).click();
-  await expect(page.getByText(/Not yet verified:.*effect/)).toBeVisible();
-
-  // A dataset sourced adequately throughout carries no warning — otherwise the
-  // marker would be decoration rather than information.
-  await page.getByRole("button", { name: "Bazaar Dreams", exact: true }).click();
-  await expect(page.getByText(/Not yet verified:/)).toHaveCount(0);
+  // Fields whose source is too weak for the claim they make must be called out, not just
+  // listed. Which datasets those are is DERIVED rather than named: this assertion used to
+  // hardcode "artifacts shows a warning about effect", and broke the moment the artifact
+  // effects were split into a quoted `effect` plus a code-verified `mechanic`. The churn
+  // is the verification programme working, so the test follows the data.
+  const TABS: Record<string, string> = {
+    artifacts: "Artifacts",
+    dreams: "Bazaar Dreams",
+    shrines: "Shrines",
+    loadoutUnlocks: "Loadout Unlocks",
+  };
+  let weakSeen = 0;
+  let strongSeen = 0;
+  for (const [dataset, tab] of Object.entries(TABS)) {
+    await page.getByRole("button", { name: tab, exact: true }).click();
+    const weak = inadequateFields(dataset as never);
+    if (weak.length > 0) {
+      await expect(
+        page.getByText(new RegExp(`Not yet verified:.*${weak[0]}`)),
+        `${tab} has a weakly-sourced field (${weak.join(", ")}) and must say so`,
+      ).toBeVisible();
+      weakSeen++;
+    } else {
+      await expect(
+        page.getByText(/Not yet verified:/),
+        `${tab} is fully sourced and must carry no warning`,
+      ).toHaveCount(0);
+      strongSeen++;
+    }
+  }
+  // Both branches must actually be exercised, or this test could pass vacuously.
+  expect(weakSeen, "no dataset has a weak field — the warning path is untested").toBeGreaterThan(0);
+  expect(strongSeen, "no dataset is fully sourced — the clean path is untested").toBeGreaterThan(0);
 });
 
 test("breakpoints tab shows computed, code-verified milestones", async ({ page }) => {

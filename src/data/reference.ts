@@ -36,7 +36,18 @@ export interface ArtifactRef {
   name: string;
   /** Icon path under /public, e.g. "/icons/artifacts/artifact-of-command.png". */
   icon: string;
+  /**
+   * The game's own ARTIFACT_*_DESCRIPTION, quoted verbatim. Authoritative for WORDING and
+   * invalid as a source for behaviour (PLAN §5.0.1) — which is why `mechanic` exists.
+   */
   effect: string;
+  /**
+   * What the artifact actually does, read from its code. Separate from `effect` for the
+   * same reason the shrines are: the description is a quote, this is the verified fact,
+   * and several of these descriptions omit numbers that decide whether you enable it.
+   * Omitted where the description is purely qualitative and the code adds nothing.
+   */
+  mechanic?: string;
   /** Ambry code as three space-separated rows, or null if not code-unlocked. */
   code: string | null;
   dlc: Dlc;
@@ -56,19 +67,19 @@ const rawArtifacts: Omit<ArtifactRef, "id" | "icon">[] = [
   { name: "Artifact of Devotion", effect: "Replace broken drones with Lemurian Eggs. Offer an item to gain followers.", code: "▲♦▲ ■♦■ ♦▲♦", dlc: "base" },
   { name: "Artifact of Dissonance", effect: "Monsters can appear outside their usual environments.", code: "●■■ ■■■ ■■●", dlc: "base" },
   { name: "Artifact of Enigma", effect: "Spawn with a random equipment that changes every time it's activated.", code: "♦■■ ▲■▲ ●♦♦", dlc: "base" },
-  { name: "Artifact of Evolution", effect: "Monsters gain items between stages.", code: "♦♦♦ ■■■ ●●●", dlc: "base" },
-  { name: "Artifact of Frailty", effect: "Fall damage is doubled and lethal.", code: "●●● ▲●▲ ▲▲▲", dlc: "base" },
-  { name: "Artifact of Glass", effect: "Allies deal 500% damage, but have 10% health.", code: "♦♦♦ ♦♦♦ ♦♦♦", dlc: "base" },
+  { name: "Artifact of Evolution", effect: "Monsters gain items between stages.", mechanic: "MonsterTeamGainsItemsArtifactManager: the monster team gains one item per stage cleared (stageClearCount + 1), drawn from a fixed repeating 5-step pattern of drop tables — Tier1, Tier1, Tier2, Tier2, Tier3 — so item quality cycles rather than being random each stage.", code: "♦♦♦ ■■■ ●●●", dlc: "base" },
+  { name: "Artifact of Frailty", effect: "Fall damage is doubled and lethal.", mechanic: "GlobalEventManager: fall damage (normally maxHealth * impact/60) is doubled and the NonLethal flag is cleared, so it can kill. Undocumented: it also sets BypassOneShotProtection, and the identical effect applies to players at Eclipse 3 and above even with the artifact disabled.", code: "●●● ▲●▲ ▲▲▲", dlc: "base" },
+  { name: "Artifact of Glass", effect: "Allies deal 500% damage, but have 10% health.", mechanic: "CharacterBody.RecalculateStats: damage *= 5f, and the health loss is applied as cursePenalty *= 10f rather than a direct cut — so it divides maximum health by ten and composes multiplicatively with other curse sources such as Shaped Glass.", code: "♦♦♦ ♦♦♦ ♦♦♦", dlc: "base" },
   { name: "Artifact of Honor", effect: "Enemies can only spawn as elites.", code: "■■■ ■▲■ ■■■", dlc: "base" },
   { name: "Artifact of Kin", effect: "Monsters will be of only one type per stage.", code: "●▲▲ ♦●▲ ♦♦●", dlc: "base" },
   { name: "Artifact of Metamorphosis", effect: "Players always spawn as a random survivor.", code: "♦■● ♦■● ♦■●", dlc: "base" },
   { name: "Artifact of Prestige", effect: "At least one Shrine of the Mountain spawns every stage. Shrine of the Mountain effects are permanent.", code: "▲●● ■●▲ ●●■", dlc: "ac" },
   { name: "Artifact of Rebirth", effect: "Descend to Petrichor V with gifts from a previous life.", code: null, dlc: "sots" },
-  { name: "Artifact of Sacrifice", effect: "Monsters drop items on death, but Chests no longer spawn.", code: "▲▲▲ ▲▲▲ ▲♦▲", dlc: "base" },
+  { name: "Artifact of Sacrifice", effect: "Monsters drop items on death, but Chests no longer spawn.", mechanic: "SacrificeArtifactManager: monsters roll an item drop on death and chest-type interactables are skipped (InteractableSpawnCard.skipSpawnWhenSacrificeArtifactEnabled). Undocumented: it also halves the stage's interactable budget (sceneDirector.onPopulateCreditMultiplier *= 0.5f), so non-chest interactables become scarcer too.", code: "▲▲▲ ▲▲▲ ▲♦▲", dlc: "base" },
   { name: "Artifact of Soul", effect: "Wisps emerge from defeated monsters.", code: "●■● ●♦● ■♦■", dlc: "base" },
-  { name: "Artifact of Spite", effect: "Enemies drop multiple exploding bombs on death.", code: "▲●▲ ●●● ▲●▲", dlc: "base" },
-  { name: "Artifact of Swarms", effect: "Monster spawns are doubled, but monster maximum health is halved.", code: "●●▲ ▲♦▲ ▲●●", dlc: "base" },
-  { name: "Artifact of Vengeance", effect: "Your relentless doppelganger will invade every 10 minutes.", code: "♦■■ ♦●■ ♦■■", dlc: "base" },
+  { name: "Artifact of Spite", effect: "Enemies drop multiple exploding bombs on death.", mechanic: "BombArtifactManager: each monster death drops bombs dealing 150% of the victim's damage (bombDamageCoefficient 1.5) in a 7m blast, fusing after 8s. The count scales with the victim's size (bombSpawnBaseRadius 3 plus bombSpawnRadiusCoefficient 4, one extra bomb per 4 units of radius), capped at 30, and bombs that would fall further than 60m are discarded.", code: "▲●▲ ●●● ▲●▲", dlc: "base" },
+  { name: "Artifact of Swarms", effect: "Monster spawns are doubled, but monster maximum health is halved.", mechanic: "SwarmsArtifactManager: swarmSpawnCount = 2, doubling monster spawns; each spawn is given the CutHp item and RecalculateStats does maxHealth /= (cutHpCount + 1), i.e. exactly half. Deployable limits for summons also double (CharacterMaster).", code: "●●▲ ▲♦▲ ▲●●", dlc: "base" },
+  { name: "Artifact of Vengeance", effect: "Your relentless doppelganger will invade every 10 minutes.", mechanic: "DoppelgangerInvasionManager: invasionInterval = 600f, so a doppelganger of a player invades every 10 minutes of run time, carrying a copy of that player's items.", code: "♦■■ ♦●■ ♦■■", dlc: "base" },
 ];
 
 export const ARTIFACTS: ArtifactRef[] = rawArtifacts.map((a) => {
