@@ -1998,3 +1998,48 @@ cut-content call from the opposite direction, which is the point of re-checking 
 trusting a previous verdict.
 
 **217 items · 160 verified · 19 survivors · 20 artifacts, all complete against the game.**
+
+### 3j.36 Sixth audit pass — a false claim about our own sourcing
+
+This pass checked the datasets nothing had yet touched, plus the provenance declarations
+themselves. Four checks came back clean and one found a falsehood — in a claim the site
+makes *about where its data comes from*.
+
+**Clean, and now verified rather than assumed:**
+
+- **DLC tags** — all 218 records cross-checked against `ItemDef.dlc`; 0 mismatches.
+- **Bazaar dreams** — 31/31, exact string matches.
+- **Skills** — 19/19 survivors present, and every per-survivor skill *count* matches the
+  game's `SkillFamily` variants. The uneven counts are real: Heretic and Void Fiend have 4
+  (fixed kits), Captain 5, Acrid 6.
+- **Skill names** — 121/125 matched directly. The four misses are Heretic's
+  (Hungering Gaze, Slicing Maelstrom, Shadowfade, Ruin) and are a **blind spot in the
+  extractor, not an error**: Heretic's kit comes from the lunar replacement SkillDefs
+  rather than a `SkillFamily` on its body. All four are exact matches to
+  `SKILL_LUNAR_*_REPLACEMENT_NAME`.
+
+#### The Ambry codes are not extractable, and we said they were
+
+`provenance.ts` told readers the artifact codes were wiki-sourced but *"live in
+ArtifactFormulaDisplay prefabs and are not yet extracted"*. PLAN said the same, and §7
+listed it as pending work. **All of that is false.**
+
+```csharp
+Sha256Hash result = GetResult(sequence);          // Sha256Hash.FromBytes(ComputeHash(sequence))
+if (result.Equals(reference.hashAsset.value))     // Sha256HashAsset — a stored HASH
+```
+
+`PortalDialerController` ships only SHA-256 hashes and hashes the dialled sequence to
+compare. The plaintext codes are in no asset, and `ArtifactFormulaDisplay` — the class I had
+named — only maps compound defs to decal *materials*. The game is deliberately built so the
+codes cannot be datamined.
+
+This matters more than a normal data error. Every other correction in this log is about a
+number being wrong; this is the site **misdescribing its own sourcing** — telling a reader
+that a gap is a scheduling problem when it is a cryptographic one. Provenance claims are
+claims, and they were never audited until now.
+
+Corrected in both places, with what is actually true recorded: the codes remain wiki-sourced
+and `adequate: false`, and the only route to verifying them is brute-forcing the (small)
+sequence space against the shipped hashes — possible, not attempted, and now written down as
+such rather than as an extraction that someone merely has not got around to.

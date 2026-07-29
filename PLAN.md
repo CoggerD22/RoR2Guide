@@ -322,7 +322,11 @@ fully sourced — immediately found substantial, verifiable error:
   - A second cut-content catch: **Shrine of Warding** (`SHRINE_PROTECTION_NAME`) has
     name and context tokens but *no* description and *no* behaviour class — the same
     signature as Artifact of Spirit. Excluded, with the reasoning recorded in the file.
-- **Ambry codes** are extractable from `ArtifactFormulaDisplay` (§7).
+- **Ambry codes are NOT extractable.** `PortalDialerController` stores only
+  `Sha256HashAsset` values and hashes the dialled sequence to compare against them, so
+  the plaintext never ships. An earlier note here claimed they lived in
+  `ArtifactFormulaDisplay`; that prefab only maps compounds to decal materials.
+  Brute-forcing the sequence space against the hashes would recover them.
 
 #### 5.0.1 The deeper flaw: description text is not behaviour
 
@@ -420,7 +424,7 @@ Anything where a description token was stored into a behaviour-typed field is
 | **`SHRINES` (12) effects/costs** | ❌ **Invalid — description-as-behaviour; redo** |
 | **`ARTIFACTS` (20) effects** | ❌ **Invalid — same; redo against behaviour classes** |
 | `LOADOUT_UNLOCKS` (52) | ✅ Regenerated from SkillFamily variants + RegisterAchievement (§5.1) |
-| **Ambry codes (19)** | ⚠️ Still wiki-sourced — extractable, not yet done |
+| **Ambry codes (19)** | ⚠️ Wiki-sourced, and NOT extractable — the game ships only SHA-256 hashes |
 | **Proc coefficients (21/125)** | ⚠️ Still unresolved — statically recoverable (§5.7) |
 | **Loadout alt-skill coverage** | ✅ regenerated from SkillFamily variants — 52 rows, slots + challenges verified (§5.1) |
 

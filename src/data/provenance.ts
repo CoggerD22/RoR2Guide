@@ -59,7 +59,7 @@ export const REFERENCE_PROVENANCE: Record<string, DatasetSources> = {
     },
     code: {
       tier: "wiki",
-      ref: "riskofrain2.wiki.gg — Ambry codes live in ArtifactFormulaDisplay prefabs and are not yet extracted (§7)",
+      ref: "riskofrain2.wiki.gg. NOT extractable: PortalDialerController stores only Sha256HashAsset values and hashes the dialled sequence to compare, so the plaintext codes ship nowhere. Brute-forcing the sequence space against those hashes would recover them; not attempted.",
       adequate: false,
     },
     icon: { tier: "wiki", ref: "wiki.gg artifact emblems (art asset, not a factual claim)", adequate: true },
