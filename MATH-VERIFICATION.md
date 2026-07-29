@@ -1480,3 +1480,48 @@ Two smaller things worth recording because both have now bitten twice:
 The one remaining warning is honest: **Fuel Array** has a 60s cooldown the description does
 not state. It is a single-use objective item that kills you, so the cooldown is arguably
 meaningless — but rather than decide that silently, the audit says so out loud.
+
+### 3j.25 Equipment batch 1 — 12 verified, and Spinel Tonic's downside was understated
+
+**138 -> 150 of 212.** Ten equipment matched their descriptions exactly:
+
+| Equipment | Evidence |
+| --- | --- |
+| Jade Elephant | `AddTimedBuff(ElephantArmorBoost, 5f)`; `armor += 500f` |
+| Ocular HUD | `AddTimedBuff(FullCrit, 8f)`; `crit += 100f` |
+| Foreign Fruit | `HealFraction(0.5f)` |
+| Super Massive Leech | `AddTimedBuff(LifeSteal, 8f)`; heal `= damage * 0.2f` |
+| Royal Capacitor | `damageValue = characterBody.damage * 30f` |
+| Gorag's Opus | `TeamWarCry 7f` on self and every team member; `moveSpeed += 0.5f`, `attackSpeed += 1f` |
+| Eccentric Vase | `maxDistance = 1000f`; `DestroyOnTimer.duration = 30f` |
+| The Back-up | `sliceCount = 4`; lifetime `25f` |
+| Disposable Missile Launcher | `remainingMissiles += 12` |
+| Helfire Tincture | `AddHelfireDuration(12f)` |
+
+Two needed rewriting.
+
+**Spinel Tonic** — the buff was right on all six stats (`maxHealth *= 1.5f`,
+`attackSpeed *= 1.7f`, `moveSpeed *= 1.3f`, `armor += 20f`, `damage *= 2f`,
+`regen *= 4f`) and `tonicBuffDuration = 20f`. It also does `maxShield *= 1.5f`, which the
+description omitted. The **downside was materially understated**:
+
+```csharp
+if (num27 > 0 && !flag2)                    // TonicAffliction count, and NOT tonic-buffed
+{
+    float num125 = Mathf.Pow(0.95f, num27);
+    attackSpeed *= num125; moveSpeed *= num125; damage *= num125; regen *= num125;
+    cursePenalty += 0.1f * (float)num27;
+}
+```
+
+Three corrections in one block. It is **`0.95^n`, compounding**, not "-5% per stack". It hits
+**four** stats, not "all stats" — armor and health are untouched by that multiplier. And
+there is an entirely undocumented **10% curse per stack**, which lowers maximum health.
+Offsetting that, the Affliction is **suspended while a Tonic buff is active** (`!flag2`), so
+chain-drinking hides the penalty — also unmentioned anywhere. An item whose whole decision
+is "is the downside worth it" was describing that downside wrongly in both directions.
+
+**Deus Ex Machina** said "briefly enter a countering stance". The window is
+`AddTimedBuff(Parrying, 0.5f)` — half a second, which is the entire skill-expression of the
+item and worth stating. Its other two claims check out exactly:
+`DeductActiveEquipmentCooldown(equipmentDef.cooldown * 0.75f)` and `AddBuff(SureProc)`.

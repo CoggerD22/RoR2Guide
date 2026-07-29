@@ -4720,7 +4720,7 @@
     "icon": "/icons/disposable-missile-launcher.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Disposable_Missile_Launcher",
     "verified": true,
-    "confidence": "langfile",
+    "confidence": "code",
     "cooldown": 45
   },
   {
@@ -4738,7 +4738,7 @@
     "icon": "/icons/foreign-fruit.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Foreign_Fruit",
     "verified": true,
-    "confidence": "langfile",
+    "confidence": "code",
     "cooldown": 45
   },
   {
@@ -4780,7 +4780,7 @@
     "icon": "/icons/the-back-up.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/The_Back-up",
     "verified": true,
-    "confidence": "langfile",
+    "confidence": "code",
     "unlock": {
       "challenge": "Mechanic",
       "requirement": "Repair 30 drones or turrets."
@@ -4803,7 +4803,7 @@
     "icon": "/icons/ocular-hud.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Ocular_HUD",
     "verified": true,
-    "confidence": "langfile",
+    "confidence": "code",
     "cooldown": 60
   },
   {
@@ -4825,7 +4825,7 @@
     "icon": "/icons/royal-capacitor.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Royal_Capacitor",
     "verified": true,
-    "confidence": "langfile",
+    "confidence": "code",
     "cooldown": 20
   },
   {
@@ -4951,7 +4951,7 @@
     "icon": "/icons/eccentric-vase.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Eccentric_Vase",
     "verified": true,
-    "confidence": "langfile",
+    "confidence": "code",
     "unlock": {
       "challenge": "Blackout",
       "requirement": "Defeat the unique guardian of Gilded Coast without any beacons deactivating."
@@ -5016,7 +5016,7 @@
     "icon": "/icons/jade-elephant.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Jade_Elephant",
     "verified": true,
-    "confidence": "langfile",
+    "confidence": "code",
     "cooldown": 45
   },
   {
@@ -5075,7 +5075,7 @@
     "icon": "/icons/super-massive-leech.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Super_Massive_Leech",
     "verified": true,
-    "confidence": "langfile",
+    "confidence": "code",
     "cooldown": 60
   },
   {
@@ -5095,7 +5095,7 @@
     "icon": "/icons/gorags-opus.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Gorag%27s_Opus",
     "verified": true,
-    "confidence": "langfile",
+    "confidence": "code",
     "cooldown": 45
   },
   {
@@ -5243,7 +5243,7 @@
     "tier": "equipment",
     "dlc": "ac",
     "pickupText": "Counter any damage. Successful counters bless your next attack, ensuring your on-hit effects ALWAYS activate.",
-    "description": "Briefly enter a countering stance that parries any and all damage. A successful parry nullifies the damage, reduces equipment cooldown by 75%, and grants Blessing — your next attack always activates its on-hit effects. Cooldown: 60s.",
+    "description": "Enter a countering stance for 0.5s that parries any and all damage. A successful parry nullifies the damage, reduces the active equipment's cooldown by 75% of its full cooldown, and grants Blessing (the SureProc buff) — your next attack always activates its on-hit effects. Cooldown: 60s.",
     "stacking": [],
     "tags": [
       "survivability",
@@ -5253,7 +5253,7 @@
     "icon": "/icons/deus-ex-machina.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Deus_Ex_Machina",
     "verified": true,
-    "confidence": "langfile",
+    "confidence": "code",
     "cooldown": 60
   },
   {
@@ -5336,7 +5336,7 @@
     "icon": "/icons/helfire-tincture.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Helfire_Tincture",
     "verified": true,
-    "confidence": "langfile",
+    "confidence": "code",
     "cooldown": 45
   },
   {
@@ -5345,7 +5345,7 @@
     "tier": "lunar-equipment",
     "dlc": "base",
     "pickupText": "Gain a massive boost to ALL stats. Chance to gain an affliction that reduces ALL stats.",
-    "description": "Gain a 20-second buff: +100% damage, +70% attack speed, +20 armor, +50% max health, +300% regen, +30% movement speed. On expiration, a 20% chance to gain a Tonic Affliction reducing all stats by -5% per stack. Cooldown: 60s.",
+    "description": "Gain a 20-second buff: +100% damage, +70% attack speed, +20 armor, +50% max health, +50% max shield, +300% regen, +30% movement speed. On expiration, a 20% chance to gain a Tonic Affliction. Each Affliction stack multiplies attack speed, movement speed, damage, and regeneration by 0.95 — compounding, not -5% per stack — and adds a 10% curse, which lowers your maximum health. The Affliction is suspended entirely while a Tonic buff is active. Cooldown: 60s.",
     "stacking": [],
     "tags": [
       "utility",
@@ -5358,7 +5358,7 @@
     "icon": "/icons/spinel-tonic.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Spinel_Tonic",
     "verified": true,
-    "confidence": "langfile",
+    "confidence": "code",
     "cooldown": 60
   },
   {
