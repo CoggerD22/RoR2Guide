@@ -1662,3 +1662,36 @@ component with no ambiguity.
 That is now three distinct places a constant can hide, none reachable by the others:
 serialized on an **item bundle** (Elusive Antlers), on an **EntityStateConfiguration**
 (Resonance Disc, Hooks of Heresy), or on an **arbitrary prefab component** (this).
+
+### 3j.29 Of One Mind is 25%, not 20% — and a record corrected without being verified
+
+**155 -> 156 of 212.**
+
+**Of One Mind (Collective)** claimed "reduces ally and self skill cooldowns by 20%".
+
+```csharp
+int num75 = (HasBuff(DLC3Content.Buffs.EliteCollective) ? 1
+                                                        : GetBuffCount(Buffs.CollectiveShareBuff));
+...
+if (num75 > 0) { num113 *= 0.75f; }        // num113 is cooldownScale, applied to every slot
+```
+
+`num113` is written to `skillLocator.primary/secondary/utility/special.cooldownScale`, so
+the multiplier is the cooldown. `0.75` is a **25%** reduction. The `num75` line also confirms
+the shared half of the claim: allies inside the dome carry `CollectiveShareBuff` and get the
+identical reduction. Its dome radius (`AffixCollectiveBodyAttachment.radius: 30.0`) and
+8s lockout (`ColliderDisableIfHitDuration: 8.0`) are both exact.
+
+**The record is corrected but deliberately still `langfile`.** Two claims — "explode for 100%
+damage" and "disable enemy items for 2.5s" — live on the `CollectiveDeathProjectile` prefab,
+and I found its blast radius (11.0) but not those two values. Fixing a number I have proved
+wrong while leaving the record unverified is the right split: a wrong number is worse than an
+unverified one, and marking the whole record `code` would claim more than I checked. This is
+the first entry in this log where those two decisions come apart, and the schema handles it
+because `confidence` describes the record, not the individual sentence.
+
+**Spectral Circlet (Celestine)** is verified and enriched. Its slow is the same
+`AddTimedBuff(Slow80, 1.5f * procCoefficient * n)` path as Her Biting Embrace, but
+`AffixHaunted` contributes `n = 2` where `AffixWhite` contributes 1 — so the Celestine slow
+lasts **3s, twice the Glacial one**, from a single shared line neither description hints at.
+The ally cloak is a `BuffWard` with `Networkradius = 30f + body.radius`.

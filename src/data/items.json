@@ -5464,7 +5464,7 @@
     "tier": "equipment",
     "dlc": "base",
     "pickupText": "Become an aspect of incorporeality.",
-    "description": "Gain the power of a Celestine Elite: your attacks apply an 80% slow on hit, and nearby allies gain invisibility. Passive (no cooldown).",
+    "description": "Gain the power of a Celestine Elite: your attacks apply an 80% slow for 3s on hit — twice the duration a Glacial Elite applies, and scaled by the hit's proc coefficient — and a ward with a 30m radius (plus your body radius) cloaks nearby allies. Passive (no cooldown).",
     "stacking": [],
     "tags": [
       "utility",
@@ -5475,7 +5475,7 @@
     "icon": "/icons/spectral-circlet.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Spectral_Circlet",
     "verified": true,
-    "confidence": "langfile",
+    "confidence": "code",
     "cooldown": 10,
     "activated": false
   },
@@ -5567,7 +5567,7 @@
     "tier": "equipment",
     "dlc": "ac",
     "pickupText": "Become an aspect of the Collective.",
-    "description": "Gain the power of a Collective Elite: a 30m dome blocks projectiles and reduces ally and self skill cooldowns by 20%. On death, explode for 100% damage and disable enemy items for 2.5s. The dome disables for 8s when hit by a skill attack. Passive.",
+    "description": "Gain the power of a Collective Elite: a 30m dome blocks projectiles and reduces ally and self skill cooldowns by 25%. On death, explode for 100% damage and disable enemy items for 2.5s. The dome disables for 8s when hit by a skill attack. Passive.",
     "stacking": [],
     "tags": [
       "utility",
