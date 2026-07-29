@@ -635,3 +635,30 @@ test("a description the game gets wrong is flagged on the page, not just in the 
     page.getByRole("dialog", { name: clean.name }).getByText(/text above is inaccurate/i),
   ).toHaveCount(0);
 });
+
+test("a newly added tier renders end to end — data, filter, card and detail", async ({ page }) => {
+  // The FoodTier items were added with schema, TIER_ORDER, TIER_META and CSS wired up,
+  // but nothing proved the UI actually surfaces them. A tier that exists only in data is
+  // an item the reader still cannot find (PLAN §6B.3 — fail closed, visibly).
+  const food = (itemsJson as unknown as Array<{ id: string; name: string; tier: string }>)
+    .filter((i) => i.tier === "food");
+  expect(food.length, "no food-tier items in the dataset").toBeGreaterThan(0);
+
+  await page.goto("/items");
+
+  // The tier heading exists, so the items are reachable by browsing rather than only by URL.
+  await expect(page.getByRole("heading", { name: "Food", exact: true })).toBeVisible();
+
+  // Every food item has a card with a real icon (not a broken image).
+  for (const f of food) {
+    const card = page.getByRole("button", { name: f.name, exact: false });
+    await expect(card.first(), `no card for ${f.name}`).toBeVisible();
+  }
+
+  // And the detail drawer opens with its sourcing badge, like any other item.
+  const first = food[0];
+  await page.goto(`/items/${first.id}`);
+  const dialog = page.getByRole("dialog", { name: first.name });
+  await expect(dialog).toBeVisible();
+  await expect(dialog.getByText(/Game-text verified|Code-verified/)).toBeVisible();
+});

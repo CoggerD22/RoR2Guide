@@ -2043,3 +2043,50 @@ Corrected in both places, with what is actually true recorded: the codes remain 
 and `adequate: false`, and the only route to verifying them is brute-forcing the (small)
 sequence space against the shipped hashes — possible, not attempted, and now written down as
 such rather than as an extraction that someone merely has not got around to.
+
+### 3j.37 Seventh audit pass — the first one that found no bad data
+
+A broad sweep over everything not yet examined. Unlike the previous six, **nothing in the
+data was wrong.** Recording that is worth as much as recording a defect, because the value
+of these passes depends on them being able to come back clean.
+
+**Checked and correct, each for the first time:**
+
+| Check | Result |
+| --- | --- |
+| Duplicate ids / names | 0 |
+| Icon files — present, non-trivial, 1:1 with ids, no orphans | 0 problems across 218 |
+| Wiki URLs well-formed | 0 malformed |
+| Tiers present in data but missing from `TIER_ORDER` | 0 (all 12 render) |
+| Tag hygiene — tags used exactly once (likely typos) | 0 of 23 distinct |
+| DLC tags vs `ItemDef.dlc` | 218 checked, 0 mismatches |
+| Bazaar dreams | 31/31 exact |
+| Skills per survivor vs `SkillFamily` variants | 19/19 counts match |
+| Skill names | 121/125 direct; the 4 misses are Heretic's, verified against `SKILL_LUNAR_*_REPLACEMENT_NAME` |
+| **Unlock challenges + requirements** | **49/49 exact, 0 mismatches** |
+
+The unlock check was the most substantive. Seven items initially looked unsourced, and all
+seven are correct: the game uses **grouped unlockables**, so `Items.ElementalRings` gates
+both Bands and `Items.LunarSkillReplacements` gates all four Heresy items. Beads of Fealty
+genuinely points at `Characters.Mercenary` — the game gates it on the same unlockable that
+grants Mercenary, which looks like a data error and is not one.
+
+`verified` was examined as a suspected vestigial flag (217 true, 0 false) and **kept**. It
+is an intermediate-state marker that the audit warns on; it is unset because no record is
+mid-work, which is the correct state rather than a dead field.
+
+#### The one real gap: a tier that existed only in data
+
+§3j.34 added the FoodTier items with schema, `TIER_ORDER`, `TIER_META` and CSS tokens all
+wired — and nothing ever proved the UI surfaced them. A tier that renders nowhere is an item
+the reader still cannot find. A Playwright test now walks it end to end: the tier heading
+exists, all five have cards, and the detail drawer opens with its sourcing badge. It passes,
+so the feature was correct — but it was *unverified*, which for this project is its own
+defect class.
+
+#### Where the gaps genuinely are
+
+**57 of 217 remain `langfile`**: 22 equipment, 8 legendary, 8 boss, 5 food (added this
+session), and 14 others. Also outstanding and honestly flagged in the UI: 21/125 proc
+coefficients, artifact `effect` text presented as mechanics (`adequate: false`), and the
+Ambry codes, which §3j.36 established are **not extractable at all**.
