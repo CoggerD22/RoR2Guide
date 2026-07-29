@@ -1612,3 +1612,53 @@ Five Aspects remain (Spectral Circlet, His Spiteful Boon, N'kuhana's Retort, His
 Reassurance, Of One Mind). They are the ones whose effects live in dedicated behaviour
 classes — `AffixHauntedBehavior`, `AffixEarthBehavior` and friends — rather than inline in
 `GlobalEventManager`, so they need the behaviour-class path rather than a buff grep.
+
+### 3j.28 His Spiteful Boon fires for 1250%, not 100% — and a third asset axis
+
+**154 -> 155 of 212.**
+
+Every number in this Aspect's description checked out except the one that decides whether
+you take it:
+
+| Claim | Source | Result |
+| --- | --- | --- |
+| tether up to 5 allies | `maxAllies = 5` (code) + `maxTargets: 5` (prefab) | correct |
+| within 35m | `AffixBeadBodyAttachment.radius: 35.0` (prefab) | correct |
+| granting 300 armor | `armor += (HasBuff(BeadArmor) ? 300f : 0f)` | correct |
+| after 10 hits | `damageHitCountTotal: 10` (prefab) | correct |
+| **100% damage** | `playerDamageCoefficient: 12.5` (prefab) | **1250%** |
+| Lunar Ruin twice | `AddTimedBuff(lunarruin, 420f)` then again `if (flag)` | correct, 420s each |
+| disables 10s | `cooldownAfterFiring = 10f` | correct |
+
+```csharp
+num = ((teamIndex != TeamIndex.Player || !attachedBody.isPlayerControlled)
+        ? (attachedBody.damage * damageCoefficient)        // 1.0  — monsters
+        : (attachedBody.damage * playerDamageCoefficient)); // 12.5 — players
+```
+
+We published the **monster** coefficient. The component carries both, and the player branch
+is twelve and a half times larger. This is the same failure mode as Shared Design in
+§3j.27 — a number that exists in the game, copied into a player-facing description where it
+answers a different question.
+
+#### A third asset axis: `scripts/extract-component-fields.py`
+
+Neither existing asset extractor could reach these values. `extract-item-prefabs.py` keys
+on `ror2-*-items-<name>` bundle names and aspects are not items; `extract-state-fields.py`
+only reads EntityStateConfigurations. The values live on an ordinary MonoBehaviour attached
+to a prefab in an elites bundle.
+
+The obvious design — resolve `m_Script` to a MonoScript and key on `m_ClassName` — **does
+not work**, and I only know that because I measured rather than assumed: a probe found
+every MonoScript pointer in these bundles has `m_FileID == 1`, meaning it lives in an
+unloaded external dependency, so 0 of 2 MonoBehaviours resolved. The first version of the
+extractor returned "0 instances" for both classes and would have read as "not in the
+assets" if I had trusted it.
+
+Selection is therefore by **field name**, which survives in the typetree regardless — and is
+a better key anyway, since `maxAllies` + `damageHitCountTotal` identifies exactly one
+component with no ambiguity.
+
+That is now three distinct places a constant can hide, none reachable by the others:
+serialized on an **item bundle** (Elusive Antlers), on an **EntityStateConfiguration**
+(Resonance Disc, Hooks of Heresy), or on an **arbitrary prefab component** (this).

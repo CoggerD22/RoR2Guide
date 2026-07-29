@@ -5485,7 +5485,7 @@
     "tier": "equipment",
     "dlc": "sots",
     "pickupText": "Become an aspect of spite.",
-    "description": "Gain the power of a Twisted Elite: tether to up to 5 allies within 35m, granting them 300 armor. If tethered allies are hit 10 times, fire a lunar spike ball that homes onto an enemy for 100% damage and inflicts Lunar Ruin twice. Tethering disables for 10s after launching. Passive.",
+    "description": "Gain the power of a Twisted Elite: tether to up to 5 allies within 35m, granting them 300 armor. If tethered allies are hit 10 times, fire a lunar spike ball that homes onto an enemy for 1250% damage and inflicts Lunar Ruin twice, each stack lasting 420s. Tethering disables for 10s after launching. Passive.",
     "stacking": [],
     "tags": [
       "utility",
@@ -5496,7 +5496,7 @@
     "icon": "/icons/his-spiteful-boon.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/His_Spiteful_Boon",
     "verified": true,
-    "confidence": "langfile",
+    "confidence": "code",
     "cooldown": 25,
     "activated": false
   },
