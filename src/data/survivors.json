@@ -333,7 +333,8 @@
     "baseAttackSpeed": 1,
     "wiki": "https://riskofrain2.wiki.gg/wiki/Void_Fiend",
     "verified": true,
-    "confidence": "asset"
+    "confidence": "asset",
+    "gameName": "「V??oid Fiend』"
   },
   {
     "id": "seeker",
@@ -381,7 +382,8 @@
     "baseAttackSpeed": 1,
     "wiki": "https://riskofrain2.wiki.gg/wiki/Chef",
     "verified": true,
-    "confidence": "asset"
+    "confidence": "asset",
+    "gameName": "CHEF"
   },
   {
     "id": "false-son",

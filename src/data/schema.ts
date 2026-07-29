@@ -242,7 +242,19 @@ export type StatScaling = z.infer<typeof statScalingSchema>;
 export const survivorSchema = z
   .object({
     id: slug,
+    /** Readable name, e.g. "Void Fiend". May be NORMALISED — see `gameName`. */
     name: z.string().min(1),
+    /**
+     * The survivor's exact in-game string, when it differs from `name`.
+     *
+     * Two survivors are stylised in the language files and nowhere carry a plain form:
+     * Void Fiend is `「V??oid Fiend』` in every token including its achievements, and Chef
+     * is `CHEF`. Displaying those verbatim would wreck search and readability, so the
+     * codex normalises them — but silently normalising is still altering game data, and
+     * rule #1 does not have a "cosmetic" exemption. Recording the original keeps the
+     * normalisation a documented decision instead of an invisible one.
+     */
+    gameName: z.string().min(1).optional(),
     dlc: dlcSchema,
     health: statScalingSchema,
     regen: statScalingSchema,

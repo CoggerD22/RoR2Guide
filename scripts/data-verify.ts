@@ -252,15 +252,55 @@ function crossCheckCompleteness(): string[] {
   if (!existsSync(defsPath)) return [];
   const defs = JSON.parse(readFileSync(defsPath, "utf8")) as {
     items: Array<{ name: string; tier: string; dlc: string }>;
+    equipment?: Array<{ name: string; canDrop: boolean; dlc: string }>;
   };
   const itemsRaw = JSON.parse(
     readFileSync(resolve(root, "src/data/items.json"), "utf8"),
   ) as Array<{ name: string }>;
   const ours = new Set(itemsRaw.map((i) => i.name));
-  return defs.items
+  const gaps = defs.items
     .filter((d) => d.name && d.name !== "?" && d.tier && d.tier !== "NoTier")
     .filter((d) => !ours.has(d.name))
     .map((d) => `codex is missing "${d.name}" (${d.tier}, ${d.dlc})`);
+
+  // Equipment lives in a separate list, and the first version of this check ignored it
+  // entirely — a hole in the very check written to close a hole. `Run.cs` gates every
+  // equipment drop pool on `if (equipmentDef.canDrop)`, so canDrop is the obtainability
+  // test for anything that comes out of a chest or pod.
+  for (const e of defs.equipment ?? []) {
+    if (!e.name || e.name === "?" || !e.canDrop) continue;
+    if (!ours.has(e.name)) gaps.push(`codex is missing equipment "${e.name}" (${e.dlc})`);
+  }
+
+  // canDrop:false equipment is obtainable ONLY if something else grants it — the elite
+  // Aspects drop from elites via their EliteDef, which is why those are in the codex.
+  // Everything below was checked individually and is genuinely unreachable in a run;
+  // listing them here means a future DLC adding a new one gets flagged rather than
+  // silently assumed to be cut.
+  const REVIEWED_UNOBTAINABLE = new Set([
+    "Beyond the Limits",       // EliteSecretSpeedEquipment — referenced NOWHERE in the assembly
+    "Overloading Excavator",   // IrradiatingLaser — likewise, no references at all
+    "Coven of Gold",           // JunkContent.EliteGoldEquipment
+    "Jar of Souls",            // JunkContent.SoulJar
+    "Reaper's Remorse",        // JunkContent.GhostGun
+    "Elegy of Extinction",     // DLC1, implemented + enabled, but canDrop:false and in no
+                               // pool; its lore is still a literal dev placeholder
+    "G-Force Accelerator",     // DLC3, implemented + enabled, canDrop:false, in no pool
+    "Seed of Life (Consumed)", // post-use state of an item we already carry
+    "Trophy Hunter's Tricorn (Consumed)",
+  ]);
+  for (const e of defs.equipment ?? []) {
+    // An unresolved token as the "name" (EQUIPMENT_SOULCORRUPTOR_NAME) means the def has
+    // no English language entry at all, so it has no player-facing existence — the same
+    // signal that correctly excludes StatsFromScrap (3j.23).
+    if (!e.name || e.name === "?" || /^[A-Z][A-Z0-9_]+$/.test(e.name) || e.canDrop) continue;
+    if (ours.has(e.name) || REVIEWED_UNOBTAINABLE.has(e.name)) continue;
+    gaps.push(
+      `equipment "${e.name}" (${e.dlc}) is neither in the codex nor in the reviewed ` +
+        `unobtainable list — check whether something grants it`,
+    );
+  }
+  return gaps;
 }
 
 function main() {

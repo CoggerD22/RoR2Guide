@@ -1946,3 +1946,55 @@ droppable items map to the correct tier, including the four separate Void sub-ti
 verification programme that only iterates over its own records can be complete, internally
 consistent, fully sourced — and still be missing things it never knew to look for. The
 check has to start from the *game's* list, not ours.
+
+### 3j.35 Fifth audit pass — the completeness check itself was incomplete
+
+§3j.34 added a completeness check because nothing had ever asked what was *missing*. This
+pass asked the same question of everything the check did not cover — and the first finding
+was **the check's own blind spot**: it iterated `defs.items` only, so **equipment was never
+compared at all**. A hole in the very check written to close a hole.
+
+#### Equipment: complete, but ten defs needed adjudicating
+
+All 31 `canDrop` equipment are present. The remaining named-but-not-droppable defs were
+resolved individually rather than assumed, using which Content class declares them:
+
+| Def | Verdict |
+| --- | --- |
+| Coven of Gold, Jar of Souls, Reaper's Remorse | `JunkContent` — cut |
+| Beyond the Limits, Overloading Excavator | referenced **nowhere in the assembly** — cut |
+| `EQUIPMENT_SOULCORRUPTOR_NAME` | no English token at all — not player-facing |
+| Seed of Life (Consumed), Trophy Hunter's Tricorn (Consumed) | post-use states of items we carry |
+| **Elegy of Extinction** (DLC1), **G-Force Accelerator** (DLC3) | implemented, enabled, **unobtainable** |
+
+The last two are the interesting ones, because they look real: both have working
+`EquipmentSlot` handlers (`FireLunarPortalOnUse`, `FireGroundEnemies`), both are `enabled`,
+and G-Force Accelerator even ships VFX prefabs. `Run.cs:1872` settles it —
+`if (equipmentDef.canDrop)` gates entry into *every* equipment drop pool, both have
+`canDrop: false`, and nothing else in the assembly grants either. Elegy of Extinction's lore
+is still a literal developer placeholder ("write something sad here :("). Correctly absent.
+
+Rather than leave that reasoning in a commit message, the exclusions are now an explicit
+list in `data:verify`, so a future DLC adding a genuinely obtainable one is **flagged**
+instead of silently assumed to be cut.
+
+#### Survivors: 19/19, but two names were silently altered
+
+Both are stylised in the language files and nowhere carry a plain form:
+`VOIDSURVIVOR_BODY_NAME` is `「V??oid Fiend』` (as are all its skill and achievement
+tokens) and `CHEF_BODY_NAME` is `CHEF`. We display "Void Fiend" and "Chef".
+
+The normalisation is right for a searchable codex, but it *is* altering game data, and rule
+#1 has no cosmetic exemption. The exact strings are now recorded in a `gameName` field, so
+the decision is documented rather than invisible. Nothing else about the 19 survivors
+differs from the game.
+
+#### Artifacts: 20/20
+
+`.gamedata/reference.json` lists 21 because it reads language tokens, and **Artifact of
+Spirit** has tokens. Counting `public static ArtifactDef` declarations across all Content
+classes gives exactly **20** — no Spirit def exists. This re-confirms the original
+cut-content call from the opposite direction, which is the point of re-checking rather than
+trusting a previous verdict.
+
+**217 items · 160 verified · 19 survivors · 20 artifacts, all complete against the game.**
