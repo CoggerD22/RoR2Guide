@@ -1739,3 +1739,53 @@ the fourth and fifth such cases after Sonorous Whispers, Plasma Shrimp and Wax Q
 running tally is now clear enough to state as a finding in its own right: **the in-game
 description is wrong often enough that "it matches the language file" is worth nothing as
 evidence.**
+
+### 3j.31 Audit of the verification work itself
+
+A deliberate pause to check my own output rather than the game's. The question asked was
+not "is the data right" but "does each record actually carry the evidence it claims". Three
+real problems, none of which `data:audit` could previously see.
+
+**1. Eighteen records asserted `code` while carrying no formula at all.** Crowbar, Soldier's
+Syringe, Lens-Maker's Glasses, Fuel Cell, Transcendence and thirteen others were verified
+in the early `RecalculateStats` sweep, and the evidence went into this document — but never
+into the record. The site therefore printed "Code-verified" beside a number and showed
+nothing to support it, which is a weaker claim than it looks: the badge asserts provenance
+that the page cannot show. Twenty formulas backfilled from the def-use traces, each
+re-derived rather than assumed. `Harvester's Scythe` gained a fact in the process — its heal
+is multiplied by the hit's **proc coefficient**, which its description never says.
+
+**2. The site displayed numbers it knew were wrong, with those numbers highlighted.**
+`description` is the game's own wording; `stacking` is what the code does. Where a sweep
+corrected a value, the description kept the old one — and `ItemDetail` renders it through
+`highlightNumbers`, which visually emphasises exactly the figures we had disproved. Wax
+Quail showed **"10m"** in emphasised text three lines above a verified 5m, with nothing
+saying which was right.
+
+This is the most serious finding of the session, because every earlier correction made it
+*worse*: each verified item added another contradicted description. Fixed with a
+`descriptionNote` field rendered directly beneath the description as a warning, written for
+the twelve affected items, plus a `data:audit` rule that **fails the build** when a verified
+stacking value cannot be found in the description and no note explains it. A Playwright test
+covers the rendering.
+
+The rule needed two passes. Checking "does the number appear anywhere in the text" let
+Plasma Shrimp through, because its description says "+50% per stack" while the verified
+value is 40 and "40" happened to occur earlier in the same sentence — so the rule now also
+parses the description's own `(+N per stack)` claims and compares them directly. That
+second check then produced a **false positive** on Titanic Knurl, whose "(+1.6 hp/s per
+stack)" the unit pattern could not match because of the slash. Both fixed; the episode is
+recorded because a validation rule that is wrong is worse than none.
+
+**3. `Unstable Transmitter` had no stacking entries, which asserts that stacking does
+nothing.** It does: `RefreshCooldown` computes
+`1.1f x (1 - Util.Hyperbolic((n-1) x 0.1f))`, so the internal retrigger window shrinks from
+1.1s to 1.0s to 0.917s. Recorded. Its four description numbers all check out, but the
+constants that look like the evidence — `barrierPercentage`, `TeleportOrbDuration` — are
+`public const` fields **referenced nowhere in the assembly**. The live code uses hardcoded
+literals that happen to match. Citing the constants would have been citing dead code, and
+the values agreeing is luck rather than proof.
+
+After the pass: **0** records claim `code` without provenance; the only entries with no
+stacking are the five scrap items, which are verified to do nothing (§3j.23); and no
+verified number is displayed alongside a contradicting description without a warning.

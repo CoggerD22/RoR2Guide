@@ -113,6 +113,19 @@ export function ItemDetail({ item, onClose, onSelectItem }: ItemDetailProps) {
             {highlightNumbers(item.description)}
           </p>
 
+          {/*
+            The description above is the GAME'S wording, and the game is wrong often enough
+            that it cannot be presented unqualified — its numbers are even highlighted,
+            which reads as authority. Where the verified value differs, say so right here
+            rather than hoping the reader scrolls to the formula (PLAN §5.0.1).
+          */}
+          {item.descriptionNote && (
+            <p className="-mt-2 rounded-lg border border-amber-400/25 bg-amber-400/5 p-2.5 text-[11px] leading-relaxed text-amber-200/90">
+              <strong className="font-semibold">The game&rsquo;s text above is inaccurate.</strong>{" "}
+              {item.descriptionNote}
+            </p>
+          )}
+
           {item.stacking.length > 0 && (
             <section>
               <h3 className="mb-2 text-xs font-semibold uppercase tracking-widest text-muted-foreground">

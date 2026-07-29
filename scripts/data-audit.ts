@@ -305,6 +305,62 @@ function main(): number {
     }
   }
 
+  // --- Verified numbers must not silently contradict the description --------
+  // `description` is the game's own wording and `stacking` is what the code does. When a
+  // sweep corrects a stacking value the description keeps the old number, and the UI was
+  // rendering both — with the description's figures highlighted as though authoritative.
+  // Wax Quail displayed "10m" three lines above a verified 5m. Either the description
+  // contains the verified number, or `descriptionNote` has to explain why it does not.
+  for (const it of items) {
+    if (it.confidence !== "code" && it.confidence !== "asset") continue;
+    if (it.descriptionNote) continue;
+    const orphans: string[] = [];
+    for (const s of it.stacking) {
+      for (const [k, v] of [
+        ["base", s.base],
+        ["perStack", s.perStack],
+      ] as const) {
+        if (v == null || v === 0) continue;
+        // Accept the rounded form too: 20.4 may legitimately read as "20" in prose.
+        const forms = [String(v), String(Math.round(v)), String(Math.abs(v))];
+        if (!forms.some((f) => it.description.includes(f))) {
+          orphans.push(`${s.stat}.${k}=${v}`);
+        }
+      }
+    }
+    if (orphans.length) {
+      errors.push(
+        `${it.name}: verified value(s) ${orphans.join(", ")} do not appear in the ` +
+          `description, and there is no \`descriptionNote\` explaining the discrepancy — ` +
+          `the page would show the game's number and ours side by side with no indication ` +
+          `which is right`,
+      );
+      continue;
+    }
+    // "Number appears somewhere" is a weak test: Plasma Shrimp's description says
+    // "+50% per stack" while the verified value is 40, and passed the check above purely
+    // because "40" occurs earlier in the same sentence. So also read the per-stack figures
+    // the description states outright and require one of them to match.
+    // Units may carry a slash or a space ("+1.6 hp/s per stack"), so the unit class has to
+    // allow both — without it Titanic Knurl reported a phantom mismatch.
+    const stated = [...it.description.matchAll(/\(\+?(-?\d+(?:\.\d+)?)\s*[a-z%/ ]*per stack\)/gi)]
+      .map((m) => Math.abs(Number(m[1])));
+    if (stated.length) {
+      const verified = it.stacking
+        .map((s) => s.perStack)
+        .filter((v): v is number => v != null && v !== 0)
+        .map(Math.abs);
+      const unmatched = verified.filter((v) => !stated.some((d) => Math.abs(d - v) < 1e-6));
+      if (unmatched.length && verified.length) {
+        errors.push(
+          `${it.name}: description states "+${stated.join("/")} per stack" but the ` +
+            `verified per-stack value(s) are ${unmatched.join(", ")}, with no ` +
+            `\`descriptionNote\` to flag it`,
+        );
+      }
+    }
+  }
+
   // --- Equipment cooldown: field must agree with the sentence ---------------
   // The cooldown used to live only inside `description`, where nothing could check it,
   // and Seed of Life published "Cooldown: 60s" for an equipment whose EquipmentDef says

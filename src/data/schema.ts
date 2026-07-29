@@ -139,6 +139,20 @@ export const itemSchema = z
     pickupText: z.string().min(1),
     /** Full description with numbers. */
     description: z.string().min(1),
+    /**
+     * Shown directly beneath `description` when the game's own text disagrees with the
+     * verified numbers.
+     *
+     * `description` is the game's wording, kept verbatim; `stacking` carries what the code
+     * actually does. Where those differ we were rendering BOTH, with the description's
+     * numbers highlighted as though authoritative and nothing telling the reader which to
+     * trust — Wax Quail said "10m" three lines above a verified 5m. Publishing a number we
+     * have proved wrong is not excused by publishing the right one nearby.
+     *
+     * `data:audit` requires this whenever a verified stacking value cannot be found in the
+     * description, so the two can never silently drift apart again.
+     */
+    descriptionNote: z.string().min(1).optional(),
     /** Logbook flavour quote (optional; can be long). */
     flavor: z.string().min(1).optional(),
     /**

@@ -613,3 +613,25 @@ test("run plans are shareable and loadable via URL", async ({ page }) => {
   await expect(page.getByRole("complementary").getByText("Crowbar")).toBeVisible();
   await expect(page.getByRole("complementary").getByText("not-a-real-item")).toHaveCount(0);
 });
+
+test("a description the game gets wrong is flagged on the page, not just in the formula", async ({ page }) => {
+  // The description is the GAME'S wording and its numbers are highlighted, which reads as
+  // authority. Where we have proved it wrong, the page must say so next to it — Wax Quail
+  // displayed "10m" three lines above a verified 5m (PLAN §5.0.1).
+  const corrected = (itemsJson as unknown as Array<{ id: string; name: string; descriptionNote?: string }>)
+    .find((i) => i.descriptionNote);
+  if (!corrected) throw new Error("no item carries a descriptionNote");
+
+  await page.goto(`/items/${corrected.id}`);
+  const dialog = page.getByRole("dialog", { name: corrected.name });
+  await expect(dialog.getByText(/The game.s text above is inaccurate/i)).toBeVisible();
+
+  // An item whose description agrees with the code carries no such warning.
+  const clean = (itemsJson as unknown as Array<{ id: string; name: string; descriptionNote?: string; confidence: string }>)
+    .find((i) => !i.descriptionNote && i.confidence === "code");
+  if (!clean) throw new Error("no clean code-verified item");
+  await page.goto(`/items/${clean.id}`);
+  await expect(
+    page.getByRole("dialog", { name: clean.name }).getByText(/text above is inaccurate/i),
+  ).toHaveCount(0);
+});

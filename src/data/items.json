@@ -11,7 +11,8 @@
         "stat": "Bonus damage vs. enemies above 90% health",
         "base": 75,
         "perStack": 75,
-        "type": "linear"
+        "type": "linear",
+        "formula": "damage *= 1f + 0.75f * n (HealthComponent). Linear."
       }
     ],
     "tags": [
@@ -39,7 +40,8 @@
         "stat": "Attack speed",
         "base": 15,
         "perStack": 15,
-        "type": "linear"
+        "type": "linear",
+        "formula": "attackSpeed += n * 0.15f (CharacterBody.RecalculateStats). Linear."
       }
     ],
     "tags": [
@@ -65,7 +67,8 @@
         "perStack": 10,
         "type": "linear",
         "cap": "Reaches 100% (guaranteed crit) at 10 stacks; further stacks add nothing.",
-        "capStacks": 10
+        "capStacks": 10,
+        "formula": "crit += n * 10f (CharacterBody.RecalculateStats). Linear."
       }
     ],
     "tags": [
@@ -149,7 +152,8 @@
         "stat": "Movement speed",
         "base": 14,
         "perStack": 14,
-        "type": "linear"
+        "type": "linear",
+        "formula": "moveSpeed += n * 0.14f (CharacterBody.RecalculateStats). Linear."
       }
     ],
     "tags": [
@@ -233,7 +237,8 @@
         "stat": "Maximum health",
         "base": 25,
         "perStack": 25,
-        "type": "linear"
+        "type": "linear",
+        "formula": "maxHealth += n * (25f x levelScale) (CharacterBody.RecalculateStats). Linear, and the 25 scales with level like every flat-health item."
       }
     ],
     "tags": [
@@ -691,13 +696,15 @@
         "stat": "Attack speed",
         "base": 7.5,
         "perStack": 7.5,
-        "type": "linear"
+        "type": "linear",
+        "formula": "attackSpeed += n * 0.075f (CharacterBody.RecalculateStats). Linear."
       },
       {
         "stat": "Movement speed",
         "base": 7,
         "perStack": 7,
-        "type": "linear"
+        "type": "linear",
+        "formula": "moveSpeed += n * 0.07f (CharacterBody.RecalculateStats). Linear."
       }
     ],
     "tags": [
@@ -779,7 +786,8 @@
     "icon": "/icons/elusive-antlers.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Elusive_Antlers",
     "verified": true,
-    "confidence": "code"
+    "confidence": "code",
+    "descriptionNote": "Two corrections. The buff lasts 7s, not 12s, and the spawn interval is hyperbolic rather than -10% per stack. The text also omits that each orb grants a barrier of 10 (+7 per stack)."
   },
   {
     "id": "chronic-expansion",
@@ -930,7 +938,8 @@
         "stat": "Max nearby units counted",
         "base": 3,
         "perStack": 1,
-        "type": "linear"
+        "type": "linear",
+        "formula": "AttackSpeedPerNearbyCollider.UpdateValues: maxCharacterCount = 2 + n. Linear."
       }
     ],
     "tags": [
@@ -1038,7 +1047,8 @@
         "stat": "Extra jumps",
         "base": 1,
         "perStack": 1,
-        "type": "linear"
+        "type": "linear",
+        "formula": "maxJumpCount = baseJumpCount + n (CharacterBody.RecalculateStats). Linear, carried with no numeric literal."
       }
     ],
     "tags": [
@@ -1082,7 +1092,8 @@
     "icon": "/icons/ukulele.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Ukulele",
     "verified": true,
-    "confidence": "code"
+    "confidence": "code",
+    "descriptionNote": "The chain reaches 22m at one stack, not 20m. The orb's own default range is 20m and the item adds 2m per stack on top, so the first stack already grants +2m."
   },
   {
     "id": "leeching-seed",
@@ -1121,7 +1132,8 @@
         "stat": "Max attack speed from critical strikes (%)",
         "base": 36,
         "perStack": 24,
-        "type": "linear"
+        "type": "linear",
+        "formula": "The buff cap is `1 + 2n` stacks and each stack is worth 12% attack speed, so the ceiling is 12% x (1 + 2n) - 36% at one stack, +24% per stack."
       }
     ],
     "tags": [
@@ -1200,7 +1212,8 @@
         "stat": "Heal on critical strike (health)",
         "base": 8,
         "perStack": 4,
-        "type": "linear"
+        "type": "linear",
+        "formula": "Heal((4f + n * 4f) * procCoefficient) (GlobalEventManager) - 8 health at one stack, +4 per stack. Undocumented: the heal is multiplied by the hit's PROC COEFFICIENT, so low-proc crits heal less."
       }
     ],
     "tags": [
@@ -1229,7 +1242,8 @@
         "stat": "Equipment charges",
         "base": 1,
         "perStack": 1,
-        "type": "linear"
+        "type": "linear",
+        "formula": "Math.Min(1 + n, 255) (Inventory) - +1 charge per stack, hard-capped at 255 by the byte the charge count is stored in."
       },
       {
         "stat": "Equipment cooldown reduction (%)",
@@ -1313,7 +1327,8 @@
     "icon": "/icons/bandolier.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Bandolier",
     "verified": true,
-    "confidence": "code"
+    "confidence": "code",
+    "descriptionNote": "The real chance at one stack is 20.4%, not 18%. The curve is hyperbolic — 1 - 1/(n+1)^0.33 — so it is 30.4% at two stacks and 36.7% at three, never the flat +10% the text implies."
   },
   {
     "id": "berzerkers-pauldron",
@@ -1493,7 +1508,8 @@
     "icon": "/icons/wax-quail.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Wax_Quail",
     "verified": true,
-    "confidence": "code"
+    "confidence": "code",
+    "descriptionNote": "The boost is 5m per stack, not 10m. The 10 in the game's text is a constant inside a square root, not a distance — the launch speed it produces bleeds off under air drag after covering exactly half that. Derivation and a 60Hz replay of the motor loop are in scripts/verify-wax-quail.mjs."
   },
   {
     "id": "old-guillotine",
@@ -1752,7 +1768,15 @@
     "dlc": "sots",
     "pickupText": "Gain a temporary barrier and a dimensional aura on low health.",
     "description": "Falling below 25% health gives you 60% of your maximum health as a temporary barrier and a dimensional aura for 8s that bleeds and teleports away enemies. Enemies killed by the aura extend the duration by 1s. Regenerates at the start of each stage.",
-    "stacking": [],
+    "stacking": [
+      {
+        "stat": "Internal cooldown (s)",
+        "base": 1.1,
+        "perStack": 0,
+        "type": "hyperbolic",
+        "formula": "RefreshCooldown: cooldown = 1.1f x (1 - Util.Hyperbolic((n - 1) x 0.1f)), where Hyperbolic(x) = 1 - 1/(1+x). So 1.1s at one stack, 1.0s at two, 0.917s at three — approaching but never reaching 0. This is the anti-retrigger window, separate from the once-per-stage charge, and is the ONLY thing extra stacks do: the 25% threshold, the 60% barrier and the 8s aura are all hardcoded literals with no stack term."
+      }
+    ],
     "tags": [
       "survivability",
       "utility"
@@ -2112,7 +2136,8 @@
         "stat": "Pulse damage from max shield (%)",
         "base": 100,
         "perStack": 10,
-        "type": "linear"
+        "type": "linear",
+        "formula": "shield += (n > 0) ? 0.04f * maxHealth : 0f (CharacterBody.RecalculateStats) - a flat 4% of max health as shield, granted once and NOT scaling with stacks."
       },
       {
         "stat": "Shield granted (% of max health)",
@@ -2155,7 +2180,8 @@
     "icon": "/icons/brilliant-behemoth.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Brilliant_Behemoth",
     "verified": true,
-    "confidence": "code"
+    "confidence": "code",
+    "descriptionNote": "The radius grows 2.5m per stack, not 1.5m, and the explosion's damage scales with the triggering hit's proc coefficient — a detail the text omits entirely."
   },
   {
     "id": "ceremonial-dagger",
@@ -2356,7 +2382,8 @@
     "icon": "/icons/frost-relic.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Frost_Relic",
     "verified": true,
-    "confidence": "code"
+    "confidence": "code",
+    "descriptionNote": "The storm caps at 22m plus your own collider radius and grows 6m per stack, not 18m and 12m. The 2m-per-kill growth is right; the cap is six icicles (+3 per stack) at 2m each on top of a 10m base."
   },
   {
     "id": "h3ad-5t-v2",
@@ -2696,7 +2723,8 @@
         "stat": "Bonus critical strike damage (%)",
         "base": 100,
         "perStack": 100,
-        "type": "linear"
+        "type": "linear",
+        "formula": "critMultiplier = 2f + 1f * n (CharacterBody.RecalculateStats) - the base multiplier is 2x, so each stack adds another +100% of base damage on a crit."
       }
     ],
     "tags": [
@@ -2972,7 +3000,8 @@
     "icon": "/icons/sonorous-whispers.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Sonorous_Whispers",
     "verified": true,
-    "confidence": "code"
+    "confidence": "code",
+    "descriptionNote": "The elite drop chance is 5% at one stack, not 4%. The code rolls 4 + 1 x stacks, so the first stack already adds its 1%."
   },
   {
     "id": "war-bonds",
@@ -3106,13 +3135,15 @@
         "stat": "Maximum health",
         "base": 40,
         "perStack": 40,
-        "type": "linear"
+        "type": "linear",
+        "formula": "maxHealth += n * (40f x levelScale) (CharacterBody.RecalculateStats). Linear."
       },
       {
         "stat": "Base health regen (hp/s)",
         "base": 1.6,
         "perStack": 1.6,
-        "type": "linear"
+        "type": "linear",
+        "formula": "regen += n * 1.6f x levelScale (CharacterBody.RecalculateStats). Linear, and it is item regen, so it scales with level."
       }
     ],
     "tags": [
@@ -3269,7 +3300,8 @@
     "wiki": "https://riskofrain2.wiki.gg/wiki/Genesis_Loop",
     "verified": true,
     "confidence": "code",
-    "corruptedBy": "newly-hatched-zoea"
+    "corruptedBy": "newly-hatched-zoea",
+    "descriptionNote": "The recharge is 15s at one stack. The text's 30s is the value before the item's own -50% is applied, which happens from the first stack."
   },
   {
     "id": "pearl",
@@ -3283,7 +3315,8 @@
         "stat": "Maximum health (%)",
         "base": 10,
         "perStack": 10,
-        "type": "linear"
+        "type": "linear",
+        "formula": "maxHealth += (pearls + irradiantPearls) * (0.1f x levelScale) (CharacterBody.RecalculateStats) - the two Pearls share one accumulator, so they stack with each other."
       }
     ],
     "tags": [
@@ -3308,7 +3341,8 @@
         "stat": "All stats (%)",
         "base": 10,
         "perStack": 10,
-        "type": "linear"
+        "type": "linear",
+        "formula": "Shares Pearl's health accumulator, `(pearls + irradiant) * 0.1f`, and adds its own regen term `n * 0.1f x levelScale` plus crit - the 'ALL stats' claim is several separate additions, not one multiplier."
       }
     ],
     "tags": [
@@ -3716,7 +3750,8 @@
         "stat": "Maximum health (%)",
         "base": 50,
         "perStack": 25,
-        "type": "linear"
+        "type": "linear",
+        "formula": "shield += maxHealth * (1.5f + (n - 1) * 0.25f); maxHealth = 1f (CharacterBody.RecalculateStats). The shield is 150% of your health at one stack, +25% per stack, and your health is set to exactly 1."
       }
     ],
     "tags": [
@@ -4108,7 +4143,8 @@
     "icon": "/icons/stone-flux-pauldron.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Stone_Flux_Pauldron",
     "verified": true,
-    "confidence": "code"
+    "confidence": "code",
+    "descriptionNote": "The movement-speed penalty is 66.7% at one stack, not 50%. The item adds to its divisor twice where Light Flux Pauldron adds once, which the two descriptions word identically."
   },
   {
     "id": "light-flux-pauldron",
@@ -4139,7 +4175,8 @@
     "icon": "/icons/light-flux-pauldron.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Light_Flux_Pauldron",
     "verified": true,
-    "confidence": "code"
+    "confidence": "code",
+    "descriptionNote": "The attack-speed penalty is not +50% per stack. It is reciprocal — 50% at one stack, 66.7% at two, 75% at three — approaching but never reaching 100%. The cooldown reduction beside it genuinely is compounding 50%, so the two halves of this sentence describe different curves."
   },
   {
     "id": "longstanding-solitude",
@@ -4358,7 +4395,8 @@
     "icon": "/icons/safer-spaces.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Safer_Spaces",
     "verified": true,
-    "confidence": "code"
+    "confidence": "code",
+    "descriptionNote": "The recharge is 13.5s at one stack, not 15s. The -10% applies from the first stack, so it is 12.15s at two and 10.94s at three."
   },
   {
     "id": "weeping-fungus",
@@ -4440,7 +4478,8 @@
     "icon": "/icons/plasma-shrimp.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Plasma_Shrimp",
     "verified": true,
-    "confidence": "code"
+    "confidence": "code",
+    "descriptionNote": "The missile deals +40% per stack, not +50%. The coefficient is a flat 0.4 x stacks: 40%, 80%, 120%."
   },
   {
     "id": "lysate-cell",
@@ -4523,7 +4562,8 @@
         "stat": "Root duration (s)",
         "base": 1,
         "perStack": 1,
-        "type": "linear"
+        "type": "linear",
+        "formula": "AddTimedBuff(Buffs.Nullified, 1f * n) (GlobalEventManager). Linear."
       }
     ],
     "tags": [
