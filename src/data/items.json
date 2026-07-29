@@ -5410,7 +5410,7 @@
     "icon": "/icons/ifrits-distinction.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Ifrit%27s_Distinction",
     "verified": true,
-    "confidence": "langfile",
+    "confidence": "code",
     "cooldown": 10,
     "activated": false
   },
@@ -5420,7 +5420,7 @@
     "tier": "equipment",
     "dlc": "base",
     "pickupText": "Become an aspect of lightning.",
-    "description": "Gain the power of an Overloading Elite: your attacks explode after a delay, and 50% of your health is replaced by shield. Passive (no cooldown).",
+    "description": "Gain the power of an Overloading Elite: your attacks plant a delayed lightning stake dealing 50% TOTAL damage, and half of your maximum health is converted into shield. Passive (no cooldown).",
     "stacking": [],
     "tags": [
       "damage",
@@ -5432,7 +5432,7 @@
     "icon": "/icons/silence-between-two-strikes.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Silence_Between_Two_Strikes",
     "verified": true,
-    "confidence": "langfile",
+    "confidence": "code",
     "cooldown": 25,
     "activated": false
   },
@@ -5442,7 +5442,7 @@
     "tier": "equipment",
     "dlc": "base",
     "pickupText": "Become an aspect of ice.",
-    "description": "Gain the power of a Glacial Elite: leave an ice explosion on death and apply an 80% slow on hit. Passive (no cooldown).",
+    "description": "Gain the power of a Glacial Elite: apply an 80% slow for 1.5s on hit — the duration is multiplied by the hit's proc coefficient, so weak hits slow for less — and leave a delayed ice explosion on death with a radius of 12m plus your body radius. Passive (no cooldown).",
     "stacking": [],
     "tags": [
       "damage",
@@ -5454,7 +5454,7 @@
     "icon": "/icons/her-biting-embrace.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Her_Biting_Embrace",
     "verified": true,
-    "confidence": "langfile",
+    "confidence": "code",
     "cooldown": 25,
     "activated": false
   },
@@ -5546,7 +5546,7 @@
     "tier": "lunar-equipment",
     "dlc": "base",
     "pickupText": "Become an aspect of perfection.",
-    "description": "Gain the power of a Perfected Elite: attacks inflict Cripple, fire 4 bombs every 10 seconds (30% damage each), gain +30% movement speed, and +25% max health converted to shields. Passive.",
+    "description": "Gain the power of a Perfected Elite: attacks inflict Cripple for 3s, you fire 4 bombs every 10 seconds for 30% damage each while in combat, and you gain +30% movement speed. ALL of your health becomes a regenerating shield worth 125% of your maximum health, leaving you at 1 HP — the same code path as Transcendence, not a partial conversion. Passive.",
     "stacking": [],
     "tags": [
       "damage",
@@ -5557,7 +5557,7 @@
     "icon": "/icons/shared-design.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Shared_Design",
     "verified": true,
-    "confidence": "langfile",
+    "confidence": "code",
     "cooldown": 25,
     "activated": false
   },

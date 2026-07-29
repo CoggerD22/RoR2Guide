@@ -1571,3 +1571,44 @@ genuinely activatable — Crowdfunder runs through `UpdateGoldGat()`, a continuo
 rather than a one-shot handler. "No handler" was therefore not usable as an automatic test
 for passivity, and `activated` is set from evidence per item rather than derived, precisely
 because the cheap heuristic would have mislabelled those three.
+
+### 3j.27 Elite Aspects batch 1 — Shared Design's shield was badly wrong
+
+**150 -> 154 of 212.**
+
+**Ifrit's Distinction** was exact: `totalDamage = damageInfo.damage * 0.5f` for the burn,
+and `itemAvailability.hasFireTrail = HasBuff(AffixRed)` for the trail.
+
+**Shared Design (Perfected)** said "+25% max health converted to shields". The code is
+
+```csharp
+bool num74 = num15 > 0 || HasBuff(RoR2Content.Buffs.AffixLunar);   // num15 = Transcendence
+if (num74) {
+    num81 += maxHealth * (1.5f + (float)(num15 - 1) * 0.25f);
+    maxHealth = 1f;
+}
+```
+
+The Aspect enters **Transcendence's own code path**. With no Transcendence, `num15` is 0, so
+the multiplier is `1.5 + (0-1) * 0.25 = 1.25` and `maxHealth` is set to **1**. So *all* of
+your health becomes a regenerating shield worth **125%** of it — not "25% of max health
+converted". Someone read the 1.25 as "+25%" and wrote a sentence that describes a partial
+conversion of a quarter of your health, which is a completely different item. Its other
+three claims are exact: `Cripple` for 3s, `num = 4` missiles on a `>= 10f` recharge at
+`damage * 0.3f` each, `moveSpeed += 0.3f` — plus the undocumented restriction that the
+bombs only fire **while in combat** (`!outOfCombat`).
+
+**Her Biting Embrace** was right but thin. The slow is
+`AddTimedBuff(Slow80, 1.5f * damageInfo.procCoefficient * n)`, so the *duration* scales with
+proc coefficient — a weak hit slows for proportionally less, which changes how the Aspect
+plays on multi-hit weapons and was nowhere in the text. The death blast radius is
+`12f + victimBody.radius`.
+
+**Silence Between Two Strikes** was qualitative ("your attacks explode after a delay"); the
+stake is a flat `damageCoefficient = 0.5f`, so 50% TOTAL damage, now stated. Its shield
+claim was exactly right — `num82 = maxHealth * 0.5f; maxHealth -= num82; shield += maxHealth`.
+
+Five Aspects remain (Spectral Circlet, His Spiteful Boon, N'kuhana's Retort, His
+Reassurance, Of One Mind). They are the ones whose effects live in dedicated behaviour
+classes — `AffixHauntedBehavior`, `AffixEarthBehavior` and friends — rather than inline in
+`GlobalEventManager`, so they need the behaviour-class path rather than a buff grep.
