@@ -55,6 +55,27 @@ def load_tokens():
     return tokens
 
 
+# RoR2.ItemTag, in declaration order — the serialized field stores the enum index.
+ITEM_TAGS = [
+    "Any", "Damage", "Healing", "Utility", "AIBlacklist", "Cleansable", "OnKillEffect",
+    "EquipmentRelated", "SprintRelated", "WorldUnique", "Scrap", "BrotherBlacklist",
+    "CannotSteal", "CannotCopy", "PriorityScrap", "CannotDuplicate", "LowHealth",
+    "HoldoutZoneRelated", "InteractableRelated", "ObliterationRelated",
+    "OnStageBeginEffect", "HalcyoniteShrine", "RebirthBlacklist", "DevotionBlacklist",
+    "ExtractorUnitBlacklist", "IgnoreForDropList", "PowerShape",
+    "CommandArtifactBlacklist", "FoodRelated", "MobilityRelated",
+    "AllowedForUseAsCraftingIngredient", "CanBeTemporary", "SacrificeBlacklist",
+    "ObjectiveRelated", "Technology", "HiddenForDroneBuffIcon",
+]
+
+
+def tag_name(v):
+    try:
+        return ITEM_TAGS[int(v)]
+    except (ValueError, TypeError, IndexError):
+        return str(v)
+
+
 def tier_name(v):
     if isinstance(v, int) and 0 <= v < len(TIERS):
         return TIERS[v]
@@ -112,6 +133,12 @@ def extract():
                 items.setdefault(cached, {
                     "name": tokens.get(tok, "?"), "token": tok, "cachedName": cached,
                     "tier": tier_name(t.get("deprecatedTier")),
+                    # Tags decide real behaviour, not just categorisation: CostTypeCatalog
+                    # drains PriorityScrap before Scrap before everything else, which is
+                    # the whole of Regenerating Scrap's "prioritized by printers" claim.
+                    # Without these the mechanism is verifiable but its application to a
+                    # specific item is not.
+                    "tags": [tag_name(x) for x in (t.get("tags") or [])],
                     "dlc": dlc,
                 })
 

@@ -1360,3 +1360,72 @@ The extractor repeated a mistake already solved once: Unity ships
 `baseRechargeInterval: Infinity` for skills that never recharge, which `json.dump` writes
 as bare `Infinity` — valid Python, invalid JSON. `extract-item-prefabs.py` had already been
 fixed for this and the guard should have been carried over.
+
+### 3j.23 Def-use batch 7 — proving that scrap does nothing, and a whole class of constants that live only in assets
+
+| Item | Source | Result |
+| --- | --- | --- |
+| Lepton Daisy | team-summed `TPHealingNova` count = pulse count | confirmed, team-wide |
+| Shipping Request Form | `0.79`, `0.20n`, `0.01n^2` weights | confirmed, quadratic |
+| Collector's Compulsion | `return 3 + 2 * (n - 1)` | confirmed |
+| Resonance Disc | `damage * n` x asset coefficients `3.0` / `10.0` | confirmed |
+| Bottled Chaos | `for (i = 0; i < n; i++)` | confirmed |
+| Item Scrap x4 + Regenerating Scrap | see below | **proved inert** |
+
+**128 -> 138 of 212.**
+
+#### Proving a negative
+
+The five scrap items make no numeric claim — their claim is that they do *nothing*. That
+is verifiable, and the def-use trace is what makes it so. All four scrap counts are read in
+`RecalculateStats`, and every single use is multiplied by `num61`:
+
+```
+num98 += (float)(num61 * num62) * 0.06f;      // white
+num95  = (float)(num61 * num63) * 3f * num85; // green + Regenerating
+num110 += (float)(num61 * num64) * 0.3f;      // red
+for (int m = 0; m < num65 * num61; m++)       // yellow
+```
+
+`num61` is `DLC3Content.Items.StatsFromScrap`, which is `NoTier`, has **no English language
+entry at all** (`ITEM_STATSFROMSCRAP_NAME` is unresolved), and therefore cannot drop. With
+`num61 == 0` every one of those terms is zero. Scrap is inert **because of an unreleased
+item**, not because the game never mentions it — which is a much stronger statement than
+"we found no code", and it is exactly the kind of claim that a grep-for-literals approach
+can never make.
+
+**Regenerating Scrap** is fully confirmed on all three of its claims:
+`OnServerStageBegin -> TryRegenerateScrap()` transforms `RegeneratingScrapConsumed` back
+(the stage-start regeneration); `CostTypeCatalog` swaps it to the Consumed variant instead
+of destroying it; and its printer priority is real — the payment code drains three weighted
+buckets in order, **`PriorityScrap` -> `Scrap` -> everything else**, and `extract-itemdefs.py`
+now extracts tags, confirming Regenerating Scrap holds `PriorityScrap` while the four plain
+scraps hold `Scrap`. Previously the *mechanism* was verifiable but its application to this
+specific item was not; tags close that gap.
+
+#### `scripts/extract-state-fields.py` — constants with no value in the C#
+
+Resonance Disc looked unverifiable for a bad reason. `FireMainBeamState` declares
+
+```csharp
+public static float mainBeamDamageCoefficient;   // no initialiser, anywhere
+```
+
+and the value is injected at runtime from an `EntityStateConfiguration` asset. Grepping the
+decompile finds only the declaration — the number does not exist in the code at all. This is
+the same shape as Hooks of Heresy (§3j.22) and it is not rare: the new extractor finds
+**1,109 state types carrying 5,042 numeric fields.** `extract-procs.py` had been reading
+exactly one of them (`procCoefficient`) for months.
+
+For Resonance Disc it gives `mainBeamDamageCoefficient = 3.0` and
+`secondBombDamageCoefficient = 10.0` against `GetDamage() = ownerBody.damage * n`, so
+300%/+300% and 1000%/+1000% are both exact — and `killChargesRequired = 4`,
+`killChargeDuration = 7` confirm "4 enemies in 7 seconds" from the same asset.
+
+**Shipping Request Form** turned out more interesting than recorded: the rarity weights are
+`0.79`, `0.20n`, `0.01n^2`, summed across **all players**. Red scales quadratically and
+white not at all, so the split runs 79/20/1 -> 64.2/32.5/3.3 -> 53.4/40.5/6.1. The
+description's "increases rarity chances per stack" undersells a quadratic term.
+
+Also team-wide, and undocumented as such: **Lepton Daisy** (pulse count summed over the
+team) and **Eulogy Zero** (§3j.22, global item count).

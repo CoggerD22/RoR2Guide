@@ -854,7 +854,7 @@
     "icon": "/icons/item-scrap-white.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Item_Scrap",
     "verified": true,
-    "confidence": "langfile"
+    "confidence": "code"
   },
   {
     "id": "rusted-key",
@@ -1567,7 +1567,8 @@
         "stat": "Healing nova charges",
         "base": 1,
         "perStack": 1,
-        "type": "linear"
+        "type": "linear",
+        "formula": "TeleporterHealNovaGeneratorMain sums GetItemCountEffective(TPHealingNova) over every master on the team, and that total is the pulse count. Linear, +1 per stack - but the count is TEAM-WIDE, so allies' copies add to yours."
       }
     ],
     "tags": [
@@ -1577,7 +1578,7 @@
     "icon": "/icons/lepton-daisy.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Lepton_Daisy",
     "verified": true,
-    "confidence": "langfile"
+    "confidence": "code"
   },
   {
     "id": "razorwire",
@@ -1733,7 +1734,7 @@
         "base": 1,
         "perStack": 1,
         "type": "special",
-        "formula": "each stack increases the rarity chances of the 2 items delivered each stage"
+        "formula": "FreeChestDropTable.RebuildSelection weights the three drop lists as 0.79, 0.20 x n and 0.01 x n^2, where n is the FreeChest count summed across ALL PLAYERS. Red scales QUADRATICALLY, white not at all, so the split moves 79/20/1 at one stack -> 64.2/32.5/3.3 at two -> 53.4/40.5/6.1 at three."
       }
     ],
     "tags": [
@@ -1742,7 +1743,7 @@
     "icon": "/icons/shipping-request-form.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Shipping_Request_Form",
     "verified": true,
-    "confidence": "langfile"
+    "confidence": "code"
   },
   {
     "id": "unstable-transmitter",
@@ -1777,7 +1778,7 @@
     "icon": "/icons/item-scrap-green.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Item_Scrap",
     "verified": true,
-    "confidence": "langfile"
+    "confidence": "code"
   },
   {
     "id": "sale-star",
@@ -1868,7 +1869,7 @@
     "icon": "/icons/regenerating-scrap.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Regenerating_Scrap",
     "verified": true,
-    "confidence": "langfile"
+    "confidence": "code"
   },
   {
     "id": "breaching-fin",
@@ -2046,7 +2047,8 @@
         "stat": "Max stat-bonus stacks",
         "base": 3,
         "perStack": 2,
-        "type": "linear"
+        "type": "linear",
+        "formula": "return 3 + 2 * (n - 1) (CharacterBody). Linear."
       }
     ],
     "tags": [
@@ -2055,7 +2057,7 @@
     "icon": "/icons/collectors-compulsion.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Collector%27s_Compulsion",
     "verified": true,
-    "confidence": "langfile"
+    "confidence": "code"
   },
   {
     "id": "faraday-spur",
@@ -2637,13 +2639,15 @@
         "stat": "Explosion damage (% base)",
         "base": 1000,
         "perStack": 1000,
-        "type": "linear"
+        "type": "linear",
+        "formula": "LaserTurbineBaseState.GetDamage returns ownerBody.damage * n, and FireMainBeamState applies secondBombDamageCoefficient = 10.0 (EntityStateConfiguration asset) - 1000% at one stack, linear in stacks."
       },
       {
         "stat": "Pierce & return damage (% base)",
         "base": 300,
         "perStack": 300,
-        "type": "linear"
+        "type": "linear",
+        "formula": "Same GetDamage() x mainBeamDamageCoefficient = 3.0 (asset) - 300%, linear. The charge condition is confirmed by the same asset: killChargesRequired = 4 within killChargeDuration = 7s. Beam proc coefficient is 1.0."
       }
     ],
     "tags": [
@@ -2654,7 +2658,7 @@
     "icon": "/icons/resonance-disc.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Resonance_Disc",
     "verified": true,
-    "confidence": "langfile"
+    "confidence": "code"
   },
   {
     "id": "defensive-microbots",
@@ -2844,7 +2848,8 @@
         "stat": "Random equipment activations",
         "base": 1,
         "perStack": 1,
-        "type": "linear"
+        "type": "linear",
+        "formula": "EquipmentSlot: `for (i = 0; i < n; i++)` firing one random equipment effect per iteration. Linear."
       }
     ],
     "tags": [
@@ -2854,7 +2859,7 @@
     "icon": "/icons/bottled-chaos.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Bottled_Chaos",
     "verified": true,
-    "confidence": "langfile"
+    "confidence": "code"
   },
   {
     "id": "electric-boomerang",
@@ -3087,7 +3092,7 @@
     "icon": "/icons/item-scrap-red.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Item_Scrap",
     "verified": true,
-    "confidence": "langfile"
+    "confidence": "code"
   },
   {
     "id": "titanic-knurl",
@@ -3640,7 +3645,7 @@
     "icon": "/icons/item-scrap-yellow.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Item_Scrap",
     "verified": true,
-    "confidence": "langfile",
+    "confidence": "code",
     "corruptedBy": "newly-hatched-zoea"
   },
   {
