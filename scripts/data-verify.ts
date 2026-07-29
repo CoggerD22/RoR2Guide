@@ -233,6 +233,36 @@ function crossCheckCorruption(): string[] {
   return drift;
 }
 
+/**
+ * Completeness: does the codex contain every item the game can actually drop?
+ *
+ * Every other check in this project asks whether what we HAVE is correct. None asked
+ * whether anything was MISSING — and five real items were absent for the entire life of
+ * the project: the Alloyed Collective FoodTier items (Hearty Stew, Quick Fix, Sautéed
+ * Worms, Seared Steak, Ultimate Meal). They are fully localized and have their own drop
+ * list (`Run.availableFoodTierDropList`), so nothing about them was speculative; they
+ * simply were never added, and a codex that silently omits items is wrong in a way no
+ * amount of per-record verification would ever surface.
+ *
+ * Compares against every ItemDef with a real name and a real tier. `NoTier` is excluded:
+ * those cannot drop (StatsFromScrap, the *Suppressed variants, unreleased content).
+ */
+function crossCheckCompleteness(): string[] {
+  const defsPath = resolve(root, ".gamedata/itemdefs.json");
+  if (!existsSync(defsPath)) return [];
+  const defs = JSON.parse(readFileSync(defsPath, "utf8")) as {
+    items: Array<{ name: string; tier: string; dlc: string }>;
+  };
+  const itemsRaw = JSON.parse(
+    readFileSync(resolve(root, "src/data/items.json"), "utf8"),
+  ) as Array<{ name: string }>;
+  const ours = new Set(itemsRaw.map((i) => i.name));
+  return defs.items
+    .filter((d) => d.name && d.name !== "?" && d.tier && d.tier !== "NoTier")
+    .filter((d) => !ours.has(d.name))
+    .map((d) => `codex is missing "${d.name}" (${d.tier}, ${d.dlc})`);
+}
+
 function main() {
   let mismatches = 0;
   const codeMiss: string[] = [];
@@ -299,6 +329,16 @@ function main() {
   } else {
     console.log("\n⚠ Void corruption cross-check — our pairs differ from the game's:");
     for (const d of corruptDrift) console.log(`  - ${d}`);
+  }
+
+  const gaps = crossCheckCompleteness();
+  if (!existsSync(resolve(root, ".gamedata/itemdefs.json"))) {
+    console.log("Codex completeness: skipped (.gamedata/ absent).");
+  } else if (gaps.length === 0) {
+    console.log("Codex completeness: every droppable game item is present. ✓");
+  } else {
+    console.log("\n⚠ Codex completeness — the game has items we do not:");
+    for (const g of gaps) console.log(`  - ${g}`);
   }
 
   const total = mismatches + survivorBad;

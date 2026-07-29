@@ -94,6 +94,9 @@ export const tierSchema = z.enum([
   "void-boss",
   "equipment",
   "lunar-equipment",
+  // FoodTier — a real first-class tier (ItemTier.FoodTier = 10) with its own
+  // Run.availableFoodTierDropList and a weight in BasicPickupDropTable, not a subtype.
+  "food",
 ]);
 export type Tier = z.infer<typeof tierSchema>;
 

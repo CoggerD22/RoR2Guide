@@ -52,6 +52,9 @@
   --tier-lunar: #66ccff;
   --tier-void: #c974ff;
   --tier-equipment: #ff9c3f;
+  /* Food tier has no ColorCatalog entry in the game — it is signalled by a particle
+     effect, not a colour — so unlike the others this hex is OUR design choice. */
+  --tier-food: #f2b25c;
 
   /* Typography — squarish techno display + humanist sans (PLAN §4).
      Real webfonts land later; system fallbacks for now, swap the stacks here. */
@@ -95,6 +98,7 @@
   --color-tier-lunar: var(--tier-lunar);
   --color-tier-void: var(--tier-void);
   --color-tier-equipment: var(--tier-equipment);
+  --color-tier-food: var(--tier-food);
 
   --font-display: var(--font-display-stack);
   --font-sans: var(--font-sans-stack);

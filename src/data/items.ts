@@ -17,6 +17,7 @@ export const TIER_ORDER: Tier[] = [
   "void-boss",
   "equipment",
   "lunar-equipment",
+  "food",
 ];
 
 export interface TierMeta {
@@ -37,6 +38,7 @@ export const TIER_META: Record<Tier, TierMeta> = {
   "void-boss": { label: "Void · Boss", color: "var(--tier-void)" },
   equipment: { label: "Equipment", color: "var(--tier-equipment)" },
   "lunar-equipment": { label: "Lunar Equipment", color: "var(--tier-lunar)" },
+  food: { label: "Food", color: "var(--tier-food)" },
 };
 
 export const DLC_ORDER: Dlc[] = ["base", "sotv", "sots", "ac"];

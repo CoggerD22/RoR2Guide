@@ -5652,5 +5652,129 @@
     "confidence": "langfile",
     "cooldown": 25,
     "activated": true
+  },
+  {
+    "id": "hearty-stew",
+    "name": "Hearty Stew",
+    "tier": "food",
+    "dlc": "ac",
+    "pickupText": "Increases health regeneration and converts it into damage at full health. A single sip leaves you feeling warm and fuzzy inside.",
+    "description": "Increases base health regeneration by +2.5 hp/s (+2.5 hp/s per stack). At full health, your regeneration is added to your base damage.",
+    "stacking": [
+      {
+        "stat": "Base health regen (hp/s)",
+        "base": 2.5,
+        "perStack": 2.5,
+        "type": "linear"
+      }
+    ],
+    "tags": [
+      "healing",
+      "damage"
+    ],
+    "icon": "/icons/hearty-stew.png",
+    "wiki": "https://riskofrain2.wiki.gg/wiki/Hearty_Stew",
+    "verified": true,
+    "confidence": "langfile"
+  },
+  {
+    "id": "quick-fix",
+    "name": "Quick Fix",
+    "tier": "food",
+    "dlc": "ac",
+    "pickupText": "Increases bonus health and regen gains. Does not benefit from leveling up bonuses. Full of minerals.",
+    "description": "Increases bonus health and regeneration gains by 50% (+15% per stack). Does not affect bonuses from leveling up.",
+    "stacking": [
+      {
+        "stat": "Bonus health and regen gains (%)",
+        "base": 50,
+        "perStack": 15,
+        "type": "linear"
+      }
+    ],
+    "tags": [
+      "healing",
+      "survivability"
+    ],
+    "icon": "/icons/quick-fix.png",
+    "wiki": "https://riskofrain2.wiki.gg/wiki/Quick_Fix",
+    "verified": true,
+    "confidence": "langfile"
+  },
+  {
+    "id": "sauteed-worms",
+    "name": "Sautéed Worms",
+    "tier": "food",
+    "dlc": "ac",
+    "pickupText": "Chance on hit to summon a spectral wyrm that seeks out and damages enemies. Tastes like glass frogs and starseed.",
+    "description": "On hit, 10% chance to summon a spectral wyrm that seeks out and damages and ignites enemies for 500% (+500% per stack) TOTAL damage per second for 10 seconds.",
+    "stacking": [
+      {
+        "stat": "Wyrm damage (% TOTAL per second)",
+        "base": 500,
+        "perStack": 500,
+        "type": "linear"
+      }
+    ],
+    "tags": [
+      "damage",
+      "on-hit"
+    ],
+    "icon": "/icons/sauteed-worms.png",
+    "wiki": "https://riskofrain2.wiki.gg/wiki/Sautéed_Worms",
+    "verified": true,
+    "confidence": "langfile"
+  },
+  {
+    "id": "seared-steak",
+    "name": "Seared Steak",
+    "tier": "food",
+    "dlc": "ac",
+    "pickupText": "Gain 50 max health plus a percentage of your max health. Cooked to perfection.",
+    "description": "Increases maximum health by 50 (+50 per stack), plus an additional 5% (+5% per stack) of your max health.",
+    "stacking": [
+      {
+        "stat": "Maximum health",
+        "base": 50,
+        "perStack": 50,
+        "type": "linear"
+      },
+      {
+        "stat": "Maximum health (%)",
+        "base": 5,
+        "perStack": 5,
+        "type": "linear"
+      }
+    ],
+    "tags": [
+      "survivability"
+    ],
+    "icon": "/icons/seared-steak.png",
+    "wiki": "https://riskofrain2.wiki.gg/wiki/Seared_Steak",
+    "verified": true,
+    "confidence": "langfile"
+  },
+  {
+    "id": "ultimate-meal",
+    "name": "Ultimate Meal",
+    "tier": "food",
+    "dlc": "ac",
+    "pickupText": "At full health, you become lucky. The pinnacle of culinary arts.",
+    "description": "At full health, all random effects are rolled +2 (+2 per stack) extra times for a better outcome.",
+    "stacking": [
+      {
+        "stat": "Extra rolls on random effects",
+        "base": 2,
+        "perStack": 2,
+        "type": "linear"
+      }
+    ],
+    "tags": [
+      "utility"
+    ],
+    "icon": "/icons/ultimate-meal.png",
+    "wiki": "https://riskofrain2.wiki.gg/wiki/Ultimate_Meal",
+    "verified": true,
+    "confidence": "langfile"
   }
 ]

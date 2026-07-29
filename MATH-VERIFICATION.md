@@ -1904,3 +1904,45 @@ directions; they match exactly, and the check fails correctly when a pair is ben
 Nothing else was found wrong. The reason to record a pass that finds one real bug is that
 the bug was **mine, introduced by the previous audit** — which is the strongest argument
 available for why these passes have to keep happening rather than being declared done.
+
+### 3j.34 Fourth audit pass — the codex was missing five real items
+
+Every previous check asked whether what we *have* is correct. None asked whether anything
+was **missing**. That gap had been open for the entire life of the project.
+
+**The Alloyed Collective FoodTier items were absent from the codex entirely:**
+Hearty Stew, Quick Fix, Sautéed Worms, Seared Steak, Ultimate Meal.
+
+Nothing about them was speculative or borderline. They carry full `_NAME` / `_PICKUP` /
+`_DESC` entries in the language files, and `FoodTier` is a first-class tier —
+`ItemTier.FoodTier = 10`, with its own `Run.availableFoodTierDropList` and a
+`foodTierWeight` in `BasicPickupDropTable`. They are ordinary droppable items. They were
+simply never added, and **no amount of per-record verification would ever have surfaced
+that**, because per-record checks only iterate over records that exist.
+
+Added with text transcribed from the language files (`confidence: langfile`, nothing
+paraphrased beyond stripping style tags, no number supplied that the game does not state).
+The tier is wired through the schema, `TIER_ORDER`, `TIER_META` and the CSS tokens. One
+honest note recorded in the stylesheet: unlike every other tier, `--tier-food` is **our
+design choice**, because the game has no `ColorCatalog` entry for it — the tier is signalled
+by a particle effect, so there is no hex to copy and inventing one silently would have been
+a small lie in a file full of sourced values.
+
+Icons extracted from the game bundles rather than left broken —
+`texStewIcon`, `texQuickFixIcon`, `texWyrmOnHitIcon`, `texCookedSteakIcon`,
+`texUltimateMealIcon`, all 128×128. Four matched by guessed name; **Quick Fix did not**,
+because its icon is `texQuickFixIcon` while its `cachedName` is `BonusHealthBoost`. Rather
+than accept 4/5, a fuzzy fallback located it — the same "a silent zero is not an absence"
+discipline as §3j.28.
+
+`data:verify` now enforces completeness permanently: every ItemDef with a real name and a
+real tier must exist in the codex. `NoTier` is excluded, which correctly skips
+`StatsFromScrap`, the `*Suppressed` variants and unreleased content (§3j.23).
+
+Tier assignments were also cross-checked against the game for the first time — all 175
+droppable items map to the correct tier, including the four separate Void sub-tiers.
+
+**217 items, 160 code/asset-verified.** The lesson generalises past this project: a
+verification programme that only iterates over its own records can be complete, internally
+consistent, fully sourced — and still be missing things it never knew to look for. The
+check has to start from the *game's* list, not ours.
