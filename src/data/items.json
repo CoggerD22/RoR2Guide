@@ -4721,7 +4721,8 @@
     "wiki": "https://riskofrain2.wiki.gg/wiki/Disposable_Missile_Launcher",
     "verified": true,
     "confidence": "code",
-    "cooldown": 45
+    "cooldown": 45,
+    "activated": true
   },
   {
     "id": "foreign-fruit",
@@ -4739,7 +4740,8 @@
     "wiki": "https://riskofrain2.wiki.gg/wiki/Foreign_Fruit",
     "verified": true,
     "confidence": "code",
-    "cooldown": 45
+    "cooldown": 45,
+    "activated": true
   },
   {
     "id": "preon-accumulator",
@@ -4762,7 +4764,8 @@
       "challenge": "[REDACTED]",
       "requirement": "Open the Timed Security Chest on Rallypoint Delta."
     },
-    "cooldown": 140
+    "cooldown": 140,
+    "activated": true
   },
   {
     "id": "the-back-up",
@@ -4785,7 +4788,8 @@
       "challenge": "Mechanic",
       "requirement": "Repair 30 drones or turrets."
     },
-    "cooldown": 100
+    "cooldown": 100,
+    "activated": true
   },
   {
     "id": "ocular-hud",
@@ -4804,7 +4808,8 @@
     "wiki": "https://riskofrain2.wiki.gg/wiki/Ocular_HUD",
     "verified": true,
     "confidence": "code",
-    "cooldown": 60
+    "cooldown": 60,
+    "activated": true
   },
   {
     "id": "royal-capacitor",
@@ -4826,7 +4831,8 @@
     "wiki": "https://riskofrain2.wiki.gg/wiki/Royal_Capacitor",
     "verified": true,
     "confidence": "code",
-    "cooldown": 20
+    "cooldown": 20,
+    "activated": true
   },
   {
     "id": "the-crowdfunder",
@@ -4849,7 +4855,8 @@
       "challenge": "Funded!",
       "requirement": "Collect $30,480 total gold."
     },
-    "cooldown": 5
+    "cooldown": 5,
+    "activated": true
   },
   {
     "id": "milky-chrysalis",
@@ -4869,7 +4876,8 @@
     "wiki": "https://riskofrain2.wiki.gg/wiki/Milky_Chrysalis",
     "verified": true,
     "confidence": "langfile",
-    "cooldown": 60
+    "cooldown": 60,
+    "activated": true
   },
   {
     "id": "gnarled-woodsprite",
@@ -4891,7 +4899,8 @@
       "challenge": "One with the Woods",
       "requirement": "Fully upgrade a Shrine of the Woods."
     },
-    "cooldown": 15
+    "cooldown": 15,
+    "activated": true
   },
   {
     "id": "primordial-cube",
@@ -4911,7 +4920,8 @@
     "wiki": "https://riskofrain2.wiki.gg/wiki/Primordial_Cube",
     "verified": true,
     "confidence": "langfile",
-    "cooldown": 60
+    "cooldown": 60,
+    "activated": true
   },
   {
     "id": "radar-scanner",
@@ -4933,7 +4943,8 @@
     "wiki": "https://riskofrain2.wiki.gg/wiki/Radar_Scanner",
     "verified": true,
     "confidence": "langfile",
-    "cooldown": 45
+    "cooldown": 45,
+    "activated": true
   },
   {
     "id": "eccentric-vase",
@@ -4956,7 +4967,8 @@
       "challenge": "Blackout",
       "requirement": "Defeat the unique guardian of Gilded Coast without any beacons deactivating."
     },
-    "cooldown": 45
+    "cooldown": 45,
+    "activated": true
   },
   {
     "id": "blast-shower",
@@ -4979,7 +4991,8 @@
       "challenge": "Warm For Life",
       "requirement": "Die three times while burning."
     },
-    "cooldown": 20
+    "cooldown": 20,
+    "activated": true
   },
   {
     "id": "volcanic-egg",
@@ -4998,7 +5011,8 @@
     "wiki": "https://riskofrain2.wiki.gg/wiki/Volcanic_Egg",
     "verified": true,
     "confidence": "langfile",
-    "cooldown": 30
+    "cooldown": 30,
+    "activated": true
   },
   {
     "id": "jade-elephant",
@@ -5017,7 +5031,8 @@
     "wiki": "https://riskofrain2.wiki.gg/wiki/Jade_Elephant",
     "verified": true,
     "confidence": "code",
-    "cooldown": 45
+    "cooldown": 45,
+    "activated": true
   },
   {
     "id": "sawmerang",
@@ -5036,7 +5051,8 @@
     "wiki": "https://riskofrain2.wiki.gg/wiki/Sawmerang",
     "verified": true,
     "confidence": "langfile",
-    "cooldown": 45
+    "cooldown": 45,
+    "activated": true
   },
   {
     "id": "recycler",
@@ -5058,7 +5074,8 @@
     "wiki": "https://riskofrain2.wiki.gg/wiki/Recycler",
     "verified": true,
     "confidence": "langfile",
-    "cooldown": 45
+    "cooldown": 45,
+    "activated": true
   },
   {
     "id": "super-massive-leech",
@@ -5076,7 +5093,8 @@
     "wiki": "https://riskofrain2.wiki.gg/wiki/Super_Massive_Leech",
     "verified": true,
     "confidence": "code",
-    "cooldown": 60
+    "cooldown": 60,
+    "activated": true
   },
   {
     "id": "gorags-opus",
@@ -5096,7 +5114,8 @@
     "wiki": "https://riskofrain2.wiki.gg/wiki/Gorag%27s_Opus",
     "verified": true,
     "confidence": "code",
-    "cooldown": 45
+    "cooldown": 45,
+    "activated": true
   },
   {
     "id": "forgive-me-please",
@@ -5119,7 +5138,8 @@
       "challenge": "I Love Dying!",
       "requirement": "Die 20 times."
     },
-    "cooldown": 45
+    "cooldown": 45,
+    "activated": true
   },
   {
     "id": "fuel-array",
@@ -5138,7 +5158,8 @@
     "wiki": "https://riskofrain2.wiki.gg/wiki/Fuel_Array",
     "verified": true,
     "confidence": "langfile",
-    "cooldown": 60
+    "cooldown": 60,
+    "activated": true
   },
   {
     "id": "molotov-6-pack",
@@ -5157,7 +5178,8 @@
     "wiki": "https://riskofrain2.wiki.gg/wiki/Molotov_(6-Pack)",
     "verified": true,
     "confidence": "langfile",
-    "cooldown": 45
+    "cooldown": 45,
+    "activated": true
   },
   {
     "id": "executive-card",
@@ -5176,7 +5198,8 @@
     "wiki": "https://riskofrain2.wiki.gg/wiki/Executive_Card",
     "verified": true,
     "confidence": "langfile",
-    "cooldown": 0.1
+    "cooldown": 0.1,
+    "activated": true
   },
   {
     "id": "goobo-jr",
@@ -5194,7 +5217,8 @@
     "wiki": "https://riskofrain2.wiki.gg/wiki/Goobo_Jr.",
     "verified": true,
     "confidence": "langfile",
-    "cooldown": 100
+    "cooldown": 100,
+    "activated": true
   },
   {
     "id": "remote-caffeinator",
@@ -5213,7 +5237,8 @@
     "wiki": "https://riskofrain2.wiki.gg/wiki/Remote_Caffeinator",
     "verified": true,
     "confidence": "langfile",
-    "cooldown": 60
+    "cooldown": 60,
+    "activated": true
   },
   {
     "id": "seed-of-life",
@@ -5235,7 +5260,8 @@
       "challenge": "King of the Hill",
       "requirement": "Journey to the Prime Meridian and defeat the False Son."
     },
-    "cooldown": 0
+    "cooldown": 0,
+    "activated": true
   },
   {
     "id": "deus-ex-machina",
@@ -5254,7 +5280,8 @@
     "wiki": "https://riskofrain2.wiki.gg/wiki/Deus_Ex_Machina",
     "verified": true,
     "confidence": "code",
-    "cooldown": 60
+    "cooldown": 60,
+    "activated": true
   },
   {
     "id": "trophy-hunters-tricorn",
@@ -5272,7 +5299,8 @@
     "wiki": "https://riskofrain2.wiki.gg/wiki/Trophy_Hunter%27s_Tricorn",
     "verified": true,
     "confidence": "langfile",
-    "cooldown": 0
+    "cooldown": 0,
+    "activated": true
   },
   {
     "id": "effigy-of-grief",
@@ -5291,7 +5319,8 @@
     "wiki": "https://riskofrain2.wiki.gg/wiki/Effigy_of_Grief",
     "verified": true,
     "confidence": "langfile",
-    "cooldown": 15
+    "cooldown": 15,
+    "activated": true
   },
   {
     "id": "glowing-meteorite",
@@ -5314,7 +5343,8 @@
       "challenge": "Moon Worshipper",
       "requirement": "Carry 5 Lunar items in a single run."
     },
-    "cooldown": 140
+    "cooldown": 140,
+    "activated": true
   },
   {
     "id": "helfire-tincture",
@@ -5337,7 +5367,8 @@
     "wiki": "https://riskofrain2.wiki.gg/wiki/Helfire_Tincture",
     "verified": true,
     "confidence": "code",
-    "cooldown": 45
+    "cooldown": 45,
+    "activated": true
   },
   {
     "id": "spinel-tonic",
@@ -5359,7 +5390,8 @@
     "wiki": "https://riskofrain2.wiki.gg/wiki/Spinel_Tonic",
     "verified": true,
     "confidence": "code",
-    "cooldown": 60
+    "cooldown": 60,
+    "activated": true
   },
   {
     "id": "ifrits-distinction",
@@ -5367,7 +5399,7 @@
     "tier": "equipment",
     "dlc": "base",
     "pickupText": "Become an aspect of fire.",
-    "description": "Gain Blazing Elite powers: your attacks apply a burn for 50% TOTAL damage on hit, and a fire trail follows burned enemies. Passive (no cooldown). Cooldown: 10s.",
+    "description": "Gain Blazing Elite powers: your attacks apply a burn for 50% TOTAL damage on hit, and a fire trail follows burned enemies. Passive (no cooldown).",
     "stacking": [],
     "tags": [
       "damage",
@@ -5379,7 +5411,8 @@
     "wiki": "https://riskofrain2.wiki.gg/wiki/Ifrit%27s_Distinction",
     "verified": true,
     "confidence": "langfile",
-    "cooldown": 10
+    "cooldown": 10,
+    "activated": false
   },
   {
     "id": "silence-between-two-strikes",
@@ -5387,7 +5420,7 @@
     "tier": "equipment",
     "dlc": "base",
     "pickupText": "Become an aspect of lightning.",
-    "description": "Gain the power of an Overloading Elite: your attacks explode after a delay, and 50% of your health is replaced by shield. Passive (no cooldown). Cooldown: 25s.",
+    "description": "Gain the power of an Overloading Elite: your attacks explode after a delay, and 50% of your health is replaced by shield. Passive (no cooldown).",
     "stacking": [],
     "tags": [
       "damage",
@@ -5400,7 +5433,8 @@
     "wiki": "https://riskofrain2.wiki.gg/wiki/Silence_Between_Two_Strikes",
     "verified": true,
     "confidence": "langfile",
-    "cooldown": 25
+    "cooldown": 25,
+    "activated": false
   },
   {
     "id": "her-biting-embrace",
@@ -5408,7 +5442,7 @@
     "tier": "equipment",
     "dlc": "base",
     "pickupText": "Become an aspect of ice.",
-    "description": "Gain the power of a Glacial Elite: leave an ice explosion on death and apply an 80% slow on hit. Passive (no cooldown). Cooldown: 25s.",
+    "description": "Gain the power of a Glacial Elite: leave an ice explosion on death and apply an 80% slow on hit. Passive (no cooldown).",
     "stacking": [],
     "tags": [
       "damage",
@@ -5421,7 +5455,8 @@
     "wiki": "https://riskofrain2.wiki.gg/wiki/Her_Biting_Embrace",
     "verified": true,
     "confidence": "langfile",
-    "cooldown": 25
+    "cooldown": 25,
+    "activated": false
   },
   {
     "id": "spectral-circlet",
@@ -5429,7 +5464,7 @@
     "tier": "equipment",
     "dlc": "base",
     "pickupText": "Become an aspect of incorporeality.",
-    "description": "Gain the power of a Celestine Elite: your attacks apply an 80% slow on hit, and nearby allies gain invisibility. Passive (no cooldown). Cooldown: 10s.",
+    "description": "Gain the power of a Celestine Elite: your attacks apply an 80% slow on hit, and nearby allies gain invisibility. Passive (no cooldown).",
     "stacking": [],
     "tags": [
       "utility",
@@ -5441,7 +5476,8 @@
     "wiki": "https://riskofrain2.wiki.gg/wiki/Spectral_Circlet",
     "verified": true,
     "confidence": "langfile",
-    "cooldown": 10
+    "cooldown": 10,
+    "activated": false
   },
   {
     "id": "his-spiteful-boon",
@@ -5449,7 +5485,7 @@
     "tier": "equipment",
     "dlc": "sots",
     "pickupText": "Become an aspect of spite.",
-    "description": "Gain the power of a Twisted Elite: tether to up to 5 allies within 35m, granting them 300 armor. If tethered allies are hit 10 times, fire a lunar spike ball that homes onto an enemy for 100% damage and inflicts Lunar Ruin twice. Tethering disables for 10s after launching. Passive. Cooldown: 25s.",
+    "description": "Gain the power of a Twisted Elite: tether to up to 5 allies within 35m, granting them 300 armor. If tethered allies are hit 10 times, fire a lunar spike ball that homes onto an enemy for 100% damage and inflicts Lunar Ruin twice. Tethering disables for 10s after launching. Passive.",
     "stacking": [],
     "tags": [
       "utility",
@@ -5461,7 +5497,8 @@
     "wiki": "https://riskofrain2.wiki.gg/wiki/His_Spiteful_Boon",
     "verified": true,
     "confidence": "langfile",
-    "cooldown": 25
+    "cooldown": 25,
+    "activated": false
   },
   {
     "id": "nkuhanas-retort",
@@ -5469,7 +5506,7 @@
     "tier": "equipment",
     "dlc": "base",
     "pickupText": "Become an aspect of corruption.",
-    "description": "Gain the power of a Malachite Elite: inflict a healing-disabled debuff for 8s on enemies, periodically release spiked balls that explode and leave spike pits, and spawn a Malachite Urchin on death. Passive. Cooldown: 10s.",
+    "description": "Gain the power of a Malachite Elite: inflict a healing-disabled debuff for 8s on enemies, periodically release spiked balls that explode and leave spike pits, and spawn a Malachite Urchin on death. Passive.",
     "stacking": [],
     "tags": [
       "damage",
@@ -5480,7 +5517,8 @@
     "wiki": "https://riskofrain2.wiki.gg/wiki/N%27kuhana%27s_Retort",
     "verified": true,
     "confidence": "langfile",
-    "cooldown": 10
+    "cooldown": 10,
+    "activated": false
   },
   {
     "id": "his-reassurance",
@@ -5488,7 +5526,7 @@
     "tier": "equipment",
     "dlc": "sotv",
     "pickupText": "Become an aspect of earth.",
-    "description": "Gain the power of a Mending Elite: continuously heal nearby allies, and spawn a Healing Core on death that detonates to heal all nearby allies. Passive. Cooldown: 10s.",
+    "description": "Gain the power of a Mending Elite: continuously heal nearby allies, and spawn a Healing Core on death that detonates to heal all nearby allies. Passive.",
     "stacking": [],
     "tags": [
       "healing",
@@ -5499,7 +5537,8 @@
     "wiki": "https://riskofrain2.wiki.gg/wiki/His_Reassurance",
     "verified": true,
     "confidence": "langfile",
-    "cooldown": 10
+    "cooldown": 10,
+    "activated": false
   },
   {
     "id": "shared-design",
@@ -5507,7 +5546,7 @@
     "tier": "lunar-equipment",
     "dlc": "base",
     "pickupText": "Become an aspect of perfection.",
-    "description": "Gain the power of a Perfected Elite: attacks inflict Cripple, fire 4 bombs every 10 seconds (30% damage each), gain +30% movement speed, and +25% max health converted to shields. Passive. Cooldown: 25s.",
+    "description": "Gain the power of a Perfected Elite: attacks inflict Cripple, fire 4 bombs every 10 seconds (30% damage each), gain +30% movement speed, and +25% max health converted to shields. Passive.",
     "stacking": [],
     "tags": [
       "damage",
@@ -5519,7 +5558,8 @@
     "wiki": "https://riskofrain2.wiki.gg/wiki/Shared_Design",
     "verified": true,
     "confidence": "langfile",
-    "cooldown": 25
+    "cooldown": 25,
+    "activated": false
   },
   {
     "id": "of-one-mind",
@@ -5527,7 +5567,7 @@
     "tier": "equipment",
     "dlc": "ac",
     "pickupText": "Become an aspect of the Collective.",
-    "description": "Gain the power of a Collective Elite: a 30m dome blocks projectiles and reduces ally and self skill cooldowns by 20%. On death, explode for 100% damage and disable enemy items for 2.5s. The dome disables for 8s when hit by a skill attack. Passive. Cooldown: 10s.",
+    "description": "Gain the power of a Collective Elite: a 30m dome blocks projectiles and reduces ally and self skill cooldowns by 20%. On death, explode for 100% damage and disable enemy items for 2.5s. The dome disables for 8s when hit by a skill attack. Passive.",
     "stacking": [],
     "tags": [
       "utility",
@@ -5539,7 +5579,8 @@
     "wiki": "https://riskofrain2.wiki.gg/wiki/Of_One_Mind",
     "verified": true,
     "confidence": "langfile",
-    "cooldown": 10
+    "cooldown": 10,
+    "activated": false
   },
   {
     "id": "aurelionites-blessing",
@@ -5559,6 +5600,7 @@
     "wiki": "https://riskofrain2.wiki.gg/wiki/Aurelionite%27s_Blessing",
     "verified": true,
     "confidence": "langfile",
-    "cooldown": 25
+    "cooldown": 25,
+    "activated": true
   }
 ]

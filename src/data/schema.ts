@@ -155,6 +155,20 @@ export const itemSchema = z
      * for non-equipment.
      */
     cooldown: z.number().nonnegative().optional(),
+    /**
+     * Equipment only: does pressing the equipment key actually do anything?
+     *
+     * `EquipmentSlot.PerformEquipmentAction` ends in `return func?.Invoke() ?? false`,
+     * and the caller only runs `OnEquipmentExecuted` — which spends the charge and
+     * starts the cooldown — when that is true. Equipment with no handler therefore
+     * cannot be activated at all, and its `cooldown` never runs even though the
+     * EquipmentDef carries one.
+     *
+     * The nine elite Aspects are exactly this: zero references in EquipmentSlot. Stating
+     * their asset cooldown as if it were operative is misleading, so `data:audit`
+     * forbids it when this is false.
+     */
+    activated: z.boolean().optional(),
     stacking: z.array(stackingEntrySchema),
     /** Search/category tags: "damage","on-hit","healing","drone", … */
     tags: z.array(z.string().min(1)),

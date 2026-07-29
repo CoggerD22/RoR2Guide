@@ -319,6 +319,19 @@ function main(): number {
       continue;
     }
     const stated = /Cooldown: (\d+(?:\.\d+)?)s\./.exec(it.description);
+    // Passive equipment cannot be activated at all, so its EquipmentDef cooldown never
+    // runs. Stating it reads as an operative number and is worse than saying nothing —
+    // this rule exists because I appended asset cooldowns to the nine elite Aspects and
+    // produced "Passive (no cooldown). Cooldown: 10s." in the same sentence.
+    if (it.activated === false) {
+      if (stated) {
+        errors.push(
+          `${it.name}: states a cooldown, but it has no EquipmentSlot handler — ` +
+            `activating it does nothing and the cooldown never runs`,
+        );
+      }
+      continue;
+    }
     if (it.cooldown === undefined) {
       warnings.push(`${it.name}: equipment has no cooldown field (asset value not recorded)`);
       // Tolerance, not equality: these come from float32 assets, so Executive Card's

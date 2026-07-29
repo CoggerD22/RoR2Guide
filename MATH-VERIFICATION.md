@@ -1525,3 +1525,49 @@ is "is the downside worth it" was describing that downside wrongly in both direc
 `AddTimedBuff(Parrying, 0.5f)` — half a second, which is the entire skill-expression of the
 item and worth stating. Its other two claims check out exactly:
 `DeductActiveEquipmentCooldown(equipmentDef.cooldown * 0.75f)` and `AddBuff(SureProc)`.
+
+### 3j.26 Correcting my own error: an asset value is not automatically a true claim
+
+§3j.24 added asset cooldowns to ten equipment whose descriptions omitted one. For nine of
+them — the elite Aspects — that was **wrong**, and it produced descriptions that
+contradicted themselves in a single breath:
+
+> "Gain Blazing Elite powers… **Passive (no cooldown). Cooldown: 10s.**"
+
+The original text was right and I overrode it with a number from the asset.
+
+```csharp
+// EquipmentSlot.PerformEquipmentAction
+return func?.Invoke() ?? false;
+
+// caller, EquipmentSlot:462
+if (equipment.charges > 0 && subcooldownTimer <= 0f && PerformEquipmentAction(equipmentDef))
+{
+    OnEquipmentExecuted(...);   // spends the charge and starts the cooldown
+}
+```
+
+All nine Aspects have **zero references anywhere in `EquipmentSlot`**, so `func` is null,
+`PerformEquipmentAction` returns false, `OnEquipmentExecuted` never runs, and the cooldown
+never starts. The `EquipmentDef.cooldown` of 10 or 25 is real *as a field* and inert *as
+behaviour*. Aurelionite's Blessing is the one Aspect that does have a handler
+(`FireAurelioniteSpike`), and its 25s is genuine.
+
+Reverted on all nine, and a new schema field `activated` records the distinction, with
+`data:audit` failing the build if passive equipment states a cooldown. I verified the rule
+by reintroducing the bad text and watching it fail, rather than assuming it worked.
+
+The lesson is worth more than the fix. My standing rule has been "prefer the asset over the
+prose", and it produced a falsehood here because **the asset answers a different question
+than the description does**. `cooldown` is what the field is called; "how long until you can
+use this again" is what a reader takes it to mean, and those coincide only when the
+equipment can be used at all. §5.0.1 already says a description proves what the game *says*,
+not what it *does* — this is the mirror image, and it now sits beside it: **a serialized
+value proves what the game stores, not what the player experiences.** Provenance is
+necessary for a claim to be true; it is not sufficient.
+
+`The Crowdfunder`, `Executive Card` and `Fuel Array` also lack a dispatch handler but are
+genuinely activatable — Crowdfunder runs through `UpdateGoldGat()`, a continuous-fire path
+rather than a one-shot handler. "No handler" was therefore not usable as an automatic test
+for passivity, and `activated` is set from evidence per item rather than derived, precisely
+because the cheap heuristic would have mislabelled those three.
