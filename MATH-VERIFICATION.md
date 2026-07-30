@@ -2699,3 +2699,51 @@ the Write tool, and I then scanned every formula in the dataset for the same cor
 signature — zero others. This is the fourth time shell quoting has damaged content in this
 project; the rule to write files with the editor rather than heredocs exists precisely for it,
 and I broke it again.
+
+### 3j.51 Sweeping the other curve shapes — all correct, and a near-miss worth recording
+
+§3j.50 found a mis-typed *curve*, which is a different defect from a wrong value: the sparkline
+is computed from `type`, so getting it wrong draws a line the game never follows. Having swept
+every hyperbolic site, this pass swept the other two shapes.
+
+**Exponential** — every `Mathf.Pow` in `RecalculateStats`/`HealthComponent`/`GlobalEventManager`
+whose exponent is an item count:
+
+| Code | Item | Recorded |
+| --- | --- | --- |
+| `Mathf.Pow(2f, n)` on health, `- 1f` on damage | Shaped Glass | exponential ✓ |
+| `15f * Mathf.Pow(0.9f, n)` cooldown | Safer Spaces | exponential ✓ |
+| `0.7f * Mathf.Pow(0.9f, n-1)` x3 stats, `armor -= 35 + 15(n-1)` | Neutronium Weight | exponential + linear ✓ |
+| `Mathf.Pow(0.95f, n)` | Tonic Affliction | verified §3j.25 |
+| `Mathf.Pow(2f, n)` | `DroneUpgradeHidden` | not player-facing |
+
+**Reciprocal** — every `/= (count + 1)`:
+
+| Code | Item | Recorded |
+| --- | --- | --- |
+| `num110 /= (n + 1)` attack speed | Light Flux Pauldron | reciprocal ✓ |
+| `num78 /= (n + 1)` health | `CutHp` (NoTier, Swarms artifact) | not an item |
+
+**All correct.** Stun Grenade was the only mis-typed curve in the dataset, and the shape
+surface is now fully swept: hyperbolic, exponential and reciprocal all traced to their call
+sites and matched against `type`.
+
+#### A near-miss, and the third of its kind
+
+Reading `num56 = Items.TransferDebuffOnHit` I read the *name* — "transfer debuff on hit" — and
+concluded it was **Noxious Thorn**, whose description is about transferring debuffs. On that
+reading, Noxious Thorn silently inflicts −30% damage, −30% attack speed, −30% movement speed
+and −35 armor on its holder while in combat, with none of it documented. That would have been
+the largest omission in this log.
+
+It is **Neutronium Weight**, a Lunar item, and its record already carries all four penalties,
+correctly typed, code-verified. Nothing was wrong. Noxious Thorn is `TriggerEnemyDebuffs`, and
+the verification of it in §3j.22 was correct.
+
+This is the **third** near-miss of exactly this shape in three passes — Halcyon vs Shrine of
+Shaping (§3j.48), VoidCoinBarrel's 25 vs Ghor's Tome (§3j.49), and now this. All three are the
+same error: a plausible *association* between a name or number and the wrong entity. All three
+were stopped by the same discipline — resolve the `cachedName` to its display name through
+`itemdefs.json` and check, rather than trusting that a name means what it sounds like. Given
+the rate, that resolution should be reflexive before any correction, not a step I remember to
+take.
