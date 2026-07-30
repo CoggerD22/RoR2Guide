@@ -23,15 +23,22 @@ interface HyperbolicItem {
   verified: Verification;
 }
 
-// Hyperbolic "chance that approaches but never reaches 100%" mechanics. Tougher
-// Times and Old Guillotine are code-verified (ConvertAmp); the two on-hit procs
-// follow RoR2's universal proc-chance stacking (same curve, not individually
-// decompiled) and are labelled accordingly.
+// Hyperbolic "chance that approaches but never reaches 100%" mechanics. All four are now
+// code-verified; the two on-hit procs were previously labelled as following "RoR2's
+// universal proc-chance stacking, not individually decompiled", which was a guess that
+// happened to be right — they are hyperbolic, and reading them proved it:
+//
+//   Sentient Meat Hook  (1f - 100f / (100f + 20f * n)) * 100f          — ConvertAmp inlined
+//   Tentabauble         ConvertAmplificationPercentageIntoReductionPercentage(5f * n * proc)
+//
+// Note WHERE the proc coefficient sits, because the two differ: Meat Hook multiplies the
+// finished chance by it, Tentabauble folds it INSIDE the amplification. Those are not the
+// same function for proc != 1, so the table below states the assumption.
 const HYPERBOLIC: HyperbolicItem[] = [
   { id: "tougher-times", stat: "Block an attack", perStackAmp: 15, verified: "code" },
   { id: "old-guillotine", stat: "Execute elites below", perStackAmp: 13, verified: "code" },
-  { id: "sentient-meat-hook", stat: "Fire hooks on hit", perStackAmp: 20, verified: "convention" },
-  { id: "tentabauble", stat: "Root on hit", perStackAmp: 5, verified: "convention" },
+  { id: "sentient-meat-hook", stat: "Fire hooks on hit", perStackAmp: 20, verified: "code" },
+  { id: "tentabauble", stat: "Root on hit", perStackAmp: 5, verified: "code" },
 ];
 
 const CRIT_STACKS = [1, 3, 5, 7, 9, 10];
@@ -47,7 +54,7 @@ function VerifiedTag({ v }: { v: Verification }) {
     </span>
   ) : (
     <span
-      title="Uses RoR2's universal proc-chance stacking; consistent but not individually decompiled"
+      title="Follows the same hyperbolic curve, but the specific mechanic has not been read in the decompile"
       className="rounded-full border border-sky-400/25 px-1.5 py-0.5 text-[10px] text-sky-300/80"
     >
       standard curve
@@ -113,6 +120,18 @@ export function Breakpoints() {
           less than the last, approaching but never reaching 100%. The tooltip percentage is the
           per-stack <em>input</em>, not the actual chance (Tougher Times shows 15% but blocks 13% at
           one stack).
+        </p>
+        {/*
+          The two on-hit rows are proc-scaled and the table cannot show that, so it has to be
+          stated. It is not a footnote-level detail: Sentient Meat Hook multiplies the finished
+          chance by the proc coefficient, while Tentabauble folds it inside the amplification,
+          so the two diverge as soon as the coefficient is not 1 (PLAN §5.0.1).
+        */}
+        <p className="mb-3 max-w-2xl text-xs leading-relaxed text-muted-foreground">
+          The two on-hit rows assume a <span className="text-foreground">proc coefficient of 1</span>.
+          Both scale with it, but not identically: Sentient Meat Hook multiplies the finished chance,
+          whereas Tentabauble applies the coefficient <em>inside</em> the curve, so a
+          half-proc-coefficient hit does not simply halve either one.
         </p>
         <div className="overflow-x-auto rounded-xl border border-border bg-surface">
           <table className="w-full min-w-[34rem] text-sm">

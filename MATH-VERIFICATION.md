@@ -2419,3 +2419,54 @@ completely false alarm that would have sent me rewriting correct data. The check
 it parses zero pairs, and the permanent audit rule warns rather than silently passing. That is
 the fourth time in this programme a silent-zero has had to be defended against (§3j.28, §3j.32,
 §3j.41 being the others), and it is now the single most repeated failure mode on record.
+
+### 3j.45 UI claims and the persistence layer — the first real *code* bug
+
+Auditing the surfaces that are not stat values: the words the UI puts on screen, and the
+store that holds a user's plan.
+
+#### A UI tooltip was hedging on something already true
+
+The Breakpoints page labelled Sentient Meat Hook and Tentabauble as *"RoR2's universal
+proc-chance stacking; consistent but not individually decompiled"* — an admission that the
+curve was assumed. Both were then read:
+
+```
+Sentient Meat Hook   (1f - 100f / (100f + 20f * n)) * 100f              // ConvertAmp, inlined
+Tentabauble          ConvertAmplificationPercentageIntoReductionPercentage(5f * n * proc)
+```
+
+The assumption was right, and both rows are now **code-verified** rather than conventional.
+But reading them surfaced a distinction the page could not show: **the two put the proc
+coefficient in different places.** Meat Hook multiplies the finished chance by it; Tentabauble
+folds it *inside* the amplification. Those are not the same function once the coefficient
+leaves 1, so the table's percentages only hold for proc-1 hits — now stated on the page,
+because a silent assumption in a table of exact-looking percentages is the same defect class
+as a description that omits its scope.
+
+#### The persistence layer trusted localStorage
+
+`migratePlannerState` validated **v1** data and cast **v2** data straight to `PlanEntry`.
+Probing it with hostile values, every one survived intact:
+
+| Persisted value | Old behaviour |
+| --- | --- |
+| `{ state: "nonsense", priority: "high" }` | passed through |
+| `{ state: "targeted" }` (no priority) | passed through, priority `undefined` |
+| `42` | passed through — the UI then reads `42.state` |
+| version `9` from a newer deploy | cast blindly |
+
+localStorage is not a trusted store: it survives deploys, can be hand-edited, and can be left
+half-written by a crash mid-write. Current-version data deserves exactly the same scepticism
+as legacy data, and it was getting none — the asymmetry existed only because v1 needed a
+transform and v2 did not, so nobody wrote a check.
+
+Fixed with one `sanitizeEntry` applied to **every** version, including future ones: an invalid
+`state` drops the entry, an invalid or missing `priority` is repaired to the default rather
+than dropping a user's item, and a non-integer or non-positive `goal` is discarded while the
+entry survives. Six new tests cover all of it.
+
+This is the first defect in this programme that was a **code** bug rather than a data one, and
+it is worth noting that it was found the same way as all the others: by asking what happens if
+the input is not what I assume. Nothing about "the data is verified" implied the store that
+holds it was safe.

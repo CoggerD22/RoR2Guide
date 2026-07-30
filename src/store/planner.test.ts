@@ -96,3 +96,50 @@ describe("planner actions", () => {
     expect(usePlanner.getState().plan["not-planned"]).toBeUndefined();
   });
 });
+
+describe("planner persistence is hostile-input safe", () => {
+  // localStorage survives deploys, can be hand-edited, and can be left half-written by a
+  // crash. The v2 path used to cast it straight to PlanEntry, so every case below survived
+  // intact — including `42`, where the UI would then read `42.state` and crash.
+  it("drops an entry with an invalid state", () => {
+    expect(migrate({ plan: { crowbar: { state: "nonsense", priority: "high" } } }, 2)).toEqual({ plan: {} });
+  });
+
+  it("drops an entry that is not an object", () => {
+    expect(migrate({ plan: { crowbar: 42 } }, 2)).toEqual({ plan: {} });
+    expect(migrate({ plan: { crowbar: null } }, 2)).toEqual({ plan: {} });
+  });
+
+  it("repairs a missing or invalid priority rather than dropping the entry", () => {
+    expect(migrate({ plan: { crowbar: { state: "targeted" } } }, 2)).toEqual({
+      plan: { crowbar: { state: "targeted", priority: DEFAULT_PRIORITY } },
+    });
+    expect(migrate({ plan: { crowbar: { state: "targeted", priority: "urgent" } } }, 2)).toEqual({
+      plan: { crowbar: { state: "targeted", priority: DEFAULT_PRIORITY } },
+    });
+  });
+
+  it("discards a nonsensical goal but keeps the entry", () => {
+    for (const goal of [0, -3, 2.5, "3", NaN]) {
+      expect(migrate({ plan: { crowbar: { state: "targeted", priority: "high", goal } } }, 2)).toEqual({
+        plan: { crowbar: { state: "targeted", priority: "high" } },
+      });
+    }
+    expect(migrate({ plan: { crowbar: { state: "targeted", priority: "high", goal: 3 } } }, 2)).toEqual({
+      plan: { crowbar: { state: "targeted", priority: "high", goal: 3 } },
+    });
+  });
+
+  it("sanitises a FUTURE version instead of trusting it", () => {
+    // A user who loads an older build after a newer one wrote its state. Unknown fields are
+    // dropped; the recognisable parts survive.
+    expect(migrate({ plan: { crowbar: { state: "targeted", priority: "high", futureField: 1 } } }, 9)).toEqual({
+      plan: { crowbar: { state: "targeted", priority: "high" } },
+    });
+  });
+
+  it("survives a plan that is not an object", () => {
+    expect(migrate({ plan: "corrupt" }, 2)).toEqual({ plan: {} });
+    expect(migrate({ plan: [] }, 2)).toEqual({ plan: {} });
+  });
+});

@@ -66,15 +66,46 @@ export const DEFAULT_PRIORITY: Priority = "medium";
  * shipping the richer shape without this would silently wipe a run someone is midway
  * through. Unrecognised values are dropped rather than imported as garbage.
  */
+/**
+ * Coerce one persisted entry into a valid `PlanEntry`, or drop it.
+ *
+ * This exists because the v1 path validated its input and the v2 path did not — it simply
+ * cast whatever was in localStorage to `PlanEntry`. Probing it with hostile values showed
+ * every one of these surviving intact: `state: "nonsense"`, a missing `priority`, and an
+ * entry that was the bare number `42`. Any of those reaches the UI, and `42.state` is a
+ * crash rather than a bad render.
+ *
+ * localStorage is not a trusted store. It survives across deploys, can be hand-edited, and
+ * can be left half-written by a crash mid-write — so current-version data deserves exactly
+ * the same scepticism as legacy data.
+ */
+function sanitizeEntry(value: unknown): PlanEntry | null {
+  if (!value || typeof value !== "object") return null;
+  const v = value as Partial<PlanEntry>;
+  if (v.state !== "targeted" && v.state !== "avoided") return null;
+  const priority = PRIORITIES.includes(v.priority as Priority)
+    ? (v.priority as Priority)
+    : DEFAULT_PRIORITY;
+  const entry: PlanEntry = { state: v.state, priority };
+  // A goal is optional, but a non-positive or non-integer one is meaningless.
+  if (typeof v.goal === "number" && Number.isInteger(v.goal) && v.goal > 0) entry.goal = v.goal;
+  return entry;
+}
+
 export function migratePlannerState(persisted: unknown, version: number): { plan: Record<string, PlanEntry> } {
   const state = persisted as { plan?: Record<string, unknown> } | undefined;
-  if (!state?.plan) return { plan: {} };
-  if (version >= 2) return state as { plan: Record<string, PlanEntry> };
+  if (!state?.plan || typeof state.plan !== "object") return { plan: {} };
   const plan: Record<string, PlanEntry> = {};
   for (const [id, value] of Object.entries(state.plan)) {
-    if (value === "targeted" || value === "avoided") {
+    // v1 stored a bare state string; v2+ stores an object. Both are validated, and a
+    // FUTURE version (someone loading an older build after a newer one wrote its state)
+    // falls through the same sanitiser rather than being cast blindly.
+    if (version < 2 && (value === "targeted" || value === "avoided")) {
       plan[id] = { state: value, priority: DEFAULT_PRIORITY };
+      continue;
     }
+    const entry = sanitizeEntry(value);
+    if (entry) plan[id] = entry;
   }
   return { plan };
 }
