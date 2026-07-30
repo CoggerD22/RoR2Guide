@@ -1723,13 +1723,15 @@
         "stat": "Shuriken damage (% base)",
         "base": 400,
         "perStack": 100,
-        "type": "linear"
+        "type": "linear",
+        "formula": "FireProjectileWithoutDamageType(ShurikenProjectile, …, body.damage * (3f + 1f * stack)) (PrimarySkillShurikenBehavior) — 400% at one stack, +100% per stack."
       },
       {
         "stat": "Max held shurikens",
         "base": 3,
         "perStack": 1,
-        "type": "linear"
+        "type": "linear",
+        "formula": "`int num = stack + 2` (PrimarySkillShurikenBehavior), reloading over totalReloadTime = 10f. 3 at one stack, +1 per stack."
       }
     ],
     "tags": [
@@ -1739,7 +1741,7 @@
     "icon": "/icons/shuriken.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Shuriken",
     "verified": true,
-    "confidence": "langfile"
+    "confidence": "code"
   },
   {
     "id": "shipping-request-form",
@@ -2456,7 +2458,8 @@
         "stat": "Enemies hit",
         "base": 3,
         "perStack": 2,
-        "type": "linear"
+        "type": "linear",
+        "formula": "LightningOrb with bouncesRemaining = 2 * stack, so 1 + 2n targets — 3 at one stack, +2 per stack. Damage is body.damage * 2f (200%). Two things the description omits: the orb carries a procCoefficient of only 0.3, and it fires on a 1/12s interval with the target list clearing every 0.5s rather than a flat 'every 0.5s'."
       }
     ],
     "tags": [
@@ -2470,7 +2473,7 @@
     "icon": "/icons/unstable-tesla-coil.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Unstable_Tesla_Coil",
     "verified": true,
-    "confidence": "langfile"
+    "confidence": "code"
   },
   {
     "id": "soulbound-catalyst",
@@ -3025,13 +3028,15 @@
         "stat": "Missile damage (% of boss max HP)",
         "base": 2.5,
         "perStack": 2.5,
-        "type": "linear"
+        "type": "linear",
+        "formula": "(targetBody.maxHealth + targetBody.maxShield) * (stack * 0.025f) (BarrageOnBossBehaviour) — 2.5% per stack, and measured against max health PLUS SHIELD, not health alone."
       },
       {
         "stat": "Max bonus missiles",
         "base": 20,
         "perStack": 5,
-        "type": "linear"
+        "type": "linear",
+        "formula": "maxBuffCount = 15 + stack * 5, so 20 at one stack and +5 per stack. Each extra missile costs Run.GetDifficultyScaledCost(50) gold, so the 50-gold threshold RISES as the run's difficulty coefficient climbs."
       }
     ],
     "tags": [
@@ -3041,7 +3046,8 @@
     "icon": "/icons/war-bonds.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/War_Bonds",
     "verified": true,
-    "confidence": "langfile"
+    "confidence": "code",
+    "descriptionNote": "Two things the in-game text leaves out. Against anything that is not a boss the missiles do not use a health percentage at all — they deal `body.damage * 32f`, i.e. 3200% of your damage. And the gold needed per extra missile is difficulty-scaled, so late-run missiles cost far more than 50."
   },
   {
     "id": "networked-suffering",

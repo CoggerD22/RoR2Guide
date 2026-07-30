@@ -2747,3 +2747,39 @@ were stopped by the same discipline — resolve the `cachedName` to its display 
 `itemdefs.json` and check, rather than trusting that a name means what it sounds like. Given
 the rate, that resolution should be reflexive before any correction, not a step I remember to
 take.
+
+### 3j.52 Three more items — War Bonds has a whole second behaviour
+
+**175 -> 178 of 217.** Every recorded number correct; the gaps are again about *scope*.
+
+| Item | Code | Result |
+| --- | --- | --- |
+| Shuriken | `body.damage * (3f + 1f * stack)`; `stack + 2` held | exact |
+| Unstable Tesla Coil | `body.damage * 2f`; `bouncesRemaining = 2 * stack` | exact |
+| War Bonds | `(maxHealth + maxShield) * (stack * 0.025f)`; `15 + stack * 5` | exact, see below |
+
+**War Bonds does something entirely different to non-bosses.** The description is only about
+bosses — "2.5% of the boss's max health" — but the damage function has two branches:
+
+```csharp
+if (isBoss) return (targetBody.maxHealth + targetBody.maxShield) * (stack * bossHealthDamageRatio);
+return body.damage * normalEnemyDamageRatio;   // 32f
+```
+
+Against anything that is not a boss the missiles deal **3200% of your damage**. That is not a
+footnote; it is a second mode the item never mentions. Its boss figure is also measured on
+**max health plus shield**, and the "per 50 gold" threshold is `GetDifficultyScaledCost(50)`,
+so it climbs as the run's difficulty coefficient does — late-run missiles cost considerably
+more than 50.
+
+**Unstable Tesla Coil** gained two omissions: the orb's `procCoefficient` is only **0.3**, so
+it triggers on-hit items far less than its hit count suggests; and it fires on a `1/12`s
+interval with the target list clearing every `0.5`s, rather than the flat "every 0.5s" the
+description implies.
+
+**Shuriken** was exact on both values. Worth noting its named constants
+(`damageCoefficientBase = 3f`, `numShurikensBase = 2`) are **not** what the code reads — the
+firing line inlines `3f + 1f * stack` and `stack + 2`. The values agree, so nothing is wrong,
+but after Bolstering Lantern's dead `radiusSizeGrowth` and Unstable Transmitter's unused
+`public const`s (§3j.31, §3j.50) the rule stands: **read the use site, not the constant**. Three
+times now a named constant has been decorative; this is the first where it happened to match.
