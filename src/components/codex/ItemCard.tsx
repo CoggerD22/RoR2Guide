@@ -17,8 +17,7 @@ export function ItemCard({ item, onSelect }: ItemCardProps) {
   const tier = TIER_META[item.tier];
   const density = useDisplay((s) => s.density);
   const showDescriptions = useDisplay((s) => s.showDescriptions);
-  // `dense` is for glancing mid-run: icon only, so the most items fit on screen.
-  const iconOnly = density === "dense" && !showDescriptions;
+  const showNames = useDisplay((s) => s.showNames);
 
   return (
     <div className="group relative">
@@ -44,7 +43,7 @@ export function ItemCard({ item, onSelect }: ItemCardProps) {
             density === "dense" && "size-8",
           )}
         />
-        {!iconOnly && (
+        {showNames && (
           <span
             className={cn(
               "line-clamp-2 font-medium text-foreground",

@@ -6,6 +6,8 @@ import { cn } from "@/lib/utils";
 import { asset } from "@/lib/asset";
 import { ItemTooltip } from "@/components/codex/ItemTooltip";
 import type { PlanState } from "@/store/planner";
+import { useDisplay } from "@/store/display";
+import { DlcBadge } from "@/components/codex/DlcBadge";
 
 interface PlannerCardProps {
   item: Item;
@@ -16,6 +18,9 @@ interface PlannerCardProps {
 
 /** Codex card in planner mode: click cycles target/avoid; ⓘ opens details. */
 export function PlannerCard({ item, state, onCycle, onInfo }: PlannerCardProps) {
+  const density = useDisplay((d) => d.density);
+  const showNames = useDisplay((d) => d.showNames);
+  const showDescriptions = useDisplay((d) => d.showDescriptions);
   const tier = TIER_META[item.tier];
   const isTargeted = state === "targeted";
   const isAvoided = state === "avoided";
@@ -33,15 +38,43 @@ export function PlannerCard({ item, state, onCycle, onInfo }: PlannerCardProps) 
           // its row (a 2-line name makes it ~16px taller), so a bottom-anchored badge
           // was rendering in the gap *below* the card — visible in a screenshot, and
           // reported as "no indicator on the planner". Top-anchored badges hid the bug.
-          "relative flex w-full flex-col items-center gap-2 rounded-lg border bg-surface p-3 text-center transition",
+          "relative flex w-full flex-col items-center rounded-lg border bg-surface text-center transition",
+          density === "comfortable" && "gap-2 p-3",
+          density === "compact" && "gap-1.5 p-2",
+          density === "dense" && "gap-1 p-1.5",
           isTargeted && "border-emerald-400 shadow-[0_0_18px_rgba(52,211,153,0.35)]",
           isAvoided && "border-red-500/50 opacity-40 grayscale",
           !state && "border-border hover:border-primary/50",
         )}
         style={!state ? ({ "--tier": tier.color } as CSSProperties) : undefined}
       >
-        <img src={asset(item.icon)} alt={item.name} loading="lazy" className="size-14 object-contain" />
-        <span className="line-clamp-2 text-xs font-medium text-foreground">{item.name}</span>
+        <img
+          src={asset(item.icon)}
+          alt={item.name}
+          loading="lazy"
+          className={cn(
+            "object-contain",
+            density === "comfortable" && "size-14",
+            density === "compact" && "size-10",
+            density === "dense" && "size-8",
+          )}
+        />
+        {showNames && (
+          <span
+            className={cn(
+              "line-clamp-2 font-medium text-foreground",
+              density === "compact" ? "text-[11px] leading-tight" : "text-xs",
+            )}
+          >
+            {item.name}
+          </span>
+        )}
+        {showDescriptions && (
+          <p className="mt-0.5 w-full text-left text-[10px] leading-snug text-muted-foreground">
+            {item.description}
+          </p>
+        )}
+        <DlcBadge dlc={item.dlc} className="absolute bottom-1 right-1" />
         {/*
           TOP-left, matching the codex exactly (PLAN §5.8). Consistent placement is the
           point: a marker that moves between pages has to be relearned. The ⓘ button

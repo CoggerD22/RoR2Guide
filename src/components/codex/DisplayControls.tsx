@@ -1,4 +1,4 @@
-import { AlignLeft, LayoutGrid } from "lucide-react";
+import { AlignLeft, LayoutGrid, Tag } from "lucide-react";
 import { cn } from "@/lib/utils";
 import {
   DENSITIES,
@@ -19,6 +19,8 @@ export function DisplayControls({ className }: { className?: string }) {
   const setDensity = useDisplay((s) => s.setDensity);
   const showDescriptions = useDisplay((s) => s.showDescriptions);
   const toggleDescriptions = useDisplay((s) => s.toggleDescriptions);
+  const showNames = useDisplay((s) => s.showNames);
+  const toggleNames = useDisplay((s) => s.toggleNames);
 
   return (
     <div className={cn("flex flex-wrap items-center gap-2", className)}>
@@ -46,6 +48,27 @@ export function DisplayControls({ className }: { className?: string }) {
           </button>
         ))}
       </div>
+
+      {/*
+        Names and descriptions are separate toggles rather than density side-effects: a
+        dense grid WITH names is a legitimate want, and folding them together made it
+        impossible to ask for (PLAN §8.3).
+      */}
+      <button
+        type="button"
+        onClick={toggleNames}
+        aria-pressed={showNames}
+        title="Show item names under each icon"
+        className={cn(
+          "flex items-center gap-1.5 rounded-lg border px-2.5 py-1.5 text-xs transition-colors",
+          showNames
+            ? "border-primary/40 bg-primary/10 font-medium text-foreground"
+            : "border-border bg-surface text-muted-foreground hover:text-foreground",
+        )}
+      >
+        <Tag className="size-3.5" aria-hidden />
+        Names
+      </button>
 
       <button
         type="button"

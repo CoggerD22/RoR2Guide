@@ -38,8 +38,18 @@ interface DisplayState {
    * reference sheet instead of an icon wall that costs one click per item.
    */
   showDescriptions: boolean;
+  /**
+   * Show item names under the icons.
+   *
+   * Independent of density rather than implied by it. Dense mode used to hide names
+   * outright, which forced a choice between "most items on screen" and "readable at a
+   * glance" — but those are separate wants, and tying them together meant a player who
+   * wanted a dense grid WITH names simply could not have one.
+   */
+  showNames: boolean;
   setDensity: (density: Density) => void;
   toggleDescriptions: () => void;
+  toggleNames: () => void;
 }
 
 /** Guard rehydrated values — localStorage is not a trusted store (see planner.ts). */
@@ -48,6 +58,7 @@ function sanitize(persisted: unknown): Partial<DisplayState> {
   return {
     density: DENSITIES.includes(v.density as Density) ? v.density : "comfortable",
     showDescriptions: typeof v.showDescriptions === "boolean" ? v.showDescriptions : false,
+    showNames: typeof v.showNames === "boolean" ? v.showNames : true,
   };
 }
 
@@ -56,8 +67,10 @@ export const useDisplay = create<DisplayState>()(
     (set) => ({
       density: "comfortable",
       showDescriptions: false,
+      showNames: true,
       setDensity: (density) => set({ density }),
       toggleDescriptions: () => set((s) => ({ showDescriptions: !s.showDescriptions })),
+      toggleNames: () => set((s) => ({ showNames: !s.showNames })),
     }),
     {
       name: "ror2-display",

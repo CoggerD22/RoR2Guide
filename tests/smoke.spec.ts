@@ -736,9 +736,14 @@ test("display controls: DLC badge, descriptions toggle and density (PLAN §8)", 
     "aria-pressed",
     "true",
   );
-  // Dense drops the name label, leaving the icon — the point is items per screen.
+  // Names are an INDEPENDENT toggle, not a density side-effect: a dense grid with names
+  // is a legitimate want, and folding the two together made it impossible to ask for.
   const plannerCard = page.getByRole("button", { name: /^Crowbar/ }).first();
-  await expect(plannerCard).toBeVisible();
+  await expect(plannerCard).toContainText("Crowbar");
+  await page.getByRole("button", { name: "Names" }).click();
+  await expect(page.getByRole("button", { name: /^Crowbar/ }).first()).not.toContainText("Crowbar");
+  await page.getByRole("button", { name: "Names" }).click();
+  await expect(page.getByRole("button", { name: /^Crowbar/ }).first()).toContainText("Crowbar");
 
   await page.getByRole("button", { name: "Comfortable" }).click();
 });

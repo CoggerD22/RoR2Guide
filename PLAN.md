@@ -1345,8 +1345,13 @@ needs and the right answer depends on the moment.
 
 - **Comfortable** — today's size.
 - **Compact** — smaller cards, more columns.
-- **Dense** — icon-only, maximum items per screen, for mid-run glancing.
+- **Dense** — smallest cards, maximum items per screen, for mid-run glancing.
 - Same control on both pages, same persisted preference.
+- **Names are a separate toggle, not a density side-effect.** Dense initially hid names
+  outright, which forced a choice between "most items on screen" and "readable at a
+  glance". Those are different wants, and folding them together made "dense grid *with*
+  names" impossible to ask for. Two independent switches (Names, Descriptions) plus three
+  densities covers every combination without a mode matrix to learn.
 
 ### 8.4 No dead space
 
