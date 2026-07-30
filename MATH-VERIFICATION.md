@@ -2236,3 +2236,51 @@ produced the Shared Design and His Spiteful Boon corrections. It stays `langfile
 **Forgive Me Please** likewise: `DeathProjectile` gives `baseDuration 8.0` (confirming "8
 seconds") but the "every 1 second" tick is not in the prefab's numeric fields, so the record
 is not upgraded on a partial reading.
+
+### 3j.41 Preon Accumulator — both damage figures were exactly half
+
+**163 -> 164 of 217.** §3j.40 left this one unverified because the coefficients were visible
+but their *composition* was not, and the two possible readings differed by a factor of two.
+Resolving that composition shows our numbers were the low one, in both places.
+
+Three named lines settle it:
+
+```
+EquipmentSlot:394        FireProjectileWithoutDamageType(BeamSphere, …, characterBody.damage * 2f, …)
+ProjectileExplosion:167  blastAttack.baseDamage = projectileDamage.damage * blastDamageCoefficient
+ProjectileProximityBeamController:124  lightningOrb.damageValue = projectileDamage.damage * damageCoefficient
+```
+
+The projectile is fired at **twice** the body's damage, and both effects multiply *that*:
+
+| Claim | Published | Actual |
+| --- | --- | --- |
+| Detonation | 4000% | `2 x 40` = **8000%** |
+| Tendril zap | "up to 600%/second" | `2 x 2` = **400% per zap** |
+
+Both were exactly half, which is the signature of the `* 2f` never being counted — almost
+certainly inherited from a third-party source that made the same omission.
+
+I confirmed there is only one explosion component on `BeamSphere` and read the fields my
+earlier numeric dump had filtered out as 0/1: `calculateTotalDamage: 0` and
+`totalDamageMultiplier: 0.0`, which rules out the alternate code path in
+`ProjectileExplosion` and makes the simple multiplication the operative one.
+
+Also recorded, none of it previously stated: the blast uses **SweetSpot falloff**, so 8000% is
+the centre value tapering to the 20m edge; zaps fire every 0.05s with a 0.33s per-target
+refresh and carry a proc coefficient of only **0.1**, so the tendrils barely trigger on-hit
+items; and firing applies `TakeDamageForce(direction * -1500f)` — **it knocks you backwards**.
+
+The vague "up to 600% damage/second" is replaced by the per-zap figure plus the interval
+facts, because a single DPS number cannot be honest here: the rate a given target takes
+depends on the interaction between the 0.05s fire interval and the 0.33s target-list refresh.
+
+#### `data:diff` had to learn about documented divergence
+
+Correcting the description made `data:diff` report Preon as *missing* the game's 600 and 4000
+— true, and deliberate. Left alone it would train a reader to ignore that report. It now
+suppresses the warning only when a record is `code`/`asset`-verified **and** carries a
+`descriptionNote` explaining the divergence on the page itself. Undocumented omissions and
+unverified records are still flagged; I confirmed that by changing Crowbar's 75% to 70% and
+watching it fire. (My first attempt at that test used a regex that silently matched nothing —
+the same trap as §3j.32.)

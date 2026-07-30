@@ -4799,7 +4799,7 @@
     "tier": "equipment",
     "dlc": "base",
     "pickupText": "Fire a ball of energy that electrocutes nearby enemies before detonating.",
-    "description": "Fire preon tendrils that zap enemies within 35m for up to 600% damage/second. On contact, detonate in a 20m explosion for 4000% damage. Cooldown: 140s.",
+    "description": "Fire preon tendrils that zap enemies within 35m for 400% base damage per zap. On contact, detonate in a 20m explosion for 8000% base damage. Firing knocks you backwards. Cooldown: 140s.",
     "stacking": [],
     "tags": [
       "damage",
@@ -4809,13 +4809,14 @@
     "icon": "/icons/preon-accumulator.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Preon_Accumulator",
     "verified": true,
-    "confidence": "langfile",
+    "confidence": "code",
     "unlock": {
       "challenge": "[REDACTED]",
       "requirement": "Open the Timed Security Chest on Rallypoint Delta."
     },
     "cooldown": 140,
-    "activated": true
+    "activated": true,
+    "descriptionNote": "Both damage figures were previously stated at half their real value. The projectile is fired with `characterBody.damage * 2f` (EquipmentSlot), and both effects multiply that: the blast is `projectileDamage.damage * blastDamageCoefficient` with a coefficient of 40 (ProjectileExplosion), giving 8000%; each tendril zap is `projectileDamage.damage * damageCoefficient` with a coefficient of 2 (ProjectileProximityBeamController), giving 400%. The blast uses SweetSpot falloff, so 8000% is the centre value and it tapers toward the 20m edge. Zaps fire every 0.05s with a 0.33s per-target refresh and carry a proc coefficient of only 0.1."
   },
   {
     "id": "the-back-up",

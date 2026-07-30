@@ -139,7 +139,14 @@ function main(): number {
       // Extra numbers on our side are usually the "Cooldown: Ns" we add to
       // equipment, which the game stores outside the description text.
       const missing = game.filter((n) => !ours.has(n));
-      if (missing.length > 0) {
+      // A code/asset-verified record with a `descriptionNote` has deliberately replaced the
+      // game's figure with the verified one and said so on the page — Preon Accumulator's
+      // blast is 8000%, not the 4000% the game claims. Flagging that as a missing number
+      // would train the reader of this report to ignore it. Records without a note, or not
+      // yet verified, are still reported: an undocumented omission is a real defect.
+      const documentedDivergence =
+        !!it.descriptionNote && (it.confidence === "code" || it.confidence === "asset");
+      if (missing.length > 0 && !documentedDivergence) {
         numberDiffs.push(
           `${it.name}: missing ${missing.map((n) => `[${n}]`).join(" ")}  «${stripTags(g.desc)}»`,
         );
