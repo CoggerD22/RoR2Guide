@@ -344,12 +344,12 @@ export interface ShrineRef {
 export const SHRINES: ShrineRef[] = [
   {
     name: "Shrine of Chance",
-    cost: "Escalating gold",
+    cost: "17 gold, x1.4 per success (max 2)",
     description: "When activated by a survivor the Shrine of Chance has a chance to drop an item of random rarity or a random equipment item.",
   },
   {
     name: "Shrine of Blood",
-    cost: "50% → 75% → 93.75% of max health",
+    cost: "50% -> 75% -> 93.75% of max health (max 3)",
     description: "When activated by a survivor the Shrine of Blood consumes a percentage of the survivors health in exchange for gold equal to half the amount of HP taken.",
     // ShrineBloodBehavior (code) + the shrineblood prefab (constants):
     //   maxPurchaseCount = 3, goldToPaidHpRatio = 0.5, costMultiplierPerPurchase = 2,
@@ -378,7 +378,7 @@ export const SHRINES: ShrineRef[] = [
   },
   {
     name: "Shrine of the Woods",
-    cost: "Gold, repeatable",
+    cost: "25 gold, x1.5 per use (max 3)",
     description: "When activated by a survivor the Shrine of the Woods will create a circular field around it that heals all allies when inside it.",
   },
   {
@@ -388,7 +388,7 @@ export const SHRINES: ShrineRef[] = [
   },
   {
     name: "Halcyon Shrine",
-    cost: "Gold, siphoned from nearby survivors",
+    cost: "Siphons gold within 30m; tiers at 75 / 150 / 300 (scales with difficulty)",
     description: "A Shrine created from a shard from Meridian imbued with Aurelionite's energy. When the Shrine is activated it begins siphoning gold from nearby Survivors up until a maximum gold amount has been stored. After the first tier has been reached, the player can interact with the Shrine early and ending the gold siphon or wait till the final tier is reached. Interacting with the Shrine summons a slumbering Halcyonite and on its defeat an Aurelionite Fragment will drop. Depending on the amount of gold drained the Fragment gains more options and allow more items to be selected from the Fragment.",
   },
   {
@@ -398,7 +398,7 @@ export const SHRINES: ShrineRef[] = [
   },
   {
     name: "Cleansing Pool",
-    cost: "1 Lunar item or Lunar Equipment",
+    cost: "1 Lunar item or equipment",
     description: "Allows survivors to sacrifice a random Lunar item or Lunar Equipment in exchange for a Pearl item.",
   },
   {

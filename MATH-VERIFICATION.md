@@ -2563,3 +2563,50 @@ two states.
 The Playwright assertion that Tactical Dive reads "unverified" failed, correctly, and is now
 `no attack` — the fifth test in this programme converted from asserting a gap to asserting a
 fact.
+
+### 3j.48 Shrine costs — the last `adequate: false` field on the site
+
+`shrines.cost` was the final field still flagged as weakly sourced: an editorial one-liner
+("Escalating gold", "Gold, repeatable") describing something the game states precisely.
+
+Every shrine prefab carries a `PurchaseInteraction` with `cost`, `costType`,
+`costMultiplierPerPurchase` and `maxPurchaseCount`. Reading them turns eight vague phrases
+into exact ones:
+
+| Shrine | Was | Asset values |
+| --- | --- | --- |
+| Chance | "Escalating gold" | cost 17, Money, x1.4, **max 2** |
+| Blood | "50% → 75% → 93.75%" | cost 50, PercentHealth, x2 compounding, **max 3** |
+| The Woods | "Gold, repeatable" | cost 25, Money, x1.5, **max 3** |
+| Halcyon | "Gold, siphoned from nearby survivors" | drains 1 gold per tick at 5/s within 30m; tiers 75 / 150 / 300, difficulty-scaled |
+| Cleansing Pool | "1 Lunar item or Lunar Equipment" | cost 1, `LunarItemOrEquipment` |
+| Order | "1 Lunar Coin" | cost 1, `LunarCoin` — already exact |
+| Combat, Mountain | "Free" | `CostTypeIndex.None` — confirmed free |
+
+The purchase **caps** were the substantive gain: "repeatable" gave no hint that the Woods
+stops after three uses or that Chance stops after two.
+
+Shrine of the Mountain is worth a note — its prefab has `cost: 20` but `costType: None`, so
+nothing is charged. Reading the number without the type would have invented a 20-gold price.
+
+**Two rows are deliberately not numeric.** Shrine of Shaping takes a Soul offering and Shrine
+of Rebirth takes an item choice; neither is a `PurchaseInteraction` price, so they describe a
+mechanic and the provenance says so.
+
+I also nearly recorded a false correction here. `HalcyoniteShrineInteractable` has
+`maxGoldCost 300 / midGoldCost 150 / lowGoldCost 75`, and I briefly took that as proof that
+"Shrine of Shaping" — whose cost we list as a Soul offering — was really a gold shrine. It is
+not: the tokens are two different shrines, `SHRINE_COLOSSUS_NAME` = "Shrine of Shaping" and
+`SHRINE_HALCYONITE_NAME` = "Halcyon Shrine". Both of our entries were right. Checking the
+name token rather than trusting the association is what stopped it.
+
+**Every field in `REFERENCE_PROVENANCE` is now `adequate: true`.** Nothing on the site is
+shown with a source weaker than the claim it makes.
+
+#### The test that punished finishing
+
+The Playwright assertion for weakly-sourced fields required at least one to exist, so closing
+the last one **broke the test for the crime of completing the work**. Restructured: it still
+checks each dataset against `inadequateFields()`, and when none are weak it asserts exactly
+that instead of demanding a failure to point at. Incentives in a test suite matter — one that
+only passes while a gap remains will eventually be satisfied by leaving the gap.

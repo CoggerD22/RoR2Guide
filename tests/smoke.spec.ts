@@ -324,9 +324,23 @@ test("every reference dataset states where its data came from", async ({ page })
       strongSeen++;
     }
   }
-  // Both branches must actually be exercised, or this test could pass vacuously.
-  expect(weakSeen, "no dataset has a weak field — the warning path is untested").toBeGreaterThan(0);
-  expect(strongSeen, "no dataset is fully sourced — the clean path is untested").toBeGreaterThan(0);
+  // At least one dataset must render, or the loop above proved nothing.
+  expect(weakSeen + strongSeen, "no reference dataset was checked at all").toBe(
+    Object.keys(TABS).length,
+  );
+
+  // This deliberately does NOT require a weakly-sourced dataset to exist. It used to, and
+  // that inverted the incentive: closing the last `adequate: false` field (shrines.cost,
+  // MATH-VERIFICATION §3j.48) broke the test for the crime of finishing the work. The
+  // per-dataset branch above still covers a regression the moment one reappears.
+  if (weakSeen === 0) {
+    for (const dataset of Object.keys(TABS)) {
+      expect(
+        inadequateFields(dataset as never),
+        `${dataset} reported a weak field after the loop said none existed`,
+      ).toEqual([]);
+    }
+  }
 });
 
 test("breakpoints tab shows computed, code-verified milestones", async ({ page }) => {

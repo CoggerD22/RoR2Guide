@@ -90,7 +90,18 @@ export const REFERENCE_PROVENANCE: Record<string, DatasetSources> = {
     name: { tier: "langfile", ref: "SHRINE_*_NAME / NEWT_STATUE_NAME", adequate: true },
     description: { tier: "langfile", ref: "SHRINE_*_DESCRIPTION, quoted verbatim", adequate: true },
     mechanic: { tier: "code", ref: "Shrine*Behavior + the shrine prefab's serialized fields", adequate: true },
-    cost: { tier: "editorial", ref: "our one-line summary; the game states cost in prose", adequate: false },
+    cost: {
+      tier: "asset",
+      // Was an editorial one-liner ("Escalating gold", "Gold, repeatable"). Now read from
+      // each shrine prefab's PurchaseInteraction — cost, costType, costMultiplierPerPurchase
+      // and maxPurchaseCount — plus HalcyoniteShrineInteractable's gold-drain tiers.
+      //
+      // Two rows describe a non-numeric cost because the game charges no price: Shrine of
+      // Shaping takes a Soul offering and Shrine of Rebirth takes an item choice, neither of
+      // which is a PurchaseInteraction value. Those are mechanics, stated as such.
+      ref: "PurchaseInteraction on each shrine prefab (cost/costType/costMultiplierPerPurchase/maxPurchaseCount); HalcyoniteShrineInteractable for the gold-drain tiers",
+      adequate: true,
+    },
   },
   loadoutUnlocks: {
     skill: { tier: "asset", ref: "SkillFamily.variants[].skillDef", adequate: true },
