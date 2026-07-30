@@ -60,6 +60,18 @@ export function SkillProcPanel({ survivorId }: { survivorId: string }) {
                         >
                           {s.proc}
                         </span>
+                      ) : s.damaging === false ? (
+                        /*
+                          Not a gap. These states have no damage path at all — a dash, a
+                          stance swap, an aim state — so there is no coefficient to find.
+                          Rendering them as "unverified" claimed ignorance we do not have.
+                        */
+                        <span
+                          className="text-[11px] italic text-muted-foreground/70"
+                          title="This skill has no damage-dealing path, so a proc coefficient does not apply"
+                        >
+                          no attack
+                        </span>
                       ) : (
                         <span className="text-[11px] italic text-muted-foreground">unverified</span>
                       )}
@@ -74,8 +86,10 @@ export function SkillProcPanel({ survivorId }: { survivorId: string }) {
       <p className="mt-2 text-[11px] leading-relaxed text-muted-foreground">
         A skill&rsquo;s proc coefficient scales how often it triggers on-hit items. Values are read
         from the game&rsquo;s own skill configs, projectile prefabs, and code (hover a value for its
-        source). &ldquo;Unverified&rdquo; means we could not establish a value from game data &mdash;
-        it does <em>not</em> mean the skill cannot proc.
+        source). &ldquo;No attack&rdquo; means the skill has no damage-dealing path at all, so a
+        coefficient does not apply &mdash; that is a verified fact, not a gap.
+        &ldquo;Unverified&rdquo; means we could not establish a value from game data, and does
+        <em>not</em> mean the skill cannot proc.
       </p>
     </section>
   );

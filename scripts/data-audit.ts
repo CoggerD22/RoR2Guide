@@ -231,6 +231,7 @@ function main(): number {
   // --- Skills / proc coefficients (if present) ------------------------------
   let skillCount = 0;
   let procVerified = 0;
+  let noAttack = 0;
   if (existsSync(skillsPath)) {
     let kraw: unknown;
     try {
@@ -256,12 +257,21 @@ function main(): number {
       for (const sk of entry.skills) {
         skillCount++;
         if (sk.verified) procVerified++;
+        // A skill with no damage path has nothing to verify; counting it as unverified
+        // overstates the gap, which is how 21 skills were reported when only 2 were
+        // genuinely unknown (MATH-VERIFICATION §3j.47).
+        else if (sk.damaging === false) noAttack++;
       }
     }
-    const unverified = skillCount - procVerified;
+    const unverified = skillCount - procVerified - noAttack;
     if (unverified) {
       warnings.push(
-        `${unverified}/${skillCount} skills have no verified proc coefficient (proc:null) — see MATH-VERIFICATION.md Phase 5`,
+        `${unverified}/${skillCount} skills have an unknown proc coefficient — see MATH-VERIFICATION.md Phase 5`,
+      );
+    }
+    if (noAttack) {
+      console.log(
+        `  ${noAttack}/${skillCount} skills have no damage path at all (proc not applicable)`,
       );
     }
   }

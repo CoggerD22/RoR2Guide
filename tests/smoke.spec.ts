@@ -116,9 +116,13 @@ test("stat lab shows verified proc coefficients and marks unverified honestly", 
   const doubleTap = panel.locator("tr", { hasText: "Double Tap" });
   await expect(doubleTap).toContainText("1");
 
-  // Unverified skills must read "unverified" — never a number, never 0.
+  // A skill with no damage path reads "no attack" — a verified fact, not a gap. This used
+  // to assert "unverified" for Tactical Dive, which overstated our ignorance: a dash does
+  // not have an unknown proc coefficient, it has no attack (MATH-VERIFICATION §3j.47).
   const dive = panel.locator("tr", { hasText: "Tactical Dive" });
-  await expect(dive).toContainText("unverified");
+  await expect(dive).toContainText("no attack");
+  // Whichever label applies, it is never rendered as a bare number.
+  await expect(dive).not.toContainText(/^\s*0\s*$/);
 
   // Switching survivor swaps the table (Huntress' Strafe is 1, Laser Glaive 0.8).
   await page.getByRole("button", { name: "Huntress", exact: true }).click();

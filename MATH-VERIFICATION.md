@@ -2516,3 +2516,50 @@ Nine new tests, including that an out-of-range goal cannot survive an encode/dec
 Also removed a stale docstring my own §3j.45 edit had orphaned: the old v1→v2 migration
 comment was left stranded above `sanitizeEntry`, describing the wrong function. Small, but
 it is the second time in two passes that a correction left misleading documentation behind.
+
+### 3j.47 The proc-coefficient gap closes — and 19 of 21 were never a gap
+
+`skills.json` had carried 21 skills at `proc: null` since Phase 5, rendered in the Stat Lab as
+"unverified" and reported by `data:audit` as a standing warning. The PLAN's own "next up" said
+these needed splitting into genuinely non-damaging skills versus truly unknown ones. Doing it:
+
+**19 of the 21 have no damage path at all. 2 have a verified coefficient of 0. None are unknown.**
+
+`scripts/classify-nondamaging-skills.py` checks each skill's state class — and one transition
+onward — for any damage-dealing API (`BlastAttack`, `OverlapAttack`, `BulletAttack`,
+`FireProjectile`, `TakeDamage`, `InflictDot`, orbs, or a `procCoefficient` field). Deliberately
+conservative: any hit at all keeps a skill out of the "no attack" category, because a false
+"no proc" is a *claim* whereas a false "unverified" is only a shrug.
+
+The 19 are what you would expect once stated plainly — Tactical Dive, Tactical Slide, both
+Huntress blinks, Retool, Power Mode, both Engineer turret placements, Shadowfade, Trespass,
+Sojourn, Reprieve, Meridian's Will, ADMIN-OVERRIDE, CMD-SWARM, Ascent Protocol, Repossess,
+Salvage, Orbital Supply Beacon. Dashes, stance swaps, aim states and placements. **A dash does
+not have an unknown proc coefficient; it has no attack.** Reporting that as unverified claimed
+ignorance we did not have, which is the exact mirror of this project's usual failure mode and
+just as misleading.
+
+The two REX skills the classifier flagged as *damaging* resolve to a real zero:
+
+```
+DIRECTIVE: Disperse  FireSonicBoom.CalculateProcCoefficient() => return 0f;
+Tangling Growth      FireFlower2: damageInfo.procCoefficient = 0f;
+```
+
+Both now `proc: 0, verified: true` with that provenance. Tangling Growth's is a self-damage
+path (`attacker = null`, `NonLethal | BypassArmor`, applied to the caster) — the skill's own
+hits genuinely carry no proc.
+
+**125 skills: 106 with a verified coefficient, 19 with no attack, 0 unknown.**
+`data:audit`'s long-standing proc warning is gone, replaced by an informational line.
+
+A new schema field carries the distinction rather than overloading `proc`. The schema had an
+explicit rule — *"a null proc means 'not yet verified', NOT 'does not proc'"* — so
+`damaging: false` was added instead of setting `proc: 0`, which would have conflated "attacks,
+with a coefficient of zero" (the REX case) with "does not attack" (the other 19). The Stat Lab
+now renders "no attack" with its own tooltip, and its explanatory paragraph distinguishes the
+two states.
+
+The Playwright assertion that Tactical Dive reads "unverified" failed, correctly, and is now
+`no attack` — the fifth test in this programme converted from asserting a gap to asserting a
+fact.

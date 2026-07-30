@@ -292,12 +292,27 @@ export const skillSchema = z
     proc: z.number().nullable(),
     procSource: z.string().min(1),
     verified: z.boolean(),
+    /**
+     * False when the skill's state has NO damage-dealing path at all — a dash, a stance
+     * swap, an aim state, a turret placement.
+     *
+     * Distinct from `proc: null`, which means "we could not establish a value". Conflating
+     * them made the Stat Lab report 21 skills as unverified when 19 of them have nothing to
+     * verify: Tactical Dive does not have an unknown proc coefficient, it has no attack.
+     * Reporting a known thing as unknown is the mirror of this project's usual failure and
+     * just as misleading.
+     *
+     * Established by scripts/classify-nondamaging-skills.py, which is deliberately
+     * conservative — any reference to a damage API, in the state or one transition onward,
+     * keeps a skill out of this category.
+     */
+    damaging: z.boolean().optional(),
     /** For item-granted kits (Heretic): the item that grants this skill. */
     grantedBy: z.string().min(1).optional(),
   })
   .strict()
-  .refine((s) => (s.proc === null) === !s.verified, {
-    message: "`verified` must be true exactly when `proc` is non-null",
+  .refine((s) => s.damaging === false || (s.proc === null) === !s.verified, {
+    message: "`verified` must be true exactly when `proc` is non-null (unless damaging:false)",
     path: ["verified"],
   });
 export type Skill = z.infer<typeof skillSchema>;

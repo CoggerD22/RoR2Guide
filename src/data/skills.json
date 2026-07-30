@@ -32,16 +32,18 @@
         "name": "Tactical Dive",
         "state": "EntityStates.Commando.DodgeState",
         "proc": null,
-        "procSource": "review:unresolved",
-        "verified": false
+        "procSource": "code:no-damage-path",
+        "verified": false,
+        "damaging": false
       },
       {
         "slot": "utility",
         "name": "Tactical Slide",
         "state": "EntityStates.Commando.SlideState",
         "proc": null,
-        "procSource": "review:unresolved",
-        "verified": false
+        "procSource": "code:no-damage-path",
+        "verified": false,
+        "damaging": false
       },
       {
         "slot": "special",
@@ -94,16 +96,18 @@
         "name": "Blink",
         "state": "EntityStates.Huntress.BlinkState",
         "proc": null,
-        "procSource": "review:unresolved",
-        "verified": false
+        "procSource": "code:no-damage-path",
+        "verified": false,
+        "damaging": false
       },
       {
         "slot": "utility",
         "name": "Phase Blink",
         "state": "EntityStates.Huntress.MiniBlinkState",
         "proc": null,
-        "procSource": "review:unresolved",
-        "verified": false
+        "procSource": "code:no-damage-path",
+        "verified": false,
+        "damaging": false
       },
       {
         "slot": "special",
@@ -242,16 +246,18 @@
         "name": "Retool",
         "state": "EntityStates.Toolbot.StartToolbotStanceSwap",
         "proc": null,
-        "procSource": "review:unresolved",
-        "verified": false
+        "procSource": "code:no-damage-path",
+        "verified": false,
+        "damaging": false
       },
       {
         "slot": "special",
         "name": "Power Mode",
         "state": "EntityStates.Toolbot.ToolbotDualWieldStart",
         "proc": null,
-        "procSource": "review:unresolved",
-        "verified": false
+        "procSource": "code:no-damage-path",
+        "verified": false,
+        "damaging": false
       }
     ]
   },
@@ -304,16 +310,18 @@
         "name": "TR12 Gauss Auto-Turret",
         "state": "EntityStates.Engi.EngiWeapon.PlaceTurret",
         "proc": null,
-        "procSource": "review:unresolved",
-        "verified": false
+        "procSource": "code:no-damage-path",
+        "verified": false,
+        "damaging": false
       },
       {
         "slot": "special",
         "name": "TR58 Carbonizer Turret",
         "state": "EntityStates.Engi.EngiWeapon.PlaceWalkerTurret",
         "proc": null,
-        "procSource": "review:unresolved",
-        "verified": false
+        "procSource": "code:no-damage-path",
+        "verified": false,
+        "damaging": false
       }
     ]
   },
@@ -473,9 +481,9 @@
         "slot": "utility",
         "name": "DIRECTIVE: Disperse",
         "state": "EntityStates.Treebot.Weapon.ChargeSonicBoom",
-        "proc": null,
-        "procSource": "review:unresolved",
-        "verified": false
+        "proc": 0,
+        "procSource": "code:FireSonicBoom.CalculateProcCoefficient=0f",
+        "verified": true
       },
       {
         "slot": "utility",
@@ -497,9 +505,9 @@
         "slot": "special",
         "name": "Tangling Growth",
         "state": "EntityStates.PrepFlower2",
-        "proc": null,
-        "procSource": "review:unresolved",
-        "verified": false
+        "proc": 0,
+        "procSource": "code:FireFlower2 damageInfo.procCoefficient=0f",
+        "verified": true
       }
     ]
   },
@@ -660,8 +668,9 @@
         "name": "Orbital Supply Beacon",
         "state": "EntityStates.Captain.Weapon.SetupSupplyDrop",
         "proc": null,
-        "procSource": "review:unresolved",
-        "verified": false
+        "procSource": "code:no-damage-path",
+        "verified": false,
+        "damaging": false
       }
     ]
   },
@@ -693,8 +702,9 @@
         "grantedBy": "Strides of Heresy",
         "state": "EntityStates.GhostUtilitySkillState",
         "proc": null,
-        "procSource": "review:unresolved",
-        "verified": false
+        "procSource": "code:no-damage-path",
+        "verified": false,
+        "damaging": false
       },
       {
         "slot": "special",
@@ -794,8 +804,9 @@
         "name": "「?Tr?espass】",
         "state": "EntityStates.VoidSurvivor.VoidBlinkBase+VoidBlinkUp",
         "proc": null,
-        "procSource": "review:unresolved",
-        "verified": false
+        "procSource": "code:no-damage-path",
+        "verified": false,
+        "damaging": false
       },
       {
         "slot": "special",
@@ -840,16 +851,18 @@
         "name": "Sojourn",
         "state": "EntityStates.Seeker.Sojourn",
         "proc": null,
-        "procSource": "review:unresolved",
-        "verified": false
+        "procSource": "code:no-damage-path",
+        "verified": false,
+        "damaging": false
       },
       {
         "slot": "utility",
         "name": "Reprieve",
         "state": "EntityStates.Seeker.Reprieve",
         "proc": null,
-        "procSource": "review:unresolved",
-        "verified": false
+        "procSource": "code:no-damage-path",
+        "verified": false,
+        "damaging": false
       },
       {
         "slot": "special",
@@ -910,8 +923,9 @@
         "name": "Meridian's Will",
         "state": "EntityStates.FalseSon.MeridiansWillAim",
         "proc": null,
-        "procSource": "review:unresolved",
-        "verified": false
+        "procSource": "code:no-damage-path",
+        "verified": false,
+        "damaging": false
       },
       {
         "slot": "special",
@@ -1010,24 +1024,27 @@
         "name": "ADMIN-OVERRIDE",
         "state": "EntityStates.DroneTech.Weapon.Activate",
         "proc": null,
-        "procSource": "review:unresolved",
-        "verified": false
+        "procSource": "code:no-damage-path",
+        "verified": false,
+        "damaging": false
       },
       {
         "slot": "secondary",
         "name": "CMD-SWARM",
         "state": "EntityStates.DroneTech.Weapon.Paint.Paint",
         "proc": null,
-        "procSource": "review:unresolved",
-        "verified": false
+        "procSource": "code:no-damage-path",
+        "verified": false,
+        "damaging": false
       },
       {
         "slot": "utility",
         "name": "Ascent Protocol",
         "state": "EntityStates.DroneTech.DroneLeap",
         "proc": null,
-        "procSource": "review:unresolved",
-        "verified": false
+        "procSource": "code:no-damage-path",
+        "verified": false,
+        "damaging": false
       },
       {
         "slot": "utility",
@@ -1088,8 +1105,9 @@
         "name": "Repossess",
         "state": "EntityStates.Drifter.AimRepossess",
         "proc": null,
-        "procSource": "review:unresolved",
-        "verified": false
+        "procSource": "code:no-damage-path",
+        "verified": false,
+        "damaging": false
       },
       {
         "slot": "utility",
@@ -1104,8 +1122,9 @@
         "name": "Salvage",
         "state": "EntityStates.Drifter.Salvage",
         "proc": null,
-        "procSource": "review:unresolved",
-        "verified": false
+        "procSource": "code:no-damage-path",
+        "verified": false,
+        "damaging": false
       },
       {
         "slot": "special",
