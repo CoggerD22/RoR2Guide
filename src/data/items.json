@@ -532,7 +532,8 @@
     "icon": "/icons/power-elixir.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Power_Elixir",
     "verified": true,
-    "confidence": "langfile"
+    "confidence": "code",
+    "descriptionNote": "The 25% threshold is measured on (health + shield) / combined health, not health alone (HealthComponent.isHealthLow, lowHealthFraction = 0.25f) — so on a shielded build it triggers at a different point than the wording implies. The heal is HealFraction(0.75f), i.e. 75% of MAXIMUM health rather than missing health."
   },
   {
     "id": "repulsion-armor-plate",
@@ -1640,7 +1641,8 @@
         "stat": "Chance on kill to drop treasure (%)",
         "base": 4,
         "perStack": 4,
-        "type": "linear"
+        "type": "linear",
+        "formula": "LocalCheckRoll(4f * n) on kill (GlobalEventManager). Linear at 4% per stack. NOT yet verified: the $25 value is not on the BonusMoneyPack prefab, which carries no goldReward component — so the payout figure remains game-text-sourced."
       }
     ],
     "tags": [

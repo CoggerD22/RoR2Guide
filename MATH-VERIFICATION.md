@@ -2610,3 +2610,37 @@ the last one **broke the test for the crime of completing the work**. Restructur
 checks each dataset against `inadequateFields()`, and when none are weak it asserts exactly
 that instead of demanding a failure to point at. Incentives in a test suite matter — one that
 only passes while a gap remains will eventually be satisfied by leaving the gap.
+
+### 3j.49 Power Elixir — the threshold is not what the wording says
+
+**173 -> 174 of 217.** Both numbers in Power Elixir's description are exactly right, and the
+condition behind them is not:
+
+```csharp
+public bool isHealthLow => (health + shield) / fullCombinedHealth <= lowHealthFraction;
+lowHealthFraction = 0.25f;
+...
+HealFraction(0.75f, default(ProcChainMask));
+```
+
+"Taking damage to below 25% health" is measured on **health plus shield over combined
+health**, not health alone. On a Transcendence or Silence Between Two Strikes build — where
+almost all of the pool is shield — the item fires at a materially different point than the
+sentence implies, and a player relying on "25% health" would misjudge it. `HealFraction(0.75f)`
+is also 75% of *maximum* health, not of missing health, which the wording leaves ambiguous.
+Both recorded.
+
+**Ghor's Tome is deliberately left `langfile`.** Its 4% per stack is verified —
+`LocalCheckRoll(4f * n)` — but the "$25" is not: the handler spawns
+`Prefabs/NetworkedObjects/BonusMoneyPack`, and that prefab carries **no `goldReward` component
+at all**. The only objects with `goldReward` in the whole bundle set are the three barrels
+(Barrel1 8, VoidCoinBarrel 25, DrifterBarrel 4). VoidCoinBarrel's 25 is a tempting match and
+is a *different object* — taking it would be exactly the Halcyon/Shaping mistake from §3j.48,
+where a plausible number from a neighbouring prefab nearly became a false correction. Half the
+record is verified, so the record is not.
+
+That is now the standing shape of the remaining backlog: most of the surviving 43 are not
+unverifiable, they are **partially** verified — a chance confirmed but a payout not, a radius
+found but a coefficient's composition ambiguous. Upgrading them on the verified half would
+inflate the coverage number while leaving the unverified half indistinguishable from the rest,
+which is the precise failure this programme was built to end.
