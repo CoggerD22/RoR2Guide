@@ -19,7 +19,7 @@
  * Old links (plain id lists with no suffixes) decode unchanged — a shared plan from
  * before this feature must not break.
  */
-import { DEFAULT_PRIORITY, type PlanEntry, type Priority } from "@/store/planner";
+import { DEFAULT_PRIORITY, MAX_GOAL, MIN_GOAL, type PlanEntry, type Priority } from "@/store/planner";
 
 export type Plan = Record<string, PlanEntry>;
 
@@ -71,8 +71,13 @@ function parseToken(token: string): { id: string; priority: Priority; goal?: num
   if (!id) return { id: "", priority: DEFAULT_PRIORITY };
   const rest = trimmed.slice(id.length);
   const priorityCode = /^!([hml])/.exec(rest)?.[1];
+  // Out-of-range goals are DROPPED, not clamped. `Math.max(1, …)` used to turn `*0` into a
+  // goal of 1 — inventing an intention the link never expressed — and imposed no ceiling at
+  // all, so `*99999999999999999999` decoded to 1e20 and re-encoded into the next share link.
   const goalRaw = /\*(\d+)/.exec(rest)?.[1];
-  const goal = goalRaw ? Math.max(1, parseInt(goalRaw, 10)) : undefined;
+  const parsed = goalRaw ? parseInt(goalRaw, 10) : NaN;
+  const goal =
+    Number.isInteger(parsed) && parsed >= MIN_GOAL && parsed <= MAX_GOAL ? parsed : undefined;
   return {
     id,
     priority: (priorityCode && CODE_TO_PRIORITY[priorityCode]) || DEFAULT_PRIORITY,

@@ -2470,3 +2470,49 @@ This is the first defect in this programme that was a **code** bug rather than a
 it is worth noting that it was found the same way as all the others: by asking what happens if
 the input is not what I assume. Nothing about "the data is verified" implied the store that
 holds it was safe.
+
+### 3j.46 Share links and the goal bound — four entry points, one authority
+
+Continuing into the code paths a user's data actually travels. `planUrl` decodes links written
+by *other people*, which is the least trusted input on the site.
+
+Most of it degrades well already — an unknown suffix falls back to the bare id rather than
+producing a phantom, unknown ids are filtered, `CROWBAR` is rejected, and a
+`crowbar<script>` token yields the id `crowbar` and nothing else. Two things did not:
+
+```
+?t=crowbar*99999999999999999999   ->  goal: 100000000000000000000   (and re-encodes into the next link)
+?t=crowbar*0                      ->  goal: 1                       (a goal the link never expressed)
+```
+
+`Math.max(1, parseInt(…))` imposed **no ceiling** and **invented a floor**. Worse, the number
+survived a round trip: encoding that plan produced `t=crowbar!h*100000000000000000000`, so one
+hand-edited link would propagate to everyone it was shared with.
+
+The bound already existed and was simply never enforced: the goal input is declared
+`min={1} max={99}`, which is an HTML *hint* a user bypasses by typing or pasting. There were
+**four** ways into `goal` and each had a different opinion:
+
+| Entry point | Before |
+| --- | --- |
+| `GoalField` input | `min/max` attributes only — advisory |
+| `setGoal` | `Math.max(1, floor(goal))` — floor, no ceiling |
+| `decodePlan` | `Math.max(1, parseInt())` — floor, no ceiling |
+| `migratePlannerState` | integer > 0 — and `Number.isInteger(1e20)` is **true** |
+
+Now `MIN_GOAL`/`MAX_GOAL` are exported from the store as the single authority, and all four
+enforce them. Out-of-range values from a URL are **dropped rather than clamped** — silently
+turning someone's `*500` into `*99` would be inventing an intention, whereas dropping it
+leaves the item targeted with no goal, which is what the link actually justifies. The setter
+*does* clamp, because there the user is typing and immediate feedback is the point.
+
+`importPlan` was also hardened. It is the landing point for a shared URL and took its argument
+on trust; it now runs the same `sanitizeEntry` as rehydration. `decodePlan` already validates,
+so this is defence in depth — but a public store action is exactly the thing a later caller
+reuses without re-checking.
+
+Nine new tests, including that an out-of-range goal cannot survive an encode/decode round trip.
+
+Also removed a stale docstring my own §3j.45 edit had orphaned: the old v1→v2 migration
+comment was left stranded above `sanitizeEntry`, describing the wrong function. Small, but
+it is the second time in two passes that a correction left misleading documentation behind.

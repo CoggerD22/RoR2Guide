@@ -20,6 +20,18 @@ export const PRIORITY_LABEL: Record<Priority, string> = {
 /** Sort key — high first. */
 export const PRIORITY_RANK: Record<Priority, number> = { high: 0, medium: 1, low: 2 };
 
+/**
+ * Bounds on a stack goal, enforced everywhere a goal can enter: the number input, a shared
+ * URL, and rehydrated localStorage.
+ *
+ * The input already declared `min={1} max={99}`, but that is only an HTML hint — nothing
+ * clamped the value, so `?t=crowbar*99999999999999999999` decoded to a goal of 1e20 and
+ * round-tripped straight back into a link. 99 is the existing UI contract, kept as the one
+ * authority rather than a fourth opinion.
+ */
+export const MIN_GOAL = 1;
+export const MAX_GOAL = 99;
+
 export interface PlanEntry {
   state: PlanState;
   /** Only meaningful for `targeted`; avoided items aren't ranked. */
@@ -60,13 +72,6 @@ interface PlannerState {
 export const DEFAULT_PRIORITY: Priority = "medium";
 
 /**
- * v1 → v2 persisted-state migration, exported so it can be tested directly.
- *
- * v1 stored `plan: Record<id, "targeted" | "avoided">`. Plans live in localStorage, so
- * shipping the richer shape without this would silently wipe a run someone is midway
- * through. Unrecognised values are dropped rather than imported as garbage.
- */
-/**
  * Coerce one persisted entry into a valid `PlanEntry`, or drop it.
  *
  * This exists because the v1 path validated its input and the v2 path did not — it simply
@@ -87,8 +92,16 @@ function sanitizeEntry(value: unknown): PlanEntry | null {
     ? (v.priority as Priority)
     : DEFAULT_PRIORITY;
   const entry: PlanEntry = { state: v.state, priority };
-  // A goal is optional, but a non-positive or non-integer one is meaningless.
-  if (typeof v.goal === "number" && Number.isInteger(v.goal) && v.goal > 0) entry.goal = v.goal;
+  // A goal is optional, but one outside the input's own 1..99 range is meaningless —
+  // and `Number.isInteger(1e20)` is true, so a range check is the part that matters.
+  if (
+    typeof v.goal === "number" &&
+    Number.isInteger(v.goal) &&
+    v.goal >= MIN_GOAL &&
+    v.goal <= MAX_GOAL
+  ) {
+    entry.goal = v.goal;
+  }
   return entry;
 }
 
@@ -145,11 +158,22 @@ export const usePlanner = create<PlannerState>()(
           const current = s.plan[id];
           if (!current) return s;
           const nextEntry = { ...current };
-          if (goal === null || Number.isNaN(goal)) delete nextEntry.goal;
-          else nextEntry.goal = Math.max(1, Math.floor(goal));
+          // Clamped, not just floored: the number input's max=99 is an HTML hint a user can
+          // bypass by typing or pasting, and this is the only place that can enforce it.
+          if (goal === null || !Number.isFinite(goal)) delete nextEntry.goal;
+          else nextEntry.goal = Math.min(MAX_GOAL, Math.max(MIN_GOAL, Math.floor(goal)));
           return { plan: { ...s.plan, [id]: nextEntry } };
         }),
-      importPlan: (plan) => set({ plan }),
+      // Validated, not trusted: this is the landing point for a shared URL, and a store
+      // action is exactly the kind of thing a later caller will reuse without re-checking.
+      importPlan: (plan) =>
+        set({
+          plan: Object.fromEntries(
+            Object.entries(plan ?? {})
+              .map(([id, entry]) => [id, sanitizeEntry(entry)] as const)
+              .filter((pair): pair is readonly [string, PlanEntry] => pair[1] !== null),
+          ),
+        }),
       reset: () => set({ plan: {} }),
     }),
     {

@@ -82,3 +82,35 @@ describe("planUrl", () => {
     expect(hasPlanParams("")).toBe(false);
   });
 });
+
+describe("share links are bounded, not just parsed", () => {
+  const known = (id: string) => id === "crowbar";
+
+  // A share link is untrusted input from another person. Before this, `Math.max(1, parseInt())`
+  // imposed no ceiling and invented a floor: `*99999999999999999999` decoded to a goal of 1e20
+  // and re-encoded straight into the next link, and `*0` became a goal of 1 the link never
+  // expressed.
+  it("drops an out-of-range goal instead of clamping or inventing one", () => {
+    expect(decodePlan("t=crowbar*99999999999999999999", known).crowbar.goal).toBeUndefined();
+    expect(decodePlan("t=crowbar*100", known).crowbar.goal).toBeUndefined();
+    expect(decodePlan("t=crowbar*0", known).crowbar.goal).toBeUndefined();
+    expect(decodePlan("t=crowbar*99", known).crowbar.goal).toBe(99);
+    expect(decodePlan("t=crowbar*1", known).crowbar.goal).toBe(1);
+  });
+
+  it("still degrades gracefully on malformed tokens", () => {
+    expect(decodePlan("t=crowbar!z*abc", known)).toEqual({
+      crowbar: { state: "targeted", priority: "medium" },
+    });
+    expect(decodePlan("t=CROWBAR", known)).toEqual({});
+    expect(decodePlan("t=,,,&a=,,", known)).toEqual({});
+    expect(decodePlan("t=crowbar<script>", known)).toEqual({
+      crowbar: { state: "targeted", priority: "medium" },
+    });
+  });
+
+  it("an out-of-range goal cannot survive a round trip", () => {
+    const q = encodePlan({ crowbar: { state: "targeted", priority: "high", goal: 1e20 } });
+    expect(decodePlan(q, known).crowbar.goal).toBeUndefined();
+  });
+});

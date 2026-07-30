@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { usePlanner, DEFAULT_PRIORITY, migratePlannerState } from "./planner";
+import { usePlanner, DEFAULT_PRIORITY, MIN_GOAL, MAX_GOAL, migratePlannerState } from "./planner";
 
 /**
  * The v1→v2 migration is the risky part of PLAN §5.8b: plans live in localStorage, so
@@ -141,5 +141,32 @@ describe("planner persistence is hostile-input safe", () => {
   it("survives a plan that is not an object", () => {
     expect(migrate({ plan: "corrupt" }, 2)).toEqual({ plan: {} });
     expect(migrate({ plan: [] }, 2)).toEqual({ plan: {} });
+  });
+});
+
+describe("goal bounds are enforced at every entry point", () => {
+  it("setGoal clamps rather than trusting the input's max attribute", () => {
+    usePlanner.getState().reset();
+    usePlanner.getState().cycle("crowbar");
+    usePlanner.getState().setGoal("crowbar", 1e20);
+    expect(usePlanner.getState().plan.crowbar.goal).toBe(MAX_GOAL);
+    usePlanner.getState().setGoal("crowbar", -5);
+    expect(usePlanner.getState().plan.crowbar.goal).toBe(MIN_GOAL);
+    usePlanner.getState().setGoal("crowbar", Infinity);
+    expect(usePlanner.getState().plan.crowbar.goal).toBeUndefined();
+  });
+
+  it("importPlan sanitises what it is handed", () => {
+    usePlanner.getState().reset();
+    usePlanner.getState().importPlan({
+      good: { state: "targeted", priority: "high", goal: 3 },
+      badState: { state: "nonsense", priority: "high" } as never,
+      badEntry: 42 as never,
+      badGoal: { state: "targeted", priority: "high", goal: 1e20 },
+    });
+    const plan = usePlanner.getState().plan;
+    expect(Object.keys(plan).sort()).toEqual(["badGoal", "good"]);
+    expect(plan.badGoal.goal).toBeUndefined();
+    expect(plan.good.goal).toBe(3);
   });
 });
