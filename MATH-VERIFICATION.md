@@ -2644,3 +2644,58 @@ unverifiable, they are **partially** verified — a chance confirmed but a payou
 found but a coefficient's composition ambiguous. Upgrading them on the verified half would
 inflate the coverage number while leaving the unverified half indistinguishable from the rest,
 which is the precise failure this programme was built to end.
+
+### 3j.50 Stun Grenade is hyperbolic — and a sweep of every hyperbolic call site
+
+**174 -> 175 of 217.** Stun Grenade was recorded as `linear`, 5% per stack. It is not:
+
+```csharp
+Util.CheckRoll(Util.ConvertAmplificationPercentageIntoReductionPercentage(
+    stunChanceOnHitBaseChancePercent * n * damageInfo.procCoefficient))   // 5f
+SetStun(2f);
+```
+
+That is the Tougher Times curve. The real chance is **4.76%** at one stack, 9.09% at two,
+13.04% at three, and **33.3% at ten — not 50%**. A wrong `type` is worse than a wrong number
+here, because the sparkline is *computed* from it: the codex was drawing a straight line to
+50% for a mechanic that asymptotes. `base` stays 5 per the schema convention for hyperbolic
+entries (it is the amplification input, not the displayed chance), and the proc coefficient is
+folded **inside** the amplification, as with Tentabauble.
+
+#### Sweeping every hyperbolic site
+
+Finding one mis-typed curve is a reason to check for others, so I enumerated every call to
+`ConvertAmplificationPercentageIntoReductionPercentage` and every inlined
+`1f - 100f / (100f + …)` in the assembly. There are five:
+
+| Site | Item | Status |
+| --- | --- | --- |
+| `HealthComponent:1170` | Tougher Times (15) | already hyperbolic |
+| `CharacterBody:3363` | Old Guillotine (13) | already hyperbolic |
+| `GlobalEventManager:493` | Tentabauble (5) | verified §3j.45 |
+| `SetStateOnHurt:102` | **Stun Grenade (5)** | **corrected here** |
+| `AttackSpeedPerNearbyCollider:96` | Bolstering Lantern (5) | **dead code — see below** |
+
+Plus the two inlined forms already verified: Sentient Meat Hook and Bandolier. So the
+hyperbolic surface is now fully accounted for, and Stun Grenade was the only one wrong.
+
+#### A computed value that goes nowhere
+
+`AttackSpeedPerNearbyCollider.UpdateValues` computes
+`radiusSizeGrowth = ConvertAmp(itemCount * 5)` and then sets `diameter = 40f` unconditionally.
+`radiusSizeGrowth` is **assigned once and never read anywhere in the assembly** — so Bolstering
+Lantern's radius is a flat 20m regardless of stacks, exactly as its description says.
+
+Had I taken the computed value as live, I would have added a "radius grows per stack" claim
+that is simply false — the same trap as Unstable Transmitter's unused `public const` fields in
+§3j.31. Twice now, a plausible-looking constant has been dead. **Assignment is not evidence of
+effect; only a read is.**
+
+#### My own escaping mistake, caught
+
+Writing the formula through a shell string let the backticks around `` `base` `` be evaluated
+as a command substitution, and the word was silently deleted from the stored text. Repaired via
+the Write tool, and I then scanned every formula in the dataset for the same corruption
+signature — zero others. This is the fourth time shell quoting has damaged content in this
+project; the rule to write files with the editor rather than heredocs exists precisely for it,
+and I broke it again.

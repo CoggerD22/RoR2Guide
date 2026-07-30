@@ -646,7 +646,8 @@
         "stat": "Chance on hit to stun",
         "base": 5,
         "perStack": 5,
-        "type": "linear"
+        "type": "hyperbolic",
+        "formula": "Util.CheckRoll(Util.ConvertAmplificationPercentageIntoReductionPercentage(5f * n * procCoefficient)) (SetStateOnHurt), then SetStun(2f). HYPERBOLIC, not linear: 4.76% at one stack, 9.09% at two, 13.04% at three, 33.3% at ten — approaching but never reaching 100%. Per the schema convention for this type, `base` is the amplification INPUT (5), not the chance a player sees. The proc coefficient is folded INSIDE the amplification, so a half-proc hit gives hyperbolic(2.5n) rather than half of hyperbolic(5n)."
       }
     ],
     "tags": [
@@ -657,7 +658,8 @@
     "icon": "/icons/stun-grenade.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Stun_Grenade",
     "verified": true,
-    "confidence": "langfile"
+    "confidence": "code",
+    "descriptionNote": "The real chance is 4.76% at one stack, not 5% — the game feeds 5 x stacks through its hyperbolic amplification curve, the same one behind Tougher Times. Stacking never reaches 100%: ten Stun Grenades give 33.3%, not 50%."
   },
   {
     "id": "warbanner",
