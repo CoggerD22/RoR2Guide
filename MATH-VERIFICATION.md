@@ -2284,3 +2284,46 @@ suppresses the warning only when a record is `code`/`asset`-verified **and** car
 unverified records are still flagged; I confirmed that by changing Crowbar's 75% to 70% and
 watching it fire. (My first attempt at that test used a regex that silently matched nothing —
 the same trap as §3j.32.)
+
+### 3j.42 Food tier verified — and Hearty Stew is far better than it reads
+
+**164 -> 169 of 217.** The five FoodTier items were added in §3j.34 straight from the language
+files at `langfile` confidence. All five are now code-verified, every recorded number correct,
+and two of them do noticeably more than their descriptions suggest.
+
+| Item | Code | Result |
+| --- | --- | --- |
+| Seared Steak | `maxHealth += n * 50f x levelScale`; separate `+ n * 0.05f x levelScale` | confirmed |
+| Hearty Stew | `regen += 2.5f * n x levelScale` | confirmed + see below |
+| Quick Fix | `levelScale += 0.5f + 0.15f * (n - 1)` | confirmed + see below |
+| Ultimate Meal | `master.luck += 2f + (n-1) * m` | confirmed |
+| Sautéed Worms | `damage * (5f * stack)`, `baseProcChance 10f`, `lifetime 10f` | confirmed |
+
+**Hearty Stew converts *all* regeneration, not its own.** The description reads "your
+regeneration is added to your base damage", which sounds like the +2.5 hp/s this item grants.
+The code is `num102 = Mathf.Max(regen, 0f); damage += num102` — the **entire** regen stat from
+every source. With Titanic Knurl, Rejuvenation Rack, Cautious Slug and levels stacked, that is
+a completely different item, and it makes Stew a damage item that happens to look like a
+healing one. Reworded.
+
+Also: the full-health check is `health >= maxHealth / cursePenalty`, so cursed characters
+qualify at a lower absolute HP than the raw maximum implies.
+
+**Quick Fix scales the shared multiplier.** It does not add health — it raises `levelScale`
+itself by `0.5 + 0.15(n-1)`, the same multiplier every per-level health and regen term is
+multiplied by. So it amplifies Bison Steak, Titanic Knurl, Seared Steak and base regen
+simultaneously. That is also why its description's "does not affect bonuses from leveling up"
+is true: those are applied on a different path.
+
+**Ultimate Meal** has a small oddity worth recording: the per-stack coefficient is `1` at
+exactly one stack and `2` beyond it. Since the term is `(n-1) * m`, both readings give 0 at
+one stack, so the curve is a clean +2 luck per stack regardless — but a future reader
+spotting `num121 = 1f` should know it is inert. Its luck feeds the same value as 57 Leaf
+Clover (+1 each) and Purity (-1 each), so the three compose.
+
+**Sautéed Worms** gained two undocumented limits: a **1s internal cooldown** and a cap of
+**8 simultaneous wyrms** (`DeployableSlot.WyrmOnHit`). Its 10% proc chance is also multiplied
+by the hit's proc coefficient.
+
+Every item I added in §3j.34 is now verified to the same standard as the rest of the codex,
+which is the bar a newly-added tier should have to clear before it counts as done.

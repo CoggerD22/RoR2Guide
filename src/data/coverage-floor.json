@@ -1,4 +1,4 @@
 {
   "_comment": "Ratchet for PLAN 6B.2. data:audit FAILS if code/asset-verified item count drops below this. Raise it whenever coverage improves; only lower it deliberately, with a reason.",
-  "items": 164
+  "items": 169
 }

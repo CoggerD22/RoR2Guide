@@ -5660,13 +5660,14 @@
     "tier": "food",
     "dlc": "ac",
     "pickupText": "Increases health regeneration and converts it into damage at full health. A single sip leaves you feeling warm and fuzzy inside.",
-    "description": "Increases base health regeneration by +2.5 hp/s (+2.5 hp/s per stack). At full health, your regeneration is added to your base damage.",
+    "description": "Increases base health regeneration by +2.5 hp/s (+2.5 hp/s per stack). At full health, your ENTIRE health regeneration — from every source, not just this item — is added to your base damage.",
     "stacking": [
       {
         "stat": "Base health regen (hp/s)",
         "base": 2.5,
         "perStack": 2.5,
-        "type": "linear"
+        "type": "linear",
+        "formula": "regen += 2.5f * n x levelScale (CharacterBody.RecalculateStats). Linear."
       }
     ],
     "tags": [
@@ -5676,7 +5677,7 @@
     "icon": "/icons/hearty-stew.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Hearty_Stew",
     "verified": true,
-    "confidence": "langfile"
+    "confidence": "code"
   },
   {
     "id": "quick-fix",
@@ -5690,7 +5691,8 @@
         "stat": "Bonus health and regen gains (%)",
         "base": 50,
         "perStack": 15,
-        "type": "linear"
+        "type": "linear",
+        "formula": "The item raises the level-scaling multiplier itself: `levelScale += 0.5f + 0.15f * (n - 1)` (CharacterBody.RecalculateStats), so +50% at one stack and +15% per stack thereafter. Because it scales that shared multiplier, it amplifies every per-level health and regen source at once — which is why the description says it does not affect bonuses from leveling up: those are applied elsewhere."
       }
     ],
     "tags": [
@@ -5700,7 +5702,7 @@
     "icon": "/icons/quick-fix.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Quick_Fix",
     "verified": true,
-    "confidence": "langfile"
+    "confidence": "code"
   },
   {
     "id": "sauteed-worms",
@@ -5714,7 +5716,8 @@
         "stat": "Wyrm damage (% TOTAL per second)",
         "base": 500,
         "perStack": 500,
-        "type": "linear"
+        "type": "linear",
+        "formula": "WyrmOnHitBehavior: baseProcChance 10f multiplied by the hit's proc coefficient, firing a wyrm with `damage = damageInfo.damage * (5f * stack)` and projectileLifetime 10f. Two limits the description omits: a 1s internal cooldown (baseCooldown) and a cap of 8 simultaneous wyrms (DeployableSlot.WyrmOnHit)."
       }
     ],
     "tags": [
@@ -5724,7 +5727,7 @@
     "icon": "/icons/sauteed-worms.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Sautéed_Worms",
     "verified": true,
-    "confidence": "langfile"
+    "confidence": "code"
   },
   {
     "id": "seared-steak",
@@ -5738,13 +5741,15 @@
         "stat": "Maximum health",
         "base": 50,
         "perStack": 50,
-        "type": "linear"
+        "type": "linear",
+        "formula": "maxHealth += n * (50f x levelScale) (CharacterBody.RecalculateStats). Linear."
       },
       {
         "stat": "Maximum health (%)",
         "base": 5,
         "perStack": 5,
-        "type": "linear"
+        "type": "linear",
+        "formula": "The percentage term is a separate addition, `healthMultiplier += n * (0.05f x levelScale)`, so the flat 50 and the 5% do not compound — they are summed independently like Titanic Knurl's two effects."
       }
     ],
     "tags": [
@@ -5753,7 +5758,7 @@
     "icon": "/icons/seared-steak.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Seared_Steak",
     "verified": true,
-    "confidence": "langfile"
+    "confidence": "code"
   },
   {
     "id": "ultimate-meal",
@@ -5767,7 +5772,8 @@
         "stat": "Extra rolls on random effects",
         "base": 2,
         "perStack": 2,
-        "type": "linear"
+        "type": "linear",
+        "formula": "master.luck += 2f + (n - 1) * m, where m is 1 at one stack and 2 beyond (CharacterBody.RecalculateStats) — so +2 luck at one stack and +2 per stack after. Gated entirely on the UltimateMealBoost buff (the at-full-health condition), and it feeds the same `luck` value as 57 Leaf Clover (+1 each) and Purity (-1 each), so the three combine."
       }
     ],
     "tags": [
@@ -5776,6 +5782,6 @@
     "icon": "/icons/ultimate-meal.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Ultimate_Meal",
     "verified": true,
-    "confidence": "langfile"
+    "confidence": "code"
   }
 ]
