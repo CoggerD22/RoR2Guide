@@ -4969,7 +4969,7 @@
     "icon": "/icons/primordial-cube.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Primordial_Cube",
     "verified": true,
-    "confidence": "langfile",
+    "confidence": "code",
     "cooldown": 60,
     "activated": true
   },
@@ -5257,7 +5257,7 @@
     "tier": "equipment",
     "dlc": "sotv",
     "pickupText": "Create a clone of you for 30 seconds.",
-    "description": "Spawn a gummy clone with 300% damage and 300% health, using your skill loadout. Expires in 30 seconds. Cooldown: 100s.",
+    "description": "Spawn a gummy clone with 300% damage and 300% health, using your skill loadout. Expires in 30 seconds. Up to 3 clones can exist at once. Cooldown: 100s.",
     "stacking": [],
     "tags": [
       "damage",
@@ -5266,7 +5266,7 @@
     "icon": "/icons/goobo-jr.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Goobo_Jr.",
     "verified": true,
-    "confidence": "langfile",
+    "confidence": "code",
     "cooldown": 100,
     "activated": true
   },
@@ -5368,7 +5368,7 @@
     "icon": "/icons/effigy-of-grief.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Effigy_of_Grief",
     "verified": true,
-    "confidence": "langfile",
+    "confidence": "code",
     "cooldown": 15,
     "activated": true
   },

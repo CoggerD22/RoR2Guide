@@ -2194,3 +2194,45 @@ effect", and broke the moment this landed — correctly. It is now **derived** f
 `inadequateFields()` per dataset, with explicit guards that both the warning path and the
 clean path are exercised, so it can neither rot nor pass vacuously. That is the fourth test
 this programme has had to convert from naming data to following it.
+
+### 3j.40 Equipment batch 2 — the numbers were in three different places each
+
+**160 -> 163 of 217.** Three equipment verified, and the interesting part is how scattered
+each one's evidence was. None could be settled from the handler alone.
+
+| Equipment | Where the claims actually lived |
+| --- | --- |
+| Primordial Cube | handler fires `Prefabs/Projectiles/GravSphere`; the prefab has `radius 30.0`, `lifetime 10.0` |
+| Effigy of Grief | `CrippleWard` prefab `radius 15.0`; the **Cripple buff** for the slow and armor; `CharacterMaster` for the placement limit |
+| Goobo Jr. | `GummyCloneProjectile` boost counts; **two other items'** per-stack values; `MasterSuicideOnTimer` for the duration |
+
+**Goobo Jr.** is the clearest example of why "read the handler" is not enough. Its
+description claims 300% damage and 300% health, and neither number appears anywhere near
+the clone. `GummyCloneProjectile` carries `damageBoostCount: 20` and `hpBoostCount: 20`; the
+clone is handed 20 `BoostDamage` and 20 `BoostHp` items, and `RecalculateStats` gives each
+`+0.1` — so +200%, i.e. **300% of base**. Exactly right, via three hops. Its 30s comes from
+`MasterSuicideOnTimer.lifeTimer = 30f`, and `DeployableSlot.GummyClone` caps at **3
+simultaneous clones**, which the description omits and which is now stated.
+
+**Effigy of Grief** confirmed on all three numbers: `radius 15.0` on the ward, and the
+Cripple buff does `armor -= 20f` plus `num99 += 1f` where `num97 *= num98 / num99` — so the
+divisor doubles and movement is halved, which is the stated 50%. `DeployableSlot.CrippleWard`
+= 5, matching "can place up to 5".
+
+**Primordial Cube** matched exactly: 30m draw radius and a 10s lifetime, both serialized on
+`GravSphere` (with `forceMagnitude -1500` doing the pulling).
+
+#### Left unverified on purpose
+
+**Preon Accumulator** is not upgraded. `BeamSphere` carries `attackRange 35.0` (matching the
+description), `damageCoefficient 2.0` at `attackInterval 0.05`, and `blastDamageCoefficient
+40.0` with `blastRadius 20.0` — and the handler fires it at `characterBody.damage * 2f`.
+Whether the published "600% damage/second" and "4000% damage" fall out of those depends on
+whether each coefficient multiplies the *projectile's* damage or the *body's*, and the two
+readings differ by a factor of two. The radius (20m) and range (35m) are confirmed; the two
+damage figures are not, and guessing which composition is right is exactly the error that
+produced the Shared Design and His Spiteful Boon corrections. It stays `langfile`.
+
+**Forgive Me Please** likewise: `DeathProjectile` gives `baseDuration 8.0` (confirming "8
+seconds") but the "every 1 second" tick is not in the prefab's numeric fields, so the record
+is not upgraded on a partial reading.
