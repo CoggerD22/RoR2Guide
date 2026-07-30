@@ -3110,7 +3110,8 @@
         "stat": "Temporary item duration bonus (s)",
         "base": 10,
         "perStack": 10,
-        "type": "linear"
+        "type": "linear",
+        "formula": "DuplicatorBehavior.CalculateNewItemDecayDuration: inventory.SetItemDecayDurationServer(80f + stack * 10). The +10 per stack the description states is exact, but it sits on an 80s base that the item itself installs — so a temporary copy actually lasts 90 seconds at one stack, 100 at two. \"An additional 10 seconds\" is additional to a baseline the game never shows."
       }
     ],
     "tags": [
@@ -3119,7 +3120,8 @@
     "icon": "/icons/substandard-duplicator.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Substandard_Duplicator",
     "verified": true,
-    "confidence": "langfile"
+    "confidence": "code",
+    "descriptionNote": "The stated \"+10 per stack\" is correct but incomplete: the item sets the temporary-item lifetime to 80 + 10 x stacks seconds, so a copy lasts 90s at one stack rather than 10s. The 80s floor is installed by this item and appears nowhere in its text."
   },
   {
     "id": "item-scrap-red",

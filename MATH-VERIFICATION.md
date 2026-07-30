@@ -2783,3 +2783,29 @@ firing line inlines `3f + 1f * stack` and `stack + 2`. The values agree, so noth
 but after Bolstering Lantern's dead `radiusSizeGrowth` and Unstable Transmitter's unused
 `public const`s (§3j.31, §3j.50) the rule stands: **read the use site, not the constant**. Three
 times now a named constant has been decorative; this is the first where it happened to match.
+
+### 3j.53 Substandard Duplicator — "an additional 10 seconds" additional to what?
+
+**178 -> 179 of 217.**
+
+```csharp
+float itemDecayDurationServer = 80f + (float)(stack * 10);
+base.body.inventory.SetItemDecayDurationServer(itemDecayDurationServer);
+```
+
+The game's own text — "Temporary items last an additional 10 (+10 per stack) seconds" — is
+arithmetically correct and practically useless, because the **80-second base it is additional
+to is installed by this very item** and appears in no description anywhere. A player reading
+it reasonably concludes a temporary copy lasts about ten seconds. It lasts **ninety**.
+
+This is a different failure from the ones catalogued so far. Not a wrong number, not an
+omitted side-effect, not a scope error — a number that is *right* and *unanchored*. "+10 per
+stack" is true; "additional" has no referent the player can see.
+
+Recorded both ways: the per-stack increment stays 10 (it is what the code adds), and the note
+states the real lifetime, 90s at one stack and +10 from there.
+
+I also checked whether 80 might be a general engine default rather than this item's doing —
+`Inventory.tempItemsStorage` initialises `decayDuration = 1f`, and `SetItemDecayDurationServer`
+has exactly one caller, this behaviour. So the 80 is genuinely the Duplicator's, not a
+pre-existing baseline it adds to.
