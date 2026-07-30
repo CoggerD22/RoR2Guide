@@ -2327,3 +2327,39 @@ by the hit's proc coefficient.
 
 Every item I added in §3j.34 is now verified to the same standard as the rest of the codex,
 which is the bar a newly-added tier should have to clear before it counts as done.
+
+### 3j.43 Four more items — and three descriptions that understate what they touch
+
+**169 -> 173 of 217.** Every recorded number was correct; the corrections are all about
+*scope* — what the effect measures, or what it applies to.
+
+| Item | Code | Result |
+| --- | --- | --- |
+| Lost Seer's Lenses | `LocalCheckRoll(n * 0.5f * procCoefficient)`, `DamageType.VoidDeath` | confirmed |
+| Weeping Fungus | `HealFraction(0.01f * stack)` every `0.5f`s | confirmed |
+| Ben's Raincoat | `for (i = 0; i < stack; i++)`, `cooldownSeconds 5f` | confirmed, wording fixed |
+| Mired Urn | `maxTargets = stack`; prefab `radius 13.0`, `dps 1.0`, `tickRate 4.0` | confirmed, note added |
+
+**Ben's Raincoat's barrier is 10% of combined health, not maximum health.**
+`ImmuneToDebuffBehavior` does `AddBarrier(0.1f * healthComponent.fullCombinedHealth)` — health
+*plus shield*. On a Transcendence or Silence Between Two Strikes build, where almost all of
+your effective pool is shield, that is materially more than the in-game wording implies.
+Description corrected and the distinction noted.
+
+**Mired Urn does not heal for the damage dealt.** The controller records each target's
+`combinedHealth` before the hit and after it, sums the *actual* reduction, and heals you by
+that. Against armour, against shields, or when a target dies partway through a tick, you
+receive less than the damage number would suggest. The tether itself is exact: 13m,
+100% of your damage per second, delivered in four ticks a second, one target per stack.
+
+**Weeping Fungus** heals `1%` twice a second rather than `2%` once — arithmetically the same
+per second, and *not* the same in practice, because a sprint shorter than the 0.5s tick heals
+nothing at all. Same class of finding as Interstellar Desk Plant (§3j.32).
+
+**Lost Seer's Lenses** is scaled by proc coefficient, which its "0.5% chance" wording hides
+entirely — a low-proc weapon executes far less often than the flat number reads — and the
+whole branch sits behind `!body.isBoss`, so the description's "non-Boss" is exact.
+
+The running pattern across this programme is now unmistakable: descriptions are reliable
+about **magnitude** and unreliable about **scope**. Nine of the last twelve corrections have
+been "this applies to more/less than you think", not "this number is wrong".

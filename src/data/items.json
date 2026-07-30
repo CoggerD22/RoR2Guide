@@ -2849,13 +2849,14 @@
     "tier": "legendary",
     "dlc": "sotv",
     "pickupText": "Prevent debuffs, instead gaining a temporary barrier. Recharges over time.",
-    "description": "Prevents 1 (+1 per stack) debuff and instead grants a temporary barrier for 10% of maximum health. Recharges every 5 seconds.",
+    "description": "Prevents 1 (+1 per stack) debuff and instead grants a temporary barrier for 10% of your COMBINED health and shield. Recharges every 5 seconds.",
     "stacking": [
       {
         "stat": "Debuffs prevented before recharge",
         "base": 1,
         "perStack": 1,
-        "type": "linear"
+        "type": "linear",
+        "formula": "ImmuneToDebuffBehavior.OverrideDebuff loops `for (i = 0; i < stack; i++)`, so one debuff per stack, then applies a 5s ImmuneToDebuffCooldown (cooldownSeconds = 5f)."
       }
     ],
     "tags": [
@@ -2864,7 +2865,8 @@
     "icon": "/icons/bens-raincoat.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Ben%27s_Raincoat",
     "verified": true,
-    "confidence": "langfile"
+    "confidence": "code",
+    "descriptionNote": "The barrier is 10% of `fullCombinedHealth` (ImmuneToDebuffBehavior), not 10% of maximum health — so on a shielded build such as Transcendence or Silence Between Two Strikes it is materially larger than the in-game wording implies."
   },
   {
     "id": "bottled-chaos",
@@ -3440,7 +3442,8 @@
         "stat": "Max tethered enemies",
         "base": 1,
         "perStack": 1,
-        "type": "linear"
+        "type": "linear",
+        "formula": "SiphonOnLowHealthItemBodyBehavior sets SiphonNearbyController.maxTargets = stack, so one tether per stack. The prefab (SiphonNearbyBodyAttachment) carries radius 13.0, damagePerSecondCoefficient 1.0 and tickRate 4.0 — so 100% of your damage per second, applied in four ticks. Target searching is gated on !outOfCombat, which is the \"while in combat\" clause."
       }
     ],
     "tags": [
@@ -3451,8 +3454,9 @@
     "icon": "/icons/mired-urn.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Mired_Urn",
     "verified": true,
-    "confidence": "langfile",
-    "corruptedBy": "newly-hatched-zoea"
+    "confidence": "code",
+    "corruptedBy": "newly-hatched-zoea",
+    "descriptionNote": "The heal is not 100% of the damage dealt — the controller measures each target's combinedHealth before and after the hit and heals you by the amount actually removed. Against armour, shields, or an enemy that dies mid-tick, that is less than the damage number suggests."
   },
   {
     "id": "empathy-cores",
@@ -4357,7 +4361,8 @@
         "stat": "Instant-kill chance (%)",
         "base": 0.5,
         "perStack": 0.5,
-        "type": "linear"
+        "type": "linear",
+        "formula": "LocalCheckRoll(n * 0.5f * damageInfo.procCoefficient) (HealthComponent), applying DamageType.VoidDeath. Linear at 0.5% per stack — but scaled by the hit's PROC COEFFICIENT, so low-proc attacks execute far less often than the flat figure suggests, and the whole branch is gated on `!body.isBoss`."
       }
     ],
     "tags": [
@@ -4371,7 +4376,7 @@
     "icon": "/icons/lost-seers-lenses.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Lost_Seer%27s_Lenses",
     "verified": true,
-    "confidence": "langfile"
+    "confidence": "code"
   },
   {
     "id": "safer-spaces",
@@ -4414,7 +4419,8 @@
         "stat": "Heal per second while sprinting (% health)",
         "base": 2,
         "perStack": 2,
-        "type": "linear"
+        "type": "linear",
+        "formula": "MushroomVoidBehavior: HealFraction(0.01f * stack) every 0.5s — so 1% twice a second, which is the stated 2% per second per stack. The tick rate matters for short sprints: stopping after 0.4s heals nothing at all."
       }
     ],
     "tags": [
@@ -4426,7 +4432,7 @@
     "icon": "/icons/weeping-fungus.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Weeping_Fungus",
     "verified": true,
-    "confidence": "langfile"
+    "confidence": "code"
   },
   {
     "id": "encrusted-key",
