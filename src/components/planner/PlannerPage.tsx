@@ -10,6 +10,7 @@ import { emptyFilters, hasActiveFilter, toggleInSet, type FilterState } from "@/
 import { usePlanner } from "@/store/planner";
 import { PlannerCard } from "./PlannerCard";
 import { RunPlanRail } from "./RunPlanRail";
+import { DisplayControls } from "@/components/codex/DisplayControls";
 
 export function PlannerPage() {
   const [query, setQuery] = useState("");
@@ -41,6 +42,7 @@ export function PlannerPage() {
           <span className="text-red-400">avoid</span> at printers and scrappers this run. The plan
           is grouped by tier and saved locally.
         </p>
+        <DisplayControls className="mt-3" />
       </header>
 
       <CodexFilters

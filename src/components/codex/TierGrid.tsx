@@ -2,6 +2,8 @@ import { Fragment, type ReactNode } from "react";
 import { SearchX } from "lucide-react";
 import type { Item } from "@/data/schema";
 import { PRESENT_TIERS, TIER_META } from "@/data/items";
+import { cn } from "@/lib/utils";
+import { DENSITY_GRID, useDisplay } from "@/store/display";
 
 interface TierGridProps {
   items: Item[];
@@ -10,6 +12,7 @@ interface TierGridProps {
 
 /** Groups items by tier (in display order) and renders a card per item. */
 export function TierGrid({ items, renderCard }: TierGridProps) {
+  const density = useDisplay((d) => d.density);
   if (items.length === 0) {
     return (
       <div className="flex flex-col items-center gap-2 py-20 text-center text-muted-foreground">
@@ -43,7 +46,7 @@ export function TierGrid({ items, renderCard }: TierGridProps) {
               </h2>
               <span className="text-xs text-muted-foreground">{list.length}</span>
             </div>
-            <div className="grid grid-cols-3 gap-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6">
+            <div className={cn("grid", DENSITY_GRID[density])}>
               {list.map((item) => (
                 <Fragment key={item.id}>{renderCard(item)}</Fragment>
               ))}

@@ -4,6 +4,9 @@ import type { Item } from "@/data/schema";
 import { TIER_META } from "@/data/items";
 import { asset } from "@/lib/asset";
 import { ItemTooltip } from "./ItemTooltip";
+import { DlcBadge } from "./DlcBadge";
+import { useDisplay } from "@/store/display";
+import { cn } from "@/lib/utils";
 
 interface ItemCardProps {
   item: Item;
@@ -12,22 +15,54 @@ interface ItemCardProps {
 
 export function ItemCard({ item, onSelect }: ItemCardProps) {
   const tier = TIER_META[item.tier];
+  const density = useDisplay((s) => s.density);
+  const showDescriptions = useDisplay((s) => s.showDescriptions);
+  // `dense` is for glancing mid-run: icon only, so the most items fit on screen.
+  const iconOnly = density === "dense" && !showDescriptions;
 
   return (
     <div className="group relative">
       <button
         type="button"
         onClick={() => onSelect(item)}
-        className="tier-card flex w-full flex-col items-center gap-2 rounded-lg bg-surface p-3 text-center"
+        className={cn(
+          "tier-card flex w-full flex-col items-center rounded-lg bg-surface text-center",
+          density === "comfortable" && "gap-2 p-3",
+          density === "compact" && "gap-1.5 p-2",
+          density === "dense" && "gap-1 p-1.5",
+        )}
         style={{ "--tier": tier.color } as CSSProperties}
       >
         <img
           src={asset(item.icon)}
           alt={item.name}
           loading="lazy"
-          className="size-14 object-contain [image-rendering:auto]"
+          className={cn(
+            "object-contain [image-rendering:auto]",
+            density === "comfortable" && "size-14",
+            density === "compact" && "size-10",
+            density === "dense" && "size-8",
+          )}
         />
-        <span className="line-clamp-2 text-xs font-medium text-foreground">{item.name}</span>
+        {!iconOnly && (
+          <span
+            className={cn(
+              "line-clamp-2 font-medium text-foreground",
+              density === "compact" ? "text-[11px] leading-tight" : "text-xs",
+            )}
+          >
+            {item.name}
+          </span>
+        )}
+        {/*
+          Full description inline (PLAN §8.2). Left-aligned because centred body text is
+          hard to read, and the whole point of this mode is reading rather than scanning.
+        */}
+        {showDescriptions && (
+          <p className="mt-0.5 w-full text-left text-[10px] leading-snug text-muted-foreground">
+            {item.description}
+          </p>
+        )}
         {/*
           Challenge-gated marker (PLAN §5.8). Deliberately solid amber rather than the
           previous faint 12px outline, which was reported as invisible at grid density
@@ -50,6 +85,7 @@ export function ItemCard({ item, onSelect }: ItemCardProps) {
             />
           </span>
         )}
+        <DlcBadge dlc={item.dlc} className="absolute bottom-1 right-1" />
         {!item.verified && (
           <span
             className="absolute right-1.5 top-1.5 size-2 rounded-full bg-amber-400"

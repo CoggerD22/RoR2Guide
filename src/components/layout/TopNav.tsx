@@ -6,7 +6,7 @@ import { cn } from "@/lib/utils";
 export function TopNav() {
   return (
     <header className="sticky top-0 z-40 border-b border-border bg-background/85 backdrop-blur">
-      <div className="mx-auto flex h-14 max-w-6xl items-center gap-4 px-4 sm:px-6">
+      <div className="mx-auto flex h-14 max-w-[120rem] items-center gap-4 px-4 sm:px-6">
         <Link
           to="/items"
           className="flex shrink-0 items-center gap-2 font-display text-sm font-semibold tracking-wide"

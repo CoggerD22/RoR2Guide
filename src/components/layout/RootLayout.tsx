@@ -7,7 +7,7 @@ export function RootLayout() {
   return (
     <div className="flex min-h-dvh flex-col">
       <TopNav />
-      <main className="mx-auto w-full max-w-6xl flex-1 px-4 sm:px-6">
+      <main className="mx-auto w-full max-w-[120rem] flex-1 px-4 sm:px-6">
         <Outlet />
       </main>
       <Footer />

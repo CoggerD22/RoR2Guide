@@ -1306,3 +1306,61 @@ equipment a player can end up holding. Once that's decided, the data to implemen
 already exists (names, descriptions, DLC, and flags are all extracted) — so it's one
 decision, not a research task. Coven of Gold would ship with the game's own `???`,
 honestly labelled.
+
+---
+
+## 8. Reading the site while actually playing (§8)
+
+The site is used *next to a running game*, on a second monitor or an alt-tab. That framing
+drives everything below: the enemy of a companion tool is anything that costs a glance.
+
+Three requests, all the same underlying problem — **too little information per screen**:
+
+### 8.1 Expansion symbol on every item
+
+Every card shows which release it comes from, not just the detail drawer. A player who does
+not own Alloyed Collective, or who is checking what a run can actually roll, should not have
+to open an item to find out.
+
+- One compact glyph per card, using the existing `DLC_META` (`Base` / `SotV` / `SotS` / `AC`).
+- Base-game items get a marker too. An absent badge reads as "forgot to label it", and the
+  point is to be able to scan a grid and see the mix at a glance.
+- It must not collide with the two existing corner markers — the amber unlock lock
+  (top-left) and the unverified dot (top-right). Bottom-right is free.
+- Tier colour stays reserved for item identity (design tokens), so the badge is neutral.
+
+### 8.2 Show every description at once
+
+A toggle that expands every card to include its description text, so the grid becomes a
+readable reference sheet rather than an icon wall that needs one click per item.
+
+- Applies to **Item Codex and Run Planner** alike.
+- Persisted, like `railMode` — a preference about how you read, not part of a plan, and it
+  must never travel in a share link.
+
+### 8.3 Fit everything on one screen
+
+A density control, because "see it all at once" and "read the descriptions" are opposite
+needs and the right answer depends on the moment.
+
+- **Comfortable** — today's size.
+- **Compact** — smaller cards, more columns.
+- **Dense** — icon-only, maximum items per screen, for mid-run glancing.
+- Same control on both pages, same persisted preference.
+
+### 8.4 No dead space
+
+The site is not monetised and has no plans to be, so there is no reason to reserve gutters.
+`max-w-6xl` (1152px) currently wastes roughly a third of a 1440p display and more of an
+ultrawide — exactly the screens a second-monitor tool runs on.
+
+- Widen the shell to use the viewport, keeping a small padding gutter.
+- Keep a readable measure where it matters: prose (footer, provenance notes, guide text)
+  stays column-limited even when the grid does not. Wide is right for grids, wrong for
+  sentences.
+
+### 8.5 Not doing
+
+- No user accounts or server-side preference sync (CLAUDE.md rule #5 — client only).
+- No per-item pinning beyond the existing plan states; the rail already answers "what am I
+  looking for".

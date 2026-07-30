@@ -5,6 +5,7 @@ import { filterItems } from "@/lib/filterPipeline";
 import { CodexFilters } from "./CodexFilters";
 import { CodexGrid } from "./CodexGrid";
 import { emptyFilters, hasActiveFilter, toggleInSet, type FilterState } from "./filters";
+import { DisplayControls } from "./DisplayControls";
 
 export function CodexPage() {
   const navigate = useNavigate();
@@ -24,6 +25,7 @@ export function CodexPage() {
           {allItems.length} items across every tier and DLC. Hover a card for its in-game
           tooltip; click for full details.
         </p>
+        <DisplayControls className="mt-3" />
       </header>
 
       <CodexFilters

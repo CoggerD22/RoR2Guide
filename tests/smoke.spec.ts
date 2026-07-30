@@ -704,3 +704,41 @@ test("a newly added tier renders end to end — data, filter, card and detail", 
   await expect(dialog).toBeVisible();
   await expect(dialog.getByText(/Game-text verified|Code-verified/)).toBeVisible();
 });
+
+test("display controls: DLC badge, descriptions toggle and density (PLAN §8)", async ({ page }) => {
+  // The site is read next to a running game, so these are about information per screen.
+  await page.goto("/items");
+
+  // §8.1 — every card carries an expansion marker, base game included. An absent badge
+  // reads as "unlabelled", which defeats scanning a grid for the mix.
+  const crowbar = page.getByRole("button", { name: /Crowbar/ }).first();
+  await expect(crowbar.getByLabel(/Expansion: Base game/)).toBeVisible();
+  const acItem = page.getByRole("button", { name: /Hearty Stew/ }).first();
+  await expect(acItem.getByLabel(/Expansion: Alloyed Collective/)).toBeVisible();
+
+  // §8.2 — descriptions inline, no click required.
+  const descriptions = page.getByRole("button", { name: "Descriptions" });
+  await expect(crowbar).not.toContainText("above 90% health");
+  await descriptions.click();
+  await expect(crowbar).toContainText("above 90% health");
+
+  // The preference persists — it is about how you read, not what you planned.
+  await page.reload();
+  await expect(page.getByRole("button", { name: /Crowbar/ }).first()).toContainText(
+    "above 90% health",
+  );
+  await page.getByRole("button", { name: "Descriptions" }).click();
+
+  // §8.3 — density is shared with the planner, so setting it here applies there too.
+  await page.getByRole("button", { name: "Dense" }).click();
+  await page.goto("/planner");
+  await expect(page.getByRole("button", { name: "Dense" })).toHaveAttribute(
+    "aria-pressed",
+    "true",
+  );
+  // Dense drops the name label, leaving the icon — the point is items per screen.
+  const plannerCard = page.getByRole("button", { name: /^Crowbar/ }).first();
+  await expect(plannerCard).toBeVisible();
+
+  await page.getByRole("button", { name: "Comfortable" }).click();
+});

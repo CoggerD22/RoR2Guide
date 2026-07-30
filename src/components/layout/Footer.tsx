@@ -17,7 +17,11 @@ export function Footer() {
 
   return (
     <footer className="mt-auto border-t border-border bg-surface">
-      <div className="mx-auto flex max-w-6xl flex-col gap-1 px-4 py-6 text-xs leading-relaxed text-muted-foreground sm:px-6">
+      {/*
+        The shell is full-width for grids (PLAN §8.4), but prose is not a grid — a 120rem
+        measure is unreadable. Sentences stay column-limited; only the layout widens.
+      */}
+      <div className="mx-auto flex max-w-4xl flex-col gap-1 px-4 py-6 text-xs leading-relaxed text-muted-foreground sm:px-6">
         <p>
           A fan-made, non-commercial companion for Risk of Rain 2.{" "}
           <strong className="font-medium text-foreground">
