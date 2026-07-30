@@ -2363,3 +2363,59 @@ whole branch sits behind `!body.isBoss`, so the description's "non-Boss" is exac
 The running pattern across this programme is now unmistakable: descriptions are reliable
 about **magnitude** and unreliable about **scope**. Nine of the last twelve corrections have
 been "this applies to more/less than you think", not "this number is wrong".
+
+### 3j.44 Beyond numbers — the site's own claims, and the whole unlock surface
+
+Widening the audit past stat values, to everything the site asserts.
+
+#### The version stamp — two of three claims re-verified, one was stale
+
+The footer says "Data verified against patch 1.4.1 (Alloyed Collective, Steam build
+21587608) on …". All three components checked against the install:
+
+- **`PATCH_VERSION` 1.4.1** — confirmed: the only version-shaped string in
+  `globalgamemanagers` besides the Unity version (2021.3.33).
+- **`GAME_BUILD_ID` 21587608** — confirmed against `appmanifest_632360.acf`'s `buildid`.
+- **`VERIFIED_ON` 2026-07-19** — **stale.** Roughly a hundred records have been verified
+  since that date, so the site was understating its own currency. Updated.
+
+The docstring telling a future maintainer where to re-find the patch version was also wrong:
+it claimed the value "sits directly after Hopoo Games, LLC / Risk of Rain 2", when in fact
+the company and product names are followed by a long run of padding and the version appears
+well after. The *value* was right, the *instruction for re-checking it* was not — which is
+exactly what turns a 30-second re-verification into a wrong guess after the next patch.
+
+#### Unlocks: 100/100
+
+Item unlocks were verified in §3j.37 (49/49). Skill unlocks never had been.
+
+**51 of 51 loadout-unlock claims are exact** — 48 matched the extractor dump directly with
+**zero** challenge-name and **zero** requirement-text mismatches. The three outside the dump
+(`Blight`, `Beacon: Hacking`, `Beacon: Resupply`) are legitimately not `SkillFamily`
+variants — Blight is a Passive, the beacons are Supply Drop options — and all three were
+checked by hand against `Achievements.json`, matching name and description verbatim:
+
+```
+ACHIEVEMENT_CROCOKILLWEAKENEMIESMILESTONE_NAME  "Acrid: Easy Prey"
+ACHIEVEMENT_CAPTAINBUYMEGADRONE_NAME            "Captain: Worth Every Penny"
+ACHIEVEMENT_CAPTAINVISITSEVERALSTAGES_NAME      "Captain: Wanderlust"
+```
+
+**The gap this closed is worth naming.** `data:diff` confirmed each challenge *name existed
+somewhere* in the game, and `data:audit` confirmed *slots*. Neither confirmed that a skill was
+paired with the **right** challenge — a skill could have carried another skill's unlock
+condition and every check would have passed. `data:audit` now cross-checks the pairing and the
+requirement text; verified by swapping Acrid's Pandemic and Bad Medicine challenges and
+watching it fail.
+
+Survivors carry no unlock claims at all, so there is nothing to be wrong — a gap in coverage
+rather than an error, and now a known one.
+
+#### Parser discipline, fourth occurrence
+
+The first run of this cross-check reported "**0** game pairs, 51 unverified" because I assumed
+the wrong JSON shape. Reported as-is, that reads as *"no skill unlock is verified"* — a
+completely false alarm that would have sent me rewriting correct data. The check now throws if
+it parses zero pairs, and the permanent audit rule warns rather than silently passing. That is
+the fourth time in this programme a silent-zero has had to be defended against (§3j.28, §3j.32,
+§3j.41 being the others), and it is now the single most repeated failure mode on record.

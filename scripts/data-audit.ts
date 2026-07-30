@@ -305,6 +305,49 @@ function main(): number {
     }
   }
 
+  // --- Loadout unlocks: the right challenge, with the game's exact wording ---
+  // `data:diff` confirms each challenge NAME exists somewhere in the game, and the block
+  // above confirms slots. Neither confirms that a given skill is paired with the *right*
+  // challenge, or that the requirement text is the game's — so a skill could carry another
+  // skill's unlock condition and nothing would notice. Local-only: .gamedata is git-ignored.
+  const skillUnlockPath = resolve(root, ".gamedata/skill-unlocks.json");
+  if (existsSync(skillUnlockPath)) {
+    const dump = JSON.parse(readFileSync(skillUnlockPath, "utf8")) as Record<
+      string,
+      { alternates?: Array<{ skill: string; challenge: string; requirement?: string }> }
+    >;
+    const game = new Map<string, { challenge: string; requirement?: string }>();
+    for (const v of Object.values(dump)) {
+      for (const a of v.alternates ?? []) {
+        game.set(a.skill, { challenge: a.challenge, requirement: a.requirement });
+      }
+    }
+    if (game.size === 0) {
+      warnings.push("skill-unlocks.json parsed to 0 pairs — extractor output shape changed?");
+    } else {
+      for (const entry of LOADOUT_UNLOCKS) {
+        for (const u of entry.skills) {
+          const g = game.get(u.skill);
+          // Skills outside the SkillFamily variant list (Acrid's Blight passive, Captain's
+          // beacon options) legitimately are not in the dump; they are verified against
+          // Achievements.json by hand and recorded in MATH-VERIFICATION §3j.44.
+          if (!g) continue;
+          if (u.challenge && g.challenge !== u.challenge) {
+            errors.push(
+              `LOADOUT_UNLOCKS "${u.skill}": challenge is "${u.challenge}", game says ` +
+                `"${g.challenge}"`,
+            );
+          } else if (u.requirement && g.requirement && u.requirement !== g.requirement) {
+            errors.push(
+              `LOADOUT_UNLOCKS "${u.skill}": requirement text differs from the game's ` +
+                `achievement description`,
+            );
+          }
+        }
+      }
+    }
+  }
+
   // --- Verified numbers must not silently contradict the description --------
   // `description` is the game's own wording and `stacking` is what the code does. When a
   // sweep corrects a stacking value the description keeps the old number, and the UI was
