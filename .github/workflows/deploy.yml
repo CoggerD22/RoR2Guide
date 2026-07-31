@@ -32,6 +32,26 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
+      # The data gates run HERE, not only in ci.yml. Both workflows trigger on push to
+      # main independently, so a failing audit in CI would not have stopped this job from
+      # publishing — the checks that exist to keep false data off the site were not
+      # actually gating the site. Duplicating a few seconds of work is the correct price
+      # for making publication conditional on them.
+      #
+      # data:verify degrades to a no-op without .gamedata (git-ignored), so it stays
+      # green here while still enforcing the self-consistency half.
+      - name: Typecheck
+        run: pnpm typecheck
+
+      - name: Data audit
+        run: pnpm data:audit
+
+      - name: Data verify
+        run: pnpm data:verify
+
+      - name: Unit tests
+        run: pnpm test:unit
+
       - name: Build
         run: pnpm build
 
