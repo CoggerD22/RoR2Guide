@@ -2809,3 +2809,27 @@ I also checked whether 80 might be a general engine default rather than this ite
 `Inventory.tempItemsStorage` initialises `decayDuration = 1f`, and `SetItemDecayDurationServer`
 has exactly one caller, this behaviour. So the 80 is genuinely the Duplicator's, not a
 pre-existing baseline it adds to.
+
+### 3j.54 Partial evidence, recorded without inflating the count
+
+Two more records reached the state §3j.49 predicted would dominate the tail: **half verified,
+half not.** Neither is upgraded, and the verified half is written down anyway.
+
+**Defense Nucleus** — `CharacterMaster.GetDeployableSameSlotLimit` gives
+`result = n * 4` for `DeployableSlot.MinorConstructOnKill`, so "Limited to 4 (+4 per stack)"
+is exact, and the spawn is gated on `victimBody.isElite` exactly as described. The construct's
+stated **300% damage / 300% health** is not in the spawn path. Goobo Jr. (§3j.40) turned out to
+get its identical-sounding 300%/300% from twenty `BoostDamage`/`BoostHp` items on the summoned
+master, so the same mechanism is likely here — *likely* being the reason this stays `langfile`.
+
+**Sale Star** — `InteractionDriver` confirms which interactables qualify
+(`PurchaseInteraction.saleStarCompatible`) and that the highlight only appears on a chest you
+can afford. The 5%-per-stack chance for additional items is not in that path.
+
+Recording evidence on a record that stays unverified is worth doing rather than skipping: the
+next person to look at Defense Nucleus should not have to re-derive the deployable limit to
+discover that the *construct stats* are the open question. The formula field is the working
+note, not just the certificate.
+
+**179 of 217.** The count did not move, which is the correct outcome for a pass that verified
+two halves. A programme whose number only ever goes up is one that has started rounding.
