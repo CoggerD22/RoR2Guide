@@ -3045,3 +3045,48 @@ re-checkable after a patch instead of resting on this one reading.
 
 Lesson, and it is the §9 thesis in one line: **a second implementation of the game's
 arithmetic is a second dataset, and it was never being audited.**
+
+### 3j.60 §9 surface audit, third pass — one sentence that was false on 28 rows
+
+The item detail panel rendered every stacking row the same way:
+
+> **15** base, **+15** per stack
+
+That sentence is true for `linear`. It is one of the 177 rows' honest description. On the
+**28 non-linear rows** it invites the reader to do arithmetic the game does not do:
+
+| Item | Rendered as | Reader computes at 2 stacks | Actual |
+|---|---|---|---|
+| Mercurial Rachis | 16 base, +50 per stack | 66 m | **24 m** (16 × 1.5) |
+| Old War Stealthkit | 30 base, −50 per stack | −20 s | **15 s** (30 × 0.5) |
+| Tougher Times | 15 base, +15 per stack | 30% | **23.08%** |
+| Bandolier | 20.4 base, +10 per stack | 30.4% ✓, then 40.4% at 3 | **36.7%** at 3 |
+
+`perStack` carries three unrelated meanings across the schema — an addend (linear), a
+multiplier (exponential / reciprocal), and an amplification input (hyperbolic) — and all
+three were being printed into the same visual slot with the same words. Every one of these
+rows already carried a `formula` field saying the right thing in the very next line; a
+reader who reads bold numbers and skips monospace paragraphs got the wrong answer anyway.
+That is the §9 thesis again: **correct data, false presentation**, and no data check can see
+it.
+
+Non-linear rows now read "16 **at one stack**, +50 per stack — *is a multiplier applied per
+stack, not a number added*", and hyperbolic rows additionally print their real curve
+(13.0 at 1 · 23.1 at 2 · 31.0 at 3 · 46.2 at 5 · 60.0 at 10) computed from
+`Util.ConvertAmplificationPercentageIntoReductionPercentage` rather than restated. Unstable
+Transmitter is hyperbolic in a different shape (`perStack` is 0, the stack term lives in its
+own formula) and is deliberately excluded — drawing the generic curve there would be an
+invention.
+
+Four unit tests and one Playwright test now hold this: one of them walks all 217 items and
+fails if any non-linear row is left with a bare additive per-stack number.
+
+#### Breakpoints tab: checked, no change needed
+
+All four hyperbolic rows re-verified at their call sites — Tougher Times `15f` in
+`HealthComponent`, Old Guillotine `13f` in `CharacterBody.executeEliteHealthFraction`,
+Tentabauble `5f` in `GlobalEventManager`, and Sentient Meat Hook's `20f`, which is written
+out inline rather than through the shared helper and so does not appear in a search for it.
+The proc-coefficient caveat already on that tab is correct, including the subtlety that Meat
+Hook multiplies the finished chance while Tentabauble applies the coefficient inside the
+curve.

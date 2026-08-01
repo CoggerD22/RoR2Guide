@@ -3,7 +3,7 @@ import { Biohazard, ExternalLink, Lock, X } from "lucide-react";
 import type { Item } from "@/data/schema";
 import { TIER_META, DLC_META, itemById } from "@/data/items";
 import { highlightNumbers } from "@/lib/highlight";
-import { sparklinePoints } from "@/lib/stacking";
+import { sparklinePoints, perStackMeaning, hyperbolicCurve } from "@/lib/stacking";
 import { cn } from "@/lib/utils";
 import { asset } from "@/lib/asset";
 import { StackingBadge } from "./StackingBadge";
@@ -149,23 +149,45 @@ export function ItemDetail({ item, onClose, onSelectItem }: ItemDetailProps) {
               <div className="flex flex-col gap-3">
                 {item.stacking.map((entry, i) => {
                   const points = sparklinePoints(entry);
+                  const meaning = perStackMeaning(entry.type);
+                  const curve = hyperbolicCurve(entry);
                   return (
                     <div key={i} className="rounded-lg border border-border bg-surface-2 p-3">
                       <div className="flex items-center justify-between gap-2">
                         <span className="text-sm font-medium text-foreground">{entry.stat}</span>
                         <StackingBadge type={entry.type} />
                       </div>
+                      {/*
+                        "N base, +M per stack" is only a true sentence for linear rows.
+                        Anywhere else that phrasing invites the reader to add M once per
+                        stack and get a number the game never produces (PLAN §9.1) — so
+                        non-linear rows say what their second number is instead.
+                      */}
                       <div className="mt-1 text-xs text-muted-foreground">
-                        <span className="font-semibold text-foreground">{entry.base}</span> base
+                        <span className="font-semibold text-foreground">{entry.base}</span>{" "}
+                        {entry.type === "linear" ? "base" : "at one stack"}
                         {entry.perStack !== 0 && (
                           <>
                             , <span className="font-semibold text-foreground">
                               {entry.perStack > 0 ? `+${entry.perStack}` : entry.perStack}
                             </span>{" "}
                             per stack
+                            {meaning && <span className="italic"> &mdash; {meaning}</span>}
                           </>
                         )}
                       </div>
+                      {curve && (
+                        <div className="mt-1.5 flex flex-wrap gap-x-3 gap-y-0.5 text-[11px] tabular-nums text-muted-foreground">
+                          {curve.map((p) => (
+                            <span key={p.n}>
+                              <span className="font-semibold text-foreground">
+                                {p.v.toFixed(1)}
+                              </span>{" "}
+                              at {p.n}
+                            </span>
+                          ))}
+                        </div>
+                      )}
                       {entry.formula && (
                         <p className="mt-2 font-mono text-[11px] leading-relaxed text-muted-foreground">
                           {entry.formula}

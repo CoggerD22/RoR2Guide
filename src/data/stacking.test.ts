@@ -1,7 +1,8 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, test } from "vitest";
 // The Zod-validated export, not the raw JSON — so these assertions run against the
 // same typed data the app consumes.
 import { items } from "./items";
+import { perStackMeaning, hyperbolicCurve } from "@/lib/stacking";
 
 /**
  * Regression tests for stacking values that were WRONG when derived from the game's
@@ -204,4 +205,44 @@ describe("linear coefficients confirmed against code", () => {
       expect(it.confidence, `${id} confidence`).toBe("code");
     }
   });
+});
+
+/**
+ * §9: "N base, +M per stack" is a sentence that is only true for linear rows.
+ * These lock the presentation of the 28 non-linear rows to something the reader can
+ * act on, and pin the hyperbolic curve to the game's universal formula.
+ */
+test("every non-linear stacking type says what its per-stack number means", () => {
+  expect(perStackMeaning("linear")).toBeNull();
+  for (const t of ["hyperbolic", "exponential", "reciprocal", "special"] as const) {
+    expect(perStackMeaning(t), t).toBeTruthy();
+  }
+});
+
+test("no non-linear row is left presenting a bare additive per-stack number", () => {
+  const bare: string[] = [];
+  for (const item of items) {
+    for (const e of item.stacking) {
+      if (e.type === "linear" || e.perStack === 0) continue;
+      if (!perStackMeaning(e.type)) bare.push(`${item.name}: ${e.stat} (${e.type})`);
+    }
+  }
+  expect(bare, bare.join("\n")).toEqual([]);
+});
+
+test("hyperbolic rows resolve to the game's curve, not to base x stacks", () => {
+  const tougher = items.find((i) => i.id === "tougher-times")!;
+  const row = tougher.stacking.find((s) => s.type === "hyperbolic")!;
+  const curve = hyperbolicCurve(row)!;
+  expect(curve.find((p) => p.n === 1)!.v).toBeCloseTo(13.043, 3); // NOT 15
+  expect(curve.find((p) => p.n === 2)!.v).toBeCloseTo(23.077, 3); // NOT 30
+  expect(curve.find((p) => p.n === 10)!.v).toBeCloseTo(60, 5);
+});
+
+test("Unstable Transmitter is hyperbolic in a different shape and draws no curve", () => {
+  // perStack is 0 there: the stack term lives inside its own formula, so a generic
+  // curve would be an invention.
+  const ut = items.find((i) => i.id === "unstable-transmitter")!;
+  const row = ut.stacking.find((s) => s.type === "hyperbolic")!;
+  expect(hyperbolicCurve(row)).toBeNull();
 });

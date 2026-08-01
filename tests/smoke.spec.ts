@@ -801,3 +801,21 @@ test("§9: Transcendence reports shield, not a health total you do not have", as
   await expect(health.first()).toContainText("1");
   await expect(page.getByText("165", { exact: true })).toBeVisible();
 });
+
+test("§9: a non-linear row never reads as 'add M per stack'", async ({ page }) => {
+  // Mercurial Rachis is 16m x 1.5 per stack. Rendered as "16 base, +50 per stack" it
+  // invited the reader to compute 66m at two stacks; the real answer is 24m.
+  await page.goto("/items/mercurial-rachis");
+  await expect(page.getByText(/16\s*at one stack/)).toBeVisible();
+  await expect(page.getByText(/multiplier applied per stack, not a number added/)).toBeVisible();
+
+  // Tougher Times shows the curve it actually follows, beside the 15% input.
+  await page.goto("/items/tougher-times");
+  await expect(page.getByText(/feeds a hyperbolic curve/)).toBeVisible();
+  await expect(page.getByText("13.0", { exact: true })).toBeVisible(); // not 15 at one stack
+  await expect(page.getByText("23.1", { exact: true })).toBeVisible(); // not 30 at two
+
+  // Linear rows keep the phrasing that is true for them.
+  await page.goto("/items/soldiers-syringe");
+  await expect(page.getByText(/15\s*base/)).toBeVisible();
+});
