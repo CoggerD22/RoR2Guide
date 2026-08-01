@@ -1,6 +1,14 @@
 import type { Survivor, StatScaling } from "@/data/schema";
 import { STAT_ITEMS, type StatTarget } from "@/data/statItems";
 
+/**
+ * Difficulty is not cosmetic to a stat sheet. `Run.cs` hands every player a hidden item at
+ * spawn — `DrizzlePlayerHelper` on Easy, `MonsoonPlayerHelper` on anything with
+ * `countsAsHardMode` — and `RecalculateStats` reads both. Rainstorm alone gets neither, so
+ * a sheet with no difficulty control is silently a Rainstorm sheet.
+ */
+export type Difficulty = "drizzle" | "rainstorm" | "monsoon";
+
 export interface StatInputs {
   survivor: Survivor;
   /** 1–99 */
@@ -8,6 +16,8 @@ export interface StatInputs {
   /** itemId → quantity */
   items: Record<string, number>;
   artifactOfGlass: boolean;
+  /** Defaults to Rainstorm, the difficulty that grants no helper item. */
+  difficulty?: Difficulty;
 }
 
 export interface DerivedStats {
@@ -42,6 +52,22 @@ function scale(s: StatScaling, level: number): number {
   return s.base + s.perLevel * (level - 1);
 }
 
+/**
+ * Fraction of incoming damage that gets through, from `HealthComponent`:
+ *
+ *   `num7 = (armor >= 0f) ? (1f - armor / (armor + 100f)) : (2f - 100f / (100f - armor));`
+ *
+ * Armor has TWO branches and only the positive one was implemented here — as the algebraic
+ * shortcut `(100 + armor) / 100`, which is exactly right above zero and nonsense below it
+ * (at −100 armor it reports zero effective HP rather than double damage taken). Nothing in
+ * the picker can currently drive armor negative, so this was a trap rather than a live bug:
+ * the first armor-reducing item added to the Stat Lab would have sprung it silently. Both
+ * branches are cheap, so both are here (PLAN §9.1).
+ */
+export function damageTakenMultiplier(armor: number): number {
+  return armor >= 0 ? 1 - armor / (armor + 100) : 2 - 100 / (100 - armor);
+}
+
 /** Sum of a linear stat target across all selected items. */
 function sumTarget(items: Record<string, number>, target: StatTarget): number {
   let total = 0;
@@ -55,7 +81,13 @@ function sumTarget(items: Record<string, number>, target: StatTarget): number {
   return total;
 }
 
-export function computeStats({ survivor, level, items, artifactOfGlass }: StatInputs): DerivedStats {
+export function computeStats({
+  survivor,
+  level,
+  items,
+  artifactOfGlass,
+  difficulty = "rainstorm",
+}: StatInputs): DerivedStats {
   const lvl = Math.max(1, Math.min(99, Math.round(level)));
 
   const baseHealth = scale(survivor.health, lvl);
@@ -98,8 +130,14 @@ export function computeStats({ survivor, level, items, artifactOfGlass }: StatIn
   // Verified against CharacterBody.RecalculateStats: regen FROM ITEMS scales with
   // level by (1 + 0.2*(level-1)); Irradiant Pearl adds +0.1 hp/s per stack into
   // that same level-scaled pool. Base regen already carries its own level growth.
+  // Difficulty multiplies the FINISHED regen total, base included:
+  //   `num96 = (num83 + items * levelFactor) * num94`, where num94 is
+  //   1 + 0.5 on Drizzle, 1 - 0.4 on Monsoon, and 1 on Rainstorm.
+  const regenDifficulty = difficulty === "drizzle" ? 1.5 : difficulty === "monsoon" ? 0.6 : 1;
   const regenLevelFactor = 1 + 0.2 * (lvl - 1);
-  const healthRegen = baseRegen + (sumTarget(items, "regenFlat") + allStatsPct / 100) * regenLevelFactor;
+  const healthRegen =
+    (baseRegen + (sumTarget(items, "regenFlat") + allStatsPct / 100) * regenLevelFactor) *
+    regenDifficulty;
 
   // --- Damage ---
   // One additive pool: `num103 = 1 + 0.1*Irradiant + (2^ShapedGlass - 1)`, then
@@ -114,7 +152,9 @@ export function computeStats({ survivor, level, items, artifactOfGlass }: StatIn
   const moveSpeed = survivor.moveSpeed * (1 + (sumTarget(items, "moveSpeedPct") + allStatsPct) / 100);
 
   // --- Armor ---
-  const armor = survivor.armor * (1 + allStatsPct / 100);
+  // Drizzle's +70 lands AFTER the percentage multiplier (`armor *= 1f + 0.1f * num31;`
+  // then `armor += num26 * 70f;`), so Irradiant Pearl does not scale it.
+  const armor = survivor.armor * (1 + allStatsPct / 100) + (difficulty === "drizzle" ? 70 : 0);
 
   // --- Crit ---
   // Base 1% + item crit; Irradiant Pearl also adds +10% crit chance per stack
@@ -128,7 +168,7 @@ export function computeStats({ survivor, level, items, artifactOfGlass }: StatIn
   // health, so the armor-adjusted figure is over the COMBINED pool — which is what
   // `HealthComponent.fullCombinedHealth` sums.
   const combinedHealth = maxHealth + maxShield;
-  const effectiveHealth = (combinedHealth * (100 + armor)) / 100; // positive-armor formula
+  const effectiveHealth = combinedHealth / damageTakenMultiplier(armor);
   const dps = damage * attackSpeed * avgCritFactor;
   const jumps = survivor.jumpCount + sumTarget(items, "jumpFlat");
 

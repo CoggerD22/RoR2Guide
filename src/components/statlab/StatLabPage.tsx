@@ -3,7 +3,7 @@ import { Minus, Plus, Sparkles } from "lucide-react";
 import { survivors } from "@/data/survivors";
 import { itemById } from "@/data/items";
 import { STAT_ITEM_IDS, UNMODELED_STACKING } from "@/data/statItems";
-import { computeStats, type DerivedStats } from "@/lib/statMath";
+import { computeStats, type DerivedStats, type Difficulty } from "@/lib/statMath";
 import { usePlanner } from "@/store/planner";
 import { cn } from "@/lib/utils";
 import { asset } from "@/lib/asset";
@@ -50,18 +50,41 @@ function statCards(s: DerivedStats): StatCardDef[] {
   ];
 }
 
+/**
+ * The two hidden difficulty items, with what they actually do. Both are code-verified:
+ * `Run.cs` grants them at spawn and `CharacterBody.RecalculateStats` reads them.
+ */
+const DIFFICULTIES: { id: Difficulty; label: string; hint: string }[] = [
+  {
+    id: "drizzle",
+    label: "Drizzle",
+    hint: "Hidden Drizzle item: health regen x1.5 and a flat +70 armor.",
+  },
+  {
+    id: "rainstorm",
+    label: "Rainstorm",
+    hint: "The only difficulty that grants no hidden item — these are the raw body stats.",
+  },
+  {
+    id: "monsoon",
+    label: "Monsoon",
+    hint: "Hidden hard-mode item: health regen x0.6. Shared by every difficulty above Monsoon (Typhoon, Eclipse) — the game keys it on countsAsHardMode, not on Monsoon itself.",
+  },
+];
+
 export function StatLabPage() {
   const [survivorId, setSurvivorId] = useState(survivors[0].id);
   const [level, setLevel] = useState(1);
   const [items, setItems] = useState<Record<string, number>>({});
   const [glass, setGlass] = useState(false);
+  const [difficulty, setDifficulty] = useState<Difficulty>("rainstorm");
 
   const plan = usePlanner((st) => st.plan);
   const survivor = survivors.find((s) => s.id === survivorId) ?? survivors[0];
 
   const derived = useMemo(
-    () => computeStats({ survivor, level, items, artifactOfGlass: glass }),
-    [survivor, level, items, glass],
+    () => computeStats({ survivor, level, items, artifactOfGlass: glass, difficulty }),
+    [survivor, level, items, glass, difficulty],
   );
 
   const setQty = (id: string, q: number) =>
@@ -119,6 +142,38 @@ export function StatLabPage() {
                 </button>
               ))}
             </div>
+          </section>
+
+          {/*
+            Not a cosmetic setting: Run.cs gives every player a hidden item at spawn on
+            Drizzle and on any hard mode, and RecalculateStats reads both. Without this
+            control the sheet was silently a Rainstorm sheet (PLAN §9.1).
+          */}
+          <section>
+            <h2 className="mb-2 text-xs font-semibold uppercase tracking-widest text-muted-foreground">
+              Difficulty
+            </h2>
+            <div className="flex gap-1.5">
+              {DIFFICULTIES.map((d) => (
+                <button
+                  key={d.id}
+                  type="button"
+                  onClick={() => setDifficulty(d.id)}
+                  title={d.hint}
+                  className={cn(
+                    "rounded-md border px-2.5 py-1 text-sm transition-colors",
+                    d.id === difficulty
+                      ? "border-primary/60 bg-primary/15 text-foreground"
+                      : "border-border text-muted-foreground hover:text-foreground",
+                  )}
+                >
+                  {d.label}
+                </button>
+              ))}
+            </div>
+            <p className="mt-1.5 text-[11px] leading-relaxed text-muted-foreground">
+              {DIFFICULTIES.find((d) => d.id === difficulty)?.hint}
+            </p>
           </section>
 
           <section>

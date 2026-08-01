@@ -819,3 +819,23 @@ test("§9: a non-linear row never reads as 'add M per stack'", async ({ page }) 
   await page.goto("/items/soldiers-syringe");
   await expect(page.getByText(/15\s*base/)).toBeVisible();
 });
+
+test("§9: the stat sheet states its difficulty instead of silently assuming one", async ({ page }) => {
+  // Run.cs hands every player a hidden item on Drizzle and on any hard mode, and
+  // RecalculateStats reads both — so a sheet with no difficulty control was a Rainstorm
+  // sheet that never said so.
+  await page.goto("/stats");
+  await expect(page.getByText(/only difficulty that grants no hidden item/)).toBeVisible();
+
+  const regen = page.locator("div", { has: page.getByText("Health Regen", { exact: true }) });
+  await expect(regen.first()).toContainText("1.0/s"); // Commando, Rainstorm
+
+  await page.getByRole("button", { name: "Drizzle", exact: true }).click();
+  await expect(regen.first()).toContainText("1.5/s");
+  const armor = page.locator("div", { has: page.getByText("Armor", { exact: true }) });
+  await expect(armor.first()).toContainText("70");
+
+  await page.getByRole("button", { name: "Monsoon", exact: true }).click();
+  await expect(regen.first()).toContainText("0.6/s");
+  await expect(page.getByText(/countsAsHardMode/)).toBeVisible();
+});

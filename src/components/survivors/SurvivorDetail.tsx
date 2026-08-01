@@ -65,8 +65,17 @@ export function SurvivorDetail({ id }: { id: string }) {
               </tbody>
             </table>
           </div>
+          {/*
+            "Rainstorm-standard" was true but named only half of it: the hidden Drizzle item
+            adds a flat +70 armor as well as multiplying regen, so the Armor row is just as
+            difficulty-dependent as the regen row (PLAN §9.1).
+          */}
           <p className="mt-2 text-[11px] leading-relaxed text-muted-foreground">
-            Right column is growth per level. Regen figures are Rainstorm-standard.
+            Right column is growth per level; blank means the stat does not scale with level,
+            which is true of every stat below damage, for every survivor in the game. These are Rainstorm
+            values &mdash; the only difficulty that grants no hidden item. Drizzle multiplies
+            health regen by 1.5 and adds a flat <span className="text-foreground">+70 armor</span>;
+            Monsoon and above multiply health regen by 0.6.
           </p>
         </section>
 

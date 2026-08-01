@@ -3090,3 +3090,66 @@ out inline rather than through the shared helper and so does not appear in a sea
 The proc-coefficient caveat already on that tab is correct, including the subtlety that Meat
 Hook multiplies the finished chance while Tentabauble applies the coefficient inside the
 curve.
+
+### 3j.61 §9 surface audit, fourth pass — the sheet had a difficulty setting it never told you about
+
+Every number in the Stat Lab, and every base stat on a survivor page, was a **Rainstorm**
+number. Nothing said so, and the difficulty is not cosmetic:
+
+```csharp
+// Run.cs, at spawn
+if (selectedDifficulty == DifficultyIndex.Easy)
+    inventory.GiveItemPermanent(RoR2Content.Items.DrizzlePlayerHelper);
+else if (difficultyDef.countsAsHardMode)
+    inventory.GiveItemPermanent(RoR2Content.Items.MonsoonPlayerHelper);
+```
+
+Both are read by `RecalculateStats`, and between them they move two of the ten cards:
+
+- **Drizzle** — `num94 += 0.5f` (regen ×1.5) *and* `armor += num26 * 70f`. A Drizzle player
+  reading our Commando sheet was 0.5 hp/s and **70 armor** out.
+- **Monsoon** — `num94 -= 0.4f` (regen ×0.6). Keyed on `countsAsHardMode`, so Typhoon and
+  Eclipse carry the same item; the control says so rather than implying Monsoon is special.
+- **Rainstorm** — neither item. It is the only difficulty for which the raw body stats are
+  the truth.
+
+The Stat Lab now has a three-way control, and the survivor page's footnote — previously
+*"Regen figures are Rainstorm-standard"*, true but naming only half of it — now names the
+armor grant too, since the Armor row was exactly as difficulty-dependent as the regen row
+and said nothing.
+
+Two ordering details are in the model, not just the prose: difficulty multiplies the
+**finished** regen total (`num96 = (base + items × levelFactor) × num94`), and Drizzle's +70
+lands **after** the Irradiant Pearl multiplier (`armor *= 1f + 0.1f * num31;` *then*
+`armor += num26 * 70f;`), so a Pearl does not scale it. Both are pinned by tests.
+
+#### A latent trap: armor had two branches and we implemented one
+
+`effectiveHealth` used `(100 + armor) / 100`. That is the exact algebraic simplification of
+the game's positive branch, and nonsense below zero — at −100 armor it reports **zero**
+damage taken, i.e. infinite effective HP. `HealthComponent` is explicit:
+
+```csharp
+num7 = (armor >= 0f) ? (1f - armor / (armor + 100f)) : (2f - 100f / (100f - armor));
+```
+
+No survivor has negative base armor and nothing in the picker reduces it, so this was never
+live — but it would have gone live silently the first time an armor-reducing item was added
+to the Stat Lab, with no test failing. Both branches are now implemented and both are
+tested, including that the positive branch still equals the old shortcut to ten decimals.
+
+#### Checked, no change needed
+
+- **No survivor scales armor, move speed, attack speed, jump power or crit with level** —
+  all five `level*` fields are 0 on all 19 survivor bodies, so the survivor table's blank
+  growth column is correct rather than merely unfilled. The footnote now says this outright.
+- **Hard-cap triage re-read.** Of the five candidates, two (`Elusive Antlers`, `H3AD-5T v2`)
+  are `(!inventory) ? 1 : count` null guards rather than caps and are correctly excluded;
+  Longstanding Solitude's cap of 3 is recorded; Fuel Cell's is a 255-stack byte clamp.
+  Pocket I.C.B.M.'s missile *count* is `(n <= 0) ? 1 : 3` — a genuine one-stack ceiling —
+  and `items.json` already states it in that row's formula. The planner's "caps at N" badge
+  is complete for what the data records.
+- **Shrine `cost` provenance** is `adequate: true`, read from each prefab's
+  `PurchaseInteraction`. An older note in this log calling it an editorial summary is stale.
+- **No UI copy hardcodes a data count** that could drift; the one instance introduced in
+  this pass was rewritten before it landed.
