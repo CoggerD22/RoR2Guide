@@ -314,3 +314,33 @@ test("Milky Chrysalis records what was traced and does not claim the rest", () =
   expect(x.stacking.find((s) => /Flight duration/.test(s.stat))?.base).toBe(15);
   expect(x.descriptionNote).toMatch(/NOT verified/);
 });
+
+/**
+ * Ghor's Tome's payout was recorded as untraceable in an earlier pass — BonusMoneyPack
+ * carries no `goldReward`. It carries a MoneyPickup with `baseGoldReward`, and the item's
+ * OWN bundle name is what distinguishes its 25 from the identical 25 on a DLC3 drone pack
+ * and from VoidCoinBarrel's — the same name-collision that has misattributed data here
+ * three times before.
+ */
+test("Ghor's Tome: chance and payout are both traced, from different places", () => {
+  const x = items.find((i) => i.id === "ghors-tome")!;
+  expect(x.confidence).toBe("code");
+  const chance = x.stacking.find((s) => /Chance on kill/i.test(s.stat))!;
+  expect(chance.base).toBe(4);
+  expect(chance.perStack).toBe(4);
+  expect(chance.type).toBe("linear"); // NOT the usual hyperbolic on-hit curve
+  const gold = x.stacking.find((s) => /Treasure value/i.test(s.stat))!;
+  expect(gold.base).toBe(25);
+  expect(gold.formula).toMatch(/bonusgoldpackonkill/);
+});
+
+test("Box of Dynamite scales off the drone's damage, not yours", () => {
+  const x = items.find((i) => i.id === "box-of-dynamite")!;
+  expect(x.confidence).toBe("code");
+  const dmg = x.stacking.find((s) => /Dynamite damage/i.test(s.stat))!;
+  expect(dmg.base).toBe(240);
+  expect(dmg.perStack).toBe(85);
+  // The recharge is flat: extra copies buy damage, never rate.
+  expect(x.stacking.find((s) => /Recharge/i.test(s.stat))?.perStack).toBe(0);
+  expect(x.descriptionNote).toMatch(/DRONE's damage, not yours/);
+});

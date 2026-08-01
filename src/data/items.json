@@ -1645,7 +1645,14 @@
         "base": 4,
         "perStack": 4,
         "type": "linear",
-        "formula": "LocalCheckRoll(4f * n) on kill (GlobalEventManager). Linear at 4% per stack. NOT yet verified: the $25 value is not on the BonusMoneyPack prefab, which carries no goldReward component — so the payout figure remains game-text-sourced."
+        "formula": "GlobalEventManager: `LocalCheckRoll(4f * n)` on kill — LINEAR at 4% per stack, not the hyperbolic curve most on-hit chances use — spawning Prefabs/NetworkedObjects/BonusMoneyPack."
+      },
+      {
+        "stat": "Treasure value (gold, before difficulty scaling)",
+        "base": 25,
+        "perStack": 0,
+        "type": "none",
+        "formula": "The pack's MoneyPickup component carries baseGoldReward = 25 with shouldScale = true, read from the item's OWN bundle (ror2-base-bonusgoldpackonkill) — which is what distinguishes it from the identical 25 on a DLC3 drone pack and from VoidCoinBarrel's goldReward of 25. `shouldScale` routes it through Run.GetDifficultyScaledCost, i.e. 25 x difficultyCoefficient^1.25, which is the description's 'Scales over time'."
       }
     ],
     "tags": [
@@ -1656,7 +1663,8 @@
     "icon": "/icons/ghors-tome.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Ghor%27s_Tome",
     "verified": true,
-    "confidence": "langfile"
+    "confidence": "code",
+    "descriptionNote": "'Scales over time' is precisely 25 x difficultyCoefficient^1.25 — the same exponent the game uses for chest prices, so the drop keeps pace with what things cost rather than with your damage."
   },
   {
     "id": "squid-polyp",
@@ -2054,7 +2062,29 @@
         "stat": "Dynamite damage (% base)",
         "base": 240,
         "perStack": 85,
-        "type": "linear"
+        "type": "linear",
+        "formula": "DroneDynamiteBehaviour: `damage = base.body.damage * (2.4f + 0.85f * (stack - 1))`, i.e. 240% + 85% per extra stack, exactly as stated. The subtlety is `base.body`: this behaviour is attached by DroneDynamiteDisplay, an item held by the DRONE, so the coefficient applies to the drone's damage stat and not to yours."
+      },
+      {
+        "stat": "Recharge between sticks (s)",
+        "base": 10,
+        "perStack": 0,
+        "type": "none",
+        "formula": "`rechargeTimer += 10f` after each throw (baseCooldown = 10f). It does not scale with stacks — extra copies buy damage, never rate. Enemy checks run every 0.25s while the timer is down, so a stick goes out within a quarter-second of an enemy being in range."
+      },
+      {
+        "stat": "Enemy search distance (m)",
+        "base": 30,
+        "perStack": 0,
+        "type": "none",
+        "formula": "searchDistance = 30f with searchRadius = 2.5f, checked on a 0.25s searchInterval. The drone must find something within 30m before it throws — the description's 'while in combat' is this check, not a combat-state flag."
+      },
+      {
+        "stat": "Blast radius (m)",
+        "base": 7,
+        "perStack": 0,
+        "type": "none",
+        "formula": "blastRadius = 7 on the DynamiteProjectile prefab (ror2-dlc3 items bundle for DronesDropDynamite), thrown with force = 500 in a random direction (Random.onUnitSphere)."
       }
     ],
     "tags": [
@@ -2065,7 +2095,8 @@
     "icon": "/icons/box-of-dynamite.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Box_of_Dynamite",
     "verified": true,
-    "confidence": "langfile"
+    "confidence": "code",
+    "descriptionNote": "The 240% is of the DRONE's damage, not yours — the behaviour runs on the drone, via an item the drone holds. And 'while in combat' is literally an enemy within 30m, checked four times a second; the 10s recharge never scales with stacks."
   },
   {
     "id": "collectors-compulsion",

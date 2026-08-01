@@ -3387,3 +3387,51 @@ and letting it graduate on the strength of the parts that did resolve is precise
 dataset starts lying.
 
 Coverage 182 → **188 of 217**, floor raised to match.
+
+### 3j.67 the langfile tail, part 2 — a payout previously recorded as untraceable
+
+**Ghor's Tome** carried an explicit surrender in its own formula field:
+
+> *NOT yet verified: the $25 value is not on the BonusMoneyPack prefab, which carries no
+> `goldReward` component — so the payout figure remains game-text-sourced.*
+
+That was a true statement about the wrong component. The pack has no `goldReward`; it has a
+**`MoneyPickup`** with `baseGoldReward`. Querying that field name instead returns four
+candidates — and three of them are decoys:
+
+| `baseGoldReward` | bundle |
+|---|---|
+| **25** | `ror2-base-**bonusgoldpackonkill**` |
+| 8 | `ror2-dlc2-elites-eliteaurelionite` |
+| 15 | `ror2-dlc3-drifter` |
+| 25 | `ror2-dlc3-drones` |
+
+Two of them are 25. The **bundle name** is the only thing that separates Ghor's Tome's 25
+from a DLC3 drone pack's — and this project has already been burned three times by exactly
+this collision, most relevantly by `VoidCoinBarrel`, which also carries a `goldReward` of 25
+and is not Ghor's Tome. Field name plus bundle name is the identifying pair; either alone is
+a coin flip.
+
+With it: `shouldScale = true` routes the 25 through `Run.GetDifficultyScaledCost`, which is
+`baseCost × difficultyCoefficient^1.25`. That is the description's "Scales over time", now a
+formula rather than a phrase — and the same exponent the game prices chests with, so the drop
+tracks what things cost rather than what you kill.
+
+Also worth recording: the chance is `LocalCheckRoll(4f * n)` — **linear**, not the hyperbolic
+curve nearly every other on-hit chance uses. An item whose stacking looks like every other
+proc item's but is not is precisely the kind of thing a reader assumes wrongly.
+
+#### Box of Dynamite: the coefficient is not applied to your damage
+
+`damage = base.body.damage * (2.4f + 0.85f * (stack - 1))` confirms 240% (+85%) exactly. The
+subtlety is `base.body`. `DroneDynamiteBehaviour` is attached via `DroneDynamiteDisplay` — an
+item the **drone** holds — so the coefficient multiplies the drone's damage stat, not yours.
+The description ("your drones drop sticks of dynamite that detonate for 240% damage") is
+ambiguous about whose damage, and the natural reading is the wrong one.
+
+Three more numbers that were nowhere: the recharge is a flat `rechargeTimer += 10f` that
+**never scales with stacks** (extra copies buy damage, never rate), "while in combat" is
+literally an enemy within `searchDistance = 30f` checked every `0.25s`, and the stick's blast
+is `blastRadius = 7` thrown with `force = 500` in a `Random.onUnitSphere` direction.
+
+Coverage 188 → **190 of 217**.
