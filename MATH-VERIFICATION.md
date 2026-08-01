@@ -3153,3 +3153,56 @@ tested, including that the positive branch still equals the old shortcut to ten 
   `PurchaseInteraction`. An older note in this log calling it an editorial summary is stale.
 - **No UI copy hardcodes a data count** that could drift; the one instance introduced in
   this pass was rewritten before it landed.
+
+### 3j.62 §9 surface audit, fifth pass — thirteen artifacts whose "the code adds nothing" was untrue
+
+The artifacts tab has carried a two-layer design since M6: the game's own description, quoted,
+and beneath it a green **"Verified mechanic — from game code"** panel. Seven artifacts had the
+second layer. The other thirteen carried a doc comment justifying the gap:
+
+> *Omitted where the description is purely qualitative and the code adds nothing.*
+
+That is a claim about game code, sitting in the file that is supposed to be sourced from game
+code, and it was **wrong for all thirteen**. Each was read from its implementation:
+
+| Artifact | What the description never says |
+|---|---|
+| **Honor** | Promotes into exactly **four** elite types — `eliteDefs = { Fire, Lightning, Ice, Earth }`. Malachite, Celestine, Void and Perfected are not in that array and Honor never produces them. |
+| **Command** | Strips the stage of everything that already offered a choice: every interactable with a `ShopTerminalBehavior`, `MultiShopController` or `ScrapperController` is removed. Multishops and scrappers stop spawning. |
+| **Delusion** | A wrong guess does `RemoveItemPermanent` on the item you picked — and the decoys are drawn **from your own inventory**, so a wrong answer deletes one of your items rather than forfeiting a reward. |
+| **Vengeance** | The doppelganger carries a hidden `InvadingDoppelganger` item that `RecalculateStats` reads twice: `num78 *= 10f` and `num101 *= 0.04f` — **ten times your health, four percent of your damage**. |
+| **Death** | Does *not* kill the team if the victim had a revive: Dio's, Pluripotent Larva, `ExtraLifeBuff`, a Seed of Life, or Seeker self-revive. |
+| **Dissonance** | Does not widen the pool — it **replaces** it with `mixEnemyMonsterCards` trimmed to 3 Basic / 3 Miniboss / 3 Champion cards. Nine monster types, and the stage's usual residents may not be among them. |
+| **Soul** | `WispSoulBody` has a **negative** regen (-3/s, -0.6/level), so the wisps bleed out on their own. |
+| **Metamorphosis** | Re-rolls on **every** respawn, and only ever into survivors *that player has unlocked* (`networkUser.unlockables`). |
+| **Devotion** | Followers get `BoostHp`/`BoostDamage` in counts of 10/20/10/20 by level — at 10% each, a level-1 follower is at **+200%** health and damage. |
+| **Kin** | Picks one card affordable within `40 x difficultyCoefficient` credits (50 on Void Fields), max 5 spawns (6), min 1 (2). |
+| **Chaos** | The gates apply no multiplier, and the class's one damage-scale field (`friendlyFireDamageScale = 0.5f`) has **zero callers in RoR2.dll** — checked at IL level. Friendly fire is full damage. |
+| **Rebirth** | Exactly **one** item per run, consumed; a random `rebirthDropTable` roll if you banked none. |
+| **Enigma** | Pool is `enigmaEquipmentList` filtered by enabled expansion; MUL-T is special-cased to two slots. |
+
+Two guards came out of writing them:
+
+- **A name resolved before it was published.** The Death write-up first said "the Delicate
+  Watch-style HealAndRevive equipment" — a vague analogy standing in for a name I had not
+  looked up. `EQUIPMENT_HEALANDREVIVE_NAME` is **Seed of Life**. This is the third time a
+  `cachedName` has nearly been published as a guess; the rule holds — resolve the token first.
+- **A near-miss on attribution.** `PrestigeBulwarkManager`'s cost formula
+  (`max(overrideCost, 600 x compensatedDifficultyCoefficient^0.5) x (1 + mountainShrineCount)`)
+  is the **Bulwark's Ambry trial** for unlocking Prestige, not what Prestige does in a run.
+  Filing it under the artifact's effect would have been the Halcyon/Shaping error again. It is
+  deliberately not in the artifact's mechanic string.
+
+Three tests hold the layer: every artifact must have a mechanic; no mechanic may be a
+paraphrase (it must introduce at least ten terms absent from the description — this test is
+what caught Vengeance's original one-liner as too thin, which is how the x10/x0.04 was found);
+and exactly one artifact may lack an Ambry code, Rebirth, which is unlocked at a Shrine of
+Rebirth instead.
+
+#### A disclaimer that had become false
+
+The shrine cost badge carried `title="Our summary, not game data"`. That stopped being true
+when the costs were re-read from each prefab's `PurchaseInteraction`. A **false disclaimer is
+its own defect**, and a mirror image of the ones §9 usually finds: it tells the reader that a
+verified figure is our guess, which sends them to a worse source to check it. Understating
+provenance and overstating it are the same failure — the badge now names the field it came from.

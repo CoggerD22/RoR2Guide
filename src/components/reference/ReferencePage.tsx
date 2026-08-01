@@ -116,17 +116,23 @@ function Shrines() {
         The blurb below each shrine is the GAME'S OWN description, quoted verbatim —
         not a verified account of the mechanic (PLAN §5.0.1). These descriptions are
         often incomplete: Shrine of Blood's, for instance, never mentions that its
-        cost compounds per use or that uses are capped. Labelled as a quote until the
-        code+prefab-verified mechanic layer lands.
+        cost compounds per use or that uses are capped. The verified mechanic layer
+        below each quote is where those facts live.
       */}
       <SourceNote dataset="shrines" />
       {SHRINES.map((s) => (
         <div key={s.name} className="rounded-xl border border-border bg-surface p-4">
           <div className="flex flex-wrap items-baseline justify-between gap-2">
             <h3 className="font-display text-sm font-semibold text-foreground">{s.name}</h3>
+            {/*
+              This said "Our summary, not game data" — which stopped being true when the
+              costs were re-read from each shrine prefab's PurchaseInteraction. A false
+              disclaimer is its own §9 defect: it tells the reader our verified figure is a
+              guess, and sends them off to a worse source to check it.
+            */}
             <span
               className="rounded-full bg-surface-2 px-2 py-0.5 text-xs text-primary"
-              title="Our summary, not game data"
+              title="Read from this shrine's PurchaseInteraction (cost, costType, costMultiplierPerPurchase, maxPurchaseCount)"
             >
               {s.cost}
             </span>

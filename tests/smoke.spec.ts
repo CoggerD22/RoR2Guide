@@ -839,3 +839,23 @@ test("§9: the stat sheet states its difficulty instead of silently assuming one
   await expect(regen.first()).toContainText("0.6/s");
   await expect(page.getByText(/countsAsHardMode/)).toBeVisible();
 });
+
+test("§9: every artifact shows a verified mechanic, not only the game's blurb", async ({ page }) => {
+  await page.goto("/reference");
+  // The layer existed on 7 of 20 artifacts, with a code comment claiming the rest were
+  // omitted because the code added nothing. It did not: Honor never rolls Malachite,
+  // Command deletes multishops from the stage, Delusion's wrong answer eats your item.
+  await expect(page.getByText("Verified mechanic — from game code")).toHaveCount(20);
+  await expect(page.getByText(/Malachite, Celestine, Void and Perfected elites are not/)).toBeVisible();
+  await expect(page.getByText(/deletes one of your own items/)).toBeVisible();
+  await expect(page.getByText(/TEN TIMES your maximum health/)).toBeVisible();
+});
+
+test("§9: the shrine cost badge no longer disclaims data it verified", async ({ page }) => {
+  await page.goto("/reference");
+  await page.getByRole("button", { name: "Shrines" }).click();
+  const badge = page.getByTitle(/PurchaseInteraction/).first();
+  await expect(badge).toBeVisible();
+  // The old title told the reader our prefab-read figure was our own guess.
+  await expect(page.getByTitle("Our summary, not game data")).toHaveCount(0);
+});
