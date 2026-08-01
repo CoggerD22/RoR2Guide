@@ -116,11 +116,11 @@ test("stat lab shows verified proc coefficients and marks unverified honestly", 
   const doubleTap = panel.locator("tr", { hasText: "Double Tap" });
   await expect(doubleTap).toContainText("1");
 
-  // A skill with no damage path reads "no attack" — a verified fact, not a gap. This used
+  // A skill with no damage path reads "no direct damage" — a verified fact, not a gap. It used
   // to assert "unverified" for Tactical Dive, which overstated our ignorance: a dash does
   // not have an unknown proc coefficient, it has no attack (MATH-VERIFICATION §3j.47).
   const dive = panel.locator("tr", { hasText: "Tactical Dive" });
-  await expect(dive).toContainText("no attack");
+  await expect(dive).toContainText("no direct damage");
   // Whichever label applies, it is never rendered as a bare number.
   await expect(dive).not.toContainText(/^\s*0\s*$/);
 
@@ -209,8 +209,10 @@ test("survivor page joins base stats, skills, procs and unlock challenges", asyn
     page.getByText("As Commando, land the killing blow on an Overloading Worm."),
   ).toBeVisible();
 
-  // Unverified procs must say so, never show a number.
-  await expect(page.getByText("proc unverified").first()).toBeVisible();
+  // A skill with no damage path must say so, and must never show a number. It used to
+  // read "proc unverified" here while the Stat Lab said the opposite about the same skill
+  // (PLAN §9.1) — this now asserts the state the data actually records.
+  await expect(page.getByText("no direct damage").first()).toBeVisible();
 
   // DLC survivors join too — this silently rendered nothing while their names
   // carried a "(SotV)" suffix that never matched survivors.json.
@@ -858,4 +860,20 @@ test("§9: the shrine cost badge no longer disclaims data it verified", async ({
   await expect(badge).toBeVisible();
   // The old title told the reader our prefab-read figure was our own guess.
   await expect(page.getByTitle("Our summary, not game data")).toHaveCount(0);
+});
+
+test("§9: the survivor page and the Stat Lab describe the same skill the same way", async ({ page }) => {
+  // The Stat Lab has distinguished "no damage path" from "unverified" since §3j.47. The
+  // survivor page never learned it, so Tactical Dive read "proc unverified" there and
+  // "no direct damage" in the lab — the same fact, described two ways, and the wrong way
+  // on the page a reader is more likely to open.
+  await page.goto("/survivors/commando");
+  const dive = page.locator("li", { hasText: "Tactical Dive" }).first();
+  await expect(dive).toContainText("no direct damage");
+  await expect(page.getByText("proc unverified")).toHaveCount(0);
+
+  // And the header stops reporting ignorance it does not have.
+  await expect(page.getByText(/Every proc coefficient accounted for/)).toBeVisible();
+  await expect(page.getByText(/not applicable/)).toBeVisible();
+  await expect(page.getByText(/a turret or a beacon carries its own/)).toBeVisible();
 });

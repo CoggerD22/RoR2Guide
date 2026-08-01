@@ -68,9 +68,9 @@ export function SkillProcPanel({ survivorId }: { survivorId: string }) {
                         */
                         <span
                           className="text-[11px] italic text-muted-foreground/70"
-                          title="This skill has no damage-dealing path, so a proc coefficient does not apply"
+                          title="This skill's own state has no damage-dealing path, so it has no proc coefficient of its own. A turret or beacon it places carries its own."
                         >
-                          no attack
+                          no direct damage
                         </span>
                       ) : (
                         <span className="text-[11px] italic text-muted-foreground">unverified</span>

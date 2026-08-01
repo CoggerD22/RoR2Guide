@@ -21,8 +21,17 @@ export function SurvivorDetail({ id }: { id: string }) {
 
   const { survivor: s, slots, unmatchedUnlocks } = detail;
   const allSkills = slots.flatMap((g) => g.skills);
+  /*
+    Three states, not two — the same split `data:audit` has used since §3j.47, which this
+    page had never been taught. A skill whose own state has no damage path has no proc
+    coefficient to find, so counting it against "verified" reported ignorance we do not
+    have: Commando read 4/6 when nothing about his kit is actually unknown (PLAN §9.1).
+  */
   const verified = allSkills.filter((k) => k.verified).length;
+  const noDamage = allSkills.filter((k) => !k.verified && k.damaging === false).length;
   const totalSkills = allSkills.length;
+  const applicable = totalSkills - noDamage;
+  const unknown = applicable - verified;
   const itemGranted = allSkills.some((k) => k.grantedBy);
 
   return (
@@ -85,8 +94,20 @@ export function SurvivorDetail({ id }: { id: string }) {
             <h2 className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">
               Loadout skills
             </h2>
-            <span className="text-[11px] text-muted-foreground">
-              {verified}/{totalSkills} procs verified vs game data
+            <span
+              className="text-[11px] text-muted-foreground"
+              title={
+                noDamage > 0
+                  ? `${verified} of ${applicable} damage-dealing skills have a verified proc coefficient. ` +
+                    `${noDamage} more deal no damage themselves, so there is no coefficient to verify.`
+                  : `${verified} of ${applicable} skills have a verified proc coefficient.`
+              }
+            >
+              {unknown === 0
+                ? `Every proc coefficient accounted for (${verified} verified${
+                    noDamage > 0 ? `, ${noDamage} not applicable` : ""
+                  })`
+                : `${verified}/${applicable} procs verified vs game data`}
             </span>
           </div>
 
@@ -133,6 +154,14 @@ export function SurvivorDetail({ id }: { id: string }) {
                             <span className="text-muted-foreground">proc </span>
                             <span className="font-semibold tabular-nums text-foreground">{k.proc}</span>
                           </>
+                        ) : k.damaging === false ? (
+                          /*
+                            The Stat Lab has shown this state since §3j.47; this page still
+                            said "proc unverified", so the same skill was described two ways
+                            on two pages — and the wrong way here, claiming ignorance about a
+                            skill we had in fact classified.
+                          */
+                          <span className="italic text-muted-foreground/70">no direct damage</span>
                         ) : (
                           <span className="italic text-muted-foreground">proc unverified</span>
                         )}
@@ -168,8 +197,11 @@ export function SurvivorDetail({ id }: { id: string }) {
 
           <p className="mt-3 text-[11px] leading-relaxed text-muted-foreground">
             A skill&rsquo;s proc coefficient scales how often it triggers on-hit items. Hover a
-            value for its source. &ldquo;Unverified&rdquo; means we could not establish a value
-            from game data &mdash; it does <em>not</em> mean the skill cannot proc.
+            value for its source. &ldquo;No direct damage&rdquo; means the skill&rsquo;s own
+            state deals none, so it has no coefficient of its own &mdash; it does <em>not</em>{" "}
+            mean nothing it creates can proc, and a turret or a beacon carries its own.
+            &ldquo;Unverified&rdquo; is reserved for the case where we could not establish a
+            value at all; it does <em>not</em> mean the skill cannot proc.
           </p>
 
           <a

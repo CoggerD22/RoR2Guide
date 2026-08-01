@@ -3251,3 +3251,43 @@ It is also the wrong number to drop, given what these audits established: "one i
 *correct* plan for Rusted Key, Encrusted Key and Longstanding Solitude past 3, where extra
 stacks genuinely do nothing. The one goal value the encoder discarded was the one the data most
 often justifies. Fixed, with the old test rewritten to state why rather than deleted.
+
+### 3j.64 §9 surface audit, seventh pass — two pages describing the same skill two ways
+
+`data:audit` has used a three-state model for proc coefficients since §3j.47: **verified**
+(we have the number), **no damage path** (there is no number to have), and **unknown**. That
+split is what corrected the reported proc gap from 21 skills to 2, and then to 0.
+
+The Stat Lab learned it. The **survivor page never did.** It rendered
+`k.verified ? proc N : "proc unverified"` — two states — so all 19 non-damaging skills read
+*"proc unverified"* there while the Stat Lab said the value did not apply. The same fact,
+described two ways, on two pages of the same site, and the wrong way on the page a reader is
+more likely to open.
+
+It compounded in the header. `{verified}/{totalSkills} procs verified vs game data` counted
+"not applicable" against "verified", so **Commando read 4/6** — advertising two unknowns in a
+kit where nothing is unknown. And the footnote defined the state a reader was seeing as *"we
+could not establish a value from game data"*, which is the exact opposite of the truth for all
+19: we established it, and the answer was that there is nothing to establish.
+
+Fixed by giving the page the audit's own three states. The header now reads *"Every proc
+coefficient accounted for (N verified, M not applicable)"* whenever nothing is genuinely
+unknown, with the breakdown on hover, and falls back to a ratio over **applicable** skills if
+that ever stops being true.
+
+#### And a wording fix that outgrew its original case
+
+The label was *"no attack"*, chosen when the classified skills were dashes and stance swaps.
+The set has since grown to include **Engineer's turrets and Captain's supply beacon** — and
+"no attack" on a turret skill invites exactly the wrong conclusion, that Engineer turrets do
+not proc items. They carry their own coefficient; it is the placement state that has none.
+
+Both surfaces now say **"no direct damage"**, and the tooltip is precise about the scope of
+the claim: *this skill's own state has no damage-dealing path, so it has no proc coefficient
+of its own; a turret or beacon it places carries its own.* Verified scope, stated as verified
+scope — the distinction is the whole of §5.0.1 applied to our own labels rather than to the
+game's descriptions.
+
+The data was right throughout and is unchanged: `verified` means "we have a number" and
+`damaging: false` means "there is no number", and collapsing them in the schema would have
+destroyed the distinction the audit depends on. The defect was only ever in the reading.
