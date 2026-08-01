@@ -781,3 +781,23 @@ test("§9: an empty result names the cause instead of blaming filters", async ({
     await page.getByRole("button", { name: t, exact: true }).click().catch(() => {});
   }
 });
+
+test("§9: Transcendence reports shield, not a health total you do not have", async ({ page }) => {
+  // The Stat Lab modelled Transcendence as "+50% max health" and printed a max-health
+  // figure the survivor never has: RecalculateStats sets maxHealth to exactly 1 and moves
+  // the pool into shield. Arithmetically self-consistent, and completely misleading.
+  await page.goto("/stats");
+
+  const health = page.locator("div", { has: page.getByText("Max Health", { exact: true }) });
+  await expect(page.getByText("Max Shield", { exact: true })).toHaveCount(0);
+
+  await page.getByRole("button", { name: "Add one Transcendence" }).click();
+
+  await expect(page.getByText("Max Shield", { exact: true })).toBeVisible();
+  await expect(page.getByText(/Transcendence leaves you on 1 HP/)).toBeVisible();
+  await expect(page.getByText(/healing cannot restore it/)).toBeVisible();
+  await expect(page.getByText(/Transcendence is a conversion, not a bonus/)).toBeVisible();
+  // Commando is the default survivor: 110 base health -> 1 HP and a 165 shield.
+  await expect(health.first()).toContainText("1");
+  await expect(page.getByText("165", { exact: true })).toBeVisible();
+});

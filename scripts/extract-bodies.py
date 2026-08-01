@@ -39,6 +39,7 @@ OUT_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__)
 # CharacterBody's serialized stat fields (see decompiled RoR2.CharacterBody).
 BODY_FIELDS = [
     "baseMaxHealth", "levelMaxHealth", "baseRegen", "levelRegen",
+    "baseMaxShield", "levelMaxShield",
     "baseDamage", "levelDamage", "baseArmor", "levelArmor",
     "baseMoveSpeed", "levelMoveSpeed", "baseAcceleration",
     "baseJumpCount", "baseJumpPower", "levelJumpPower",

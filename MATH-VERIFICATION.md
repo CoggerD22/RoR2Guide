@@ -2978,3 +2978,70 @@ Checked and correct, recorded so they are not re-examined blind: the planner's e
 `Items.Crowbar` → `Discover10UniqueTier1`, so the lock is not spurious on a starting-looking
 item), the Stat Lab's own disclosure that conditional items are not modelled, and its
 "DPS proxy" label, which is honest about being a proxy.
+
+### 3j.59 §9 surface audit, second pass — the Stat Lab was publishing a health total nobody has
+
+The §6A programme verified `items.json` against the game. It never verified the **Stat
+Lab**, which is a second implementation of the game's arithmetic. Three defects, all found
+by reading `RecalculateStats` beside `statMath.ts` line for line.
+
+#### Transcendence: modelled as a bonus, when it is a conversion
+
+`statItems.ts` had Transcendence as `healthPct: base 50, perStack 25` — a flat percentage
+into the same pool as Pearl. The game:
+
+```csharp
+if (num74)                                             // num15 = ShieldOnly > 0
+{
+    num81 += maxHealth * (1.5f + (float)(num15 - 1) * 0.25f);   // -> maxShield
+    maxHealth = 1f;
+}
+```
+
+Three separate errors followed from one wrong model:
+
+1. **The number was attached to the wrong pool.** The Stat Lab printed *Max Health 165* for
+   a Commando who in fact has **1** max health and a 165 shield. Shield recharges by itself
+   out of combat and **cannot be healed** — so the Health Regen card beside it, and every
+   healing item, were quietly describing a resource the player no longer has.
+2. **The arithmetic was wrong too.** The multiplier applies to the *finished* health total,
+   so it compounds with percentage health items instead of adding to them. Transcendence ×3
+   with a Pearl: game `(110 × 1.1) × 2.0 = 242`; the old model gave `110 × 2.10 = 231`.
+3. **`effectiveHealth` ignored shield entirely**, because before this nothing in the picker
+   could produce any. `HealthComponent.fullCombinedHealth` sums health + shield + barrier.
+
+Fixed by modelling the conversion, adding `maxShield` / `combinedHealth` / `shieldOnly` to
+`DerivedStats`, showing a Max Shield card with what shield actually is, and warning on the
+Health Regen card. `items.json`'s formula field had the mechanic *right all along* — the row
+label said "Maximum health (%)", so the codex was accurate and the calculator was not. The
+row is now "Shield, as a % of your max health" at 150 (+25), with a `descriptionNote`
+explaining why the game's own text says 50%: a 150% shield replacing 100% health is a net
++50% pool.
+
+#### Shaped Glass shares the damage pool
+
+`num103 += Mathf.Pow(2f, num28) - 1f` sits in the same additive running total as Irradiant
+Pearl's `+= num31 * 0.1f`. We multiplied them separately: 1 glass + 1 Irradiant gave **2.2×**
+where the game gives **2.1×**. Health is genuinely two steps (percentage pool, then the
+`cursePenalty` divisor), which is presumably how the damage side came to be written the same
+way.
+
+#### `cursePenalty` divides shield as well
+
+`maxHealth /= cursePenalty; maxShield /= cursePenalty;` — Shaped Glass halves the
+Transcendence shield too. Unreachable before, since shield was never non-zero.
+
+#### Confirmed correct while there
+
+Read and matched to the code rather than assumed: the attack-speed, move-speed, armor and
+crit pools all take Irradiant Pearl additively, exactly as modelled; `critMultiplier =
+2f + 1f * LaserScope`; Artifact of Glass is `×5` damage and a `×10` `cursePenalty`, both
+separate multipliers, as modelled. `baseCrit` is 1 and `levelCrit` 0 for **all 19**
+survivors (checked against the extracted bodies, where every monster is 0), so the hardcoded
+base 1% is right. **No survivor body has a `baseMaxShield`** — of 241 extracted bodies only
+`SolusVendorBody` does — so starting shield is genuinely zero and item-granted shield is the
+whole story. `extract-bodies.py` now pulls `baseMaxShield`/`levelMaxShield` so that claim is
+re-checkable after a patch instead of resting on this one reading.
+
+Lesson, and it is the §9 thesis in one line: **a second implementation of the game's
+arithmetic is a second dataset, and it was never being audited.**

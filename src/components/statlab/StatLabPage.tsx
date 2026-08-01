@@ -20,9 +20,26 @@ interface StatCardDef {
 
 function statCards(s: DerivedStats): StatCardDef[] {
   return [
-    { label: "Max Health", value: fmt(s.maxHealth) },
-    { label: "Effective HP", value: fmt(s.effectiveHealth), hint: "incl. armor" },
-    { label: "Health Regen", value: `${fmt(s.healthRegen, 1)}/s` },
+    {
+      label: "Max Health",
+      value: fmt(s.maxHealth),
+      hint: s.shieldOnly ? "Transcendence leaves you on 1 HP" : undefined,
+    },
+    ...(s.maxShield > 0
+      ? [
+          {
+            label: "Max Shield",
+            value: fmt(s.maxShield),
+            hint: "recharges out of combat; healing cannot restore it",
+          },
+        ]
+      : []),
+    { label: "Effective HP", value: fmt(s.effectiveHealth), hint: "health + shield, incl. armor" },
+    {
+      label: "Health Regen",
+      value: `${fmt(s.healthRegen, 1)}/s`,
+      hint: s.shieldOnly ? "does not refill shield" : undefined,
+    },
     { label: "Damage", value: fmt(s.damage, 1), hint: "per base hit" },
     { label: "Attack Speed", value: `${fmt(s.attackSpeed, 2)}x` },
     { label: "DPS proxy", value: fmt(s.dps, 1), hint: "dmg x aspd x crit" },
@@ -242,6 +259,16 @@ export function StatLabPage() {
               </div>
             ))}
           </div>
+          {derived.shieldOnly && (
+            <p className="mt-4 rounded-lg border border-border bg-surface px-3 py-2 text-xs leading-relaxed text-muted-foreground">
+              <strong className="text-foreground">Transcendence is a conversion, not a bonus.</strong>{" "}
+              Max health becomes literally 1 and the whole pool moves into shield, which recharges
+              on its own after a few seconds out of combat but cannot be healed &mdash; so health
+              regen, medkits and most healing do nothing for it. The multiplier (150%, +25% per
+              extra stack) applies to your finished health total, so it compounds with Pearl rather
+              than adding to it.
+            </p>
+          )}
           <p className="mt-4 text-xs leading-relaxed text-muted-foreground">
             Effective HP uses the armor formula (reduction = armor / (100 + armor)); regen from
             items scales with level, matching the game. The DPS proxy (damage x attack speed x

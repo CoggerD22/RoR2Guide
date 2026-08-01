@@ -3772,11 +3772,11 @@
     "description": "Convert all but 1 health into regenerating shields. Gain 50% (+25% per stack) maximum health.",
     "stacking": [
       {
-        "stat": "Maximum health (%)",
-        "base": 50,
+        "stat": "Shield, as a % of your max health",
+        "base": 150,
         "perStack": 25,
         "type": "linear",
-        "formula": "shield += maxHealth * (1.5f + (n - 1) * 0.25f); maxHealth = 1f (CharacterBody.RecalculateStats). The shield is 150% of your health at one stack, +25% per stack, and your health is set to exactly 1."
+        "formula": "CharacterBody.RecalculateStats: `maxShield += maxHealth * (1.5f + (n - 1) * 0.25f); maxHealth = 1f`. The multiplier applies to the FINISHED health total, so it compounds with percentage health items rather than adding to them, and max health is then set to exactly 1. The game's own text calls this 'gain 50% maximum health' because a 150% shield in place of 100% health is a net +50% pool, but the pool is shield: it recharges by itself out of combat and healing cannot restore it."
       }
     ],
     "tags": [
@@ -3787,7 +3787,8 @@
     "icon": "/icons/transcendence.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Transcendence",
     "verified": true,
-    "confidence": "code"
+    "confidence": "code",
+    "descriptionNote": "The description's '50%' is the NET change to your total pool. The shield itself is 150% of your max health at one stack (+25% per stack), and max health drops to 1 — so healing, regen and Infusion stop mattering, while shield recharge and armour start to."
   },
   {
     "id": "corpsebloom",

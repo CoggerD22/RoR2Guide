@@ -12,6 +12,17 @@ export interface StatInputs {
 
 export interface DerivedStats {
   maxHealth: number;
+  /**
+   * Regenerating shield. Zero for every survivor at base — no player body has a
+   * `baseMaxShield` (checked across all 241 extracted bodies; only SolusVendorBody
+   * has one) — so this is entirely item-granted. Transcendence is the only source
+   * the Stat Lab models.
+   */
+  maxShield: number;
+  /** True when Transcendence has moved the survivor's pool into shield. */
+  shieldOnly: boolean;
+  /** maxHealth + maxShield, before armor. What actually has to be chewed through. */
+  combinedHealth: number;
   effectiveHealth: number;
   healthRegen: number;
   damage: number;
@@ -57,12 +68,31 @@ export function computeStats({ survivor, level, items, artifactOfGlass }: StatIn
   // Irradiant Pearl: +10% to ALL stats per stack.
   const allStatsPct = 10 * q("irradiant-pearl");
 
-  // --- Health ---
+  // --- Health and shield ---
+  // RecalculateStats order, verified line by line:
+  //   maxHealth = (base + level + flat items) * (1 + pct items)
+  //   if (Transcendence) { maxShield += maxHealth * (1.5 + 0.25*(n-1)); maxHealth = 1 }
+  //   cursePenalty = 2^ShapedGlass, x10 under Artifact of Glass
+  //   maxHealth /= cursePenalty; maxShield /= cursePenalty
+  // The order matters: Transcendence multiplies the FINISHED health pool, so it
+  // compounds with Pearl rather than adding to it, and it is a conversion — the
+  // survivor is left on literally 1 HP.
   const healthFlat = sumTarget(items, "healthFlat"); // Bison Steak, Titanic Knurl
-  const healthPct = sumTarget(items, "healthPct") + allStatsPct; // Pearl, Transcendence, Irradiant
+  const healthPct = sumTarget(items, "healthPct") + allStatsPct; // Pearl, Irradiant Pearl
   let maxHealth = (baseHealth + healthFlat) * (1 + healthPct / 100);
-  maxHealth *= Math.pow(0.5, shapedGlass); // Shaped Glass halves max HP per stack
-  if (artifactOfGlass) maxHealth *= 0.1; // Artifact of Glass: 10% max health
+
+  const transcendence = q("transcendence");
+  let maxShield = 0;
+  if (transcendence > 0) {
+    maxShield += maxHealth * (1.5 + 0.25 * (transcendence - 1));
+    maxHealth = 1;
+  }
+
+  // Shaped Glass and Artifact of Glass are one `cursePenalty` divisor applied to
+  // BOTH pools, after the conversion above.
+  const cursePenalty = Math.pow(2, shapedGlass) * (artifactOfGlass ? 10 : 1);
+  maxHealth /= cursePenalty;
+  maxShield /= cursePenalty;
 
   // --- Regen ---
   // Verified against CharacterBody.RecalculateStats: regen FROM ITEMS scales with
@@ -72,9 +102,12 @@ export function computeStats({ survivor, level, items, artifactOfGlass }: StatIn
   const healthRegen = baseRegen + (sumTarget(items, "regenFlat") + allStatsPct / 100) * regenLevelFactor;
 
   // --- Damage ---
-  let damage = baseDamage * Math.pow(2, shapedGlass); // Shaped Glass doubles base damage per stack
+  // One additive pool: `num103 = 1 + 0.1*Irradiant + (2^ShapedGlass - 1)`, then
+  // `x5` separately for Artifact of Glass. Shaped Glass does NOT multiply the
+  // percentage items — at 1 glass + 1 Irradiant the game gives 2.1x, not 2.2x.
+  const damageMult = Math.pow(2, shapedGlass) + allStatsPct / 100;
+  let damage = baseDamage * damageMult;
   if (artifactOfGlass) damage *= 5; // Artifact of Glass: deal 500% damage
-  damage *= 1 + allStatsPct / 100;
 
   // --- Attack / move speed ---
   const attackSpeed = survivor.baseAttackSpeed * (1 + (sumTarget(items, "attackSpeedPct") + allStatsPct) / 100);
@@ -91,12 +124,19 @@ export function computeStats({ survivor, level, items, artifactOfGlass }: StatIn
   const avgCritFactor = 1 + (critChance / 100) * (critMultiplier - 1);
 
   // --- Derived ---
-  const effectiveHealth = maxHealth * (100 + armor) / 100; // positive-armor formula
+  // Armor applies to whatever pool is being hit, and shield is consumed before
+  // health, so the armor-adjusted figure is over the COMBINED pool — which is what
+  // `HealthComponent.fullCombinedHealth` sums.
+  const combinedHealth = maxHealth + maxShield;
+  const effectiveHealth = (combinedHealth * (100 + armor)) / 100; // positive-armor formula
   const dps = damage * attackSpeed * avgCritFactor;
   const jumps = survivor.jumpCount + sumTarget(items, "jumpFlat");
 
   return {
     maxHealth,
+    maxShield,
+    shieldOnly: transcendence > 0,
+    combinedHealth,
     effectiveHealth,
     healthRegen,
     damage,

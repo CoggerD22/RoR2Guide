@@ -43,11 +43,18 @@ export const STAT_ITEMS: Record<string, ItemStatEffect[]> = {
     { target: "regenFlat", base: 1.6, perStack: 1.6 },
   ],
   pearl: [{ target: "healthPct", base: 10, perStack: 10 }],
-  transcendence: [{ target: "healthPct", base: 50, perStack: 25 }],
   "hopoo-feather": [{ target: "jumpFlat", base: 1, perStack: 1 }],
-  // Special-cased in statMath (not linear):
+  // Special-cased in statMath (not a linear addition to a stat pool):
+  //   Shaped Glass  — `cursePenalty` divisor on health AND shield, and an additive
+  //                   `2^n - 1` term in the damage pool.
+  //   Irradiant Pearl — +10% to several different pools.
+  //   Transcendence — a CONVERSION, not a bonus: it multiplies the finished health
+  //                   pool into shield and sets max health to 1. It was previously
+  //                   modelled here as a flat "+50% max health", which reported a
+  //                   health total the survivor does not have.
   "shaped-glass": [],
   "irradiant-pearl": [],
+  transcendence: [],
 };
 
 /**
