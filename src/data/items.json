@@ -2280,7 +2280,8 @@
         "stat": "Extra lives",
         "base": 1,
         "perStack": 1,
-        "type": "linear"
+        "type": "linear",
+        "formula": "CharacterMaster consumes exactly one stack per death — an ItemTransformation of ExtraLife into ExtraLifeConsumed — so one extra life per stack. RespawnExtraLife then does `AddTimedBuff(RoR2Content.Buffs.Immune, 3f)`, confirming the 3 seconds. Undocumented: the respawn is at your death position, but if you were killed by an unsafe area the game first searches for a safe destination rather than dropping you back into it."
       }
     ],
     "tags": [
@@ -2294,7 +2295,8 @@
     "icon": "/icons/dios-best-friend.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Dio%27s_Best_Friend",
     "verified": true,
-    "confidence": "langfile"
+    "confidence": "code",
+    "descriptionNote": "The in-game text does not say what stacking does. Each copy is consumed separately — one death, one stack — so N of them is N extra lives, and the 3-second invulnerability applies to every revive rather than only the first."
   },
   {
     "id": "sentient-meat-hook",

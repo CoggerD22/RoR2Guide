@@ -2833,3 +2833,31 @@ note, not just the certificate.
 
 **179 of 217.** The count did not move, which is the correct outcome for a pass that verified
 two halves. A programme whose number only ever goes up is one that has started rounding.
+
+### 3j.55 Dio's Best Friend — and the audit catching my own edit
+
+**179 -> 180 of 217.** `CharacterMaster` consumes exactly one stack per death (an
+`ItemTransformation` of `ExtraLife` into `ExtraLifeConsumed`), and `RespawnExtraLife` does
+`AddTimedBuff(RoR2Content.Buffs.Immune, 3f)` — so both the one-life-per-stack behaviour and
+the stated 3 seconds are confirmed. Undocumented: the respawn is at your death position, but
+if an unsafe area killed you the game searches for a safe destination first rather than
+dropping you back into it.
+
+**The interesting part is that the audit rejected the upgrade.** Marking the record `code`
+immediately failed the build:
+
+> `Dio's Best Friend: verified value(s) Extra lives.base=1, Extra lives.perStack=1 do not
+> appear in the description, and there is no descriptionNote explaining the discrepancy`
+
+Correct, and I had not noticed. The in-game text — *"Upon death, this item will be consumed
+and you will return to life with 3 seconds of invulnerability"* — never says what stacking
+does. Our `1 / +1` is right, and it was about to be published as a verified number the
+description gave no support for.
+
+That rule was written in §3j.31 for the opposite case: descriptions that *contradict* a
+verified value. It turns out to catch this one too — descriptions that are *silent* where we
+assert. Both are the same defect from the reader's side: a number on the page with nothing
+visible behind it. Note added, stating that N copies is N extra lives and that the
+invulnerability applies to every revive rather than only the first.
+
+A guard that fires on the author who wrote it is the only kind worth having.
