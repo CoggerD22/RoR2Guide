@@ -2861,3 +2861,38 @@ visible behind it. Note added, stating that N copies is N extra lives and that t
 invulnerability applies to every revive rather than only the first.
 
 A guard that fires on the author who wrote it is the only kind worth having.
+
+### 3j.56 Extending §3j.55's check to unverified records — Rusted Key's stat was fiction
+
+The rule that caught Dio's Best Friend only applies to **code/asset** records. Running the same
+question over `langfile` ones — *does this record publish a stacking value its description never
+states?* — returned exactly two, and one was wrong.
+
+**Pluripotent Larva** is verified: `ExtraLifeVoid -> ExtraLifeVoidConsumed` once per death,
+`AddTimedBuff(Buffs.Immune, 3f)`, then a walk of `ContagiousItemManager.transformationInfos`
+calling `TryForceReplacement` on each — which is the "all of your items that can be corrupted
+will be" clause, confirmed. Note added, as with Dio, because the description says nothing about
+stacking.
+
+**Rusted Key carried a stat that was not real.** It recorded `Lockbox behavior = 1 (+1 per
+stack)`, which reads as "each key adds something per stage". The code says otherwise:
+
+```csharp
+foreach (CharacterMaster m in CharacterMaster.readOnlyInstancesList)
+    if (m.inventory.GetItemCountEffective(TreasureCache) > 0) num5++;   // per PLAYER, not per key
+for (int j = 0; j < num5; j++) TrySpawnObject(iscLockbox, …);
+```
+
+`> 0` is a boolean. **One lockbox spawns per player who holds any key**, and a second key adds
+nothing to that stage. Opening one *consumes* a key (`CostTypeIndex.TreasureCacheItem` transforms
+it to `ItemIndex.None`), so N keys is N openings spread across a run — a real per-stack effect,
+but a completely different one from what the row implied.
+
+The stat is renamed to what it actually measures and the note says plainly that stacking does
+not add caches.
+
+Worth naming the defect class, because it is new here: not a wrong number, not an omission, but
+a **stat row that was never a statistic**. "Lockbox behavior = 1 (+1)" is not a measurement of
+anything — it was a placeholder that acquired the authority of data by sitting in a column of
+real numbers. The audit could not catch it because the value was internally consistent; only
+asking "what would this number mean?" does.

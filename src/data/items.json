@@ -876,11 +876,11 @@
     "description": "A hidden cache containing an item (80% Uncommon / 20% Legendary) will appear in a random location on each stage.",
     "stacking": [
       {
-        "stat": "Lockbox behavior",
+        "stat": "Lockboxes you can open (one spawns per stage)",
         "base": 1,
         "perStack": 1,
-        "type": "special",
-        "formula": "One lockbox per stage per key-holder; additional keys' effect on rarity vs. count needs logbook confirmation"
+        "type": "linear",
+        "formula": "SceneDirector counts PLAYERS holding at least one key — `GetItemCountEffective(TreasureCache) > 0` increments a counter once per player — and spawns that many lockboxes. Extra keys therefore do NOT add lockboxes to a stage. Opening one costs a key (CostTypeIndex.TreasureCacheItem transforms it to ItemIndex.None), so N keys buys N openings across a run at one cache per stage."
       }
     ],
     "tags": [
@@ -894,7 +894,8 @@
     "unlock": {
       "challenge": "Keyed Up",
       "requirement": "Defeat the Teleporter boss under 15 seconds."
-    }
+    },
+    "descriptionNote": "Stacking does not spawn more caches. Exactly one lockbox spawns per player who holds any Rusted Key, and opening it consumes one key — so a second key is a second opening on a later stage, not a second cache on this one."
   },
   {
     "id": "hikers-boots",
@@ -4711,7 +4712,8 @@
         "stat": "Extra lives",
         "base": 1,
         "perStack": 1,
-        "type": "linear"
+        "type": "linear",
+        "formula": "CharacterMaster transforms ExtraLifeVoid into ExtraLifeVoidConsumed once per death, so one revive per stack. RespawnExtraLifeVoid does AddTimedBuff(Buffs.Immune, 3f), confirming the 3 seconds, and then walks ContagiousItemManager.transformationInfos calling TryForceReplacement on each — which is the 'all of your items that can be corrupted will be' clause, verified."
       }
     ],
     "tags": [
@@ -4723,7 +4725,8 @@
     "icon": "/icons/pluripotent-larva.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Pluripotent_Larva",
     "verified": true,
-    "confidence": "langfile"
+    "confidence": "code",
+    "descriptionNote": "The in-game text does not say what stacking does. Each copy is consumed separately, so N of them is N revives — and the corruption sweep runs on every revive, not only the first."
   },
   {
     "id": "newly-hatched-zoea",
