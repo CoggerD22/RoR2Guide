@@ -747,3 +747,21 @@ test("display controls: DLC badge, descriptions toggle and density (PLAN §8)", 
 
   await page.getByRole("button", { name: "Comfortable" }).click();
 });
+
+test("stat lab explains when an item's stacking is not modelled", async ({ page }) => {
+  // Reported as "stacking stops working past 1". It was not a bug in the arithmetic —
+  // Predatory Instincts' +5% crit genuinely does not stack — but the calculator gave no
+  // sign that the item's REAL per-stack effect was simply outside what it models.
+  await page.goto("/stats");
+
+  const add = page.getByRole("button", { name: "Add one Predatory Instincts" });
+  await add.click();
+  // One stack: no warning needed, nothing is being hidden yet.
+  await expect(page.getByText(/Some stacks are not shown above/)).toHaveCount(0);
+
+  await add.click();
+  // Two stacks: the sheet is now hiding a real effect, so it has to say so.
+  const note = page.getByText(/Some stacks are not shown above/);
+  await expect(note).toBeVisible();
+  await expect(page.getByText(/attack speed gained from critical strikes/)).toBeVisible();
+});

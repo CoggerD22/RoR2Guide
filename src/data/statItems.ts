@@ -50,6 +50,26 @@ export const STAT_ITEMS: Record<string, ItemStatEffect[]> = {
   "irradiant-pearl": [],
 };
 
+/**
+ * Items whose STACKING effect the calculator deliberately does not model, and why.
+ *
+ * Both of these grant a flat +5% critical chance that genuinely does not stack
+ * (`if (count > 0) crit += 5f` — verified), so the calculator is arithmetically right to
+ * show no change past one stack. But their *real* per-stack effects are conditional
+ * events rather than static stats, so the picker silently implied that stacking them does
+ * nothing at all. That is the same failure this project keeps correcting in the data:
+ * an absent number reading as "no effect" rather than "not shown here".
+ */
+export const UNMODELED_STACKING: Record<string, string> = {
+  "predatory-instincts":
+    "Only the flat +5% crit is shown, and it does not stack. Stacking raises the cap on " +
+    "attack speed gained from critical strikes (36%, +24% per stack) — a buff that builds " +
+    "as you crit, so it has no fixed value to add to a static sheet.",
+  "harvesters-scythe":
+    "Only the flat +5% crit is shown, and it does not stack. Stacking increases the heal on " +
+    "each critical strike (8, +4 per stack), which is an on-hit event rather than a stat.",
+};
+
 /** Ids the Stat Lab exposes in its item picker, in a sensible display order. */
 export const STAT_ITEM_IDS: string[] = [
   "soldiers-syringe",

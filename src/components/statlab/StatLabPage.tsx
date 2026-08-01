@@ -2,7 +2,7 @@ import { useMemo, useState } from "react";
 import { Minus, Plus, Sparkles } from "lucide-react";
 import { survivors } from "@/data/survivors";
 import { itemById } from "@/data/items";
-import { STAT_ITEM_IDS } from "@/data/statItems";
+import { STAT_ITEM_IDS, UNMODELED_STACKING } from "@/data/statItems";
 import { computeStats, type DerivedStats } from "@/lib/statMath";
 import { usePlanner } from "@/store/planner";
 import { cn } from "@/lib/utils";
@@ -163,6 +163,22 @@ export function StatLabPage() {
                     <span className="min-w-0 flex-1 truncate text-sm text-foreground">
                       {item.name}
                     </span>
+                    {/*
+                      Some items' per-stack effect is a conditional buff or an on-hit event,
+                      not a static stat, so adding a second copy changes nothing on this
+                      sheet. Without saying so, that reads as a broken calculator rather
+                      than a modelling boundary — the same "absent number means no effect"
+                      failure this project keeps correcting in the data.
+                    */}
+                    {UNMODELED_STACKING[id] && (
+                      <span
+                        className="shrink-0 cursor-help rounded border border-amber-400/40 px-1 text-[10px] font-medium text-amber-300/90"
+                        title={UNMODELED_STACKING[id]}
+                        aria-label={`Stacking not modelled: ${UNMODELED_STACKING[id]}`}
+                      >
+                        1&times;
+                      </span>
+                    )}
                     <div className="flex items-center gap-1.5">
                       <button
                         type="button"
@@ -187,6 +203,20 @@ export function StatLabPage() {
                 );
               })}
             </div>
+            {/*
+              Spelled out, not just a tooltip: the tooltip only helps someone who already
+              suspects something is wrong. This was reported as "stacking stops working",
+              which is exactly what it looks like without an explanation on screen.
+            */}
+            {STAT_ITEM_IDS.some((id) => UNMODELED_STACKING[id] && (items[id] ?? 0) > 1) && (
+              <p className="mt-3 rounded-lg border border-amber-400/25 bg-amber-400/5 p-2.5 text-[11px] leading-relaxed text-amber-200/90">
+                <strong className="font-semibold">Some stacks are not shown above.</strong>{" "}
+                {STAT_ITEM_IDS.filter((id) => UNMODELED_STACKING[id] && (items[id] ?? 0) > 1)
+                  .map((id) => `${itemById.get(id)?.name}: ${UNMODELED_STACKING[id]}`)
+                  .join(" ")}
+              </p>
+            )}
+
             <label className="mt-3 flex cursor-pointer items-center gap-2 text-sm text-muted-foreground">
               <input
                 type="checkbox"

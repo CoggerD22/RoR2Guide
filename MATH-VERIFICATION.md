@@ -2896,3 +2896,40 @@ a **stat row that was never a statistic**. "Lockbox behavior = 1 (+1)" is not a 
 anything — it was a placeholder that acquired the authority of data by sitting in a column of
 real numbers. The audit could not catch it because the value was internally consistent; only
 asking "what would this number mean?" does.
+
+### 3j.57 "Stacking stops working past 1" — reported by the user, and they were right
+
+Reported: adding a second Predatory Instincts or Harvester's Scythe changes nothing in the
+Stat Lab. The arithmetic was correct and the presentation was not.
+
+Both items grant a flat **+5% critical chance that genuinely does not stack** —
+`if (count > 0) crit += 5f`, verified in §3j.37 — so `perStack: 0` is right. But that is only
+a rider. Their actual per-stack effects are:
+
+- **Predatory Instincts** — raises the ceiling on attack speed gained from critical strikes
+  (36%, +24% per stack). A buff that accumulates as you crit, so it has no fixed value to put
+  on a static sheet.
+- **Harvester's Scythe** — increases the heal per critical strike (8, +4 per stack). An on-hit
+  event, not a stat.
+
+Neither is *computable* as a static number, so excluding them is a defensible modelling
+boundary. Presenting that boundary as silence is not: the picker offered the items, took the
+second stack, and changed nothing, which reads as a broken calculator.
+
+**This is the same defect the whole programme exists to correct, in the calculator instead of
+the data**: an absent number reading as "no effect" rather than "not shown here". It is the
+mirror of §3j.47, where 19 skills were labelled "unverified" when they simply had no attack —
+there I was overstating ignorance, here I was understating scope.
+
+Checked systematically rather than fixing the two that were reported: of every Stat Lab item,
+exactly these two model a non-scaling stat while the codex records a scaling one. Shaped Glass,
+Irradiant Pearl and Laser Scope all scale correctly (probed 1 -> 3 stacks through
+`computeStats`, confirming which outputs move).
+
+Fixed with `UNMODELED_STACKING`: an amber `1x` marker in the picker, and — once a second copy
+is actually added — a spelled-out explanation on screen. A tooltip alone would only help
+someone who already suspected a problem, and the person who hit this had no reason to.
+
+**The reporting matters more than the fix.** Every automated check I have compares our data to
+the game; none of them can notice that a correct number is being *presented* misleadingly.
+That gap is only closed by someone using the thing.
