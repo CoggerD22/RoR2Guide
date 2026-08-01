@@ -8,16 +8,31 @@ import { DENSITY_GRID, useDisplay } from "@/store/display";
 interface TierGridProps {
   items: Item[];
   renderCard: (item: Item) => ReactNode;
+  /**
+   * The active search text, if any. The empty state used to blame "those filters" even when
+   * the cause was a typo in the search box — telling a reader to check the wrong control
+   * (PLAN §9.1, class 8: an empty state that explains nothing, or the wrong thing).
+   */
+  query?: string;
 }
 
 /** Groups items by tier (in display order) and renders a card per item. */
-export function TierGrid({ items, renderCard }: TierGridProps) {
+export function TierGrid({ items, renderCard, query }: TierGridProps) {
   const density = useDisplay((d) => d.density);
   if (items.length === 0) {
     return (
       <div className="flex flex-col items-center gap-2 py-20 text-center text-muted-foreground">
         <SearchX className="size-8" aria-hidden />
-        <p className="text-sm">No items match those filters.</p>
+        <p className="text-sm">
+          {query?.trim()
+            ? `No items match “${query.trim()}”.`
+            : "No items match those filters."}
+        </p>
+        <p className="text-xs text-muted-foreground/70">
+          {query?.trim()
+            ? "Search covers names, effects and tags — try a shorter term, or clear it."
+            : "Try re-enabling a tier or DLC above."}
+        </p>
       </div>
     );
   }

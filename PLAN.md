@@ -1369,3 +1369,117 @@ ultrawide — exactly the screens a second-monitor tool runs on.
 - No user accounts or server-side preference sync (CLAUDE.md rule #5 — client only).
 - No per-item pinning beyond the existing plan states; the rail already answers "what am I
   looking for".
+
+---
+
+## 9. Surface audit — every concept the site presents (§9)
+
+### 9.0 Why this phase exists
+
+Phases 6A/6B verify that our **data matches the game**. Every gate built there —
+`data:audit`, `data:diff`, `data:verify`, the coverage ratchet, the Ambry hash test — asks a
+single question: *is this number the game's number?* By §3j.57 the answer was yes for 181 of
+217 items, with every remaining gap visibly badged.
+
+Then a user reported that stacking Predatory Instincts "stops working". Nothing was wrong
+with the number. `perStack: 0` is correct — its +5% crit genuinely does not stack. The item's
+*real* per-stack effect is a conditional buff that a static sheet cannot express, and the
+calculator said nothing about that, so a correct value read as a broken feature.
+
+**No check in this repository could have caught that**, and none ever will, because they all
+compare our data to the game and this defect lives strictly between the data and the reader.
+That is a second, independent axis of correctness:
+
+> **§6A asks: is it true?**
+> **§9 asks: does a reader who is not us come away believing something true?**
+
+A site can pass every gate in §6A and still mislead on every page. This phase is the audit
+for that, and it has to be done by reading, not by tooling.
+
+### 9.1 The defect classes to hunt
+
+Named from the ones already found, because each was invisible until it had a name.
+
+1. **Absent number reads as "no effect".** Predatory Instincts (§3j.57): a modelling boundary
+   presented as silence. Also the mirror — §3j.47, where 19 skills read "unverified" when they
+   had no attack at all, overstating ignorance.
+2. **A row that is not a measurement.** Rusted Key's `Lockbox behavior = 1 (+1)` (§3j.56):
+   a placeholder that acquired the authority of data by sitting in a column of real numbers.
+   Internally consistent, so no validator could object.
+3. **A true number with no referent.** Substandard Duplicator's "+10 seconds" (§3j.53) —
+   additional to an 80s base the item installs and never mentions. Right, and useless.
+4. **A control that implies a capability it lacks.** The passive elite Aspects carrying an
+   operative-looking cooldown (§3j.26); a picker that accepts input it ignores.
+5. **A claim about our own sourcing that is false.** The Ambry "not yet extracted" note
+   (§3j.36) — the site describing its own gaps wrongly.
+6. **A preference that is shared in name only.** `PlannerCard` ignoring the display store
+   while the Codex honoured it — the control said "this applies here" and it did not.
+7. **Scope stated too narrowly.** War Bonds' second damage mode, Ben's Raincoat measuring
+   combined health, Hearty Stew converting *all* regen (§3j.42–52). The number is right and
+   the reader still concludes the wrong thing.
+8. **An empty or degenerate state that explains nothing.** A filter that matches zero items,
+   a survivor with no alternates, a plan with nothing in it — each should say why, not just
+   render blank.
+9. **A number whose units or basis are ambiguous.** "% of max health" vs "% of missing
+   health"; "per second" vs "per tick"; "total damage" vs "base damage".
+10. **Interactive dead ends.** A button that silently no-ops, a link that 404s, a keyboard
+    path that traps focus.
+
+### 9.2 The questions to ask of every element
+
+For each thing rendered anywhere on the site, in order:
+
+- **What claim does this make?** State it as a sentence a reader would come away with. If it
+  cannot be stated, it is decoration and should be labelled as such or removed.
+- **Is that claim true?** (§6A already answers this for data; re-ask for anything computed
+  or composed at render time.)
+- **Is it true in the reading a non-expert takes?** Not the reading we intended.
+- **What does its absence imply?** Empty, zero, and missing must each mean something
+  deliberate.
+- **What happens at the extremes?** Zero items, one item, every item; stack 1 and stack 99;
+  the longest name; the smallest viewport.
+- **If it is interactive: does every input change something visible, and is the change the
+  one the control advertises?**
+
+### 9.3 Surfaces to audit, exhaustively
+
+Every page, in reading order, and every component within it. Nothing is skipped for being
+"obviously fine" — Rusted Key's row looked obviously fine for the entire life of the project.
+
+- **Shell** — nav, active states, footer, disclaimer, version stamp, 404/deep links.
+- **Item Codex** — search, tier/DLC/tag filters, secondary filters, counts, tier headings,
+  cards (icon, name, badges, unlock lock, unverified dot, DLC glyph), hover tooltip, detail
+  drawer (every field, provenance badge, description note, stacking rows, sparkline, cap
+  text, formula, wiki link), empty results.
+- **Run Planner** — cards and their three states, the rail (ordering, priority, goals, cap
+  warnings, scroll), Plan/Run modes, New run, share link round-trip, density/description
+  controls.
+- **Stat Lab** — survivor picker, level control, item picker (quantities, unmodelled marker),
+  every computed stat and its units, Artifact of Glass toggle, proc table (values, "no
+  attack", "unverified"), breakpoints.
+- **Reference** — artifacts (effect vs mechanic vs code vs icon), bazaar dreams, shrines,
+  loadout unlocks, breakpoints, every `SourceNote`.
+- **Survivors** — list, detail, base stats, skills, proc column.
+- **Cross-cutting** — every tooltip, every `title` attribute, every aria-label, every colour
+  that carries meaning, every number's unit, light/dark, mobile widths.
+
+### 9.4 Method
+
+Read the rendered output, not the source, wherever possible — the source says what was
+intended and the audit is about what lands. Where a claim is computed at render time, verify
+the computation independently rather than trusting that the inputs were verified.
+
+Record findings in `MATH-VERIFICATION.md` alongside the data findings, with the same
+standard: what was wrong, what it actually is, and what would have prevented it. Fix
+presentation defects in the same pass unless a fix needs a decision, in which case surface it.
+
+### 9.5 What "done" means
+
+Not "no findings" — this phase cannot prove absence any more than §6A could. Done is:
+
+- every surface in §9.2 has been read with the §9.1 questions asked explicitly;
+- every finding is fixed or recorded with a reason;
+- anything that cannot be checked by reading (behaviour under real play) is named as such.
+
+The honest end state is a list of what was examined and what remains unexaminable — not a
+green tick.

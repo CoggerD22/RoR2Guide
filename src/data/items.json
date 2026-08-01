@@ -1753,11 +1753,11 @@
     "description": "A delivery containing 2 items (79%/20%/1%) will appear in a random location on each stage. Increases rarity chances of the items per stack.",
     "stacking": [
       {
-        "stat": "Delivered item rarity",
+        "stat": "Red-item weight multiplier on the delivery",
         "base": 1,
         "perStack": 1,
         "type": "special",
-        "formula": "FreeChestDropTable.RebuildSelection weights the three drop lists as 0.79, 0.20 x n and 0.01 x n^2, where n is the FreeChest count summed across ALL PLAYERS. Red scales QUADRATICALLY, white not at all, so the split moves 79/20/1 at one stack -> 64.2/32.5/3.3 at two -> 53.4/40.5/6.1 at three."
+        "formula": "FreeChestDropTable.RebuildSelection weights the three drop lists as 0.79, 0.20 x n and 0.01 x n^2, with n summed across ALL PLAYERS. White does not scale, green scales linearly and red scales QUADRATICALLY, so the split runs 79/20/1 at one stack, 64.2/32.5/3.3 at two and 53.4/40.5/6.1 at three. The row's own numbers are the n in that n^2 term; the split itself is the useful figure and is given here because no single per-stack number can express a quadratic."
       }
     ],
     "tags": [
@@ -4460,11 +4460,11 @@
     "description": "A hidden cache containing an item (60%/30%/10%) will appear in a random location on each stage. Opening the cache consumes this item. Corrupts all Rusted Keys.",
     "stacking": [
       {
-        "stat": "Void cache behavior",
+        "stat": "Void caches you can open (one spawns per stage)",
         "base": 1,
         "perStack": 1,
-        "type": "special",
-        "formula": "one cache per stage per key-holder; additional keys raise the cache item's rarity"
+        "type": "linear",
+        "formula": "SceneDirector counts PLAYERS holding at least one key — `GetItemCountEffective(TreasureCacheVoid) > 0` increments once per player — and spawns that many void caches, exactly as Rusted Key does. Extra keys add no caches to a stage, and opening one consumes a key. NOT verified: this row previously claimed additional keys raise the cache's item rarity. That claim is not in the spawn path and was never sourced; it is removed rather than restated, since a formula field is read as provenance."
       }
     ],
     "tags": [
@@ -4476,7 +4476,8 @@
     "icon": "/icons/encrusted-key.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Encrusted_Key",
     "verified": true,
-    "confidence": "langfile"
+    "confidence": "langfile",
+    "descriptionNote": "Stacking does not spawn more caches. One void cache spawns per player holding any Encrusted Key, and opening it consumes one key — so a second key is a second opening on a later stage. Whether extra keys improve the cache's contents is not something we have verified either way."
   },
   {
     "id": "plasma-shrimp",

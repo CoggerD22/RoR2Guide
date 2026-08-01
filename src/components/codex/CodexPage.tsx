@@ -49,6 +49,7 @@ export function CodexPage() {
 
       <CodexGrid
         items={results}
+        query={query}
         onSelect={(item) => navigate({ to: "/items/$id", params: { id: item.id } })}
       />
 

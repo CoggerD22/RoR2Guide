@@ -68,6 +68,7 @@ export function PlannerPage() {
         <div className="order-2 lg:order-1">
           <TierGrid
             items={results}
+            query={query}
             renderCard={(item) => (
               <PlannerCard
                 item={item}

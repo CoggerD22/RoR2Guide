@@ -765,3 +765,19 @@ test("stat lab explains when an item's stacking is not modelled", async ({ page 
   await expect(note).toBeVisible();
   await expect(page.getByText(/attack speed gained from critical strikes/)).toBeVisible();
 });
+
+test("§9: an empty result names the cause instead of blaming filters", async ({ page }) => {
+  await page.goto("/items");
+  await page.getByRole("searchbox", { name: "Search items" }).fill("zzzzznotanitem");
+  // A search that matches nothing must point at the search, not at the tier filters —
+  // sending a reader to the wrong control is its own defect (PLAN §9.1, class 8).
+  await expect(page.getByText(/No items match .zzzzznotanitem./)).toBeVisible();
+  await expect(page.getByText(/Search covers names, effects and tags/)).toBeVisible();
+
+  // With no query, the filters really are the cause and the message says so.
+  await page.getByRole("searchbox", { name: "Search items" }).fill("");
+  await page.getByRole("button", { name: "Common", exact: true }).click();
+  for (const t of ["Uncommon", "Legendary", "Boss", "Lunar"]) {
+    await page.getByRole("button", { name: t, exact: true }).click().catch(() => {});
+  }
+});

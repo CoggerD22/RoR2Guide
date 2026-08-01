@@ -2933,3 +2933,48 @@ someone who already suspected a problem, and the person who hit this had no reas
 **The reporting matters more than the fix.** Every automated check I have compares our data to
 the game; none of them can notice that a correct number is being *presented* misleadingly.
 That gap is only closed by someone using the thing.
+
+### 3j.58 §9 surface audit, first pass — three more placeholder rows and a misdirecting empty state
+
+PLAN §9 is now written: a phase for the axis §6A cannot test. §6A asks *is this the game's
+number*; §9 asks *does a reader who is not us come away believing something true*. The
+Predatory Instincts report proved the second can fail while the first passes, and that no
+check in this repository could ever have noticed.
+
+First pass findings.
+
+#### Two more rows that were never measurements
+
+A scan for stat labels naming no unit or basis surfaced 36 candidates, most of them fine
+("Attack speed", "Max Beetle Guards" — clear from context). Two were the Rusted Key defect
+(§3j.56) repeated:
+
+- **Encrusted Key** — `Void cache behavior = 1 (+1)`. The spawn code is identical to Rusted
+  Key's: `GetItemCountEffective(TreasureCacheVoid) > 0` increments once per **player**, so
+  extra keys add no caches. Worse, its formula field asserted *"additional keys raise the
+  cache item's rarity"* — a mechanical claim that appears nowhere in the spawn path and was
+  never sourced, sitting in the field the UI presents **as provenance**. Removed rather than
+  restated: an unverified claim is worse in a provenance field than anywhere else on the site.
+- **Shipping Request Form** — `Delivered item rarity = 1 (+1)`. Here the *formula* is correct
+  and code-verified (weights `0.79`, `0.20n`, `0.01n²`), but the row's numbers measure
+  nothing. Renamed to the quadratic term it actually is, with the resulting split spelled out,
+  because no single per-stack number can express a quadratic.
+
+That is **three** placeholder rows found in two passes. Each was internally consistent, so no
+validator could object; each acquired the authority of data by sitting in a column of real
+numbers. The only detector is asking *"what would this number mean?"* of every row.
+
+#### An empty state pointing at the wrong control
+
+Searching for a typo rendered *"No items match those filters."* — sending the reader to the
+tier and DLC buttons when the cause was the search box. Now names the query, and suggests the
+right remedy for each cause. Small, and precisely the §9 class: correct behaviour, wrong
+explanation.
+
+#### Verified as fine
+
+Checked and correct, recorded so they are not re-examined blind: the planner's empty rail
+("Nothing yet" per section), Crowbar's unlock badge (genuinely gated behind *The Basics* —
+`Items.Crowbar` → `Discover10UniqueTier1`, so the lock is not spurious on a starting-looking
+item), the Stat Lab's own disclosure that conditional items are not modelled, and its
+"DPS proxy" label, which is honest about being a proxy.
