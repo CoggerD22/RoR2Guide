@@ -186,6 +186,20 @@ export const itemSchema = z
      * forbids it when this is false.
      */
     activated: z.boolean().optional(),
+    /**
+     * Equipment only: does a successful use destroy it?
+     *
+     * Needed because a cooldown of 0 is ambiguous on its own — it reads as "reusable
+     * instantly" when for these it means "there is nothing to recharge". Both cases are
+     * code-verified rather than taken from the description's "consumed" wording:
+     * `FireHealAndRevive` and `FireBossHunter` each end in `SetEquipmentIndex(<the
+     * *Consumed* variant>, isRemovingEquipment: true)`, so the equipment is replaced on
+     * a successful activation.
+     *
+     * `data:audit` requires this on any activated equipment whose cooldown is 0, so a
+     * bare 0 can never again be published as if it meant instant reuse.
+     */
+    consumedOnUse: z.boolean().optional(),
     stacking: z.array(stackingEntrySchema),
     /** Search/category tags: "damage","on-hit","healing","drone", … */
     tags: z.array(z.string().min(1)),

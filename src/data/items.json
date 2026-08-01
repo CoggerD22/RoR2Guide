@@ -5368,7 +5368,8 @@
       "requirement": "Journey to the Prime Meridian and defeat the False Son."
     },
     "cooldown": 0,
-    "activated": true
+    "activated": true,
+    "consumedOnUse": true
   },
   {
     "id": "deus-ex-machina",
@@ -5407,7 +5408,8 @@
     "verified": true,
     "confidence": "langfile",
     "cooldown": 0,
-    "activated": true
+    "activated": true,
+    "consumedOnUse": true
   },
   {
     "id": "effigy-of-grief",

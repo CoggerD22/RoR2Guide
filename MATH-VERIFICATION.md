@@ -3291,3 +3291,40 @@ game's descriptions.
 The data was right throughout and is unchanged: `verified` means "we have a number" and
 `damaging: false` means "there is no number", and collapsing them in the schema would have
 destroyed the distinction the audit depends on. The defect was only ever in the reading.
+
+### 3j.65 §9 surface audit, eighth pass — a verified answer we held and never showed
+
+Sweeping the remaining 35 `langfile` items found that 23 of them are equipment with no
+stacking rows at all. Their meaningful verifiable fact is the **cooldown**, and the data has
+carried it — asset-read, and cross-checked by `data:audit` against the description — ever
+since the Seed of Life correction.
+
+**No page had ever rendered it.**
+
+That is a defect in the omission direction, and a sharp one for a site whose stated premise is
+*"the answers the game itself makes hard to find"*: equipment cooldown is among the most
+useful numbers in the game, we had it verified for 19 equipment, and a reader could not see it.
+It also meant the audit rule guarding the field was protecting something invisible.
+
+The detail page now has an Equipment section, with three states rather than one number:
+
+- **A cooldown**, plus the caveat the description cannot give — that it is the figure *before*
+  any Fuel Cell or Gesture of the Drowned reduction.
+- **Consumed on use**, for the two equipment whose asset cooldown is `0`. A bare 0 reads as
+  *"reusable instantly"*, which is the opposite of the truth. Verified from code rather than
+  from the descriptions' "consumed" wording (§5.0.1 applies to our own reading too):
+  `FireHealAndRevive` and `FireBossHunter` each end in
+  `SetEquipmentIndex(<the *Consumed* variant>, isRemovingEquipment: true)`.
+- **Passive**, for equipment with no `EquipmentSlot` handler, which states that the asset
+  cooldown *never runs* rather than quoting it as if it did — the failure mode that produced
+  "Passive (no cooldown). Cooldown: 10s." in an earlier pass.
+
+New schema field `consumedOnUse`, and two new audit rules so the ambiguity cannot return: an
+activated equipment with a 0s cooldown **must** declare `consumedOnUse`, and anything
+declaring it must actually have a 0s cooldown. Before this, storing the 0 was harmless because
+nothing displayed it; the moment it is displayed, it needs the flag.
+
+A note on the redundancy: many equipment descriptions already state their cooldown, so the
+panel repeats them. That is deliberate — for the equipment whose description *omits* it (which
+`data:audit` warns about by name) the panel is the only place the number appears, and the
+reduction caveat is not in any description.

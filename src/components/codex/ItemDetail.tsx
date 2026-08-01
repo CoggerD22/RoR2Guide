@@ -126,6 +126,44 @@ export function ItemDetail({ item, onClose, onSelectItem }: ItemDetailProps) {
             </p>
           )}
 
+          {/*
+            The cooldown has been in the data — asset-read and audit-checked — since the
+            Seed of Life correction, and no page had ever rendered it. A verified answer we
+            hold and do not show is a gap on a site whose whole premise is "the answers the
+            game makes hard to find" (PLAN §9.1).
+
+            0 is never printed bare: on its own it reads as "reusable instantly", when for
+            these it means there is nothing to recharge.
+          */}
+          {item.cooldown !== undefined && (
+            <section>
+              <h3 className="mb-2 text-xs font-semibold uppercase tracking-widest text-muted-foreground">
+                Equipment
+              </h3>
+              <div className="rounded-lg border border-border bg-surface-2 p-3 text-xs text-muted-foreground">
+                {item.activated === false ? (
+                  <>
+                    <span className="font-semibold text-foreground">Passive.</span> Pressing
+                    the equipment key does nothing &mdash; it has no handler in{" "}
+                    <code className="rounded bg-surface px-1">EquipmentSlot</code>, so the{" "}
+                    {item.cooldown}s on its asset never runs.
+                  </>
+                ) : item.consumedOnUse ? (
+                  <>
+                    <span className="font-semibold text-foreground">Consumed on use.</span> A
+                    successful activation replaces it, so there is no cooldown to wait out.
+                  </>
+                ) : (
+                  <>
+                    Cooldown{" "}
+                    <span className="font-semibold text-foreground">{item.cooldown}s</span>{" "}
+                    &mdash; before any Fuel Cell or Gesture of the Drowned reduction.
+                  </>
+                )}
+              </div>
+            </section>
+          )}
+
           {item.stacking.length > 0 && (
             <section>
               <h3 className="mb-2 text-xs font-semibold uppercase tracking-widest text-muted-foreground">

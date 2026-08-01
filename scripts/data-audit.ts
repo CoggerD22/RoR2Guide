@@ -460,6 +460,22 @@ function main(): number {
           `(consumed-on-use equipment has none)`,
       );
     }
+    // A bare 0 is ambiguous where it matters most: on its own it reads as "reusable
+    // instantly" when in every real case so far it means "there is nothing to recharge".
+    // Now that the detail page renders the cooldown, that ambiguity would be published
+    // rather than merely stored (PLAN §9.1).
+    // (`activated: false` already `continue`d above, so anything reaching here is activatable.)
+    if (it.cooldown === 0 && !it.consumedOnUse) {
+      errors.push(
+        `${it.name}: activated equipment with a 0s cooldown must set \`consumedOnUse\` ` +
+          `— a bare 0 renders as "reusable instantly"`,
+      );
+    }
+    if (it.consumedOnUse && it.cooldown !== 0) {
+      errors.push(
+        `${it.name}: marked consumedOnUse but carries a ${it.cooldown}s cooldown`,
+      );
+    }
   }
 
   // --- Coverage ratchet (PLAN §6B.2) ---------------------------------------

@@ -877,3 +877,28 @@ test("§9: the survivor page and the Stat Lab describe the same skill the same w
   await expect(page.getByText(/not applicable/)).toBeVisible();
   await expect(page.getByText(/a turret or a beacon carries its own/)).toBeVisible();
 });
+
+test("§9: the codex finally shows the equipment cooldown it has always held", async ({ page }) => {
+  // The cooldown has been asset-read and audit-checked since the Seed of Life correction,
+  // and no page rendered it — a verified answer withheld, on a site whose premise is
+  // "the answers the game makes hard to find".
+  await page.goto("/items/gnarled-woodsprite");
+  const sprite = page.getByRole("dialog", { name: "Gnarled Woodsprite" });
+  // Scoped to the new panel: the game's own description happens to mention a cooldown too,
+  // which is exactly why the panel adds what the description cannot — the reduction caveat.
+  await expect(sprite.getByText(/Cooldown 15s . before any Fuel Cell/)).toBeVisible();
+  await expect(sprite.getByRole("heading", { name: "Equipment" })).toBeVisible();
+
+  // A cooldown of 0 is never printed bare: alone it reads as "reusable instantly".
+  await page.goto("/items/seed-of-life");
+  const seed = page.getByRole("dialog", { name: "Seed of Life" });
+  await expect(seed.getByText(/Consumed on use\. A successful activation/)).toBeVisible();
+
+  // Passive equipment says the asset cooldown never runs, rather than quoting it.
+  await page.goto("/items/his-reassurance");
+  const reassurance = page.getByRole("dialog", { name: "His Reassurance" });
+  await expect(
+    reassurance.getByText(/Passive\. Pressing the equipment key does nothing/),
+  ).toBeVisible();
+  await expect(reassurance.getByText(/never runs/)).toBeVisible();
+});
