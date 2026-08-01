@@ -5227,7 +5227,36 @@
     "dlc": "base",
     "pickupText": "Looks like it could power something. EXTREMELY unstable...",
     "description": "A single-use objective item used to power REX in the Abyssal Depths. Detonates for 300% of your maximum health if you fall below 50% health. Cannot be scrapped or selected from Command.",
-    "stacking": [],
+    "stacking": [
+      {
+        "stat": "Detonation threshold (combined health)",
+        "base": 50,
+        "perStack": 0,
+        "type": "none",
+        "formula": "EntityStates.QuestVolatileBattery.Monitor: healthFractionDetonationThreshold = 0.5f, tested against HealthComponent.combinedHealthFraction — health PLUS shield and barrier, not health alone — and only on the crossing (`frac <= 0.5f && 0.5f < previousFrac`), so it arms once as you fall past half, not repeatedly while you stay there."
+      },
+      {
+        "stat": "Fuse before detonation (s)",
+        "base": 3,
+        "perStack": 0,
+        "type": "none",
+        "formula": "CountDown.duration = 3 (EntityStateConfiguration). The countdown is not cancellable by healing back above the threshold: CountDown only checks fixedAge."
+      },
+      {
+        "stat": "Blast radius (m)",
+        "base": 30,
+        "perStack": 0,
+        "type": "none",
+        "formula": "CountDown.explosionRadius = 30 (EntityStateConfiguration), fired as a BlastAttack with falloffModel = None — so every target inside 30m takes the FULL damage, with no drop-off by distance. procCoefficient is 0, so it triggers no on-hit items."
+      },
+      {
+        "stat": "Damage (% of your full combined health)",
+        "base": 300,
+        "perStack": 0,
+        "type": "none",
+        "formula": "CountDown.Detonate: baseDamage = attachedHealthComponent.fullCombinedHealth * 3f. Note it is your COMBINED pool (health + shield + barrier), matching the arming check, and the equipment is consumed (SetEquipmentIndex(None)) on detonation."
+      }
+    ],
     "tags": [
       "utility",
       "equipment"
@@ -5235,9 +5264,9 @@
     "icon": "/icons/fuel-array.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Fuel_Array",
     "verified": true,
-    "confidence": "langfile",
-    "cooldown": 60,
-    "activated": true
+    "confidence": "code",
+    "activated": false,
+    "descriptionNote": "Fuel Array is not an activated equipment — it has no fire handler at all, so it cannot be used on demand and has no cooldown. It arms itself the moment your combined health (including shield and barrier) crosses below half, then detonates 3 seconds later regardless of whether you heal back up."
   },
   {
     "id": "molotov-6-pack",

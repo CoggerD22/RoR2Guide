@@ -246,3 +246,26 @@ test("Unstable Transmitter is hyperbolic in a different shape and draws no curve
   const row = ut.stacking.find((s) => s.type === "hyperbolic")!;
   expect(hyperbolicCurve(row)).toBeNull();
 });
+
+/**
+ * §9: the last standing data:audit warning ("Fuel Array has a 60s cooldown but the
+ * description never states it") was pointing at a real defect, not a game quirk. Fuel
+ * Array has no fire handler in EquipmentSlot at all — the behaviour is a state machine on
+ * the body — so there was nothing for a cooldown to gate.
+ */
+test("Fuel Array is passive, and carries the numbers its description omits", () => {
+  const fa = items.find((i) => i.id === "fuel-array")!;
+  expect(fa.cooldown).toBeUndefined();
+  expect(fa.activated).toBe(false);
+  expect(fa.confidence).toBe("code");
+
+  const by = (re: RegExp) => fa.stacking.find((s) => re.test(s.stat));
+  expect(by(/threshold/i)?.base).toBe(50); // healthFractionDetonationThreshold = 0.5f
+  expect(by(/Fuse/i)?.base).toBe(3); // CountDown.duration
+  expect(by(/radius/i)?.base).toBe(30); // CountDown.explosionRadius
+  expect(by(/Damage/i)?.base).toBe(300); // fullCombinedHealth * 3f
+
+  // The two facts a player actually needs and the game never states.
+  expect(by(/radius/i)?.formula).toMatch(/falloffModel = None/);
+  expect(fa.descriptionNote).toMatch(/regardless of whether you heal back up/);
+});

@@ -3206,3 +3206,48 @@ when the costs were re-read from each prefab's `PurchaseInteraction`. A **false 
 its own defect**, and a mirror image of the ones §9 usually finds: it tells the reader that a
 verified figure is our guess, which sends them to a worse source to check it. Understating
 provenance and overstating it are the same failure — the badge now names the field it came from.
+
+### 3j.63 §9 surface audit, sixth pass — the last audit warning was real, and a lossy share link
+
+#### Fuel Array: a cooldown on an equipment that cannot be activated
+
+`data:audit` had carried one standing warning for several passes:
+
+> ⚠ Fuel Array: has a 60s cooldown but the description never states it
+
+It had been read as a quirk of the game's text. It was our defect. Fuel Array has **no fire
+handler in `EquipmentSlot` at all** — the entire behaviour is a state machine attached to the
+body — so there is nothing a cooldown could gate, and `activated: true` was wrong too. The
+audit rule was doing its job; the warning was being tolerated rather than answered.
+
+Reading `EntityStates.QuestVolatileBattery` gave four numbers the description omits, and one
+correction to what the description *implies*:
+
+- `Monitor.healthFractionDetonationThreshold = 0.5f`, tested against
+  `HealthComponent.combinedHealthFraction` — health **plus shield and barrier**, not health
+  alone — and only on the crossing (`frac <= 0.5f && 0.5f < previousFrac`), so it arms once as
+  you fall past half rather than re-arming while you stay there.
+- `CountDown.duration = 3` and `explosionRadius = 30` (both from the EntityStateConfiguration,
+  which is why they are in no C# literal).
+- The blast is a `BlastAttack` with **`falloffModel = None`** — every target inside 30 m takes
+  full damage — and `procCoefficient = 0`, so it triggers no on-hit items.
+- `baseDamage = fullCombinedHealth * 3f`. The description's "300% of your maximum health" is
+  measured against the **combined** pool, which matters enormously to a Transcendence build.
+
+And the fact a player most needs: the countdown checks only `fixedAge`, so **healing back above
+half does not stop it**.
+
+`data:audit` now reports *All checks passed* with zero warnings, and the coverage floor rises
+to 182/217.
+
+#### A shared plan that was not the plan you made
+
+`encodePlan` omitted a goal of 1 as "adds nothing" — and there was a test asserting that. It
+adds something: the rail renders "×1" for a goal of 1 and "+goal" for none, so a link shared by
+someone who had set "one is enough" arrived showing no goal at all. Silent loss between what
+was configured and what was sent.
+
+It is also the wrong number to drop, given what these audits established: "one is enough" is the
+*correct* plan for Rusted Key, Encrusted Key and Longstanding Solitude past 3, where extra
+stacks genuinely do nothing. The one goal value the encoder discarded was the one the data most
+often justifies. Fixed, with the old test rewritten to state why rather than deleted.

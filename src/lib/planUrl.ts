@@ -39,7 +39,12 @@ export function encodePlan(plan: Plan): string {
     const p = entry.priority && entry.priority !== DEFAULT_PRIORITY
       ? `!${PRIORITY_TO_CODE[entry.priority]}`
       : "";
-    const g = entry.goal && entry.goal > 1 ? `*${entry.goal}` : "";
+    // A goal of 1 IS encoded. It used to be omitted as "adds nothing", but the rail
+    // renders "x1" for a goal of 1 and "+goal" for none — they are different states, and
+    // "one is enough" is a real plan for the items where stacking genuinely does nothing
+    // (Rusted Key, Encrusted Key, Longstanding Solitude past 3). Dropping it meant the
+    // recipient of a link saw a plan the sender had not made (PLAN §9.1).
+    const g = entry.goal !== undefined ? `*${entry.goal}` : "";
     targeted.push(`${id}${p}${g}`);
   }
   // Sort for a stable, diff-friendly URL that doesn't depend on insertion order.

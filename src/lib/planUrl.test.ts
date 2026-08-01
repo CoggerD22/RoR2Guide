@@ -29,12 +29,26 @@ describe("planUrl", () => {
     expect(decodePlan(encodePlan(plan))).toEqual(plan);
   });
 
-  it("encodes priority and goal, omitting the defaults to keep links short", () => {
+  it("omits the default priority to keep links short", () => {
     expect(encodePlan({ crowbar: targeted("high") })).toBe("t=crowbar!h");
     expect(encodePlan({ crowbar: targeted("low", 3) })).toBe("t=crowbar!l*3");
-    // Default priority and a goal of 1 add nothing.
-    expect(encodePlan({ crowbar: targeted("medium", 1) })).toBe("t=crowbar");
     expect(encodePlan({ crowbar: targeted("medium", 4) })).toBe("t=crowbar*4");
+  });
+
+  /**
+   * A goal of 1 used to be omitted as "adds nothing". It adds something: the rail renders
+   * "x1" for a goal of 1 and "+goal" for none, so the recipient of a shared link saw a
+   * plan the sender had not made. "One is enough" is also the CORRECT plan for the items
+   * where stacking genuinely does nothing — Rusted Key, Encrusted Key, Longstanding
+   * Solitude past 3 — which this project spent the data passes establishing.
+   */
+  it("does not silently drop a goal of 1 from a shared link", () => {
+    expect(encodePlan({ crowbar: targeted("medium", 1) })).toBe("t=crowbar*1");
+    const plan: Plan = { "rusted-key": targeted("high", 1) };
+    expect(decodePlan(encodePlan(plan))).toEqual(plan);
+    // A plan with no goal at all still encodes bare, and stays that way.
+    expect(encodePlan({ crowbar: targeted("medium") })).toBe("t=crowbar");
+    expect(decodePlan("t=crowbar").crowbar.goal).toBeUndefined();
   });
 
   it("round-trips priority and goal", () => {
