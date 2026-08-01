@@ -269,3 +269,48 @@ test("Fuel Array is passive, and carries the numbers its description omits", () 
   expect(by(/radius/i)?.formula).toMatch(/falloffModel = None/);
   expect(fa.descriptionNote).toMatch(/regardless of whether you heal back up/);
 });
+
+/**
+ * §6A tail: equipment traced from EquipmentSlot's handler down to the prefab components
+ * that actually hold the numbers. These pin the facts the in-game text does not carry —
+ * each one is the reason the item stopped being langfile-only.
+ */
+test("Radar Scanner sweeps once, not for ten seconds", () => {
+  const x = items.find((i) => i.id === "radar-scanner")!;
+  expect(x.confidence).toBe("code");
+  expect(x.stacking.find((s) => /radius/i.test(s.stat))?.base).toBe(500);
+  // DestroyOnTimer 5s against a pulseInterval of 10s leaves room for exactly one pulse.
+  expect(x.stacking.find((s) => /Pulses/i.test(s.stat))?.base).toBe(1);
+  expect(x.descriptionNote).toMatch(/snapshot|sweeps once/i);
+});
+
+test("Executive Card's real floor is the 0.5s subcooldown, not the 0.1s cooldown", () => {
+  const x = items.find((i) => i.id === "executive-card")!;
+  expect(x.cooldown).toBeCloseTo(0.1, 4);
+  expect(x.stacking.find((s) => /gap between uses/i.test(s.stat))?.base).toBe(0.5);
+});
+
+test("Glowing Meteorite's '20' is a wave count, not seconds", () => {
+  const x = items.find((i) => i.id === "glowing-meteorite")!;
+  expect(x.stacking.find((s) => /^Waves$/.test(s.stat))?.base).toBe(20);
+  expect(x.stacking.find((s) => /Damage per blast/.test(s.stat))?.base).toBe(600);
+  expect(x.descriptionNote).toMatch(/20 WAVES/);
+});
+
+test("Forgive Me Please only ticks while the doll is stuck", () => {
+  const x = items.find((i) => i.id === "forgive-me-please")!;
+  expect(x.stacking.find((s) => /On-kill triggers/.test(s.stat))?.base).toBe(8);
+  expect(x.descriptionNote).toMatch(/STUCK/);
+});
+
+/**
+ * Milky Chrysalis is the honest half-result: duration and boost are code-verified, and the
+ * description's flat "+20% movement speed" is nowhere in JetpackController or
+ * RecalculateStats. It stays langfile because a partly-traced item is not a traced one.
+ */
+test("Milky Chrysalis records what was traced and does not claim the rest", () => {
+  const x = items.find((i) => i.id === "milky-chrysalis")!;
+  expect(x.confidence).toBe("langfile");
+  expect(x.stacking.find((s) => /Flight duration/.test(s.stat))?.base).toBe(15);
+  expect(x.descriptionNote).toMatch(/NOT verified/);
+});

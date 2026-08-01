@@ -3328,3 +3328,62 @@ A note on the redundancy: many equipment descriptions already state their cooldo
 panel repeats them. That is deliberate — for the equipment whose description *omits* it (which
 `data:audit` warns about by name) the panel is the only place the number appears, and the
 reduction caveat is not in any description.
+
+### 3j.66 the langfile tail, part 1 — seven equipment traced to their prefabs
+
+Equipment is the hardest part of the dataset to verify, because almost none of its numbers
+are in `RoR2.dll`. `EquipmentSlot.Fire*` is nearly always four lines that load a prefab by
+path and spawn it; every figure a player cares about is a **serialized field on that prefab**.
+That is the third of the three hiding places §5.0.2 named, and reaching it needs
+`extract-component-fields.py` pointed at the right field names.
+
+Seven traced end to end. Five of the seven turned out to carry a fact the in-game text does
+not.
+
+**Radar Scanner** — `radius = 500`, `revealDuration = 10`, matching the description. But the
+prefab also carries a `DestroyOnTimer` of **5 seconds** against a `pulseInterval` of **10**,
+and `nextPulse` starts at `negativeInfinity` so the first pulse fires immediately. It
+therefore pulses **exactly once** and is destroyed long before a second. The "10 seconds" is
+how long the markers stay up, not how long it keeps looking — anything that becomes
+revealable after the moment you press the button is missed. I had written "pulses forever"
+before checking for a second component on the prefab; querying one more field name reversed
+the conclusion.
+
+**Executive Card** — the description says *"Cooldown: 0.1s"* and the EquipmentDef agrees. But
+`FireVendingMachine` ends with `subcooldownTimer = 0.5f`, and **both** activation paths refuse
+to fire while that is above zero. The real floor is five times the stated one.
+
+**Glowing Meteorite** — *"Lasts 20 seconds"* is not a duration. `waveCount = 20` with
+`waveMinInterval = 0.5` and `waveMaxInterval = 1.5`, so it is **20 waves** spaced randomly,
+running anywhere from about 10 to about 30 seconds. The 600% is confirmed
+(`blastDamageCoefficient = 6`) but is the figure at the centre of an 8m sphere with
+`falloffModel = Linear`. And "ALL characters" is exact: `teamIndex = None` plus
+`AttackerFiltering.AlwaysHit`.
+
+**Forgive Me Please** — 8 ticks, one per second, confirmed. The countdown sits inside
+`if (projectileStickOnImpactController.stuck)`, so a doll that lands on nothing **never
+ticks**. Each tick hands `GlobalEventManager.OnCharacterDeath` a `DamageReport` whose victim is
+the doll's own `HealthComponent` — which is how it fires on-kill effects with nothing dying.
+
+**Blast Shower** — `CleanseBody(removeDebuffs: true, removeBuffs: **false**,
+removeCooldownBuffs: true, removeDots: true, removeStun: true, removeNearbyProjectiles: true)`.
+Two omissions in the game's text: it breaks **stun and freeze**, often the actual reason to
+press it, and it strips **cooldown buffs** as well as debuffs, so it is not purely beneficial.
+
+**Recycler** — the reroll is uniform over the pickup's *transmutation group* minus itself, not
+its rarity tier, and the once-only rule is a real `NetworkRecycled` flag. Better: if the group
+has no other member the handler `return false`s, and a handler that returns false never
+reaches `OnEquipmentExecuted` — so **the cooldown is not spent**.
+
+#### The one that stayed langfile, deliberately
+
+**Milky Chrysalis**: `duration = 15` and `boostSpeedMultiplier = 3` on a `boostCooldown` of
+0.5s are verified, as is the ending — downward velocity is clamped to −5 rather than dropping
+you. The description's flat **"+20% movement speed"** appears nowhere in `JetpackController`
+and is not in `RecalculateStats`. I did not find where it is applied, and I did not find that
+it isn't. So the verified parts are recorded, the gap is written into `descriptionNote` as
+*not verified*, and the item **stays `langfile`** — a partly-traced item is not a traced one,
+and letting it graduate on the strength of the parts that did resolve is precisely how a
+dataset starts lying.
+
+Coverage 182 → **188 of 217**, floor raised to match.

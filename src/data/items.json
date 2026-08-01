@@ -4943,7 +4943,22 @@
     "dlc": "base",
     "pickupText": "Gain temporary flight.",
     "description": "Sprout wings and fly for 15 seconds. Gain +20% movement speed for the duration. Cooldown: 60s.",
-    "stacking": [],
+    "stacking": [
+      {
+        "stat": "Flight duration (s)",
+        "base": 15,
+        "perStack": 0,
+        "type": "none",
+        "formula": "JetpackController prefab: duration = 15, acceleration = 200. Past the duration the controller stops providing flight and anti-gravity and clamps your downward velocity to -5, so the flight ends in a slow descent rather than a drop."
+      },
+      {
+        "stat": "Jump-boost speed multiplier",
+        "base": 3,
+        "perStack": 0,
+        "type": "none",
+        "formula": "boostSpeedMultiplier = 3 on a boostCooldown of 0.5s: pressing jump WHILE MOVING sets velocity to moveVector x (moveSpeed x 3). It is a burst on a half-second timer, not a sustained speed increase."
+      }
+    ],
     "tags": [
       "utility",
       "mobility",
@@ -4955,7 +4970,8 @@
     "verified": true,
     "confidence": "langfile",
     "cooldown": 60,
-    "activated": true
+    "activated": true,
+    "descriptionNote": "The flight itself is a 15s window with a x3 dash on jump every 0.5s, and it ends with your fall speed clamped rather than dropping you. NOT verified: the description's flat '+20% movement speed' appears nowhere in JetpackController and is not in RecalculateStats — we have not traced where, or whether, it is applied, so it is left stated as the game states it and not claimed here."
   },
   {
     "id": "gnarled-woodsprite",
@@ -5008,7 +5024,22 @@
     "dlc": "base",
     "pickupText": "Reveal all nearby interactables.",
     "description": "Reveal all interactables within 500m for 10 seconds. Cooldown: 45s.",
-    "stacking": [],
+    "stacking": [
+      {
+        "stat": "Reveal radius (m)",
+        "base": 500,
+        "perStack": 0,
+        "type": "none",
+        "formula": "ChestScanner prefab, ChestRevealer component: radius = 500, revealDuration = 10, pulseInterval = 10, pulseTravelSpeed = 125. FireScanner spawns one instance at your core position."
+      },
+      {
+        "stat": "Pulses per use",
+        "base": 1,
+        "perStack": 0,
+        "type": "none",
+        "formula": "The scanner object carries a DestroyOnTimer of 5s while pulseInterval is 10s, and nextPulse starts at negativeInfinity so the first pulse fires on the first FixedUpdate. It therefore pulses exactly ONCE and is destroyed long before a second — the reveal is a snapshot at cast time, not a rolling 10-second scan."
+      }
+    ],
     "tags": [
       "utility",
       "equipment"
@@ -5020,9 +5051,10 @@
     "icon": "/icons/radar-scanner.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Radar_Scanner",
     "verified": true,
-    "confidence": "langfile",
+    "confidence": "code",
     "cooldown": 45,
-    "activated": true
+    "activated": true,
+    "descriptionNote": "The 10 seconds is how long the revealed markers stay up, not how long the scanner keeps looking. It sweeps once, at the moment you press the button, so anything that becomes revealable afterwards is missed."
   },
   {
     "id": "eccentric-vase",
@@ -5055,7 +5087,15 @@
     "dlc": "base",
     "pickupText": "Cleanse all negative effects.",
     "description": "Cleanse all negative effects — debuffs, damage over time, and nearby projectiles. Cooldown: 20s.",
-    "stacking": [],
+    "stacking": [
+      {
+        "stat": "Effects removed",
+        "base": 5,
+        "perStack": 0,
+        "type": "none",
+        "formula": "FireCleanse calls Util.CleanseBody(removeDebuffs: true, removeBuffs: FALSE, removeCooldownBuffs: true, removeDots: true, removeStun: true, removeNearbyProjectiles: true). Five categories go: debuffs, cooldown buffs, damage over time, stun, and nearby projectiles. Your own buffs are explicitly kept."
+      }
+    ],
     "tags": [
       "utility",
       "survivability",
@@ -5064,13 +5104,14 @@
     "icon": "/icons/blast-shower.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Blast_Shower",
     "verified": true,
-    "confidence": "langfile",
+    "confidence": "code",
     "unlock": {
       "challenge": "Warm For Life",
       "requirement": "Die three times while burning."
     },
     "cooldown": 20,
-    "activated": true
+    "activated": true,
+    "descriptionNote": "Two things the text leaves out. It also breaks stun and freeze, which is often the reason to press it. And it clears COOLDOWN buffs as well as debuffs — the flag is `removeCooldownBuffs: true` — so it is not purely beneficial. It does not touch your own buffs."
   },
   {
     "id": "volcanic-egg",
@@ -5139,7 +5180,15 @@
     "dlc": "base",
     "pickupText": "Transform an Item or Equipment into a different one. Can only recycle once.",
     "description": "Transform an item or equipment into a different one of the same rarity tier. Each drop can only be recycled once. Cooldown: 45s.",
-    "stacking": [],
+    "stacking": [
+      {
+        "stat": "Rerolls per pickup",
+        "base": 1,
+        "perStack": 0,
+        "type": "none",
+        "formula": "FireRecycle sets NetworkRecycled = true and refuses any pickup where Recycled is already set, so a given drop can be recycled exactly once. The replacement is drawn with Run.instance.treasureRng.NextElementUniform from PickupTransmutationManager.GetAvailableGroupFromPickupIndex, minus the item you started with — a uniform roll over the rest of its transmutation GROUP, which is not quite the same set as its rarity tier."
+      }
+    ],
     "tags": [
       "utility",
       "equipment"
@@ -5151,9 +5200,10 @@
     "icon": "/icons/recycler.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Recycler",
     "verified": true,
-    "confidence": "langfile",
+    "confidence": "code",
     "cooldown": 45,
-    "activated": true
+    "activated": true,
+    "descriptionNote": "If the pickup's transmutation group has no other member, FireRecycle returns false — and a handler that returns false never reaches OnEquipmentExecuted, so the use is refused and the cooldown is NOT spent. Aiming at something unrecyclable costs you nothing."
   },
   {
     "id": "super-massive-leech",
@@ -5202,7 +5252,15 @@
     "dlc": "base",
     "pickupText": "Throw a cursed doll that repeatedly triggers your 'On Kill' effects.",
     "description": "Throw a cursed doll that triggers your On-Kill effects every 1 second for 8 seconds. Cooldown: 45s.",
-    "stacking": [],
+    "stacking": [
+      {
+        "stat": "On-kill triggers per throw",
+        "base": 8,
+        "perStack": 0,
+        "type": "none",
+        "formula": "DeathProjectile prefab: baseDuration = 8, ticking once per second (`fixedAge >= 1f`, then `duration -= 1f`). Each tick builds a DamageReport whose victim is the doll's own HealthComponent and hands it to GlobalEventManager.OnCharacterDeath — which is why it fires on-kill effects without anything actually dying."
+      }
+    ],
     "tags": [
       "damage",
       "on-kill",
@@ -5211,13 +5269,14 @@
     "icon": "/icons/forgive-me-please.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Forgive_Me_Please",
     "verified": true,
-    "confidence": "langfile",
+    "confidence": "code",
     "unlock": {
       "challenge": "I Love Dying!",
       "requirement": "Die 20 times."
     },
     "cooldown": 45,
-    "activated": true
+    "activated": true,
+    "descriptionNote": "The eight ticks only run while the doll is STUCK to something: the countdown is inside `if (projectileStickOnImpactController.stuck)`, so a throw that lands on nothing sticks to nothing and never ticks."
   },
   {
     "id": "fuel-array",
@@ -5295,7 +5354,22 @@
     "dlc": "sotv",
     "pickupText": "Gain 10% cash back on all purchases. Multishops remain open.",
     "description": "Whenever you make a gold purchase, get 10% of the spent gold back. Multishop terminals stay open after a purchase. Cooldown: 0.1s.",
-    "stacking": [],
+    "stacking": [
+      {
+        "stat": "Shortest gap between uses (s)",
+        "base": 0.5,
+        "perStack": 0,
+        "type": "none",
+        "formula": "FireVendingMachine ends with `subcooldownTimer = 0.5f`, and both activation paths refuse to fire while `subcooldownTimer > 0`. The EquipmentDef cooldown really is 0.1s, but the subcooldown is five times longer, so it — not the cooldown — sets the rate."
+      },
+      {
+        "stat": "Ground search distance (m)",
+        "base": 1000,
+        "perStack": 0,
+        "type": "none",
+        "formula": "The vending machine is placed by a downward CharacterRaycast of 1000m against LayerIndex.world. With no world geometry below you the handler returns false and nothing is spent."
+      }
+    ],
     "tags": [
       "utility",
       "gold",
@@ -5304,9 +5378,10 @@
     "icon": "/icons/executive-card.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Executive_Card",
     "verified": true,
-    "confidence": "langfile",
+    "confidence": "code",
     "cooldown": 0.1,
-    "activated": true
+    "activated": true,
+    "descriptionNote": "The stated 0.1s cooldown is not the rate you can actually use it at: each use also sets a 0.5s subcooldown, and that is the real floor."
   },
   {
     "id": "goobo-jr",
@@ -5438,7 +5513,22 @@
     "dlc": "base",
     "pickupText": "Rain meteors from the sky, hurting both enemies and allies.",
     "description": "Rain meteors from the sky, damaging ALL characters for 600% damage per blast. Lasts 20 seconds. Cooldown: 140s.",
-    "stacking": [],
+    "stacking": [
+      {
+        "stat": "Damage per blast (%)",
+        "base": 600,
+        "perStack": 0,
+        "type": "none",
+        "formula": "MeteorStorm prefab: blastDamageCoefficient = 6, blastRadius = 8, blastForce = 4000, impactDelay = 2. MeteorStormController fires it as a BlastAttack with falloffModel = Linear and procCoefficient = 1 — so 600% is the figure at the centre and it drops off toward the edge of the 8m sphere."
+      },
+      {
+        "stat": "Waves",
+        "base": 20,
+        "perStack": 0,
+        "type": "none",
+        "formula": "waveCount = 20, waveMinInterval = 0.5, waveMaxInterval = 1.5. Twenty waves at a random 0.5-1.5s apart is roughly 10-30 seconds of storm, averaging about 20 — the '20' in the description is a count of waves, not a duration in seconds."
+      }
+    ],
     "tags": [
       "damage",
       "aoe",
@@ -5447,13 +5537,14 @@
     "icon": "/icons/glowing-meteorite.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Glowing_Meteorite",
     "verified": true,
-    "confidence": "langfile",
+    "confidence": "code",
     "unlock": {
       "challenge": "Moon Worshipper",
       "requirement": "Carry 5 Lunar items in a single run."
     },
     "cooldown": 140,
-    "activated": true
+    "activated": true,
+    "descriptionNote": "'Lasts 20 seconds' is really 20 WAVES, spaced a random 0.5-1.5s apart, so the storm runs anywhere from about 10 to about 30 seconds. The 'ALL characters' part is exact and worth taking literally: the blast is fired with teamIndex = None and AttackerFiltering.AlwaysHit, so it hits you and your allies at full strength."
   },
   {
     "id": "helfire-tincture",
