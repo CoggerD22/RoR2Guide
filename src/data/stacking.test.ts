@@ -344,3 +344,37 @@ test("Box of Dynamite scales off the drone's damage, not yours", () => {
   expect(x.stacking.find((s) => /Recharge/i.test(s.stat))?.perStack).toBe(0);
   expect(x.descriptionNote).toMatch(/DRONE's damage, not yours/);
 });
+
+/**
+ * OverlapAttack composes a fire cadence with a reset cadence, and the RESET is what caps
+ * how often one enemy can be hit — `Fire()` skips anything already in the ignore list.
+ * Reading that pair is what resolved three items left ambiguous a pass earlier, and it
+ * turns two "hit rates" into "once, ever".
+ */
+test("Volcanic Egg: the ram hits once per enemy and refunds the whole duration", () => {
+  const x = items.find((i) => i.id === "volcanic-egg")!;
+  expect(x.confidence).toBe("code");
+  expect(x.stacking.find((s) => /Ram damage/.test(s.stat))?.base).toBe(500);
+  expect(x.stacking.find((s) => /Detonation/.test(s.stat))?.base).toBe(800);
+  // duration is 5 and the refund per hit is also 5 — a floor, not a cap.
+  expect(x.stacking.find((s) => /refunded/.test(s.stat))?.base).toBe(5);
+  expect(x.descriptionNote).toMatch(/floor, not a cap/);
+});
+
+test("Sawmerang cannot hit the same enemy twice, whatever the text says", () => {
+  const x = items.find((i) => i.id === "sawmerang")!;
+  expect(x.stacking.find((s) => /Saws thrown/.test(s.stat))?.base).toBe(3);
+  expect(x.stacking.find((s) => /Damage per saw/.test(s.stat))?.base).toBe(400);
+  // resetInterval = -1 disables the reset; BoomerangProjectile never calls it manually.
+  expect(x.descriptionNote).toMatch(/resetInterval = -1/);
+  expect(x.descriptionNote).toMatch(/Cleaver/); // the item that DOES implement return hits
+  expect(x.confidence).toBe("langfile"); // bleed clause still untraced
+});
+
+test("Molotov's 500% is impact plus burn total, and the puddle rate is flagged", () => {
+  const x = items.find((i) => i.id === "molotov-6-pack")!;
+  expect(x.stacking.find((s) => /Bomblets/.test(s.stat))?.base).toBe(6);
+  expect(x.stacking.find((s) => /Impact damage/.test(s.stat))?.base).toBe(250);
+  expect(x.stacking.find((s) => /Burn total/.test(s.stat))?.base).toBe(250);
+  expect(x.descriptionNote).toMatch(/NOT verified/);
+});

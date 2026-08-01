@@ -5151,7 +5151,29 @@
     "dlc": "base",
     "pickupText": "Transform into a speeding draconic fireball, dealing damage as you pass through enemies.",
     "description": "Turn into a draconic fireball for 5 seconds. Deal 500% damage on impact and detonate at the end for 800% damage. Cooldown: 30s.",
-    "stacking": [],
+    "stacking": [
+      {
+        "stat": "Ram damage, once per enemy (%)",
+        "base": 500,
+        "perStack": 0,
+        "type": "none",
+        "formula": "FireballVehicle prefab: overlapDamageCoefficient = 5 at overlapFireFrequency = 15. The hit rate looks like 15/s, but overlapResetFrequency = 0.00001 makes the reset period 100,000 seconds — the ignore list is never cleared, so each enemy takes the 500% exactly ONCE no matter how long you stay inside them."
+      },
+      {
+        "stat": "Detonation damage (%)",
+        "base": 800,
+        "perStack": 0,
+        "type": "none",
+        "formula": "blastDamageCoefficient = 8, blastRadius = 8, blastForce = 3000, and blastFalloffModel = None — so unlike most blasts in the game, the full 800% lands anywhere inside the 8m sphere rather than tapering toward the edge."
+      },
+      {
+        "stat": "Seconds refunded per enemy rammed",
+        "base": 5,
+        "perStack": 0,
+        "type": "none",
+        "formula": "`age = Mathf.Max(0f, age - overlapVehicleDurationBonusPerHit)` on every successful overlap, with the field set to 5 and duration also 5. Each enemy you ram rewinds the ride timer by the FULL duration, so flying through a crowd extends the ride indefinitely. Nothing in the description hints at this."
+      }
+    ],
     "tags": [
       "damage",
       "mobility",
@@ -5160,9 +5182,10 @@
     "icon": "/icons/volcanic-egg.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Volcanic_Egg",
     "verified": true,
-    "confidence": "langfile",
+    "confidence": "code",
     "cooldown": 30,
-    "activated": true
+    "activated": true,
+    "descriptionNote": "The 5 seconds is a floor, not a cap: every enemy you ram rewinds the timer by 5 seconds, so a dense crowd can keep you airborne far longer. The 500% is once per enemy — the ignore list never resets — and the 800% detonation has no distance falloff at all."
   },
   {
     "id": "jade-elephant",
@@ -5191,7 +5214,29 @@
     "dlc": "base",
     "pickupText": "Throw a fan of buzzing saws that come back to you.",
     "description": "Throw three large saw blades that slice through enemies for 3x400% damage, plus 3x100% per second while bleeding. Can strike enemies again on the way back. Cooldown: 45s.",
-    "stacking": [],
+    "stacking": [
+      {
+        "stat": "Saws thrown",
+        "base": 3,
+        "perStack": 0,
+        "type": "none",
+        "formula": "FireSaw calls FireSingleSaw three times, at -15 degrees, 0 and +15 (`float num = 15f`), each firing Prefabs/Projectiles/Sawmerang."
+      },
+      {
+        "stat": "Damage per saw, once per enemy (%)",
+        "base": 400,
+        "perStack": 0,
+        "type": "none",
+        "formula": "ProjectileOverlapAttack on the Sawmerang prefab: damageCoefficient = 4 with resetInterval = -1. The reset is guarded by `if (resetInterval >= 0f)`, so a negative value disables it entirely and the ignore list is never cleared — 400% per saw per enemy, and the 60Hz fireFrequency only governs how often it looks for NEW targets."
+      },
+      {
+        "stat": "Blade contact damage (%/s, up to)",
+        "base": 200,
+        "perStack": 0,
+        "type": "none",
+        "formula": "A second component, a ProjectileDotZone, holds damageCoefficient = 0.2 at fireFrequency = 30 with resetFrequency = 10. Because the reset rate caps re-hits, one enemy takes at most 10 x 20% = 200% per second while inside the blade, at overlapProcCoefficient 0.2. Its lifetime is -1, i.e. it lasts as long as the saw does."
+      }
+    ],
     "tags": [
       "damage",
       "bleed",
@@ -5202,7 +5247,8 @@
     "verified": true,
     "confidence": "langfile",
     "cooldown": 45,
-    "activated": true
+    "activated": true,
+    "descriptionNote": "\"Can strike enemies again on the way back\" is not what the code does. The saw's overlap attack has resetInterval = -1, which disables the reset, and BoomerangProjectile never calls ResetOverlapAttack — so each saw hits a given enemy once, outbound or returning, whichever happens first. The game does implement return-pass re-hits, but for Chef's Cleaver: CleaverProjectile calls ResetOverlapAttack explicitly and its prefab carries a recallDamageCoefficient. Sawmerang has neither. NOT verified: the description's \"3x100% per second while bleeding\" refers to a bleed DoT we have not traced, and is not the blade-contact figure above."
   },
   {
     "id": "recycler",
@@ -5365,7 +5411,36 @@
     "dlc": "sotv",
     "pickupText": "Throw 6 flaming molotovs that ignite enemies upon shattering.",
     "description": "Throw 6 molotov cocktails that ignite enemies for 500% base damage. Each leaves a burning area dealing 200% damage per second. Cooldown: 45s.",
-    "stacking": [],
+    "stacking": [
+      {
+        "stat": "Bomblets",
+        "base": 6,
+        "perStack": 0,
+        "type": "none",
+        "formula": "MolotovClusterProjectile: childrenCount = 6, fireChildren = true, scattered over rangePitchDegrees 80 / rangeRollDegrees 360, each child a MolotovSingleProjectile at childrenDamageCoefficient = 1 (full inherited damage)."
+      },
+      {
+        "stat": "Impact damage per bomblet (%)",
+        "base": 250,
+        "perStack": 0,
+        "type": "none",
+        "formula": "blastDamageCoefficient = 2.5 in a blastRadius of 7 on each bomblet."
+      },
+      {
+        "stat": "Burn total per bomblet (%)",
+        "base": 250,
+        "perStack": 0,
+        "type": "none",
+        "formula": "The bomblet applies dotIndex 1 (Burn) with calculateTotalDamage = true and totalDamageMultiplier = 2.5, and ProjectileExplosion resolves that as `dotInfo.totalDamage = characterBody.damage * totalDamageMultiplier` — a TOTAL of 250%, not a rate. Impact plus burn is where the description's 500% comes from."
+      },
+      {
+        "stat": "Fire puddle duration (s)",
+        "base": 7,
+        "perStack": 0,
+        "type": "none",
+        "formula": "MolotovProjectileDotZone: lifetime = 7, damageCoefficient = 1 at fireFrequency = 1 with resetFrequency = 3, at overlapProcCoefficient 0.5."
+      }
+    ],
     "tags": [
       "damage",
       "aoe",
@@ -5376,7 +5451,8 @@
     "verified": true,
     "confidence": "langfile",
     "cooldown": 45,
-    "activated": true
+    "activated": true,
+    "descriptionNote": "The 500% is impact (250%) plus the burn's total (250%), not a single hit. NOT verified: the puddle's stated 200% per second does not match its component, which fires once a second at damageCoefficient 1 — 100% per second — along a chain (cluster -> 6 bomblets -> puddle) whose childrenDamageCoefficient is 1 at every step. Either the text overstates it or there is a doubling we have not found, so the number is left as the game states it and not corrected here."
   },
   {
     "id": "executive-card",

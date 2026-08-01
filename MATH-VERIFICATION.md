@@ -3435,3 +3435,61 @@ literally an enemy within `searchDistance = 30f` checked every `0.25s`, and the 
 is `blastRadius = 7` thrown with `force = 500` in a `Random.onUnitSphere` direction.
 
 Coverage 188 → **190 of 217**.
+
+### 3j.68 the langfile tail, part 3 — reading OverlapAttack's fire/reset pair
+
+Three items were left explicitly unresolved last pass because their prefabs carried a
+*fire rate* and a *reset rate* and it was not obvious how they composed. Reading
+`ProjectileOverlapAttack` and `ProjectileDotZone` settles it:
+
+`Fire()` runs every `1 / fireFrequency`, but `OverlapAttack` keeps an **ignore list** of
+everything already hit, and only clears it on the reset cadence. So the **reset rate — not
+the fire rate — is what caps how often a single enemy can be hit**, and a reset that never
+happens turns an apparent hit *rate* into "once, ever". Two of the three hinged on that.
+
+**Volcanic Egg** — `overlapDamageCoefficient = 5` at `overlapFireFrequency = 15` looks like
+500% fifteen times a second. But `overlapResetFrequency = 0.00001` puts the reset period at
+**100,000 seconds**, so each enemy takes the 500% exactly once however long you sit inside
+them. The detonation is 800% with `blastFalloffModel = None` — full damage anywhere in the
+8m sphere, which is unusual and generous. And the mechanic the description omits entirely:
+
+```csharp
+if (overlapAttack.Fire()) age = Mathf.Max(0f, age - overlapVehicleDurationBonusPerHit);
+```
+
+with that field set to **5** against a `duration` of **5**. Every enemy you ram rewinds the
+ride timer by the entire duration, so "5 seconds" is a floor and a dense crowd keeps you
+airborne indefinitely.
+
+**Sawmerang** — three saws at −15°/0°/+15° confirmed, 400% each confirmed
+(`damageCoefficient = 4`). But `resetInterval = -1`, and the reset is guarded by
+`if (resetInterval >= 0f)`, so it is disabled; `BoomerangProjectile` never calls
+`ResetOverlapAttack` either. **Each saw therefore hits a given enemy once — outbound or
+returning, whichever comes first — and the description's "Can strike enemies again on the way
+back" is not what the code does.**
+
+That negative claim is worth the corroboration it has: the game *does* implement return-pass
+re-hits, for Chef's Cleaver. `CleaverProjectile` calls `ResetOverlapAttack()` explicitly and
+its prefab carries a `recallDamageCoefficient` field. Sawmerang's prefab has neither, in the
+same engine, for the same class of weapon. The absence is a design difference, not a gap in
+the decompile.
+
+**Molotov (6-Pack)** — the 500% resolves cleanly once `calculateTotalDamage` is understood:
+`ProjectileExplosion` sets `dotInfo.totalDamage = characterBody.damage * totalDamageMultiplier`,
+so the bomblet's `blastDamageCoefficient = 2.5` (impact) and `totalDamageMultiplier = 2.5`
+(burn **total**, not a rate) sum to the stated 500%.
+
+#### Two items deliberately left short of `code`
+
+Sawmerang's *"3×100% per second while bleeding"* refers to a bleed DoT distinct from the
+blade-contact component I did trace (20% at a 10/s reset cap, i.e. up to 200%/s). Molotov's
+puddle is `damageCoefficient = 1` at `fireFrequency = 1` — **100% per second**, against a
+stated 200% — down a chain whose `childrenDamageCoefficient` is 1 at every step.
+
+Both are recorded as verified rows plus an explicit `NOT verified` note, and **both stay
+`langfile`**. The Molotov gap in particular is the shape of a real 2× error, the same shape as
+Wax Quail — and that is exactly why it does not get written as a correction on the strength of
+a chain I have not closed. Finding a discrepancy and *proving* one are different results, and
+only the second may change a number.
+
+Coverage 190 → **191 of 217**.
