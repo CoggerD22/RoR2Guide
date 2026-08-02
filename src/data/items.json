@@ -5953,7 +5953,36 @@
     "dlc": "ac",
     "pickupText": "Become an aspect of the Collective.",
     "description": "Gain the power of a Collective Elite: a 30m dome blocks projectiles and reduces ally and self skill cooldowns by 25%. On death, explode for 100% damage and disable enemy items for 2.5s. The dome disables for 8s when hit by a skill attack. Passive.",
-    "stacking": [],
+    "stacking": [
+      {
+        "stat": "Dome radius (m)",
+        "base": 30,
+        "perStack": 0,
+        "type": "none",
+        "formula": "TargetNearbyHealthComponents on AffixCollectiveBodyAttachment: radius = 30, maxTargets = 50, tickRate = 0.5 — the membership list is rebuilt every two seconds, not continuously, and seated characters are excluded (IgnoreSeatedCharacters)."
+      },
+      {
+        "stat": "Skill cooldown multiplier",
+        "base": 0.75,
+        "perStack": 0,
+        "type": "none",
+        "formula": "RecalculateStats: `if (num75 > 0) num113 *= 0.75f`, where num75 is `HasBuff(EliteCollective) ? 1 : GetBuffCount(CollectiveShareBuff)` — the holder gets it from the aspect, allies from the shared buff. It is a presence check, not a count, so standing in two domes gives no extra reduction."
+      },
+      {
+        "stat": "Dome downtime after a skill hit (s)",
+        "base": 8,
+        "perStack": 0,
+        "type": "none",
+        "formula": "ColliderDisableIfHitDuration is serialized as 8 on the AffixCollectiveBodyAttachment prefab. Worth noting the C# field's own initialiser is 10f — reading the class rather than the prefab would have produced a 10 that contradicts the game's text. The dome then regrows at ColliderGrowSpeed 3 after shrinking at 5."
+      },
+      {
+        "stat": "Death explosion damage (%)",
+        "base": 100,
+        "perStack": 0,
+        "type": "none",
+        "formula": "CollectiveDeathProjectile: blastDamageCoefficient = 1 in a blastRadius of 11. Deaths inside a collective are chained with delayBetweenDeaths = 0.8f, so members fall in sequence rather than all at once."
+      }
+    ],
     "tags": [
       "utility",
       "survivability",
@@ -5963,9 +5992,10 @@
     "icon": "/icons/of-one-mind.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Of_One_Mind",
     "verified": true,
-    "confidence": "langfile",
+    "confidence": "code",
     "cooldown": 10,
-    "activated": false
+    "activated": false,
+    "descriptionNote": "The 25% cooldown cut is a presence check rather than a count — two overlapping domes are worth no more than one. Membership is also re-scanned only twice a second (tickRate 0.5), so an ally who steps in is not covered instantly."
   },
   {
     "id": "aurelionites-blessing",

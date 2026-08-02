@@ -3658,3 +3658,54 @@ because a number that cannot be reconciled with the game's own text is often a n
 about something else.
 
 Coverage 195 → **198 of 217**; the tail is down to **19**.
+
+### 3j.72 Of One Mind — the last Aspect, and the clearest case yet for reading prefabs
+
+All four elite Aspects are now code-verified.
+
+**Of One Mind** — `TargetNearbyHealthComponents` on `AffixCollectiveBodyAttachment`:
+`radius = 30` (the dome), `maxTargets = 50`, and `tickRate = 0.5`, so **membership is
+re-scanned twice a second rather than continuously** — an ally who steps in is not covered
+instantly. Seated characters are excluded outright.
+
+The cooldown cut is `if (num75 > 0) num113 *= 0.75f`, where
+`num75 = HasBuff(EliteCollective) ? 1 : GetBuffCount(CollectiveShareBuff)` — the holder gets
+it from the aspect, allies from the shared buff. It is a **presence check, not a count**, so
+standing inside two overlapping domes is worth exactly as much as one. Death explosion is
+`blastDamageCoefficient = 1` in an 11m radius, and deaths inside a collective are chained at
+`delayBetweenDeaths = 0.8f` rather than resolving together.
+
+#### The dome downtime is the argument for the whole extractor
+
+`AffixCollectiveAttachmentBehaviour` declares:
+
+```csharp
+public float ColliderDisableIfHitDuration = 10f;
+```
+
+The prefab serializes **8**. The game's own description says 8. Reading the class — which is
+the obvious thing to do, and what every C#-only pass would have done — produces a **10 that
+contradicts the game's text**, and the natural next move would have been to "correct" the
+description's 8 to our 10. The serialized value is the truth and the initialiser is dead.
+
+This is §5.0.2's second hiding place demonstrated as cleanly as it gets: a public field with an
+initialiser that is *always* overwritten on the prefab. Nothing in the C# marks it as
+overridden; the only way to know is to read the asset.
+
+#### Attempted and stopped, with the boundary named
+
+- **Orphaned Core** — `PhysicsProjectileController` computes contact damage as
+  `baseDamageCoefficient + velocityDamageIncrease * (magnitude / speedThreshold)` with both
+  coefficients `5f`. But those are **private** fields with initialisers and no `[SerializeField]`,
+  so nothing serializes them, and `speedThreshold` is assigned at runtime. That gives the
+  *contact* damage, which is a different mechanism from the row we hold ("Launch damage 400%").
+  I could not connect the two without guessing, so nothing was written.
+- **Defensive Microbots** — `CaptainDefenseMatrixController` has
+  `defenseMatrixToGrantPlayer` and `defenseMatrixToGrantMechanicalAllies`, both `1` in code,
+  but only the *allies* field came back from the prefab scan. Until I understand why the other
+  did not, its value is not something I am willing to publish.
+
+Coverage 198 → **199 of 217**; the tail is **18**, of which 4 are quest items with no mechanic
+(Artifact Key, both Cerebellums, Beads of Fealty), 2 are the Rusted/Encrusted Key placeholder
+pair whose rows are already corrected prose, and 2 are the deliberate holds (Milky Chrysalis,
+Molotov).

@@ -468,3 +468,29 @@ test("N'kuhana's Retort: the orb count scales with your body radius", () => {
   // The healing-disable is proc-scaled, which the description does not say.
   expect(x.stacking.find((s) => /Healing-disabled/.test(s.stat))?.formula).toMatch(/procCoefficient/);
 });
+
+/**
+ * Of One Mind completes the elite Aspects. Its dome-downtime value is the clearest case
+ * this project has for reading PREFABS rather than classes: the C# field initialiser is
+ * 10f and the serialized value is 8, and only the 8 agrees with the game's own text.
+ */
+test("Of One Mind: prefab value wins over the class default, and the 25% does not stack", () => {
+  const x = items.find((i) => i.id === "of-one-mind")!;
+  expect(x.confidence).toBe("code");
+  expect(x.stacking.find((s) => /Dome radius/.test(s.stat))?.base).toBe(30);
+  expect(x.stacking.find((s) => /downtime/.test(s.stat))?.base).toBe(8); // not the 10f default
+  expect(x.stacking.find((s) => /downtime/.test(s.stat))?.formula).toMatch(/initialiser is 10f/);
+  // `if (num75 > 0) num113 *= 0.75f` — a presence check, so overlapping domes do nothing extra.
+  expect(x.stacking.find((s) => /cooldown multiplier/.test(s.stat))?.base).toBe(0.75);
+  expect(x.descriptionNote).toMatch(/presence check/);
+});
+
+test("every elite Aspect is now code-verified", () => {
+  const aspects = ["nkuhanas-retort", "his-reassurance", "of-one-mind", "aurelionites-blessing"];
+  for (const id of aspects) {
+    const x = items.find((i) => i.id === id);
+    expect(x, id).toBeTruthy();
+    expect(x!.confidence, id).toBe("code");
+    expect(x!.stacking.length, id).toBeGreaterThan(0);
+  }
+});
