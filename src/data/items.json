@@ -1828,11 +1828,18 @@
     "description": "Gain an extra item on the first chest opened per stage. Each additional Sale Star increases the chance of getting more items by 5%.",
     "stacking": [
       {
-        "stat": "Chance for extra item(s) on first chest (%)",
-        "base": 5,
+        "stat": "Items from the first compatible purchase",
+        "base": 2,
+        "perStack": 0,
+        "type": "none",
+        "formula": "PurchaseInteraction sets `dropCount = 2 + num2` (on ChestBehavior or RouletteChestController) after transforming your Sale Stars into LowerPricedChestsConsumed. The transformation runs minToTransform 1 / maxToTransform int.MaxValue, so the ENTIRE stack is spent on that one purchase. At one Sale Star num2 is hardcoded to 0, i.e. exactly one extra item."
+      },
+      {
+        "stat": "Chance of a 3rd / 4th / 5th item (%)",
+        "base": 30,
         "perStack": 5,
-        "type": "linear",
-        "formula": "InteractionDriver gates the effect on PurchaseInteraction.saleStarCompatible and highlights an affordable chest, which confirms WHICH interactables qualify. NOT verified: the stated 5%-per-stack chance for additional items is not in that path, so the number remains game-text sourced."
+        "type": "hyperbolic",
+        "formula": "With two or more Sale Stars a cascade runs for i = 1,2,3 at thresholds 30%, 15% and 1%, each roll gated on the previous one succeeding, and num2 becomes the highest i that passed. From THREE stars up, every threshold gains `(1 - 1/(n x 0.05 + 1)) x 100` — the game's usual hyperbolic curve on a 5%-per-stack amplification — so at 3 stars the thresholds are 43.0/28.0/14.0, at 5 they are 50.0/35.0/21.0, and at 10 they are 63.3/48.3/34.3."
       }
     ],
     "tags": [
@@ -1841,7 +1848,8 @@
     "icon": "/icons/sale-star.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Sale_Star",
     "verified": true,
-    "confidence": "langfile"
+    "confidence": "code",
+    "descriptionNote": "Two things the text does not say. Every Sale Star you hold is consumed by the first compatible purchase, not one per stage per star. And the '5%' is hyperbolic and only applies from THREE stars up — the second star is the big one, taking the chance of a third item from 0% to 30%, while the third adds about 13 points on top."
   },
   {
     "id": "hunters-harpoon",
@@ -3649,7 +3657,8 @@
         "stat": "Movement speed (%)",
         "base": 15,
         "perStack": 0,
-        "type": "none"
+        "type": "none",
+        "formula": "PowerPyramidBodyBehavior adds Buffs.PowerPyramidBuff while held, and RecalculateStats does `num98 += 0.15f * GetBuffCount(PowerPyramidBuff)` — additive into the same movement pool as Paul's Goat Hoof, not a separate multiplier. BaseItemBodyBehavior enables once for any stack size, so a second copy adds nothing."
       }
     ],
     "tags": [
@@ -3659,7 +3668,7 @@
     "icon": "/icons/sentry-key.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Sentry_Key",
     "verified": true,
-    "confidence": "langfile"
+    "confidence": "code"
   },
   {
     "id": "prison-matrix",
@@ -3670,10 +3679,11 @@
     "description": "Gain +50% armor. Can be placed in a Matrix Terminal.",
     "stacking": [
       {
-        "stat": "Armor bonus (+50%)",
-        "base": 50,
+        "stat": "Armor multiplier",
+        "base": 1.5,
         "perStack": 0,
-        "type": "none"
+        "type": "none",
+        "formula": "PowerCubeBodyBehavior adds Buffs.PowerCubeBuff while held, and RecalculateStats does `armor *= 1.5f` for it — a MULTIPLIER on your armor, not 50 points added. It is applied after the Irradiant Pearl and bead armor multipliers and before Drizzle's flat +70, and it uses HasBuff rather than GetBuffCount, so it cannot stack."
       }
     ],
     "tags": [
@@ -3683,7 +3693,8 @@
     "icon": "/icons/prison-matrix.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Prison_Matrix",
     "verified": true,
-    "confidence": "langfile"
+    "confidence": "code",
+    "descriptionNote": "'+50% armor' is +50% OF your armor, not +50 armor: the game multiplies by 1.5. On a survivor with 0 base armor it therefore does nothing at all until something else grants some."
   },
   {
     "id": "encrypted-cerebellum",

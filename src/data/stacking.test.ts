@@ -378,3 +378,35 @@ test("Molotov's 500% is impact plus burn total, and the puddle rate is flagged",
   expect(x.stacking.find((s) => /Burn total/.test(s.stat))?.base).toBe(250);
   expect(x.descriptionNote).toMatch(/NOT verified/);
 });
+
+/**
+ * Sale Star's formula field previously surrendered: "the stated 5%-per-stack chance is not
+ * in that path". It was in a different file — InteractionDriver only decides which
+ * interactables glow; PurchaseInteraction holds the whole mechanic.
+ */
+test("Sale Star: the whole stack is consumed, and the 5% is hyperbolic from 3 up", () => {
+  const x = items.find((i) => i.id === "sale-star")!;
+  expect(x.confidence).toBe("code");
+  // dropCount = 2 + num2, and num2 is hardcoded 0 at one star.
+  expect(x.stacking.find((s) => /first compatible purchase/i.test(s.stat))?.base).toBe(2);
+  const chance = x.stacking.find((s) => /3rd/.test(s.stat))!;
+  expect(chance.base).toBe(30);
+  expect(chance.type).toBe("hyperbolic"); // not the linear row it used to be
+  expect(x.descriptionNote).toMatch(/consumed by the first/);
+});
+
+test("Prison Matrix multiplies armor rather than adding to it", () => {
+  const x = items.find((i) => i.id === "prison-matrix")!;
+  expect(x.confidence).toBe("code");
+  expect(x.stacking[0].base).toBe(1.5); // armor *= 1.5f
+  // The consequence a reader needs: it does nothing on a 0-armor survivor.
+  expect(x.descriptionNote).toMatch(/0 base armor/);
+});
+
+test("Sentry Key is additive into the movement pool, and does not stack", () => {
+  const x = items.find((i) => i.id === "sentry-key")!;
+  expect(x.confidence).toBe("code");
+  expect(x.stacking[0].base).toBe(15);
+  expect(x.stacking[0].perStack).toBe(0);
+  expect(x.stacking[0].formula).toMatch(/Goat Hoof/);
+});

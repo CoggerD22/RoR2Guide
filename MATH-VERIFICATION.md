@@ -3493,3 +3493,60 @@ a chain I have not closed. Finding a discrepancy and *proving* one are different
 only the second may change a number.
 
 Coverage 190 → **191 of 217**.
+
+### 3j.69 the langfile tail, part 4 — a second surrender that was looking in the wrong file
+
+**Sale Star** carried the same shape of note Ghor's Tome did:
+
+> *NOT verified: the stated 5%-per-stack chance for additional items is not in that path, so
+> the number remains game-text sourced.*
+
+"That path" was `InteractionDriver`, which only decides which interactables **glow**. The
+mechanic is in `PurchaseInteraction`, and it is considerably more interesting than the
+sentence it was hiding behind:
+
+```csharp
+dropCount = 2 + num2;                      // ChestBehavior or RouletteChestController
+```
+
+with `num2` produced by a cascade that runs only when you hold **two or more**:
+
+- The Sale Stars are transformed to `LowerPricedChestsConsumed` with `minToTransform = 1`
+  and `maxToTransform = int.MaxValue` — the **entire stack is spent on one purchase**, not one
+  star per stage.
+- At exactly one star, `num2 = 0`: one extra item, flat.
+- From two up, three gated rolls at **30% / 15% / 1%**, each requiring the previous to pass.
+- From **three** up, every threshold gains `(1 − 1/(n × 0.05 + 1)) × 100` — the game's usual
+  hyperbolic curve on a 5%-per-stack amplification.
+
+So the stacking row was typed `linear` and is `hyperbolic`, and the shape is lopsided in a way
+no reader would guess: the **second** star is the big one (0% → 30% for a third item), while
+the third adds about 13 points on top of that.
+
+Two files, two different jobs, and the one that was searched was the one that only draws a
+glow. The lesson is the Wax Quail lesson in a new costume: *"the number is not in that path"*
+is a statement about the path you chose.
+
+#### Prison Matrix multiplies; the description reads like it adds
+
+`PowerCubeBodyBehavior` grants `Buffs.PowerCubeBuff`, and `RecalculateStats` does
+**`armor *= 1.5f`** — sandwiched between the Irradiant Pearl / bead multipliers and Drizzle's
+flat `+70`. "+50% armor" is +50% *of* your armor, so on Commando, Huntress, Artificer,
+Railgunner and every other 0-armor survivor it does **nothing at all** until something else
+grants some. `HasBuff` rather than `GetBuffCount`, so it cannot stack.
+
+**Sentry Key** is the opposite and equally worth stating: `num98 += 0.15f * GetBuffCount(...)`
+puts it **additively into the same movement pool as Paul's Goat Hoof**, not on its own
+multiplier — and `BaseItemBodyBehavior` enables once for any stack size, so a second copy adds
+nothing.
+
+#### Where Defense Nucleus stops, precisely
+
+Its 4-per-stack deployable cap is verified (`GetDeployableSameSlotLimit: n * 4`) and the elite
+gate is verified. The stated **300% damage / 300% health** would be boost items in a
+`CharacterSpawnCard.itemsToGrant` list — `extract-component-fields.py` reads scalar fields and
+does not surface array members, so that list is out of reach for the current tooling rather
+than absent from the game. Recording the boundary that precisely is the point: the next person
+knows what to build, instead of re-searching the same three files.
+
+Coverage 191 → **194 of 217**.
