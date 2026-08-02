@@ -3550,3 +3550,56 @@ than absent from the game. Recording the boundary that precisely is the point: t
 knows what to build, instead of re-searching the same three files.
 
 Coverage 191 → **194 of 217**.
+
+### 3j.70 the extractor could not see arrays, and was silently discarding whole records
+
+Last pass ended by naming a tooling boundary rather than an unknowable fact: Defense
+Nucleus's 300% damage / 300% health live in a `CharacterSpawnCard.itemsToGrant` list, and
+`extract-component-fields.py` read only top-level **scalars**.
+
+Fixing it exposed that the gap was worse than "arrays are skipped". The old loop ended:
+
+```python
+fields = scalars(t)
+if not fields:
+    continue
+```
+
+A ScriptableObject whose interesting content is *entirely* arrays yields an **empty** scalar
+dict — so the record was not thinned, it was **dropped**, with no trace. Every asset of that
+shape had been invisible to every query ever run through this tool. That is the silent-zero
+failure mode this log has recorded four times (`m_Script` resolution, the language-file
+loader, the skill-unlocks parser, a `replace()` that matched nothing), and it had been sitting
+in the extractor the whole time.
+
+Two changes. `arrays()` descends one level into lists of structs, keeping scalar members and
+resolving PPtrs to names where the target is in the same bundle — falling back to `#<pathId>`
+rather than dropping the entry, since the `m_FileID != 0` wall that defeats `m_Script` also
+defeats these. And `owner` now falls back to the asset's own `m_Name`, because
+ScriptableObjects have no `m_GameObject` and were therefore all labelled `""` — which left the
+bundle name as the only handle, and §3j.67 showed the bundle name alone is not enough.
+
+#### What it found immediately
+
+```
+cscMinorConstructOnKill  itemsToGrant = [ {count: 30}, {count: 30} ]
+```
+
+`BoostHp` is `num80 += n * 0.1f` and `BoostDamage` is `num103 += n * 0.1f` — **+10% each** —
+so 30 of each is exactly the stated **+300% health and +300% damage**. It is also the same
+mechanism `EliteOnlyArtifactManager` uses when it grants `(coefficient - 1) * 10` of that pair
+for Artifact of Honor, so the pattern is the game's own idiom rather than a coincidence of
+arithmetic.
+
+The residual is stated in the record rather than smoothed over: **the counts are read; the two
+`ItemDef` pointers are cross-bundle and never resolve to names.** The identification rests on
+30 × 10% reproducing the description's figures through the game's established boost pair — two
+independent paths agreeing — not on having read the item names. That is a materially different
+situation from Molotov's puddle, where the paths *disagree* and the number therefore stays
+untouched.
+
+Of the 121 spawn cards carrying an `itemsToGrant` field, only five actually populate it, and
+`cscMinorConstructOnKill` is the only one whose counts are not 1 — which is itself a useful
+negative: no other summon in the game is buffed this way.
+
+Coverage 194 → **195 of 217**.

@@ -410,3 +410,23 @@ test("Sentry Key is additive into the movement pool, and does not stack", () => 
   expect(x.stacking[0].perStack).toBe(0);
   expect(x.stacking[0].formula).toMatch(/Goat Hoof/);
 });
+
+/**
+ * Defense Nucleus was the item that named the tooling gap: its 300%/300% lives in a
+ * CharacterSpawnCard.itemsToGrant array, and extract-component-fields.py read only
+ * top-level scalars — so a ScriptableObject whose interesting content is entirely arrays
+ * produced an empty field dict and was DISCARDED, not merely thinned. Teaching the
+ * extractor to descend one level into lists closed it.
+ */
+test("Defense Nucleus: the construct's bonus is 30 boost items, not a bare claim", () => {
+  const x = items.find((i) => i.id === "defense-nucleus")!;
+  expect(x.confidence).toBe("code");
+  expect(x.stacking.find((s) => /Max Alpha Constructs/i.test(s.stat))?.perStack).toBe(4);
+  const bonus = x.stacking.find((s) => /bonus/i.test(s.stat))!;
+  expect(bonus.base).toBe(300);
+  // 30 x BoostHp and 30 x BoostDamage, each +10% in RecalculateStats.
+  expect(bonus.formula).toMatch(/count 30/);
+  // The residual has to stay stated: the ItemDef pointers never resolved.
+  expect(bonus.formula).toMatch(/Read: both counts/);
+  expect(bonus.formula).toMatch(/Inferred:/);
+});

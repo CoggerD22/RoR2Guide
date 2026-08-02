@@ -3578,7 +3578,14 @@
         "base": 4,
         "perStack": 4,
         "type": "linear",
-        "formula": "CharacterMaster.GetDeployableSameSlotLimit: `result = n * 4` for DeployableSlot.MinorConstructOnKill — 4 per stack, verified. The spawn is gated on `victimBody.isElite`, matching the description. NOT verified: the construct's stated 300% damage / 300% health are not in the spawn path and are presumably granted as boost items on the summoned master, as with Goobo Jr. — so the record stays game-text sourced."
+        "formula": "CharacterMaster.GetDeployableSameSlotLimit: `result = n * 4` for DeployableSlot.MinorConstructOnKill — 4 per stack. GlobalEventManager gates the spawn on `victimBody.isElite` and on the deployable limit, firing CommonAssets.minorConstructOnKillProjectile at a random heading."
+      },
+      {
+        "stat": "Construct damage and health bonus (%)",
+        "base": 300,
+        "perStack": 0,
+        "type": "none",
+        "formula": "The spawn card cscMinorConstructOnKill carries itemsToGrant = two entries of count 30. BoostHp is `num80 += n * 0.1f` and BoostDamage is `num103 += n * 0.1f` — +10% each — so 30 of each is exactly the stated +300% health and +300% damage, and this is the same mechanism EliteOnlyArtifactManager uses when it grants `(coefficient - 1) * 10` of the pair. Read: both counts (30, 30). Inferred: the two ItemDef pointers are cross-bundle (m_FileID != 0) and do not resolve to names, so the identification rests on the counts producing the stated figures via the game's own +10% boost pair rather than on reading the item names."
       }
     ],
     "tags": [
@@ -3589,7 +3596,7 @@
     "icon": "/icons/defense-nucleus.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Defense_Nucleus",
     "verified": true,
-    "confidence": "langfile",
+    "confidence": "code",
     "corruptedBy": "newly-hatched-zoea"
   },
   {
