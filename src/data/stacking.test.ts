@@ -494,3 +494,22 @@ test("every elite Aspect is now code-verified", () => {
     expect(x!.stacking.length, id).toBeGreaterThan(0);
   }
 });
+
+/**
+ * Defensive Microbots was blocked last pass on "only the allies field came back from the
+ * prefab scan". The cause was the extractor's own noise filter: `Layer$` under re.I matches
+ * the trailing "layer" inside "P|layer", so every serialized field ending in "Player" had
+ * been dropped from every query ever run. The fields were there the whole time.
+ */
+test("Defensive Microbots: the 0.5s is a recharge, and the scan is far faster", () => {
+  const x = items.find((i) => i.id === "defensive-microbots")!;
+  expect(x.confidence).toBe("code");
+  // itemStack is literally the loop bound in DeleteNearbyProjectile.
+  expect(x.stacking.find((s) => /Projectiles shot down/.test(s.stat))?.perStack).toBe(1);
+  expect(x.stacking.find((s) => /radius/i.test(s.stat))?.base).toBe(20);
+  // baseRechargeFrequency 2 x attackSpeed, but minimumFireFrequency 10 governs the search.
+  const rate = x.stacking.find((s) => /Volleys per second/.test(s.stat))!;
+  expect(rate.base).toBe(2);
+  expect(rate.formula).toMatch(/minimumFireFrequency = 10/);
+  expect(x.stacking.find((s) => /Granted free to Captain/.test(s.stat))?.base).toBe(1);
+});

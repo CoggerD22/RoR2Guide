@@ -2749,7 +2749,29 @@
         "stat": "Projectiles shot down per volley",
         "base": 1,
         "perStack": 1,
-        "type": "linear"
+        "type": "linear",
+        "formula": "DefenseMatrixOn.DeleteNearbyProjectile walks the live ProjectileController list and stops at `num2 >= itemStack`, so the stack count is literally the number destroyed per volley. Projectiles marked cannotBeDeleted are skipped, and only ones on another team count."
+      },
+      {
+        "stat": "Interception radius (m)",
+        "base": 20,
+        "perStack": 0,
+        "type": "none",
+        "formula": "projectileEraserRadius = 20 (EntityStateConfiguration), compared squared against the attached body's core position."
+      },
+      {
+        "stat": "Volleys per second at 1.0 attack speed",
+        "base": 2,
+        "perStack": 0,
+        "type": "none",
+        "formula": "`rechargeFrequency = baseRechargeFrequency * attachedBody.attackSpeed` with baseRechargeFrequency = 2 — so two volleys a second at base attack speed, i.e. the 0.5s the description states, and it scales with attack speed exactly as claimed. Separately, `fireFrequency = Max(minimumFireFrequency, rechargeFrequency)` with minimumFireFrequency = 10 means it LOOKS for projectiles at least ten times a second regardless — the recharge gates the shot, not the search, so a projectile entering range is caught within a tenth of a second once a charge is up."
+      },
+      {
+        "stat": "Granted free to Captain and his drones",
+        "base": 1,
+        "perStack": 0,
+        "type": "none",
+        "formula": "CaptainDefenseMatrixController on CaptainBody: defenseMatrixToGrantPlayer = 1 and defenseMatrixToGrantMechanicalAllies = 1 — Captain starts with one, and each of his mechanical allies gets one too, on top of any copies you pick up."
       }
     ],
     "tags": [
@@ -2759,7 +2781,8 @@
     "icon": "/icons/defensive-microbots.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Defensive_Microbots",
     "verified": true,
-    "confidence": "langfile"
+    "confidence": "code",
+    "descriptionNote": "The 0.5 seconds is a recharge, not a scan interval: the microbots check for projectiles at least 10 times a second and fire the moment a charge is available, so entering range does not cost you half a second of exposure."
   },
   {
     "id": "laser-scope",

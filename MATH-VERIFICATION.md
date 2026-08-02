@@ -3709,3 +3709,63 @@ Coverage 198 → **199 of 217**; the tail is **18**, of which 4 are quest items 
 (Artifact Key, both Cerebellums, Beads of Fealty), 2 are the Rusted/Encrusted Key placeholder
 pair whose rows are already corrected prose, and 2 are the deliberate holds (Milky Chrysalis,
 Molotov).
+
+### 3j.73 the noise filter was eating real data — every field ending in "Player"
+
+Last pass left Defensive Microbots blocked on a specific, checkable anomaly rather than a
+vague one: `CaptainDefenseMatrixController` declares `defenseMatrixToGrantPlayer` and
+`defenseMatrixToGrantMechanicalAllies`, both `1` in code, and the prefab scan returned **only
+the second**. That was recorded as "until I understand why the other did not, its value is
+not something I am willing to publish."
+
+A direct probe showed both serialized, both `1`:
+
+```json
+{ "defenseMatrixToGrantPlayer": 1, "defenseMatrixToGrantMechanicalAllies": 1 }
+```
+
+So the extractor was dropping it. The cause was its own noise filter:
+
+```python
+NOISE = re.compile(r"^m_|^k[A-Z]|Layer$|LayerMask|Hash$|^instanceID$", re.I)
+```
+
+`Layer$` **under `re.I`** matches the trailing "layer" inside "P|layer". **Every serialized
+field whose name ends in "Player" has been silently dropped from every query ever run through
+this tool**, since the day it was written. `^k[A-Z]` was over-matching the same way — under
+`re.I` it eats any field starting `k` + a letter, so `keepAlive` went too.
+
+That is the **fifth** silent-zero this log has recorded (`m_Script` resolution, the
+language-file loader, the skill-unlocks parser shape, a `replace()` that matched nothing, the
+array-shaped records of §3j.70) and the second one *inside the extractor*. The pattern is
+consistent enough to be worth naming: **every one of them returned a plausible smaller answer
+rather than an error.** A filter that removes too much looks exactly like a game that contains
+less.
+
+Fixed by splitting the pattern in two. Unity's noise is capitalised — `m_Layer`,
+`groundLayer`, `kMaxCount` — so those alternatives are now **case-sensitive** and keep working,
+while `...Player` and `keepAlive` come through.
+
+#### What it unblocked immediately
+
+**Defensive Microbots**, fully:
+
+- `projectileEraserRadius = 20` matches the stated 20m.
+- `DeleteNearbyProjectile` walks the live projectile list and breaks at `num2 >= itemStack` —
+  the stack count is *literally* the loop bound, so "1 (+1 per stack)" is exact. Projectiles
+  flagged `cannotBeDeleted` are skipped and only other teams' count.
+- The 0.5 seconds is a **recharge, not a scan interval**:
+  `rechargeFrequency = baseRechargeFrequency (2) x attackSpeed`, while
+  `fireFrequency = Max(minimumFireFrequency (10), rechargeFrequency)` governs how often it
+  *looks*. The microbots check ten times a second and fire the instant a charge exists, so
+  walking into a projectile does not cost you half a second of exposure — a meaningfully
+  different feel from what the text implies.
+- `defenseMatrixToGrantPlayer = 1` and `defenseMatrixToGrantMechanicalAllies = 1`: Captain
+  starts with one and each of his mechanical allies gets one, on top of any copies picked up.
+
+Coverage 199 → **200 of 217**.
+
+The lesson worth keeping is not about regexes. Last pass could have written "the prefab does
+not carry that field" and moved on; the reason it did not is that the anomaly was recorded
+*specifically* — which field, on which component, in which bundle — and a specific anomaly can
+be probed. A vague one ("couldn't find it") cannot.

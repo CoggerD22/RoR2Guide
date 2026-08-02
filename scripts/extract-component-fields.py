@@ -42,7 +42,29 @@ AA = f"{GAME}/StreamingAssets/aa/StandaloneWindows64"
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 OUT_DIR = os.path.join(ROOT, ".gamedata")
 
-NOISE = re.compile(r"^m_|^k[A-Z]|Layer$|LayerMask|Hash$|^instanceID$", re.I)
+# Two patterns, and the split matters (MATH-VERIFICATION §3j.73).
+#
+# This was one case-INSENSITIVE regex, and `Layer$` under re.I matches the trailing "layer"
+# inside "P|layer" — so every serialized field ending in "Player" had been silently dropped
+# from every query ever run through this tool. `defenseMatrixToGrantPlayer` is how it was
+# found: the probe showed the value serialized as 1, and the extractor reported the component
+# without it. `^k[A-Z]` was over-matching the same way ("keepAlive" -> k + "e").
+#
+# Unity's own noise is capitalised (`m_Layer`, `groundLayer`, `kMaxCount`), so making those
+# alternatives case-SENSITIVE keeps them filtered while letting real fields through.
+NOISE_CS = re.compile(r"^m_|^k[A-Z]|Layer$|LayerMask")
+NOISE_CI = re.compile(r"Hash$|^instanceID$", re.I)
+
+
+class _Noise:
+    """Kept as a `NOISE.search(name)` shim so call sites read unchanged."""
+
+    @staticmethod
+    def search(name: str):
+        return NOISE_CS.search(name) or NOISE_CI.search(name)
+
+
+NOISE = _Noise
 
 
 def _num(v):
