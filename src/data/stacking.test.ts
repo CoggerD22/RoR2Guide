@@ -513,3 +513,24 @@ test("Defensive Microbots: the 0.5s is a recharge, and the scan is far faster", 
   expect(rate.formula).toMatch(/minimumFireFrequency = 10/);
   expect(x.stacking.find((s) => /Granted free to Captain/.test(s.stat))?.base).toBe(1);
 });
+
+/**
+ * Orphaned Core's numbers were not in a component at all — they are in an
+ * EntityStateConfiguration, which is a different extractor's territory. The searches that
+ * failed were looking in the right game but the wrong one of the three hiding places.
+ *
+ * It also corroborates §3j.70: the "(n-1) x 10 BoostDamage" idiom appears here with the item
+ * named explicitly in C#, which is the same pattern Defense Nucleus's unresolvable pointers
+ * were inferred to be.
+ */
+test("Orphaned Core: per-stack damage is boost items, not a bigger coefficient", () => {
+  const x = items.find((i) => i.id === "orphaned-core")!;
+  expect(x.confidence).toBe("code");
+  const launch = x.stacking.find((s) => /Launch damage/.test(s.stat))!;
+  expect(launch.base).toBe(400); // chargeDamageCoefficient = 4
+  expect(launch.perStack).toBe(400);
+  expect(launch.formula).toMatch(/\(newStack - 1\) \* 10` BoostDamage/);
+  expect(x.stacking.find((s) => /Lock-on/.test(s.stat))?.base).toBe(30);
+  expect(x.stacking.find((s) => /Knockback/.test(s.stat))?.base).toBe(1000);
+  expect(x.stacking.find((s) => /Curse stacks/.test(s.stat))?.base).toBe(5);
+});

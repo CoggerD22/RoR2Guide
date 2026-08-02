@@ -3152,7 +3152,36 @@
         "stat": "Launch damage (%)",
         "base": 400,
         "perStack": 400,
-        "type": "linear"
+        "type": "linear",
+        "formula": "EntityStates.FriendUnit.KineticAura: chargeDamageCoefficient = 4 -> 400%, applied as `attack.damage = chargeDamageCoefficient * damageStat`. The per-stack scaling is NOT in that coefficient: PhysicsProjectileBehavior.UpdateMinionInventory keeps the unit stocked with `(newStack - 1) * 10` BoostDamage items, and BoostDamage is +10% each — so two stacks double the unit's damage stat and three triple it, which reproduces +400% per stack exactly."
+      },
+      {
+        "stat": "Speed damage multiplier",
+        "base": 1,
+        "perStack": 0,
+        "type": "none",
+        "formula": "`GetDamageBoostFromSpeed() = Mathf.Max(1f, moveSpeed / baseMoveSpeed)` multiplies the launch damage — the 'hits harder the faster it moves' clause, floored at 1 so it can never reduce damage. InheritMovementItems copies your movement items onto the unit, which is what makes that ratio climb."
+      },
+      {
+        "stat": "Lock-on range (m)",
+        "base": 30,
+        "perStack": 0,
+        "type": "none",
+        "formula": "lockonDistance = 30 with lockonAngle = 180, chargeBeforeLaunch = 0.5s and refreshTime = 1.5s between launches (EntityStateConfiguration for KineticAura)."
+      },
+      {
+        "stat": "Knockback damage on heavy targets (%)",
+        "base": 1000,
+        "perStack": 0,
+        "type": "none",
+        "formula": "knockbackDamageCoefficient = 10 with knockbackForce = 8000, used instead of the launch hit when the target's mass is at or above massThresholdForKnockback = 250."
+      },
+      {
+        "stat": "Curse stacks cleansed when pet",
+        "base": 5,
+        "perStack": 0,
+        "type": "none",
+        "formula": "EntityStates.FriendUnit.FriendUnitLovesYou: curseStacksToRemove = 5 within cleanseRadius = 15, over baseDuration = 5s."
       }
     ],
     "tags": [
@@ -3162,7 +3191,8 @@
     "icon": "/icons/orphaned-core.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Orphaned_Core",
     "verified": true,
-    "confidence": "langfile"
+    "confidence": "code",
+    "descriptionNote": "The '+400% per stack' is not a bigger coefficient — the unit is handed (stacks - 1) x 10 BoostDamage items, so extra copies raise its damage STAT and the flat 400% coefficient rides on top. That also means anything else buffing the unit's damage compounds with it."
   },
   {
     "id": "substandard-duplicator",

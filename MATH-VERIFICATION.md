@@ -3769,3 +3769,63 @@ The lesson worth keeping is not about regexes. Last pass could have written "the
 not carry that field" and moved on; the reason it did not is that the anomaly was recorded
 *specifically* — which field, on which component, in which bundle — and a specific anomaly can
 be probed. A vague one ("couldn't find it") cannot.
+
+### 3j.74 both silent-failure paths proved inert, and Orphaned Core was in the third hiding place
+
+Before trusting another negative result, I checked the two places
+`extract-component-fields.py` swallows exceptions without reporting — the same shape of
+mistake as §3j.73, one loop up.
+
+```
+bundles: 1472   loaded: 1472   FAILED: 0
+MonoBehaviours: 224435   readable: 224435   UNREADABLE: 0
+```
+
+Both `except Exception: continue` paths are **inert**: every bundle loads and every
+MonoBehaviour typetree reads. That is worth recording precisely because it is a negative — it
+means every extraction result in this log was computed over complete input, and a "0
+components carry it" answer means the field genuinely is not on any component.
+
+#### Which is exactly what it meant
+
+`baseDamageCoefficient`, `velocityDamageIncrease` and `speedThreshold` return **nothing**, and
+`PhysicsProjectileController` is not on the Solus unit prefab at all. Dumping that prefab's
+components shows why:
+
+```
+[EntityStates.FriendUnit.KineticAura]        serializedFieldsCollection
+[EntityStates.FriendUnit.KineticAuraImpact]  serializedFieldsCollection
+[EntityStates.FriendUnit.FinalSacrifice]     serializedFieldsCollection
+```
+
+Orphaned Core's numbers live in **EntityStateConfigurations** — §5.0.2's *second* hiding
+place, and a different extractor's territory (`extract-state-fields.py`, whose output we
+already had). Two passes of searching components failed because they were searching the wrong
+one of the three places, not because the data was missing. The three really are mutually
+unreachable.
+
+`EntityStates.FriendUnit.KineticAura` gives the lot: `chargeDamageCoefficient = 4` (the 400%),
+`lockonDistance = 30`, `lockonAngle = 180`, `chargeBeforeLaunch = 0.5`, `refreshTime = 1.5`,
+`knockbackDamageCoefficient = 10` and `knockbackForce = 8000` above
+`massThresholdForKnockback = 250`. `FriendUnitLovesYou` gives the petting: `cleanseRadius = 15`,
+`curseStacksToRemove = 5`.
+
+#### And it retroactively corroborates §3j.70
+
+The "+400% per stack" is **not** a bigger coefficient. `UpdateMinionInventory` keeps the unit
+stocked with `(newStack - 1) * 10` **BoostDamage** items, at +10% each — so two stacks double
+the unit's damage *stat* and the flat 400% coefficient rides on top.
+
+That is the same idiom Defense Nucleus's spawn card uses, where the `ItemDef` pointers were
+cross-bundle and **unresolvable**, and the identification rested on 30 × 10% reproducing the
+stated 300%. Here the identical pattern appears with `RoR2Content.Items.BoostDamage` **named
+explicitly in C#**. An inference made from counts alone in §3j.70 now has an independent
+instance of the same mechanism with the names visible. It does not upgrade that record — the
+pointers still do not resolve — but it is the strongest corroboration available short of
+resolving them, and worth having on the record beside it.
+
+`GetDamageBoostFromSpeed() = Max(1f, moveSpeed / baseMoveSpeed)` is the "hits harder the
+faster it moves" clause, floored at 1 so it can never *reduce* damage, and
+`InheritMovementItems` is what makes that ratio climb.
+
+Coverage 200 → **201 of 217**.
