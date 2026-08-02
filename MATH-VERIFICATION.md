@@ -3603,3 +3603,58 @@ Of the 121 spawn cards carrying an `itemsToGrant` field, only five actually popu
 negative: no other summon in the game is buffed this way.
 
 Coverage 194 → **195 of 217**.
+
+### 3j.71 three elite Aspects, and an audit rule catching the row I was least sure of
+
+The Aspects have always been the weakest cluster in the dataset: their in-game text is
+"Gain the power of a X Elite" followed by prose, and the mechanics live across
+`CharacterBody`, a body-attachment prefab, and sometimes an EntityState. Three now traced.
+
+**His Reassurance (Mending)** — `AffixEarthBodyAttachment` carries a `HealNearbyController`
+with **`maxTargets = 1`**. "Continuously heal nearby allies" heals exactly **one ally per
+tick**; the sphere search stops at the first eligible target. With a full team the aura
+round-robins rather than topping everyone up. Rate is `damagePerSecondCoefficient = 1.2` at
+`tickRate = 3` — 40% of **your damage** three times a second, in a 30m radius plus the body's
+own. Anything already carrying `EliteEarth` is skipped, so two Mending holders never heal each
+other. The death core is `healCoefficient = 4` in a 12m radius after a 3s chargeup.
+
+**N'kuhana's Retort (Malachite)** — `UpdateAffixPoison` fires every 6s, and the volley size is
+**`3 + (int)radius`**: the number of spiked balls scales with your character's **collision
+radius**, so a physically larger survivor throws more from the same aspect. Each is 100% of
+your damage, spread at `360/num` degrees and tilted 25° up from vertical toward your facing.
+The healing-disable is `AddTimedBuff(HealingDisabled, 8f * damageInfo.procCoefficient)` — the
+8 seconds is the figure at proc coefficient 1, and a half-proc hit applies four.
+
+**Aurelionite's Blessing** — the reconciliation is the interesting part. The two projectile
+prefabs carry `blastDamageCoefficient` of **0.1** and **1.0**, which look nothing like the
+stated 15% and 150%. Both are fired with `attackerBody.damage * aurelioniteAttackDamageCoeff`
+where that constant is **1.5f**, and the prefab coefficient multiplies on top: 0.1 × 1.5 = 15%,
+1.0 × 1.5 = 150%. Publishing from the prefab values alone would have "corrected" two numbers
+that were already right — the same two-stage trap as Molotov's `totalDamageMultiplier`.
+
+#### The audit rule earned its keep
+
+I wrote a row reading *"Seconds between spike attacks = 10"* from `rawCooldownDuration = 10f`.
+`data:audit` **failed the build**: the value appears nowhere in the description and no
+`descriptionNote` explained it. That rule exists because a number of ours next to a number of
+the game's, with nothing to say which is which, is worse than no number at all.
+
+Checking it out properly, the row was **wrong**. The autonomous firing loop is gated on
+
+```csharp
+if (hasAuthority && body != null && (useRandomTargetingForNearbyEnemy || baseAI != null))
+```
+
+and `useRandomTargetingForNearbyEnemy` is set **false** for a player who is holding
+`EliteAurelioniteEquipment` — who also has no `BaseAI`. **The 10–13 second timer is the
+monster path.** A holder aims the strike and pays the equipment's own 25s cooldown. I had
+taken a constant from a shared behaviour and attributed the NPC branch to the player.
+
+That is the Halcyon/Shaping error in a new place: not a wrong *name* this time, but a wrong
+*branch*. The row is now the telegraph timing, with the monster/player split stated in the
+formula so nobody re-derives it. Worth recording that the rule which caught it was written for
+a different reason entirely — it checks presentation, and it happened to catch a fact error,
+because a number that cannot be reconciled with the game's own text is often a number that is
+about something else.
+
+Coverage 195 → **198 of 217**; the tail is down to **19**.

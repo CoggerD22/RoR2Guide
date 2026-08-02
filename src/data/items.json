@@ -5832,7 +5832,36 @@
     "dlc": "base",
     "pickupText": "Become an aspect of corruption.",
     "description": "Gain the power of a Malachite Elite: inflict a healing-disabled debuff for 8s on enemies, periodically release spiked balls that explode and leave spike pits, and spawn a Malachite Urchin on death. Passive.",
-    "stacking": [],
+    "stacking": [
+      {
+        "stat": "Seconds between volleys",
+        "base": 6,
+        "perStack": 0,
+        "type": "none",
+        "formula": "CharacterBody.UpdateAffixPoison fires when poisonballTimer >= 6f, then resets it."
+      },
+      {
+        "stat": "Orbs per volley (on a human-sized body)",
+        "base": 4,
+        "perStack": 0,
+        "type": "none",
+        "formula": "`int num = 3 + (int)radius` — the count scales with your BODY's collision radius, so a larger survivor throws more orbs from the same aspect. They are spread evenly at 360/num degrees, tilted 0.4363 rad (25 degrees) up from vertical toward your facing."
+      },
+      {
+        "stat": "Damage per orb (%)",
+        "base": 100,
+        "perStack": 0,
+        "type": "none",
+        "formula": "Fired with `damage * 1f` via PoisonOrbProjectile."
+      },
+      {
+        "stat": "Healing-disabled duration (s)",
+        "base": 8,
+        "perStack": 0,
+        "type": "none",
+        "formula": "GlobalEventManager on hit: `AddTimedBuff(Buffs.HealingDisabled, 8f * damageInfo.procCoefficient)`. The 8 seconds is the figure at proc coefficient 1 — a half-proc hit applies four seconds, not eight."
+      }
+    ],
     "tags": [
       "damage",
       "equipment",
@@ -5841,9 +5870,10 @@
     "icon": "/icons/nkuhanas-retort.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/N%27kuhana%27s_Retort",
     "verified": true,
-    "confidence": "langfile",
+    "confidence": "code",
     "cooldown": 10,
-    "activated": false
+    "activated": false,
+    "descriptionNote": "Two things the text does not say: the number of spiked balls per volley scales with your character's collision radius (3 + radius, so bigger survivors get more), and the 8-second healing-disable is multiplied by the proc coefficient of the hit that applied it."
   },
   {
     "id": "his-reassurance",
@@ -5852,7 +5882,36 @@
     "dlc": "sotv",
     "pickupText": "Become an aspect of earth.",
     "description": "Gain the power of a Mending Elite: continuously heal nearby allies, and spawn a Healing Core on death that detonates to heal all nearby allies. Passive.",
-    "stacking": [],
+    "stacking": [
+      {
+        "stat": "Allies healed per tick",
+        "base": 1,
+        "perStack": 0,
+        "type": "none",
+        "formula": "AffixEarthBodyAttachment carries a HealNearbyController with maxTargets = 1. The sphere search stops at the first eligible ally, so 'heal nearby allies' heals exactly ONE per tick — not everyone in range. Targets must be below full health, and anything already carrying EliteEarth is skipped, so two Mending holders never heal each other."
+      },
+      {
+        "stat": "Healing (% of your damage per second)",
+        "base": 120,
+        "perStack": 0,
+        "type": "none",
+        "formula": "damagePerSecondCoefficient = 1.2 at tickRate = 3: each tick heals `1.2 x attachedBody.damage / 3`, i.e. 40% of your damage three times a second. It scales with YOUR damage stat, not with the ally's health."
+      },
+      {
+        "stat": "Aura radius (m)",
+        "base": 30,
+        "perStack": 0,
+        "type": "none",
+        "formula": "radius = 30 on the same component, plus the attached body's own radius (`sphereSearch.radius = radius + attachedBody.radius`)."
+      },
+      {
+        "stat": "Death core heal (% of damage)",
+        "base": 400,
+        "perStack": 0,
+        "type": "none",
+        "formula": "EntityStates.AffixEarthHealer.Heal: healCoefficient = 4 in radius = 12, after a Chargeup of 3s and a DeathState of 0.5s."
+      }
+    ],
     "tags": [
       "healing",
       "equipment",
@@ -5861,9 +5920,10 @@
     "icon": "/icons/his-reassurance.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/His_Reassurance",
     "verified": true,
-    "confidence": "langfile",
+    "confidence": "code",
     "cooldown": 10,
-    "activated": false
+    "activated": false,
+    "descriptionNote": "'Continuously heal nearby allies' heals one ally at a time — maxTargets is 1. With a full team the aura round-robins rather than topping everyone up at once."
   },
   {
     "id": "shared-design",
@@ -5914,7 +5974,36 @@
     "dlc": "sots",
     "pickupText": "Become an aspect of radiance.",
     "description": "Gain the power of a Gilded Elite: on hit, knock 8 gold out of enemies as collectible nuggets (scaling over time), and gain a rechargeable grounded spike attack for 15% (outer) / 150% (inner) damage. Cooldown: 25s.",
-    "stacking": [],
+    "stacking": [
+      {
+        "stat": "Spike damage, inner / outer (%)",
+        "base": 150,
+        "perStack": 0,
+        "type": "none",
+        "formula": "Both projectiles are fired with `attackerBody.damage * aurelioniteAttackDamageCoeff` where that constant is 1.5f, and each prefab then applies its own blastDamageCoefficient: inner 1.0 -> 150%, outer 0.1 -> 15%. Reading either half alone gives the wrong answer, which is why the prefab values (0.1 and 1.0) look nothing like the description's 15% and 150%."
+      },
+      {
+        "stat": "Telegraph before the strike lands (s)",
+        "base": 2,
+        "perStack": 0,
+        "type": "none",
+        "formula": "delayBeforeFiringWarning = 1f then delayBeforeFiringAttack = 2f, and the strike leads a moving target by predictIntoTheFutureByHowManySeconds = 1.5f. Note the 10-13s timer in this behaviour (rawCooldownDuration 10 + randomCooldownMaximum 3) is NOT yours: the autonomous loop is gated on `useRandomTargetingForNearbyEnemy || baseAI != null`, and holding the equipment sets that flag false while a player has no BaseAI — so for a holder the strike runs on the equipment's own 25s cooldown and you aim it."
+      },
+      {
+        "stat": "Gold per hit",
+        "base": 8,
+        "perStack": 0,
+        "type": "none",
+        "formula": "stealGoldInAdjustedIncrementsOf = 8 with procChanceOfPlayerAttackSpawningGold = 100f — every hit knocks gold loose, not a chance on hit. The amount taken from the victim is percentageOfGoldCopiedFromEnemy = 0.8 and the payout runs through goldCoefficient = 75."
+      },
+      {
+        "stat": "Strike radius (m)",
+        "base": 7.5,
+        "perStack": 0,
+        "type": "none",
+        "formula": "hitCircleRadius = 7.5f, with the outer ring's blastRadius 3 and the centre's 3.5."
+      }
+    ],
     "tags": [
       "damage",
       "gold",
@@ -5924,7 +6013,7 @@
     "icon": "/icons/aurelionites-blessing.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Aurelionite%27s_Blessing",
     "verified": true,
-    "confidence": "langfile",
+    "confidence": "code",
     "cooldown": 25,
     "activated": true
   },

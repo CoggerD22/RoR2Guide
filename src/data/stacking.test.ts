@@ -430,3 +430,41 @@ test("Defense Nucleus: the construct's bonus is 30 boost items, not a bare claim
   expect(bonus.formula).toMatch(/Read: both counts/);
   expect(bonus.formula).toMatch(/Inferred:/);
 });
+
+/**
+ * Three elite Aspects, traced to CharacterBody / their attachment prefabs. Each carries a
+ * mechanic the "Gain the power of a X Elite" blurb cannot express.
+ */
+test("His Reassurance heals ONE ally per tick, not everyone in range", () => {
+  const x = items.find((i) => i.id === "his-reassurance")!;
+  expect(x.confidence).toBe("code");
+  expect(x.stacking.find((s) => /Allies healed/.test(s.stat))?.base).toBe(1); // maxTargets = 1
+  expect(x.stacking.find((s) => /Healing/.test(s.stat))?.base).toBe(120); // 1.2/s of YOUR damage
+  expect(x.stacking.find((s) => /radius/i.test(s.stat))?.base).toBe(30);
+  expect(x.descriptionNote).toMatch(/one ally at a time/);
+});
+
+/**
+ * Aurelionite's two projectile prefabs carry blastDamageCoefficients of 0.1 and 1.0, which
+ * look nothing like the stated 15% and 150% — until you see they are fired with
+ * `damage * aurelioniteAttackDamageCoeff` where that constant is 1.5. Publishing from the
+ * prefab alone would have "corrected" two numbers that were right.
+ */
+test("Aurelionite's Blessing: 1.5x fire-time coefficient reconciles the prefab values", () => {
+  const x = items.find((i) => i.id === "aurelionites-blessing")!;
+  expect(x.confidence).toBe("code");
+  expect(x.stacking.find((s) => /Spike damage/.test(s.stat))?.base).toBe(150);
+  expect(x.stacking.find((s) => /Gold per hit/.test(s.stat))?.base).toBe(8);
+  // The behaviour's 10-13s timer belongs to the monster path, not to a holder.
+  const tel = x.stacking.find((s) => /Telegraph/.test(s.stat))!;
+  expect(tel.formula).toMatch(/is NOT yours/);
+});
+
+test("N'kuhana's Retort: the orb count scales with your body radius", () => {
+  const x = items.find((i) => i.id === "nkuhanas-retort")!;
+  expect(x.confidence).toBe("code");
+  expect(x.stacking.find((s) => /volleys/.test(s.stat))?.base).toBe(6);
+  expect(x.stacking.find((s) => /Orbs per volley/.test(s.stat))?.base).toBe(4); // 3 + (int)radius
+  // The healing-disable is proc-scaled, which the description does not say.
+  expect(x.stacking.find((s) => /Healing-disabled/.test(s.stat))?.formula).toMatch(/procCoefficient/);
+});
