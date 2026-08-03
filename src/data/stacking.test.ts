@@ -594,3 +594,19 @@ test("triggered implies not activated — the flag exists only for that case", (
     if (it.triggered) expect(it.activated, it.name).toBe(false);
   }
 });
+
+/**
+ * Electric Boomerang: the trigger is fully verified even though the damage model is not.
+ * Splitting those apart is the point — a record can be partly code-verified as long as the
+ * unresolved half says so.
+ */
+test("Electric Boomerang's 15% chance does not scale with stacks", () => {
+  const x = items.find((i) => i.id === "electric-boomerang")!;
+  const chance = x.stacking.find((s) => /Chance on hit/.test(s.stat))!;
+  expect(chance.base).toBe(15);
+  expect(chance.perStack).toBe(0); // `LocalCheckRoll(15f * procCoefficient)` — no stack term
+  expect(chance.formula).toMatch(/NO stack term/);
+  // Still langfile: 0.4 x 3.1 = 1.24 against a stated 1.20, unattributed.
+  expect(x.confidence).toBe("langfile");
+  expect(x.stacking.find((s) => /Impact damage/.test(s.stat))?.formula).toMatch(/NOT resolved/);
+});

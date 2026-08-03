@@ -158,6 +158,60 @@ function main(): number {
     }
   }
 
+  // --- Name collisions in our own prose (MATH-VERIFICATION §3j.77) ---------
+  // Four times now an internal `cachedName` has been read as belonging to the item whose
+  // page it was about, and the fourth reached production: Executive Card carried
+  // FireVendingMachine's subcooldown and raycast for two passes, because
+  // EQUIPMENT_VENDINGMACHINE_NAME is Remote Caffeinator. Tests went green over it — the
+  // test asserted the wrong value against the wrong item.
+  //
+  // "Resolve the token before writing" was the rule each time and it kept being skipped, so
+  // it is a check now. A formula may cite another item's internal name freely — comparisons
+  // are often the clearest way to explain a mechanic — but it must NAME that item too, so a
+  // reader (and this rule) can see the reference is deliberate.
+  const defsPath = resolve(root, ".gamedata/itemdefs.json");
+  if (existsSync(defsPath)) {
+    const defs = JSON.parse(readFileSync(defsPath, "utf8")) as {
+      items: Array<{ name: string; cachedName: string }>;
+      equipment: Array<{ name: string; cachedName: string }>;
+    };
+    const ours = new Set(items.map((i) => i.name));
+    const byCachedName = new Map<string, string>();
+    for (const d of [...defs.items, ...defs.equipment]) {
+      // Only names for things in OUR dataset: a hidden internal item like BoostHp has no
+      // page to be confused with, and flagging it would be noise.
+      if (d.cachedName && ours.has(d.name)) byCachedName.set(d.cachedName, d.name);
+    }
+    for (const it of items) {
+      const prose = [it.descriptionNote ?? "", ...it.stacking.map((s) => s.formula ?? "")]
+        .join("\n")
+        .trim();
+      if (!prose) continue;
+      // Display names come out FIRST, longest first. Otherwise a short cachedName that is a
+      // substring of a display name we deliberately wrote fires a false positive — naming
+      // "Tri-Tip Dagger" tripped the rule for Ceremonial Dagger, whose cachedName is
+      // "Dagger". Searching the remainder means only unlabelled references survive.
+      let stripped = prose;
+      for (const display of [...ours].sort((a, b) => b.length - a.length)) {
+        if (stripped.includes(display)) stripped = stripped.split(display).join(" ");
+      }
+      for (const [cachedName, display] of byCachedName) {
+        if (display === it.name) continue;
+        if (!new RegExp(`\\b${cachedName}\\b`).test(stripped)) continue;
+        if (prose.includes(display)) continue; // deliberate, and labelled
+        errors.push(
+          `${it.name}: cites the internal name "${cachedName}", which belongs to ` +
+            `"${display}" — either this is the wrong item's mechanic, or name "${display}" ` +
+            `in the text so the cross-reference is visible`,
+        );
+      }
+    }
+  } else {
+    warnings.push(
+      "internal-name collisions not checked (.gamedata/itemdefs.json absent — run extract-itemdefs.py)",
+    );
+  }
+
   // --- Unlock gating vs the game's own defs (PLAN §6A.7) -------------------
   // An item the game gates but we show as free is false information by omission —
   // the player is told it's obtainable when it isn't. Verified against the chain

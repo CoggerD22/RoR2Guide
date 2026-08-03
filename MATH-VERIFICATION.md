@@ -3937,3 +3937,59 @@ does not spend the 60s cooldown.**
 Coverage 203 → **204 of 217**. The count is not the point of this entry: two records were
 wrong, one of them with a confident `descriptionNote` contradicting the game's own text, and a
 test was defending it.
+
+### 3j.77 the name-collision rule, written because vigilance kept failing
+
+§3j.76 was the fourth `cachedName` collision in this project and the first to reach a live
+page. The rule drawn each of the previous three times — *resolve the internal name to its
+display name before writing anything* — is a rule about remembering to be careful, and it had
+now failed four times out of four. So it is a check.
+
+`data:audit` now scans every `formula` and `descriptionNote` for the internal name of any item
+in the dataset, and **fails** if a record cites another item's `cachedName` without naming that
+item in the same text. Cross-references stay legal — comparing mechanics is often the clearest
+explanation available — they just have to be legible as references.
+
+Run over the existing 217: **zero collisions.** So §3j.76 was the only one, which is the answer
+I wanted and could not otherwise have had.
+
+Then, to check the rule was not merely agreeing with me, I re-introduced the original bug —
+a formula on Executive Card citing `VendingMachine`:
+
+```
+✗ Executive Card: cites the internal name "VendingMachine", which belongs to
+  "Remote Caffeinator" — either this is the wrong item's mechanic, or name
+  "Remote Caffeinator" in the text so the cross-reference is visible
+```
+
+It bites, and it would have caught the original the day it was written.
+
+#### It then caught me twice more, immediately
+
+Writing Electric Boomerang up, I wrote *"skips `BleedOnHit`"* — which is **Tri-Tip Dagger's**
+internal name, and a reader would have no way to know that. Naming the item fixed it, and made
+the sentence better: the two items **anti-synergise**, and neither description says so.
+
+That fix then produced a **false positive**: `Dagger` is Ceremonial Dagger's `cachedName` and
+is a substring of "Tri-Tip Dagger". The rule now strips every mentioned display name from the
+prose first, longest first, and matches `cachedName`s only against what remains — so labelled
+references disappear before they can collide, and only unlabelled ones survive to be flagged.
+
+Three catches in the first ten minutes, one of them a real defect in prose I was writing at the
+time. That is a better argument for the check than the entry that motivated it.
+
+#### Electric Boomerang, split into what is known and what is not
+
+Verified: the trigger is `LocalCheckRoll(15f * damageInfo.procCoefficient)` — a flat 15 with
+**no stack term**, so extra copies buy damage and never frequency, and it is **linear** in the
+proc coefficient rather than hyperbolic. Two gates the text omits: the roll is skipped if the
+hit already carries `ProcType.StunAndPierceDamage` (a boomerang cannot spawn another) or if the
+damage type includes `Electrocution`.
+
+Not verified, and now stated precisely rather than vaguely: the projectile is fired with
+`characterBody.damage * 0.4f * n` into a prefab carrying `damageCoefficient = 3.1`, whose
+product is **1.24 × n** against the **1.20** the game's text states for both of its damage
+figures. A 4% gap is small enough to be a rounding convention and large enough not to assume,
+and I still cannot tell which of the two stated 120% figures the 3.1 component produces. The
+item stays `langfile` with the arithmetic written down, which is a better open question than
+the one it replaced.

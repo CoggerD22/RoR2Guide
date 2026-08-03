@@ -2975,11 +2975,18 @@
     "description": "15% chance on hit to fire an electric boomerang that slices through enemies dealing 120% base damage and deals an additional 120% (+120% per stack) base damage per second and stuns all enemies hit. Can strike enemies on the way back.",
     "stacking": [
       {
+        "stat": "Chance on hit (%)",
+        "base": 15,
+        "perStack": 0,
+        "type": "none",
+        "formula": "GlobalEventManager: `LocalCheckRoll(15f * damageInfo.procCoefficient)` — a flat 15 with NO stack term, so extra copies buy damage and never frequency. It is linear in the proc coefficient rather than hyperbolic, so a half-proc hit is a straight 7.5%. Two hard gates the text omits: the roll is skipped entirely if the hit already carries ProcType.StunAndPierceDamage (so a boomerang cannot spawn another), and if the damage type includes DamageTypeExtended.Electrocution."
+      },
+      {
         "stat": "Impact damage (%)",
         "base": 120,
         "perStack": 120,
         "type": "linear",
-        "formula": "120% base damage per the game's text. The item's code path scales the whole projectile by `0.4f * n`, so impact almost certainly scales with stacks too even though the game marks only the per-second component '(+120% per stack)' — left as recorded pending the projectile damage model."
+        "formula": "The projectile is fired with `characterBody.damage * 0.4f * n` and the StunAndPierceBoomerang prefab carries damageCoefficient = 3.1, so the product is 1.24 x n — i.e. 124% per stack, against the 120% the game's text states for both of its damage numbers. NOT resolved: a 4% gap is small enough to be a rounding convention in the description and large enough not to be assumed, and we cannot yet tell which of the two stated 120% figures the 3.1 component produces. Left as the game states it rather than corrected on a product we cannot attribute."
       },
       {
         "stat": "Damage over time (%/s)",
@@ -2997,7 +3004,8 @@
     "icon": "/icons/electric-boomerang.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Electric_Boomerang",
     "verified": true,
-    "confidence": "langfile"
+    "confidence": "langfile",
+    "descriptionNote": "The 15% chance does NOT scale with stacks — extra copies raise the boomerang's damage only. It also scales linearly with the hit's proc coefficient, and cannot be triggered by Electrocution damage or by another boomerang. Separately, the boomerang suppresses Tri-Tip Dagger's bleed: GlobalEventManager skips its BleedOnHit proc when the projectile is flagged isStunAndPierce, so the two items anti-synergise in a way neither description mentions."
   },
   {
     "id": "growth-nectar",
