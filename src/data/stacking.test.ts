@@ -534,3 +534,34 @@ test("Orphaned Core: per-stack damage is boost items, not a bigger coefficient",
   expect(x.stacking.find((s) => /Knockback/.test(s.stat))?.base).toBe(1000);
   expect(x.stacking.find((s) => /Curse stacks/.test(s.stat))?.base).toBe(5);
 });
+
+test("The Crowdfunder: the fire rate ramps and the cost is keyed to team level", () => {
+  const x = items.find((i) => i.id === "the-crowdfunder")!;
+  expect(x.confidence).toBe("code");
+  expect(x.stacking.find((s) => /Damage per bullet/.test(s.stat))?.base).toBe(100);
+  // Lerp(3, 15, t) over a 10s wind-up — the description mentions neither end of it.
+  expect(x.stacking.find((s) => /Fire rate/.test(s.stat))?.base).toBe(3);
+  expect(x.stacking.find((s) => /Gold per bullet/.test(s.stat))?.formula).toMatch(/GetTeamLevel/);
+});
+
+/**
+ * Halcyon Seed is a real correction, the same class as Stun Grenade's linear -> hyperbolic:
+ * the game's text says "+50% per stack" damage and GoldTitanManager raises the coefficient
+ * by `Mathf.Pow(totalItemCount, 0.5f)`. Linear matches only the first stack.
+ */
+test("Halcyon Seed: Aurelionite's damage is sqrt(stacks), health is linear", () => {
+  const x = items.find((i) => i.id === "halcyon-seed")!;
+  expect(x.confidence).toBe("code");
+
+  const dmg = x.stacking.find((s) => /damage/i.test(s.stat))!;
+  expect(dmg.type).toBe("special"); // was "linear" at +50
+  expect(dmg.perStack).toBe(0); // no single per-stack number can express sqrt
+  expect(dmg.formula).toMatch(/sqrt\(n\)/);
+
+  const hp = x.stacking.find((s) => /health/i.test(s.stat))!;
+  expect(hp.type).toBe("linear"); // this half of the description was right
+  expect(hp.perStack).toBe(100);
+
+  // Pooled across players, which the description does not say at all.
+  expect(x.descriptionNote).toMatch(/ALL players' seeds/);
+});

@@ -3343,14 +3343,23 @@
       {
         "stat": "Aurelionite damage (%)",
         "base": 100,
-        "perStack": 50,
-        "type": "linear"
+        "perStack": 0,
+        "type": "special",
+        "formula": "damage multiplier = sqrt(n), NOT +50% per stack. GoldTitanManager does `currentBoostDamageCoefficient *= Mathf.Pow(totalItemCount, 0.5f)` and then grants `RoundToInt((coefficient - 1) * 10)` BoostDamage items at +10% each, so the integer rounding makes it stepped: 100% at 1 seed, 140% at 2, 170% at 3, 200% at 4, 220% at 5. The description's '+50% per stack' matches only the first stack and overstates every one after it — 250% vs the real 200% at four seeds."
       },
       {
         "stat": "Aurelionite health (%)",
         "base": 100,
         "perStack": 100,
-        "type": "linear"
+        "type": "linear",
+        "formula": "health multiplier = n exactly: `currentBoostHpCoefficient *= Mathf.Pow(totalItemCount, 1f)` then `RoundToInt((n - 1) * 10)` BoostHp at +10% each. Linear, and the description is right."
+      },
+      {
+        "stat": "Seeds counted",
+        "base": 1,
+        "perStack": 1,
+        "type": "linear",
+        "formula": "CalcTitanPowerAndBestTeam sums GetItemCountForTeam across every team into `totalItemCount`, so Aurelionite's power comes from ALL players' seeds combined, not just the summoner's — while the team it fights for is whichever single team holds the most."
       }
     ],
     "tags": [
@@ -3360,8 +3369,9 @@
     "icon": "/icons/halcyon-seed.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Halcyon_Seed",
     "verified": true,
-    "confidence": "langfile",
-    "corruptedBy": "newly-hatched-zoea"
+    "confidence": "code",
+    "corruptedBy": "newly-hatched-zoea",
+    "descriptionNote": "The health scaling is exactly as stated, but the damage is sqrt(stacks), not +50% each: 140% at two seeds and 200% at four, where the text implies 150% and 250%. The two curves also draw on ALL players' seeds pooled together, not only yours."
   },
   {
     "id": "little-disciple",
@@ -5021,7 +5031,29 @@
     "dlc": "base",
     "pickupText": "Toggle to fire. Costs gold per bullet.",
     "description": "Fire a continuous barrage that deals 100% damage per bullet. Costs $1 per bullet, increasing over time. Toggle-activated (no cooldown). Cooldown: 5s.",
-    "stacking": [],
+    "stacking": [
+      {
+        "stat": "Damage per bullet (%)",
+        "base": 100,
+        "perStack": 0,
+        "type": "none",
+        "formula": "EntityStates.GoldGat.GoldGatFire: damageCoefficient = 1 at procCoefficient = 1, force = 200, spread widening from minSpread 0 to maxSpread 3 as it winds up."
+      },
+      {
+        "stat": "Fire rate, start -> wound up (per second)",
+        "base": 3,
+        "perStack": 0,
+        "type": "none",
+        "formula": "`fireFrequency = Mathf.Lerp(minFireFrequency, maxFireFrequency, totalStopwatch / windUpDuration)` with 3, 15 and 10 — it opens at 3 bullets a second and reaches 15 after ten seconds of continuous fire, then stays there until you release. Letting go resets the wind-up."
+      },
+      {
+        "stat": "Gold per bullet at team level 1",
+        "base": 1,
+        "perStack": 0,
+        "type": "none",
+        "formula": "`(int)(baseMoneyCostPerBullet * (1f + (TeamManager.GetTeamLevel(team) - 1f) * 0.25f))` with baseMoneyCostPerBullet = 1. The cost rises with your TEAM LEVEL, not with time or with the difficulty coefficient — +25% of the base per level, truncated to an integer, so it is 1 gold per bullet until team level 5 and then climbs in whole steps."
+      }
+    ],
     "tags": [
       "damage",
       "gold",
@@ -5030,13 +5062,14 @@
     "icon": "/icons/the-crowdfunder.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/The_Crowdfunder",
     "verified": true,
-    "confidence": "langfile",
+    "confidence": "code",
     "unlock": {
       "challenge": "Funded!",
       "requirement": "Collect $30,480 total gold."
     },
     "cooldown": 5,
-    "activated": true
+    "activated": true,
+    "descriptionNote": "Two things behind 'increasing over time'. The cost per bullet is keyed to team LEVEL (+25% of base per level, integer-truncated), so it stays at 1 gold until level 5. And the fire rate itself ramps: 3 bullets a second at the trigger pull, 15 after ten seconds of sustained fire, resetting when you let go."
   },
   {
     "id": "milky-chrysalis",

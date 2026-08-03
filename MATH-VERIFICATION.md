@@ -3829,3 +3829,52 @@ faster it moves" clause, floored at 1 so it can never *reduce* damage, and
 `InheritMovementItems` is what makes that ratio climb.
 
 Coverage 200 → **201 of 217**.
+
+### 3j.75 Halcyon Seed's damage is a square root wearing a linear label
+
+Two more, and one of them is a genuine numeric correction rather than an addition.
+
+#### The Crowdfunder
+
+`EntityStates.GoldGat.GoldGatFire`: `damageCoefficient = 1` at `procCoefficient = 1`, spread
+widening 0 → 3. Two facts the text does not carry:
+
+- **The fire rate ramps.** `fireFrequency = Mathf.Lerp(minFireFrequency, maxFireFrequency,
+  totalStopwatch / windUpDuration)` with 3, 15 and 10 — it opens at three bullets a second and
+  reaches fifteen after ten seconds of sustained fire, then resets when you release.
+- **The cost is keyed to team LEVEL, not to time.**
+  `(int)(baseMoneyCostPerBullet * (1f + (GetTeamLevel(team) - 1f) * 0.25f))` with a base of 1.
+  Integer truncation means it stays at exactly 1 gold per bullet until team level 5, then
+  climbs in whole steps. "Increasing over time" is true only because your level does.
+
+#### Halcyon Seed — a correction
+
+`items.json` had **damage +50% per stack, `type: "linear"`**. `GoldTitanManager`:
+
+```csharp
+currentBoostHpCoefficient     *= Mathf.Pow(totalItemCount, 1f);
+currentBoostDamageCoefficient *= Mathf.Pow(totalItemCount, 0.5f);
+GiveItemPermanent(BoostHp,     Mathf.RoundToInt((currentBoostHpCoefficient     - 1f) * 10f));
+GiveItemPermanent(BoostDamage, Mathf.RoundToInt((currentBoostDamageCoefficient - 1f) * 10f));
+```
+
+Health is `Pow(n, 1)` — genuinely linear, and the description's "+100% per stack" is exact.
+Damage is **`Pow(n, 0.5)`**. With the `RoundToInt` on the boost-item count the real curve is
+stepped: **100% at one seed, 140% at two, 170% at three, 200% at four, 220% at five** — against
+a stated 150 / 200 / 250 / 300. The linear label is right for the first stack and diverges from
+there, exactly like Stun Grenade's linear-vs-hyperbolic (§3d) and Bandolier's stated 18%.
+
+A second thing the text omits entirely: `CalcTitanPowerAndBestTeam` sums
+`GetItemCountForTeam` across **every team** into `totalItemCount`, so Aurelionite's power comes
+from **all players' seeds pooled**, while the team it fights for is whichever single team holds
+the most. In multiplayer the item is far better than its own description implies, and for a
+different reason than the one a reader would guess.
+
+Worth noting what did *not* go into the record: the difficulty terms
+(`+= difficultyCoefficient / 8f` and `/ 2f`) sit inside the
+`isFalseSonBossLunarShardBrokenMaster` branch — that is the **hostile** Aurelionite from the
+False Son fight, not your ally. Reading those two lines without the enclosing `if` would have
+produced a difficulty-scaling claim about the player's summon that is simply false. The same
+wrong-branch trap as Aurelionite's Blessing in §3j.71, caught this time before it was written.
+
+Coverage 201 → **203 of 217**.
