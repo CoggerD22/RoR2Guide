@@ -141,7 +141,19 @@ export function ItemDetail({ item, onClose, onSelectItem }: ItemDetailProps) {
                 Equipment
               </h3>
               <div className="rounded-lg border border-border bg-surface-2 p-3 text-xs text-muted-foreground">
-                {item.activated === false ? (
+                {item.activated === false && item.triggered ? (
+                  /*
+                    The third state. Saying "passive, the cooldown never runs" here would be
+                    false — the charge is spent by an in-world event instead of the key
+                    (PLAN §9.1 / MATH-VERIFICATION §3j.76).
+                  */
+                  <>
+                    <span className="font-semibold text-foreground">Triggered, not activated.</span>{" "}
+                    Pressing the equipment key does nothing, but the{" "}
+                    <span className="font-semibold text-foreground">{item.cooldown}s</span>{" "}
+                    cooldown is real &mdash; it is spent automatically when the effect fires.
+                  </>
+                ) : item.activated === false ? (
                   <>
                     <span className="font-semibold text-foreground">Passive.</span> Pressing
                     the equipment key does nothing &mdash; it has no handler in{" "}

@@ -3878,3 +3878,62 @@ produced a difficulty-scaling claim about the player's summon that is simply fal
 wrong-branch trap as Aurelionite's Blessing in §3j.71, caught this time before it was written.
 
 Coverage 201 → **203 of 217**.
+
+### 3j.76 I published a name collision — Executive Card was carrying Remote Caffeinator's data
+
+This log has recorded three near-misses on `cachedName` collisions (Halcyon/Shaping,
+VoidCoinBarrel's 25 vs Ghor's Tome, `TransferDebuffOnHit` on Neutronium Weight rather than
+Noxious Thorn) and drawn the same rule each time: **resolve the internal name to its display
+name before writing anything.** In §3j.66 I did not, and this one reached published data.
+
+`FireVendingMachine` — the `subcooldownTimer = 0.5f` and the 1000m downward
+`CharacterRaycast` — was written into **Executive Card**, with `confidence: code` and a
+`descriptionNote` telling readers their 0.1s cooldown was really 0.5s. The mapping:
+
+| Display name | Token | EquipmentDef |
+|---|---|---|
+| **Remote Caffeinator** | `EQUIPMENT_VENDINGMACHINE_NAME` | `VendingMachine` |
+| **Executive Card** | `EQUIPMENT_MULTISHOPCARD_NAME` | `MultiShopCard` |
+
+Both facts belonged to Remote Caffeinator. Executive Card has **no `EquipmentSlot` handler at
+all.** Two passes of tests went green over it, because the test I wrote asserted the wrong
+value against the wrong item — checking my own mistake against itself.
+
+It surfaced only because this pass started by resolving the *remaining* items' tokens, and
+`EQUIPMENT_VENDINGMACHINE_NAME` came back "Remote Caffeinator" when I expected the name I had
+already used. The rule works; I skipped it, and skipping it cost two passes of false data on a
+live page.
+
+#### What Executive Card actually does
+
+`MultiShopCardUtils`: `refundPercentage = 0.1f`, paid as a `GoldOrb` of
+`(uint)(0.1f * moneyCost)` — an integer cast, so **a purchase under 10 gold refunds nothing**.
+`SetCloseOnTerminalPurchase(..., doCloseMultiShop: false)` is applied to
+`ShopTerminalBehavior` **and** `DroneVendorTerminalBehavior`, so drone vendors stay open too,
+which the description omits. A non-gold purchase (lunar coin, item cost) still keeps the shop
+open and still spends a charge, but refunds nothing.
+
+#### A third activation state, because two could not describe it
+
+`OnPurchase` requires `equipmentSlot.stock > 0` and then calls `OnEquipmentExecuted()`. So the
+0.1s cooldown is **real and is spent**, even though pressing the key does nothing. Under the
+old two-state model the item had to be either mislabelled as key-activated or told the reader
+"its cooldown never runs" — both false.
+
+New `triggered` flag: `activated: false` **and** the cooldown is operative, spent by an
+in-world event. `data:audit` exempts exactly this case from the passive-cooldown rule and
+fails if `triggered` appears without `activated: false`; the detail page renders
+*"Triggered, not activated"* rather than *"Passive"*. The elite Aspects keep failing closed, as
+they should.
+
+#### Remote Caffeinator, with its own constants back
+
+`VendingMachineProjectile`: `blastDamageCoefficient = 20` (the stated 2000%) in a 16m blast.
+The `VendingMachine` component: `healFraction = 0.25` with `numBonusOrbs = 2` — one primary
+heal plus two bonus orbs is the description's "up to 3 targets" — `vendingRadius = 50` and
+`maxPurchases = 12`. And the 1000m raycast means **no ground beneath you refuses the use and
+does not spend the 60s cooldown.**
+
+Coverage 203 → **204 of 217**. The count is not the point of this entry: two records were
+wrong, one of them with a confident `descriptionNote` contradicting the game's own text, and a
+test was defending it.

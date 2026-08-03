@@ -200,6 +200,21 @@ export const itemSchema = z
      * bare 0 can never again be published as if it meant instant reuse.
      */
     consumedOnUse: z.boolean().optional(),
+    /**
+     * Equipment only: the cooldown runs, but an in-world event spends it rather than the
+     * equipment key.
+     *
+     * `activated` alone could not describe Executive Card. Pressing its key does nothing —
+     * there is no `EquipmentSlot` handler — so `activated: false` is correct, but the flat
+     * "passive, its cooldown never runs" that goes with that is WRONG here:
+     * `MultiShopCardUtils.OnPurchase` checks `equipmentSlot.stock > 0` and then calls
+     * `OnEquipmentExecuted()`, so the 0.1s cooldown is real and is spent per purchase.
+     *
+     * Without this third state the item is either mislabelled as key-activated or told the
+     * reader its cooldown is inert. `data:audit` uses it to allow a stated cooldown on
+     * non-activated equipment (MATH-VERIFICATION §3j.76).
+     */
+    triggered: z.boolean().optional(),
     stacking: z.array(stackingEntrySchema),
     /** Search/category tags: "damage","on-hit","healing","drone", … */
     tags: z.array(z.string().min(1)),

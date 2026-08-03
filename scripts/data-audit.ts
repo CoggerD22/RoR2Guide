@@ -432,7 +432,10 @@ function main(): number {
     // runs. Stating it reads as an operative number and is worse than saying nothing —
     // this rule exists because I appended asset cooldowns to the nine elite Aspects and
     // produced "Passive (no cooldown). Cooldown: 10s." in the same sentence.
-    if (it.activated === false) {
+    // `triggered` is the exception: no handler, but an in-world event spends the charge and
+    // starts the cooldown anyway (Executive Card — see §3j.76). For those the stated cooldown
+    // is operative, so the rule must not fire; everything else keeps failing closed.
+    if (it.activated === false && !it.triggered) {
       if (stated) {
         errors.push(
           `${it.name}: states a cooldown, but it has no EquipmentSlot handler — ` +
@@ -440,6 +443,12 @@ function main(): number {
         );
       }
       continue;
+    }
+    if (it.triggered && it.activated !== false) {
+      errors.push(
+        `${it.name}: marked \`triggered\` but not \`activated: false\` — the flag exists ` +
+          `precisely for equipment whose key does nothing`,
+      );
     }
     if (it.cooldown === undefined) {
       warnings.push(`${it.name}: equipment has no cooldown field (asset value not recorded)`);

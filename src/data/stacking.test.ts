@@ -284,11 +284,9 @@ test("Radar Scanner sweeps once, not for ten seconds", () => {
   expect(x.descriptionNote).toMatch(/snapshot|sweeps once/i);
 });
 
-test("Executive Card's real floor is the 0.5s subcooldown, not the 0.1s cooldown", () => {
-  const x = items.find((i) => i.id === "executive-card")!;
-  expect(x.cooldown).toBeCloseTo(0.1, 4);
-  expect(x.stacking.find((s) => /gap between uses/i.test(s.stat))?.base).toBe(0.5);
-});
+// (Removed: a test asserting FireVendingMachine's 0.5s subcooldown belonged to Executive
+// Card. It belongs to Remote Caffeinator — see the pair of tests at the end of this file.
+// The test passed for two passes because it was checking our own mistake against itself.)
 
 test("Glowing Meteorite's '20' is a wave count, not seconds", () => {
   const x = items.find((i) => i.id === "glowing-meteorite")!;
@@ -564,4 +562,35 @@ test("Halcyon Seed: Aurelionite's damage is sqrt(stacks), health is linear", () 
 
   // Pooled across players, which the description does not say at all.
   expect(x.descriptionNote).toMatch(/ALL players' seeds/);
+});
+
+/**
+ * §3j.66 attributed FireVendingMachine's subcooldown and 1000m raycast to EXECUTIVE CARD.
+ * Wrong item: EQUIPMENT_VENDINGMACHINE_NAME is "Remote Caffeinator", and Executive Card is
+ * EQUIPMENT_MULTISHOPCARD_NAME -> MultiShopCard. The fourth name-collision in this repo, and
+ * the first one that reached published data. These pin both records to their real sources.
+ */
+test("Executive Card is MultiShopCard: triggered by purchases, not by the key", () => {
+  const x = items.find((i) => i.id === "executive-card")!;
+  expect(x.activated).toBe(false); // no EquipmentSlot handler at all
+  expect(x.triggered).toBe(true); // but OnEquipmentExecuted() still spends the charge
+  expect(x.stacking.find((s) => /Gold refunded/.test(s.stat))?.base).toBe(10);
+  expect(x.stacking.find((s) => /Charges spent/.test(s.stat))?.formula).toMatch(/MultiShopCard/);
+  // The 1000m raycast belongs to a different item and must not reappear here.
+  expect(x.stacking.some((s) => /Ground search/.test(s.stat))).toBe(false);
+});
+
+test("Remote Caffeinator is VendingMachine, and owns the constants that were misfiled", () => {
+  const x = items.find((i) => i.id === "remote-caffeinator")!;
+  expect(x.confidence).toBe("code");
+  expect(x.stacking.find((s) => /Impact damage/.test(s.stat))?.base).toBe(2000);
+  expect(x.stacking.find((s) => /Healing per target/.test(s.stat))?.base).toBe(25);
+  expect(x.stacking.find((s) => /Ground search/.test(s.stat))?.base).toBe(1000);
+  expect(x.stacking.find((s) => /Shortest gap/.test(s.stat))?.base).toBe(0.5);
+});
+
+test("triggered implies not activated — the flag exists only for that case", () => {
+  for (const it of items) {
+    if (it.triggered) expect(it.activated, it.name).toBe(false);
+  }
 });

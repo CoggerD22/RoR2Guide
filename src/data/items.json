@@ -5567,18 +5567,25 @@
     "description": "Whenever you make a gold purchase, get 10% of the spent gold back. Multishop terminals stay open after a purchase. Cooldown: 0.1s.",
     "stacking": [
       {
-        "stat": "Shortest gap between uses (s)",
-        "base": 0.5,
+        "stat": "Gold refunded (%)",
+        "base": 10,
         "perStack": 0,
         "type": "none",
-        "formula": "FireVendingMachine ends with `subcooldownTimer = 0.5f`, and both activation paths refuse to fire while `subcooldownTimer > 0`. The EquipmentDef cooldown really is 0.1s, but the subcooldown is five times longer, so it — not the cooldown — sets the rate."
+        "formula": "MultiShopCardUtils: `refundPercentage = 0.1f`, paid as a GoldOrb of `(uint)(0.1f * moneyCost)` flying from the thing you bought to you. Integer cast, so purchases under 10 gold refund nothing."
       },
       {
-        "stat": "Ground search distance (m)",
-        "base": 1000,
+        "stat": "Charges spent per purchase",
+        "base": 1,
         "perStack": 0,
         "type": "none",
-        "formula": "The vending machine is placed by a downward CharacterRaycast of 1000m against LayerIndex.world. With no world geometry below you the handler returns false and nothing is spent."
+        "formula": "OnPurchase requires `equipmentSlot.stock > 0` and then calls OnEquipmentExecuted(), so the 0.1s cooldown is genuinely consumed once per qualifying purchase. Pressing the equipment key does nothing at all — there is no EquipmentSlot handler for MultiShopCard."
+      },
+      {
+        "stat": "Terminal types kept open",
+        "base": 2,
+        "perStack": 0,
+        "type": "none",
+        "formula": "SetCloseOnTerminalPurchase(..., doCloseMultiShop: false) is applied to both ShopTerminalBehavior and DroneVendorTerminalBehavior — so drone vendors stay open too, which the description does not mention."
       }
     ],
     "tags": [
@@ -5591,8 +5598,9 @@
     "verified": true,
     "confidence": "code",
     "cooldown": 0.1,
-    "activated": true,
-    "descriptionNote": "The stated 0.1s cooldown is not the rate you can actually use it at: each use also sets a 0.5s subcooldown, and that is the real floor."
+    "activated": false,
+    "descriptionNote": "It is not activated: pressing the key does nothing, and the 0.1s cooldown is spent by the purchase itself. A non-gold purchase (lunar coin, item cost) still keeps the multishop open and still consumes the charge, but refunds nothing — the gold orb only fires when the cost was money.",
+    "triggered": true
   },
   {
     "id": "goobo-jr",
@@ -5620,7 +5628,43 @@
     "dlc": "sotv",
     "pickupText": "Request a healing soda machine.",
     "description": "Request an Eclipse Zero Vending Machine from the UES Safe Travels, delivered in 5 seconds for 2000% damage. Heals up to 3 targets for 25% of their maximum health. Cooldown: 60s.",
-    "stacking": [],
+    "stacking": [
+      {
+        "stat": "Impact damage (%)",
+        "base": 2000,
+        "perStack": 0,
+        "type": "none",
+        "formula": "VendingMachineProjectile: blastDamageCoefficient = 20 in a blastRadius of 16, at blastProcCoefficient 1."
+      },
+      {
+        "stat": "Healing per target (% of their max health)",
+        "base": 25,
+        "perStack": 0,
+        "type": "none",
+        "formula": "The VendingMachine component's healFraction = 0.25, with numBonusOrbs = 2 — the primary target plus two bonus orbs is the description's 'up to 3 targets'."
+      },
+      {
+        "stat": "Vending radius (m)",
+        "base": 50,
+        "perStack": 0,
+        "type": "none",
+        "formula": "vendingRadius = 50 on the machine, which also carries maxPurchases = 12."
+      },
+      {
+        "stat": "Shortest gap between uses (s)",
+        "base": 0.5,
+        "perStack": 0,
+        "type": "none",
+        "formula": "FireVendingMachine ends with `subcooldownTimer = 0.5f`, and both activation paths refuse to fire while it is above zero. Immaterial next to the 60s cooldown, but it is where that constant actually belongs."
+      },
+      {
+        "stat": "Ground search distance (m)",
+        "base": 1000,
+        "perStack": 0,
+        "type": "none",
+        "formula": "The machine is placed by a downward CharacterRaycast of 1000m against LayerIndex.world. With no world geometry below you the handler returns false, so the use is refused and the cooldown is not spent."
+      }
+    ],
     "tags": [
       "damage",
       "healing",
@@ -5629,9 +5673,10 @@
     "icon": "/icons/remote-caffeinator.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Remote_Caffeinator",
     "verified": true,
-    "confidence": "langfile",
+    "confidence": "code",
     "cooldown": 60,
-    "activated": true
+    "activated": true,
+    "descriptionNote": "The description gives the payload but not the delivery. The machine is placed by a 1000m downward raycast, so with no ground beneath you the use is refused and the 60s cooldown is NOT spent. Once landed it serves within 50m and sells at most 12 times. The 25% heal reaches three targets because the machine fires one primary heal plus numBonusOrbs = 2."
   },
   {
     "id": "seed-of-life",
