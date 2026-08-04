@@ -4398,3 +4398,46 @@ not whatever you were thinking about.**
 
 Coverage unchanged at 208 of 217. Nothing was verified this pass; two published sentences were
 wrong and two guards had a blind spot the size of the rest of the dataset.
+
+### 3j.86 the third uncovered surface: prose that lives in components
+
+§3j.85 extended the two guards from `items.json` to `reference.ts`. The obvious next question
+is what is *still* uncovered, and the answer is a lot: **a large share of what a reader is told
+about the game is written directly into `.tsx`.** The Stat Lab's Transcendence warning, the
+three difficulty hints, the proc footnotes on two pages, the artifact panel's framing — all
+claims about the game, published with the same authority as a stacking row, and never read by
+any check.
+
+Swept 57 files. Four hits, and **every one was a gap in my detectors rather than a defect in
+the prose** — which is itself the useful result, because three of those gaps were live in the
+data guards too:
+
+| Hit | Diagnosis |
+|---|---|
+| *"we could not establish a value from game data"* ×2 | **A hedge my QUALIFIED list did not know.** It is the exact admission the rule wants; the vocabulary was incomplete. |
+| `throw new Error('Root element "#root" not found')` | Developer-facing, not reader-facing. Scope error. |
+| bare `Saw` in `reference.ts` | **"Power-Saw"** — MUL-T's skill. `\bSaw\b` matches after a hyphen, but a hyphen joins a compound word rather than starting a token. |
+
+So: `could not establish` and `that array` join the hedge vocabulary, the collision lookbehind
+now excludes `-` as well as `.` and word characters, and the negative-claim guard runs over
+`src/components/**` and `src/data/**` — scoped deliberately, since infrastructure strings are
+addressed to developers and a rule that scolds you for `Error("… not found")` is a rule people
+disable.
+
+Verified by injection, as usual: a constant reading *"This expansion does not appear in the
+game files"* dropped into `DlcBadge.tsx` fails the suite **by filename**.
+
+#### What four false positives in a row actually mean
+
+It would be easy to read this pass as the checks being too noisy. The opposite: each false
+positive was a place where the rule and my *intent* had drifted apart, and every one of those
+gaps existed in the data guards as well — prose in `items.json` hedged with "could not
+establish" would have been flagged, and a hyphenated item name would have collided. Extending
+coverage to a new surface is also the cheapest way to find out that the rule was subtly wrong
+on the old one.
+
+Four calibrations in five days, and the check has still never had to be weakened — only made
+more precise about what it was always trying to say. The count of things it catches has not
+gone down.
+
+Coverage unchanged at 208 of 217.

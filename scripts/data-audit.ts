@@ -232,7 +232,10 @@ function main(): number {
         // them for an item page. Only a bare token is ambiguous. Without this the rule
         // flagged Artifact of Honor's `Elites.Lightning` as a reference to Royal Capacitor,
         // whose cachedName happens to be "Lightning".
-        if (!new RegExp(`(?<![.\\w])${cachedName}\\b`).test(stripped)) continue;
+        // Also excludes a preceding hyphen: "Power-Saw" is MUL-T's skill, not a bare
+        // citation of Sawmerang's `Saw`. A hyphen joins a compound word; it does not start
+        // a new token the way whitespace does.
+        if (!new RegExp(`(?<![-.\\w])${cachedName}\\b`).test(stripped)) continue;
         if (flatProse.includes(flat(display))) continue; // deliberate, and labelled
         errors.push(
           `${it.name}: cites the internal name "${cachedName}", which belongs to ` +

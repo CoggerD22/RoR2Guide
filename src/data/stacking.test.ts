@@ -706,8 +706,11 @@ test("every negative claim in published prose is scoped or hedged", () => {
   const NEGATIVE =
     /(appears nowhere|is not in |are not in |not found|could not|cannot be found|does not appear|nowhere in|never resolve)/i;
   // Either an admission of our own limits, or a stated scope that a reader can re-run.
+  // "could not establish" and "that array" are hedges too — the first admits our limit
+  // outright, the second names the scope searched. Both were missing and both produced
+  // false positives on prose that was already doing the right thing.
   const QUALIFIED =
-    /(we have not found|have not traced|NOT established|NOT verified|NOT resolved|NOT reconciled|at IL level|in that file|in the whole assembly|sites? in|spawn path|that coefficient|its text|in RoR2\.dll)/i;
+    /(we have not found|have not traced|could not establish|NOT established|NOT verified|NOT resolved|NOT reconciled|at IL level|in that file|in the whole assembly|sites? in|spawn path|that coefficient|its text|that array|in RoR2\.dll)/i;
 
   const unscoped: string[] = [];
   // Artifact and shrine `mechanic` strings count too. They are prose we publish with the
@@ -792,4 +795,48 @@ test("dot-zone-derived corrections exist only where the model was confirmed", ()
     expect(dot.formula, id).toMatch(/INSIDE THE HITBOX/);
     expect(dot.formula, id).toMatch(/min\(fireFrequency, resetFrequency\)/);
   }
+});
+
+/**
+ * The same discipline, applied to prose that lives in COMPONENTS rather than datasets.
+ *
+ * A large amount of what a reader is told about the game is written directly into .tsx —
+ * the Stat Lab's Transcendence warning, the difficulty hints, the proc footnotes, the
+ * artifact panel. Those are claims about the game published with the same authority as a
+ * stacking row, and until now no check had ever read them. Scoped to components/ and data/
+ * because infrastructure strings ("Root element not found") are addressed to developers,
+ * not to players.
+ */
+test("component prose obeys the same negative-claim rule as the data", async () => {
+  const { readdirSync, readFileSync } = await import("node:fs");
+  const { join, relative } = await import("node:path");
+
+  const roots = ["src/components", "src/data"];
+  const files: string[] = [];
+  const walk = (d: string) => {
+    for (const e of readdirSync(d, { withFileTypes: true })) {
+      const p = join(d, e.name);
+      if (e.isDirectory()) walk(p);
+      else if (/\.(tsx|ts)$/.test(e.name) && !/\.test\.ts$/.test(e.name)) files.push(p);
+    }
+  };
+  for (const r of roots) walk(r);
+  expect(files.length).toBeGreaterThan(20); // fail loudly if the walk ever finds nothing
+
+  const NEGATIVE =
+    /(appears nowhere|is not in |are not in |not found|could not|cannot be found|does not appear|nowhere in|never resolve)/i;
+  const QUALIFIED =
+    /(we have not found|have not traced|could not establish|NOT established|NOT verified|NOT resolved|NOT reconciled|at IL level|in that file|in the whole assembly|sites? in|spawn path|that coefficient|its text|that array|in RoR2\.dll)/i;
+
+  const unscoped: string[] = [];
+  for (const f of files) {
+    // Comments are for us; only what ships to a reader is in scope.
+    const visible = readFileSync(f, "utf8")
+      .replace(/\/\*[\s\S]*?\*\//g, " ")
+      .replace(/^\s*\/\/.*$/gm, " ");
+    if (NEGATIVE.test(visible) && !QUALIFIED.test(visible)) {
+      unscoped.push(relative(".", f).split("\\").join("/"));
+    }
+  }
+  expect(unscoped, unscoped.join(" | ")).toEqual([]);
 });
