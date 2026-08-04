@@ -4243,3 +4243,52 @@ sentence to the game's field is closed. Molotov's is. Sawmerang's has a gap I ca
 is exactly why it does not get a number changed.
 
 Coverage 207 → **208 of 217**.
+
+### 3j.83 Electric Boomerang is Sawmerang's twin, and a model that only gets to correct where it was tested
+
+Dumping the `StunAndPierceBoomerang` prefab in full — rather than querying field names one at
+a time — shows it carries **two** damage components, exactly like Sawmerang:
+
+| Component | Fields | Values |
+|---|---|---|
+| `ProjectileOverlapAttack` | `resetInterval`, `maximumOverlapTargets`, `canHitOwner` | `damageCoefficient 3.1`, `fireFrequency 60`, **`resetInterval -1`**, proc 1 |
+| `ProjectileDotZone` | `resetFrequency`, `lifetime`, `attackerFiltering` | `damageCoefficient 1`, `fireFrequency 30`, `resetFrequency 10`, `lifetime -1`, proc 0.2 |
+
+`resetInterval = -1` disables the reset, and `BoomerangProjectile` never calls
+`ResetOverlapAttack`. So **Electric Boomerang cannot strike the same enemy on the way back**,
+and its description says it can — the identical defect, from the identical mechanism, as
+Sawmerang. Two items shipped years apart, both promising a return-pass hit that the shared
+projectile class does not implement. Chef's Cleaver remains the only thing in the game that
+actually does it, and it needs an explicit `ResetOverlapAttack()` call plus a
+`recallDamageCoefficient` field to manage it.
+
+That is published. The damage figures are not, and the reason is worth stating precisely.
+
+#### A model gets to change numbers only where it has been tested
+
+Three items now hinge on the same reading of `ProjectileDotZone` — that `Fire()` runs at
+`fireFrequency` but a target already in the ignore list is skipped, so the **reset** cadence
+caps how often one enemy is hit:
+
+| Item | fire vs reset | Computed | Stated | Verdict |
+|---|---|---|---|---|
+| Molotov (6-Pack) | **1 < 3** | 100%/s | 200%/s | **corrected** |
+| Sawmerang | 30 > 10 | 200%/s | 100%/s | not corrected |
+| Electric Boomerang | 30 > 10 | far above | 120%/s | not corrected |
+
+Molotov is the case where the model is not doing any work: with `fireFrequency` below
+`resetFrequency`, every fire hits everything inside, and "1 × base, once a second" needs no
+theory about ignore lists. That correction rests on the chain of pointers, not on the model.
+
+The other two are the untested direction, and they disagree with their descriptions **by
+different factors in different directions** — 2× low, and more than 3× high. When one model
+produces three mutually inconsistent disagreements, the model is the thing to doubt, not three
+separate tooltips. So both keep the game's numbers and carry the arithmetic plus an explicit
+note that our reading of the fire/reset pair is confirmed only in the other regime.
+
+This is the same discipline as §3j.82 stated more generally: **the evidence has to be strong
+enough for the specific claim.** A chain of resolved pointers can change a number. A plausible
+model that has never been checked in the regime it is being applied to cannot — even when the
+arithmetic is clean, and even when it is the third time in a row it has disagreed.
+
+Coverage unchanged at 208 of 217; the count is not what moved.

@@ -728,3 +728,37 @@ test("Essence of Heresy's only-one-application claim carries its own evidence", 
   expect(r.formula).toMatch(/six sites/);
   expect(r.formula).toMatch(/exactly ONE/);
 });
+
+/**
+ * Electric Boomerang turns out to be Sawmerang's twin: a BoomerangProjectile with a
+ * ProjectileOverlapAttack whose resetInterval is -1. Both descriptions promise a return-pass
+ * hit and neither delivers one — the same disabled reset, in two items shipped years apart.
+ */
+test("Electric Boomerang cannot strike the same enemy on the way back either", () => {
+  const x = items.find((i) => i.id === "electric-boomerang")!;
+  const once = x.stacking.find((s) => /Times one enemy can be sliced/.test(s.stat))!;
+  expect(once.base).toBe(1);
+  expect(once.formula).toMatch(/resetInterval = -1/);
+  expect(once.formula).toMatch(/Sawmerang/); // the cross-reference is named, per the audit rule
+});
+
+/**
+ * The honest limit on the dot-zone model, written into the data rather than only the log:
+ * it is independently confirmed only where fireFrequency < resetFrequency. Molotov is that
+ * case and was corrected; Sawmerang and Electric Boomerang are the other direction and were
+ * not. A model gets to change numbers exactly where it has been tested.
+ */
+test("dot-zone-derived corrections exist only where the model was confirmed", () => {
+  const molotov = items.find((i) => i.id === "molotov-6-pack")!;
+  expect(molotov.confidence).toBe("code"); // fire 1 < reset 3 — every fire hits, unambiguous
+
+  for (const id of ["sawmerang", "electric-boomerang"]) {
+    const x = items.find((i) => i.id === id)!;
+    expect(x.confidence, id).toBe("langfile"); // fire 30 > reset 10 — untested direction
+  }
+  expect(
+    items.find((i) => i.id === "electric-boomerang")!.stacking.find((s) =>
+      /Impact damage/.test(s.stat),
+    )!.formula,
+  ).toMatch(/untested direction/);
+});

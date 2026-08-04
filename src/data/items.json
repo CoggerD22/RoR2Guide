@@ -2993,7 +2993,7 @@
         "base": 120,
         "perStack": 120,
         "type": "linear",
-        "formula": "The projectile is fired with `characterBody.damage * 0.4f * n` and the StunAndPierceBoomerang prefab carries damageCoefficient = 3.1, so the product is 1.24 x n — i.e. 124% per stack, against the 120% the game's text states for both of its damage numbers. NOT resolved: a 4% gap is small enough to be a rounding convention in the description and large enough not to be assumed, and we cannot yet tell which of the two stated 120% figures the 3.1 component produces. Left as the game states it rather than corrected on a product we cannot attribute."
+        "formula": "The prefab carries TWO damage components. The slice is a ProjectileOverlapAttack at damageCoefficient = 3.1, overlapProcCoefficient = 1; the lingering damage is a ProjectileDotZone at damageCoefficient = 1, fireFrequency = 30, resetFrequency = 10, lifetime = -1, overlapProcCoefficient = 0.2. GlobalEventManager fires the projectile with `characterBody.damage * 0.4f * n`, so the slice lands 3.1 x 0.4n = 1.24n — 124% at one stack against a stated 120%. NOT resolved: the 4% gap on the slice, and the dot zone, whose reset-capped rate computes far above the stated 120% per second. Our reading of the fire/reset pair is only independently confirmed where fireFrequency < resetFrequency (Molotov (6-Pack)), and here it is 30 against 10 — the untested direction. Numbers left as the game states them."
       },
       {
         "stat": "Damage over time (%/s)",
@@ -3001,6 +3001,13 @@
         "perStack": 120,
         "type": "linear",
         "formula": "The game's own text states 120% (+120% per stack) base damage per second; our 42% appeared in no game file at all. NOT yet code-verified: the projectile is fired with `characterBody.damage * 0.4f * n` (GlobalEventManager) into StunAndPierceBoomerang, whose overlap component carries damageCoefficient 3.1 at fireFrequency 60 with resetFrequency 10 — reconciling those into a per-second figure is an open question (MATH-VERIFICATION 3j.32)."
+      },
+      {
+        "stat": "Times one enemy can be sliced per throw",
+        "base": 1,
+        "perStack": 0,
+        "type": "none",
+        "formula": "The slice is a ProjectileOverlapAttack with resetInterval = -1, and the reset is guarded by `if (resetInterval >= 0f)` so a negative value disables it; BoomerangProjectile never calls ResetOverlapAttack either. Structurally identical to Sawmerang, down to the prefab flags (travelSpeed 60, distanceMultiplier 0.6, isStunAndPierce true) — and the same consequence: the description's 'Can strike enemies on the way back' does not happen. Each enemy takes the slice once, outbound or returning, whichever comes first."
       }
     ],
     "tags": [
