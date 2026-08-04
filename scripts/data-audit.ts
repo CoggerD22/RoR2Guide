@@ -182,10 +182,32 @@ function main(): number {
       // page to be confused with, and flagging it would be noise.
       if (d.cachedName && ours.has(d.name)) byCachedName.set(d.cachedName, d.name);
     }
-    for (const it of items) {
-      const prose = [it.descriptionNote ?? "", ...it.stacking.map((s) => s.formula ?? "")]
-        .join("\n")
-        .trim();
+    // Everything we publish as prose, not just items.json. The artifact and shrine
+    // `mechanic` strings are dense with internal names — thirteen of the artifact ones were
+    // written in a single pass — and were never covered: the first sweep over reference.ts
+    // found an unscoped negative AND a bare "Lightning" in Artifact of Honor. A guard that
+    // only watches the file it was born in is a guard with a blind spot the size of the
+    // rest of the dataset.
+    const referenceSrc = existsSync(resolve(root, "src/data/reference.ts"))
+      ? readFileSync(resolve(root, "src/data/reference.ts"), "utf8")
+      : "";
+    const quoted = (field: string) =>
+      [...referenceSrc.matchAll(new RegExp(`${field}:\\s*"((?:[^"\\\\]|\\\\.)*)"`, "g"))].map(
+        (m) => m[1],
+      );
+    const proseRecords: Array<{ name: string; prose: string }> = [
+      ...items.map((it) => ({
+        name: it.name,
+        prose: [it.descriptionNote ?? "", ...it.stacking.map((s) => s.formula ?? "")]
+          .join("\n")
+          .trim(),
+      })),
+      ...quoted("mechanic").map((t, i) => ({ name: `reference.ts mechanic #${i + 1}`, prose: t })),
+      ...quoted("cost").map((t, i) => ({ name: `reference.ts cost #${i + 1}`, prose: t })),
+    ];
+
+    for (const it of proseRecords) {
+      const prose = it.prose;
       if (!prose) continue;
       // Display names come out FIRST, longest first. Otherwise a short cachedName that is a
       // substring of a display name we deliberately wrote fires a false positive — naming
@@ -205,7 +227,12 @@ function main(): number {
       }
       for (const [cachedName, display] of byCachedName) {
         if (display === it.name) continue;
-        if (!new RegExp(`\\b${cachedName}\\b`).test(stripped)) continue;
+        // A DOTTED reference is self-disambiguating and always allowed: `Elites.Lightning`,
+        // `Buffs.BugWings`, `Items.BoostHp` name their namespace, so no reader can mistake
+        // them for an item page. Only a bare token is ambiguous. Without this the rule
+        // flagged Artifact of Honor's `Elites.Lightning` as a reference to Royal Capacitor,
+        // whose cachedName happens to be "Lightning".
+        if (!new RegExp(`(?<![.\\w])${cachedName}\\b`).test(stripped)) continue;
         if (flatProse.includes(flat(display))) continue; // deliberate, and labelled
         errors.push(
           `${it.name}: cites the internal name "${cachedName}", which belongs to ` +

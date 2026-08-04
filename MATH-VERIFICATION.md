@@ -4347,3 +4347,54 @@ Molotov moved because a chain of pointers closed. Encrusted Key moved because a 
 resolved in-bundle. These two did not move, twice, for two *different* reasons — and the second
 reason only became visible after removing the first. **Being wrong about why you are uncertain
 is its own kind of error**, and it is invisible while the conclusion happens to be right.
+
+### 3j.85 both new guards were only watching the file they were born in
+
+The name-collision rule (§3j.77) and the negative-claim rule (§3j.80) each read
+`items.json` and nothing else. `reference.ts` holds **21 artifact and shrine `mechanic`
+strings** and **12 `cost` strings** — prose published with exactly the same authority, dense
+with internal names, and thirteen of the artifact ones written in a single pass. Neither guard
+had ever looked at any of it.
+
+Pointing them at it found two defects immediately, both in **Artifact of Honor**:
+
+- *"Malachite, Celestine, Void and Perfected elites **are not in that array**"* — an unscoped
+  negative about which elites exist.
+- A bare **`Lightning`** in `eliteDefs = { Fire, Lightning, Ice, Earth }`, which is the
+  `cachedName` of **Royal Capacitor**. A reader has no way to tell the elite from the item.
+
+Rewritten to `{ Elites.Fire, Elites.Lightning, Elites.Ice, Elites.Earth } — the four entries in
+that static array, which is the whole of the search`, which fixes both at once: the negative
+now states its scope, and the names carry their namespace.
+
+#### One refinement to the rule, which the fix itself demanded
+
+`Elites.Lightning` still tripped the collision check, because `\bLightning\b` matches inside a
+dotted path. But a **dotted reference is self-disambiguating** — `Buffs.BugWings`,
+`Items.BoostHp`, `Elites.Fire` all name their namespace, and no reader mistakes them for an
+item page. Only a bare token is ambiguous. The rule now requires the match not be preceded by
+`.` or a word character.
+
+That is the third calibration of this check in four days — substring-of-a-display-name,
+typographic apostrophes, and now dotted paths — and each one narrowed it without weakening what
+it catches. Verified by injecting both defect kinds into a shrine's `mechanic` string:
+
+```
+✗ reference.ts mechanic #19: cites the internal name "Syringe", which belongs to
+  "Soldier's Syringe" …
+× every negative claim in published prose is scoped or hedged
+    Artifact of Swarms (mechanic)
+```
+
+Both fire on the file they previously could not see.
+
+#### The general lesson, which cost a test to learn
+
+Reverting the injection with `git checkout` also reverted the Honor fix I had made minutes
+earlier, and the Playwright assertion pinned to the *old* wording then failed — correctly. Two
+things worth keeping from that: a guard proven only on the dataset it was written for is
+unproven, and **the blast radius of a "temporary" edit is whatever the revert command takes,
+not whatever you were thinking about.**
+
+Coverage unchanged at 208 of 217. Nothing was verified this pass; two published sentences were
+wrong and two guards had a blind spot the size of the rest of the dataset.

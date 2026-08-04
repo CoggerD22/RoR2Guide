@@ -852,7 +852,9 @@ test("§9: every artifact shows a verified mechanic, not only the game's blurb",
   // omitted because the code added nothing. It did not: Honor never rolls Malachite,
   // Command deletes multishops from the stage, Delusion's wrong answer eats your item.
   await expect(page.getByText("Verified mechanic — from game code")).toHaveCount(20);
-  await expect(page.getByText(/Malachite, Celestine, Void and Perfected elites are not/)).toBeVisible();
+  await expect(
+    page.getByText(/Malachite, Celestine, Void and Perfected have no\s+entry in it/),
+  ).toBeVisible();
   await expect(page.getByText(/deletes one of your own items/)).toBeVisible();
   await expect(page.getByText(/TEN TIMES your maximum health/)).toBeVisible();
 });

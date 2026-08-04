@@ -3,6 +3,7 @@ import { describe, expect, it, test } from "vitest";
 // same typed data the app consumes.
 import { items } from "./items";
 import { perStackMeaning, hyperbolicCurve } from "@/lib/stacking";
+import { ARTIFACTS, SHRINES } from "./reference";
 
 /**
  * Regression tests for stacking values that were WRONG when derived from the game's
@@ -709,9 +710,31 @@ test("every negative claim in published prose is scoped or hedged", () => {
     /(we have not found|have not traced|NOT established|NOT verified|NOT resolved|NOT reconciled|at IL level|in that file|in the whole assembly|sites? in|spawn path|that coefficient|its text|in RoR2\.dll)/i;
 
   const unscoped: string[] = [];
-  for (const it of items) {
-    const parts: Array<[string, string]> = [["descriptionNote", it.descriptionNote ?? ""]];
-    for (const st of it.stacking) parts.push([`stacking:${st.stat}`, st.formula ?? ""]);
+  // Artifact and shrine `mechanic` strings count too. They are prose we publish with the
+  // same authority, and the first sweep over them found an unqualified negative in Artifact
+  // of Honor — a guard that only watches items.json has a blind spot the size of the rest
+  // of the dataset.
+  const records: Array<[string, Array<[string, string]>]> = [
+    ...items.map(
+      (it): [string, Array<[string, string]>] => [
+        it.name,
+        [
+          ["descriptionNote", it.descriptionNote ?? ""] as [string, string],
+          ...it.stacking.map((st): [string, string] => [`stacking:${st.stat}`, st.formula ?? ""]),
+        ],
+      ],
+    ),
+    ...ARTIFACTS.map((a): [string, Array<[string, string]>] => [
+      a.name,
+      [["mechanic", a.mechanic ?? ""]],
+    ]),
+    ...SHRINES.map((sh): [string, Array<[string, string]>] => [
+      sh.name,
+      [["mechanic", sh.mechanic ?? ""], ["cost", sh.cost ?? ""]],
+    ]),
+  ];
+  for (const [owner, parts] of records) {
+    const it = { name: owner };
     for (const [where, text] of parts) {
       if (!text || !NEGATIVE.test(text)) continue;
       if (QUALIFIED.test(text)) continue;
