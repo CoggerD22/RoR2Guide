@@ -656,3 +656,44 @@ test("Gnarled Woodsprite: prefab values beat the class initialisers again", () =
   expect(x.stacking.find((s) => /burst/.test(s.stat))?.base).toBe(10); // not 5
   expect(x.descriptionNote).toMatch(/Aiming at nothing is not a wasted press/);
 });
+
+/**
+ * §3j.79's lesson, made enforceable: a FALSE NEGATIVE IS A FALSE CLAIM. "This is not in the
+ * game" reads as knowledge and is published with the same authority as a traced number, but
+ * the verified/langfile split cannot catch it — it lives in prose, not in a value. Milky
+ * Chrysalis said the +20% "is not in RecalculateStats" and it was, keyed on a buff whose name
+ * (BugWings) matches neither the item nor its controller.
+ *
+ * So every negative claim has to say how far it looked. Either it is hedged to what we
+ * actually did ("we have not found"), or it states its search scope — a file, a call site
+ * count, the IL. An unqualified "X is not in the game" is not a permitted sentence.
+ */
+test("every negative claim in published prose is scoped or hedged", () => {
+  const NEGATIVE =
+    /(appears nowhere|is not in |are not in |not found|could not|cannot be found|does not appear|nowhere in|never resolve)/i;
+  // Either an admission of our own limits, or a stated scope that a reader can re-run.
+  const QUALIFIED =
+    /(we have not found|have not traced|NOT established|NOT verified|NOT resolved|NOT reconciled|at IL level|in that file|in the whole assembly|sites? in|spawn path|that coefficient|its text|in RoR2\.dll)/i;
+
+  const unscoped: string[] = [];
+  for (const it of items) {
+    const parts: Array<[string, string]> = [["descriptionNote", it.descriptionNote ?? ""]];
+    for (const st of it.stacking) parts.push([`stacking:${st.stat}`, st.formula ?? ""]);
+    for (const [where, text] of parts) {
+      if (!text || !NEGATIVE.test(text)) continue;
+      if (QUALIFIED.test(text)) continue;
+      unscoped.push(`${it.name} (${where})`);
+    }
+  }
+  expect(unscoped, unscoped.join(" | ")).toEqual([]);
+});
+
+test("Essence of Heresy's only-one-application claim carries its own evidence", () => {
+  const x = items.find((i) => i.id === "essence-of-heresy")!;
+  const r = x.stacking.find((s) => /Ruin duration/.test(s.stat))!;
+  expect(r.base).toBe(10);
+  expect(r.perStack).toBe(0);
+  // Six IL loads, one application — checkable, not asserted.
+  expect(r.formula).toMatch(/six sites/);
+  expect(r.formula).toMatch(/exactly ONE/);
+});

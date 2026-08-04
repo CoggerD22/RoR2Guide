@@ -4135,7 +4135,7 @@
         "base": 10,
         "perStack": 0,
         "type": "linear",
-        "formula": "LunarDetonatorPassiveAttachment: `AddTimedBuff(LunarDetonationCharge, 10f)` — a FLAT 10 seconds. The item count appears nowhere in that file and this is the only site that applies the buff, so the in-game description's '(+10 per stack)' is wrong: extra stacks do not lengthen Ruin, they only lengthen the cooldown. Application is also gated on the special skill having stock and rolls against `procCoefficient * 100`, so low-proc hits can fail to apply it."
+        "formula": "LunarDetonatorPassiveAttachment: `AddTimedBuff(LunarDetonationCharge, 10f)` — a FLAT 10 seconds, with no item count anywhere in that file. Checked at IL level rather than asserted: Buffs.LunarDetonationCharge is loaded at six sites in the whole assembly, and exactly ONE of them applies it — this line. The other five read GetBuffCount (Detonate, LunarDetonatorOrb), clear it (ClearTimedBuffs), or drive the visual effect. So the in-game text’s ‘(+10 per stack)’ is wrong: extra stacks do not lengthen Ruin, they only lengthen the cooldown. Application is also gated on the special skill having stock and rolls against `procCoefficient * 100`, so low-proc hits can fail to apply it."
       },
       {
         "stat": "Recharge time (s)",

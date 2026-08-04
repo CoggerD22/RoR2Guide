@@ -4102,3 +4102,49 @@ questions that had closed. Updating an assertion because the answer arrived is t
 working.
 
 Coverage 206 → **207 of 217**.
+
+### 3j.80 auditing my own negative claims, after one of them turned out to be false
+
+§3j.79 ended on a category rather than an item: **a false negative is a false claim.** Milky
+Chrysalis's record asserted the +20% "is not in `RecalculateStats`" — published with the same
+confidence as a traced number, and wrong. The `verified` / `langfile` split cannot catch that
+class, because it lives in prose rather than in a value, so nothing in this repository was
+looking at it.
+
+So I swept for the rest. Six negative claims across all 217 records:
+
+| Record | Claim | Verdict |
+|---|---|---|
+| Orphaned Core | "the per-stack scaling is NOT in that coefficient" | scoped — names where it *is* |
+| Substandard Duplicator | "appears nowhere in its text" | about the description, trivially checkable |
+| Encrusted Key | "not in the spawn path" | scoped to one path |
+| Milky Chrysalis | "we have not found where…" | already hedged after §3j.79 |
+| Molotov (6-Pack) | "a doubling we have not found" | hedged |
+| **Essence of Heresy** | **"this is the only site that applies the buff"** | **unscoped and load-bearing** |
+
+The last one is a claim about the entire assembly, and it is the justification for calling the
+game's own "(+10 per stack)" wrong. Checked at IL level, the way BugWings should have been:
+`Buffs.LunarDetonationCharge` is loaded at **six** sites, and **exactly one** applies it —
+`LunarDetonatorPassiveAttachment`'s `AddTimedBuff(..., 10f)`. The other five read
+`GetBuffCount`, call `ClearTimedBuffs`, or drive the visual effect.
+
+The claim holds. But it *held* before I checked, too, and that is the problem: I had no way to
+tell the true ones from the false one without re-deriving each. The formula now carries the
+evidence — six sites, one application — so a reader can re-run the check instead of trusting it.
+
+#### The rule
+
+A negative claim must now either **hedge to what we did** ("we have not found") or **state its
+search scope** (a file, a call-site count, the IL, a named path). An unqualified *"X is not in
+the game"* is not a permitted sentence, and a unit test walks every `formula` and
+`descriptionNote` enforcing it.
+
+Verified by injection: a `descriptionNote` reading *"This effect is not in the game code at
+all"* fails the suite by name.
+
+This is the fourth thing this session that moved from *"remember to be careful"* to *"the build
+fails"* — after the coverage ratchet, the name-collision rule, and the verified-value-vs-
+description rule. The pattern is worth stating plainly: **every discipline I have relied on
+memory for has eventually failed, and every one I turned into a check has held.** The interval
+between the Milky Chrysalis error and finding it was four passes; the interval between writing
+the name-collision rule and it catching me was ten minutes.
