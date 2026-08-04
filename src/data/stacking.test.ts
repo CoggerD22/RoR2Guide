@@ -383,12 +383,38 @@ test("Sawmerang cannot hit the same enemy twice, whatever the text says", () => 
   expect(x.confidence).toBe("langfile"); // bleed clause still untraced
 });
 
-test("Molotov's 500% is impact plus burn total, and the puddle rate is flagged", () => {
+/**
+ * Settled by resolving both hops of the child chain in-bundle — cluster -> 6 bomblets ->
+ * puddle, childrenDamageCoefficient 1 at each step, and ProjectileExplosion passes children
+ * `projectileDamage.damage * childrenDamageCoefficient`. So base damage survives intact and
+ * the puddle's `damageCoefficient = 1` at `fireFrequency = 1` is 100%/s, half what the
+ * description claims. Same method as the Encrusted Key drop table.
+ */
+test("Molotov: 500% is impact plus burn total, and the puddle is 100%/s not 200%", () => {
   const x = items.find((i) => i.id === "molotov-6-pack")!;
+  expect(x.confidence).toBe("code");
   expect(x.stacking.find((s) => /Bomblets/.test(s.stat))?.base).toBe(6);
   expect(x.stacking.find((s) => /Impact damage/.test(s.stat))?.base).toBe(250);
   expect(x.stacking.find((s) => /Burn total/.test(s.stat))?.base).toBe(250);
-  expect(x.descriptionNote).toMatch(/NOT verified/);
+  const puddle = x.stacking.find((s) => /puddle damage/i.test(s.stat))!;
+  expect(puddle.base).toBe(100); // the game's text says 200
+  expect(puddle.formula).toMatch(/nothing here is\s+inferred|nothing here is inferred/);
+  expect(x.descriptionNote).toMatch(/twice what the game does/);
+});
+
+/**
+ * Sawmerang is the counter-example held one step short: the contact rate is computed from
+ * verified fields, but which clause of the description it answers is not established, so it
+ * is NOT published as a correction. What IS published is a clean negative — the prefab's
+ * damageType is entirely empty, so the item applies no bleed at all.
+ */
+test("Sawmerang applies no bleed, and its contact rate stays unattributed", () => {
+  const x = items.find((i) => i.id === "sawmerang")!;
+  expect(x.confidence).toBe("langfile");
+  const bleed = x.stacking.find((s) => /Bleed applied/.test(s.stat))!;
+  expect(bleed.base).toBe(0);
+  expect(bleed.formula).toMatch(/damageType/);
+  expect(x.stacking.find((s) => /Blade contact/.test(s.stat))?.formula).toMatch(/NOT reconciled/);
 });
 
 /**

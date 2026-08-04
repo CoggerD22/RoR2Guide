@@ -4190,3 +4190,56 @@ wrongly and gets *worked around*.
 No coverage change: 207 of 217. This pass tightened a boundary and repaired a rule rather than
 verifying a new item, which is the correct trade when the alternative is a record that reads
 more confident than the search behind it.
+
+### 3j.82 Molotov's puddle is half what its tooltip says; Sawmerang applies no bleed at all
+
+The technique that settled Encrusted Key — **resolve every pointer in-bundle, infer nothing** —
+settles Molotov too, and it is worth noticing that this open question had been recorded as
+unresolvable-for-now for three passes.
+
+```
+MolotovClusterProjectile --childrenCount 6, coeff 1.0--> MolotovSingleProjectile
+MolotovSingleProjectile  --childrenCount 1, coeff 1.0--> MolotovProjectileDotZone
+```
+
+Both hops resolve **inside the item's own bundle**. `ProjectileExplosion` passes children
+`projectileDamage.damage * childrenDamageCoefficient`, so with a coefficient of 1 at each hop
+the puddle's `projectileDamage.damage` is exactly your base damage. `ProjectileDotZone` then
+does `attack.damage = damageCoefficient * projectileDamage.damage` — coefficient **1**, at
+`fireFrequency = 1`.
+
+**100% per second. The description says 200%.**
+
+No step in the chain doubles anything, and every link was read rather than assumed. That is the
+second place this project has caught the game's own tooltip being wrong by a clean factor, and
+the second time the proof came from following pointers instead of arguing about coefficients.
+
+The other half of the item resolves cleanly too: the stated "500% base damage" is a **sum** —
+250% impact plus a 250% burn *total* — because `ProjectileExplosion` treats
+`calculateTotalDamage` as a total rather than a rate. Right number, composite meaning.
+
+#### Sawmerang: a clean negative and a deliberate refusal
+
+Same session, same tools, and I did **not** correct it — which is the point of recording both
+together.
+
+The verified part is a good fact: the prefab's `ProjectileDamage.damageType` is
+`{ damageType: 0, damageTypeExtended: 0, damageSource: 0 }` — **completely empty**. Sawmerang
+applies **no bleed**. Its description says "plus 3x100% per second **while bleeding**", and
+there is no bleed: the sustained damage is a `ProjectileDotZone`, and nothing the item does
+would register with a bleed-synergy build. A player reading that clause and stacking Tri-Tip
+Daggers is building on a word, not a mechanic.
+
+The unverified part stays unverified. That dot zone is `damageCoefficient = 0.2` at
+`fireFrequency = 30` with `resetFrequency = 10`, and since the reset cadence caps re-hits the
+arithmetic is 10 × 20% = **200% per second per saw** — against a stated 100%. Every one of
+those fields is read from the prefab. What I cannot establish is that this component is what
+the description's clause refers to, and "my number is double theirs" is not evidence when the
+two might be counting different things.
+
+So: Molotov corrected, Sawmerang not, on the same day with the same technique. The difference
+is not confidence in the arithmetic — both are solid — it is whether the chain from the game's
+sentence to the game's field is closed. Molotov's is. Sawmerang's has a gap I can name, which
+is exactly why it does not get a number changed.
+
+Coverage 207 → **208 of 217**.
