@@ -881,6 +881,13 @@
         "perStack": 1,
         "type": "linear",
         "formula": "SceneDirector counts PLAYERS holding at least one key — `GetItemCountEffective(TreasureCache) > 0` increments a counter once per player — and spawns that many lockboxes. Extra keys therefore do NOT add lockboxes to a stage. Opening one costs a key (CostTypeIndex.TreasureCacheItem transforms it to ItemIndex.None), so N keys buys N openings across a run at one cache per stage."
+      },
+      {
+        "stat": "Uncommon chance (%)",
+        "base": 80,
+        "perStack": 0,
+        "type": "none",
+        "formula": "dtLockbox, in the item's own bundle (ror2-base-treasurecache): tier2Weight = 4, tier3Weight = 1, every other weight 0. 4/(4+1) = 80% uncommon and 1/5 = 20% legendary — the description's split is exact, and no white item can ever drop."
       }
     ],
     "tags": [
@@ -890,7 +897,7 @@
     "icon": "/icons/rusted-key.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Rusted_Key",
     "verified": true,
-    "confidence": "langfile",
+    "confidence": "code",
     "unlock": {
       "challenge": "Keyed Up",
       "requirement": "Defeat the Teleporter boss under 15 seconds."
@@ -4586,6 +4593,13 @@
         "perStack": 1,
         "type": "linear",
         "formula": "SceneDirector counts PLAYERS holding at least one key — `GetItemCountEffective(TreasureCacheVoid) > 0` increments once per player — and spawns that many void caches, exactly as Rusted Key does. Extra keys add no caches to a stage, and opening one consumes a key. NOT verified: this row previously claimed additional keys raise the cache's item rarity. That claim is not in the spawn path and was never sourced; it is removed rather than restated, since a formula field is read as provenance."
+      },
+      {
+        "stat": "Void cache drop weights",
+        "base": 5,
+        "perStack": 0,
+        "type": "none",
+        "formula": "dtVoidLockbox, in the item's own bundle (ror2-dlc1-treasurecachevoid): voidTier1Weight = 5, voidTier2Weight = 5, voidTier3Weight = 2 — a 41.7 / 41.7 / 16.7 split. NOT reconciled: the description states 60/30/10, which is exactly the 6 / 3 / 1 of dtVoidChest, the generic void-chest table in ror2-base-common. Either the cache reads that shared table instead of the one shipped beside it, or the description is stale. The same extraction on Rusted Key's table matches its description to the digit, so the method is not the problem — this specific attribution is. Left as the game states it."
       }
     ],
     "tags": [
@@ -5123,7 +5137,29 @@
     "dlc": "base",
     "pickupText": "Heal over time. Activate to send to an ally.",
     "description": "Gain a Woodsprite follower that heals for 1.5% of your maximum health per second. Can be sent to an ally to heal them for 10% of their maximum health. Cooldown: 15s.",
-    "stacking": [],
+    "stacking": [
+      {
+        "stat": "Passive healing (% of max health per second)",
+        "base": 1.5,
+        "perStack": 0,
+        "type": "none",
+        "formula": "HealingFollower prefab: fractionHealthHealing = 0.015 on a healingInterval of 1. Note the C# field's own initialiser is 0.01 — the serialized value is what the game uses, and only it agrees with the description's 1.5%."
+      },
+      {
+        "stat": "Send-to-ally burst (% of their max health)",
+        "base": 10,
+        "perStack": 0,
+        "type": "none",
+        "formula": "Two paths, same figure: FirePassiveHealing calls `HealFraction(0.1f)` on the target directly, and the prefab carries fractionHealthBurst = 0.1. Here too the class initialiser (0.05) disagrees with both, and the prefab is right."
+      },
+      {
+        "stat": "Sprite reassignment",
+        "base": 1,
+        "perStack": 0,
+        "type": "none",
+        "formula": "`passiveHealingFollower.AssignNewTarget(currentTarget.rootObject)` — using it does not summon anything, it retargets the follower you already have. With no ally targeted the handler falls back to `this.characterBody`, so pressing it while aiming at nothing bursts YOU for 10% and leaves the sprite where it was."
+      }
+    ],
     "tags": [
       "healing",
       "equipment"
@@ -5131,13 +5167,14 @@
     "icon": "/icons/gnarled-woodsprite.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Gnarled_Woodsprite",
     "verified": true,
-    "confidence": "langfile",
+    "confidence": "code",
     "unlock": {
       "challenge": "One with the Woods",
       "requirement": "Fully upgrade a Shrine of the Woods."
     },
     "cooldown": 15,
-    "activated": true
+    "activated": true,
+    "descriptionNote": "Aiming at nothing is not a wasted press: FirePassiveHealing falls back to your own body, so you get the 10% burst yourself. Sending the sprite away also moves its passive 1.5%/s to that ally — the two effects are the same sprite, not separate ones."
   },
   {
     "id": "primordial-cube",

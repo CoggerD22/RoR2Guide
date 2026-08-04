@@ -610,3 +610,33 @@ test("Electric Boomerang's 15% chance does not scale with stacks", () => {
   expect(x.confidence).toBe("langfile");
   expect(x.stacking.find((s) => /Impact damage/.test(s.stat))?.formula).toMatch(/NOT resolved/);
 });
+
+/**
+ * The two keys are the same extraction producing opposite verdicts, which is why both are
+ * worth pinning: Rusted Key's own-bundle drop table reproduces its description exactly, and
+ * Encrusted Key's does not. One method, one match, one mismatch — so the mismatch is about
+ * that attribution, not about the technique.
+ */
+test("Rusted Key's 80/20 comes from dtLockbox in its own bundle", () => {
+  const x = items.find((i) => i.id === "rusted-key")!;
+  expect(x.confidence).toBe("code");
+  const drop = x.stacking.find((s) => /Uncommon chance/.test(s.stat))!;
+  expect(drop.base).toBe(80); // tier2Weight 4 : tier3Weight 1
+  expect(drop.formula).toMatch(/ror2-base-treasurecache/);
+});
+
+test("Encrusted Key records the mismatch rather than picking a side", () => {
+  const x = items.find((i) => i.id === "encrusted-key")!;
+  expect(x.confidence).toBe("langfile"); // deliberately not upgraded
+  const drop = x.stacking.find((s) => /drop weights/.test(s.stat))!;
+  expect(drop.formula).toMatch(/NOT reconciled/);
+  expect(drop.formula).toMatch(/dtVoidChest/); // names the table that DOES match the text
+});
+
+test("Gnarled Woodsprite: prefab values beat the class initialisers again", () => {
+  const x = items.find((i) => i.id === "gnarled-woodsprite")!;
+  expect(x.confidence).toBe("code");
+  expect(x.stacking.find((s) => /Passive healing/.test(s.stat))?.base).toBe(1.5); // not 1.0
+  expect(x.stacking.find((s) => /burst/.test(s.stat))?.base).toBe(10); // not 5
+  expect(x.descriptionNote).toMatch(/Aiming at nothing is not a wasted press/);
+});

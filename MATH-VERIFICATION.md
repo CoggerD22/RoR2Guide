@@ -3993,3 +3993,52 @@ figures. A 4% gap is small enough to be a rounding convention and large enough n
 and I still cannot tell which of the two stated 120% figures the 3.1 component produces. The
 item stays `langfile` with the arithmetic written down, which is a better open question than
 the one it replaced.
+
+### 3j.78 one extraction, two verdicts — Rusted Key matches its text, Encrusted Key does not
+
+**Gnarled Woodsprite** first, and it is the third time a prefab value has overruled its own
+class initialiser. `HealingFollowerController` declares `fractionHealthHealing = 0.01f` and
+`fractionHealthBurst = 0.05f`; the `HealingFollower` prefab serializes **0.015** and **0.10**,
+and only those agree with the game's text (1.5% per second, 10% burst). Reading the class
+would have produced *two* numbers that contradict the description at once.
+
+Also verified, and genuinely useful: using it does not summon anything —
+`passiveHealingFollower.AssignNewTarget(...)` retargets the sprite you already have — and with
+nothing aimed at, `FirePassiveHealing` falls back to `this.characterBody`, so **pressing it at
+nothing bursts you for 10%** rather than wasting the cooldown.
+
+#### The keys: the same method, one match and one mismatch
+
+Both keys' *spawn* logic was already code-verified; what was not was the drop split each
+description advertises. Both tables were found in the items' **own** bundles:
+
+| Table | Bundle | Weights | Implies |
+|---|---|---|---|
+| `dtLockbox` | `ror2-base-**treasurecache**` | tier2 **4**, tier3 **1** | **80% / 20%** |
+| `dtVoidLockbox` | `ror2-dlc1-**treasurecachevoid**` | void 1/2/3 = **5 / 5 / 2** | **41.7 / 41.7 / 16.7** |
+
+Rusted Key's description says 80% / 20%. **Exact.** Upgraded to code-verified, with the extra
+fact that its `tier1Weight` is 0, so a lockbox can never give a white item.
+
+Encrusted Key's description says **60 / 30 / 10**, and its own bundle's table says
+41.7 / 41.7 / 16.7. The stated split is instead exactly the **6 / 3 / 1** of `dtVoidChest` —
+the generic void-chest table in `ror2-base-common`. So either the cache reads that shared table
+rather than the one shipped beside it, or the description is stale.
+
+I did not pick. The record now names **both tables, both weight sets, and the exact
+arithmetic**, and stays `langfile`. What makes this worth writing down rather than shrugging at
+is that the *same extraction, on the same kind of asset, in the same run* reproduced Rusted
+Key's description to the digit. The method is not in question, so the mismatch is about this
+one attribution — which is a far sharper open question than "not verified", and the next person
+can settle it by finding the single reference from the void cache prefab to its drop table.
+
+#### A test that had quietly become ambiguous
+
+The §6B.3 test asserting untraced items show the amber banner started failing — not because
+the banner vanished, but **strict-mode violation: two matches**. Electric Boomerang's own
+formula now contains the phrase *"NOT yet code-verified"* about one of its figures, so
+`/not yet code-verified/i` matched the banner and the data. The assertion now matches the
+banner's full sentence. A test that greps for a phrase the content is allowed to contain is a
+test that will eventually lie in one direction or the other.
+
+Coverage 204 → **206 of 217**.

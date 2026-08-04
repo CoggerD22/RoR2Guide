@@ -153,7 +153,11 @@ test("unverified stacking data is labelled as such, verified data is not", async
   const langfile = itemWithConfidence("langfile");
   await page.goto(`/items/${langfile.id}`);
   const unverified = page.getByRole("dialog", { name: langfile.name });
-  await expect(unverified.getByText(/not yet code-verified/i)).toBeVisible();
+  // Match the banner's own sentence, not the phrase: a formula may legitimately say
+  // "NOT yet code-verified" about one of its own figures, and that used to collide here.
+  await expect(
+    unverified.getByText(/Numbers below are not yet code-verified/i),
+  ).toBeVisible();
 
   // A code-verified item carries no such warning — the distinction has to be visible,
   // otherwise the label is decoration rather than information.
@@ -161,7 +165,7 @@ test("unverified stacking data is labelled as such, verified data is not", async
   await page.goto(`/items/${coded.id}`);
   const verified = page.getByRole("dialog", { name: coded.name });
   await expect(verified.getByText("Code-verified")).toBeVisible();
-  await expect(verified.getByText(/not yet code-verified/i)).toHaveCount(0);
+  await expect(verified.getByText(/Numbers below are not yet code-verified/i)).toHaveCount(0);
 
   // The coverage gap is published rather than left implicit.
   await expect(page.getByText(/traced to the game's code or assets/i)).toBeVisible();
