@@ -306,11 +306,20 @@ test("Forgive Me Please only ticks while the doll is stuck", () => {
  * description's flat "+20% movement speed" is nowhere in JetpackController or
  * RecalculateStats. It stays langfile because a partly-traced item is not a traced one.
  */
-test("Milky Chrysalis records what was traced and does not claim the rest", () => {
+/**
+ * An earlier pass recorded that the +20% "appears nowhere in JetpackController and is not in
+ * RecalculateStats". The second half was wrong: it is there, keyed on Buffs.BugWings, whose
+ * name resembles neither the item nor the controller. The claim is now split — effect and
+ * magnitude verified, application site still open.
+ */
+test("Milky Chrysalis: the +20% is verified as an effect, not as a trigger", () => {
   const x = items.find((i) => i.id === "milky-chrysalis")!;
-  expect(x.confidence).toBe("langfile");
+  expect(x.confidence).toBe("langfile"); // still, because the trigger is unfound
   expect(x.stacking.find((s) => /Flight duration/.test(s.stat))?.base).toBe(15);
-  expect(x.descriptionNote).toMatch(/NOT verified/);
+  const ms = x.stacking.find((s) => /Movement speed/.test(s.stat))!;
+  expect(ms.base).toBe(20);
+  expect(ms.formula).toMatch(/BugWings/);
+  expect(ms.formula).toMatch(/NOT established/);
 });
 
 /**
@@ -625,12 +634,19 @@ test("Rusted Key's 80/20 comes from dtLockbox in its own bundle", () => {
   expect(drop.formula).toMatch(/ror2-base-treasurecache/);
 });
 
-test("Encrusted Key records the mismatch rather than picking a side", () => {
+/**
+ * Settled by resolving the cache prefab's own `dropTable` pointer in-bundle: LockboxVoid
+ * points at dtVoidLockbox (5:5:2), not at the dtVoidChest (6:3:1) its description's numbers
+ * come from. One of the few places the game's own text is demonstrably wrong.
+ */
+test("Encrusted Key: the description contradicts the table its cache actually reads", () => {
   const x = items.find((i) => i.id === "encrusted-key")!;
-  expect(x.confidence).toBe("langfile"); // deliberately not upgraded
-  const drop = x.stacking.find((s) => /drop weights/.test(s.stat))!;
-  expect(drop.formula).toMatch(/NOT reconciled/);
-  expect(drop.formula).toMatch(/dtVoidChest/); // names the table that DOES match the text
+  expect(x.confidence).toBe("code");
+  const drop = x.stacking.find((s) => /drop split/.test(s.stat))!;
+  expect(drop.base).toBeCloseTo(41.7, 1); // 5/12, not the stated 60%
+  expect(drop.formula).toMatch(/dtVoidLockbox/);
+  expect(drop.formula).toMatch(/dtVoidChest/); // the table the text's numbers belong to
+  expect(x.descriptionNote).toMatch(/The game's own text is wrong here/);
 });
 
 test("Gnarled Woodsprite: prefab values beat the class initialisers again", () => {

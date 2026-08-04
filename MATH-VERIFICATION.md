@@ -4042,3 +4042,63 @@ banner's full sentence. A test that greps for a phrase the content is allowed to
 test that will eventually lie in one direction or the other.
 
 Coverage 204 → **206 of 217**.
+
+### 3j.79 the game's own description is wrong about Encrusted Key — and I was wrong about Milky Chrysalis
+
+Last pass ended by naming exactly how the Encrusted Key question could be settled: *"find the
+single reference from the void cache prefab to its drop table."* Doing that took one probe.
+
+```
+[Lockbox]      dropTable -> dtLockbox
+[LockboxVoid]  dropTable -> dtVoidLockbox
+```
+
+Both pointers resolve **inside their own bundles**, so there is no `m_FileID` wall and no
+inference. The void cache reads `dtVoidLockbox` — `voidTier1/2/3 = 5 / 5 / 2`, i.e.
+**41.7% / 41.7% / 16.7%**. Its description advertises **60 / 30 / 10**, which is the `6 / 3 / 1`
+of `dtVoidChest`, a table this prefab does not point at.
+
+So the game's own text is wrong, and now demonstrably: not "our number disagrees with theirs",
+but "the prefab's own pointer resolves to a table whose weights are not the ones the tooltip
+prints." That is about as strong as this project's evidence ever gets, and it is worth
+contrasting with the four places this session where a *seeming* contradiction turned out to be
+mine — Aurelionite's 0.1 and 1.0 (multiplied later by 1.5), Molotov's 2.5 (a DoT total, not a
+rate), Of One Mind's 10f (overwritten by the prefab), and the wrong-branch reads in §3j.71 and
+§3j.75. Four false alarms before one real one is the right ratio to expect, and the reason the
+rule is "prove it, then correct it."
+
+Rusted Key's pointer resolves the same way to `dtLockbox` (4 : 1 = **80 / 20**), matching its
+description exactly. Same technique, same run, opposite verdict.
+
+#### And a negative claim of mine that was false
+
+Milky Chrysalis's record said the description's "+20% movement speed" *"appears nowhere in
+`JetpackController` and is not in `RecalculateStats`."* The second half was **wrong**:
+
+```csharp
+if (HasBuff(RoR2Content.Buffs.BugWings)) num98 += 0.2f;
+```
+
+It is there — additive into the same movement pool as Paul's Goat Hoof — and the BuffDef
+(`bdBugWings`) ships in the item's own bundle. I missed it because I searched
+`RecalculateStats` for "Jetpack" and "flight" and the buff is called **BugWings**, which
+resembles neither the item's display name nor its controller's. The name-collision problem
+wearing its other face: not two things sharing a name, but one thing whose name matches nothing
+you would think to search for.
+
+What is still open is narrower and stated as such: **where the buff is applied.** The
+equipment's `passiveBuffDef` is null, `JetpackController` never calls `AddBuff`, and at IL
+level `Buffs.BugWings` is loaded exactly once in the whole assembly — the read above. Effect
+and magnitude verified; trigger unfound. The item stays `langfile` on that basis, which is a
+much smaller gap than the one it replaced.
+
+**A false negative is a false claim.** "This is not in the game" reads as knowledge and was
+published with the same confidence as the things I had actually traced. It is the one category
+of error the `verified`/`langfile` split does not protect against, because it lives in the
+prose rather than in a number.
+
+Two of last pass's tests failed on this work, both correctly — they were guarding open
+questions that had closed. Updating an assertion because the answer arrived is the system
+working.
+
+Coverage 206 → **207 of 217**.

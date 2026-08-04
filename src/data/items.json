@@ -887,7 +887,7 @@
         "base": 80,
         "perStack": 0,
         "type": "none",
-        "formula": "dtLockbox, in the item's own bundle (ror2-base-treasurecache): tier2Weight = 4, tier3Weight = 1, every other weight 0. 4/(4+1) = 80% uncommon and 1/5 = 20% legendary — the description's split is exact, and no white item can ever drop."
+        "formula": "The Lockbox prefab's own `dropTable` pointer resolves in-bundle to dtLockbox (ror2-base-treasurecache): tier2Weight = 4, tier3Weight = 1, every other weight 0. 4/5 = 80% uncommon, 1/5 = 20% legendary — the description is exact — and tier1Weight 0 means a lockbox can never give a white item."
       }
     ],
     "tags": [
@@ -4595,11 +4595,11 @@
         "formula": "SceneDirector counts PLAYERS holding at least one key — `GetItemCountEffective(TreasureCacheVoid) > 0` increments once per player — and spawns that many void caches, exactly as Rusted Key does. Extra keys add no caches to a stage, and opening one consumes a key. NOT verified: this row previously claimed additional keys raise the cache's item rarity. That claim is not in the spawn path and was never sourced; it is removed rather than restated, since a formula field is read as provenance."
       },
       {
-        "stat": "Void cache drop weights",
-        "base": 5,
+        "stat": "Void cache drop split (% common / uncommon / legendary)",
+        "base": 41.7,
         "perStack": 0,
         "type": "none",
-        "formula": "dtVoidLockbox, in the item's own bundle (ror2-dlc1-treasurecachevoid): voidTier1Weight = 5, voidTier2Weight = 5, voidTier3Weight = 2 — a 41.7 / 41.7 / 16.7 split. NOT reconciled: the description states 60/30/10, which is exactly the 6 / 3 / 1 of dtVoidChest, the generic void-chest table in ror2-base-common. Either the cache reads that shared table instead of the one shipped beside it, or the description is stale. The same extraction on Rusted Key's table matches its description to the digit, so the method is not the problem — this specific attribution is. Left as the game states it."
+        "formula": "The LockboxVoid prefab's `dropTable` pointer resolves in-bundle to dtVoidLockbox (ror2-dlc1-treasurecachevoid): voidTier1Weight = 5, voidTier2Weight = 5, voidTier3Weight = 2. That is 5/12, 5/12 and 2/12 — 41.7% void common, 41.7% void uncommon, 16.7% void legendary. The description's 60/30/10 is the 6/3/1 of dtVoidChest, a different table in ror2-base-common that this prefab does not point at."
       }
     ],
     "tags": [
@@ -4611,8 +4611,8 @@
     "icon": "/icons/encrusted-key.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Encrusted_Key",
     "verified": true,
-    "confidence": "langfile",
-    "descriptionNote": "Stacking does not spawn more caches. One void cache spawns per player holding any Encrusted Key, and opening it consumes one key — so a second key is a second opening on a later stage. Whether extra keys improve the cache's contents is not something we have verified either way."
+    "confidence": "code",
+    "descriptionNote": "The game's own text is wrong here. It advertises 60%/30%/10%, but the void cache reads dtVoidLockbox, whose weights are 5:5:2 — an even split between void common and void uncommon at 41.7% each, and 16.7% legendary. The stated numbers match a different drop table (the generic void chest's 6:3:1) that this cache does not use. Stacking still does not spawn more caches: one spawns per player holding any Encrusted Key, and opening it consumes one key."
   },
   {
     "id": "plasma-shrimp",
@@ -5114,6 +5114,13 @@
         "perStack": 0,
         "type": "none",
         "formula": "boostSpeedMultiplier = 3 on a boostCooldown of 0.5s: pressing jump WHILE MOVING sets velocity to moveVector x (moveSpeed x 3). It is a burst on a half-second timer, not a sustained speed increase."
+      },
+      {
+        "stat": "Movement speed while winged (%)",
+        "base": 20,
+        "perStack": 0,
+        "type": "none",
+        "formula": "RecalculateStats: `if (HasBuff(RoR2Content.Buffs.BugWings)) num98 += 0.2f` — additive into the same movement pool as Paul's Goat Hoof, not a separate multiplier. The BuffDef (bdBugWings) ships in this item's own bundle, ror2-base-jetpack. NOT established: where the buff is APPLIED. The equipment's passiveBuffDef is null, JetpackController never calls AddBuff, and `Buffs.BugWings` is read exactly once in all of RoR2.dll (at IL level) — the read above. So the effect and its magnitude are verified; the trigger is not, and the safe reading is that it is active while the wings are."
       }
     ],
     "tags": [
@@ -5128,7 +5135,7 @@
     "confidence": "langfile",
     "cooldown": 60,
     "activated": true,
-    "descriptionNote": "The flight itself is a 15s window with a x3 dash on jump every 0.5s, and it ends with your fall speed clamped rather than dropping you. NOT verified: the description's flat '+20% movement speed' appears nowhere in JetpackController and is not in RecalculateStats — we have not traced where, or whether, it is applied, so it is left stated as the game states it and not claimed here."
+    "descriptionNote": "The flight is a 15s window with a x3 dash on jump every 0.5s, and it ends with your fall speed clamped to -5 rather than dropping you. The +20% movement speed is real and is additive with your other movement items — `Buffs.BugWings` adds 0.2 to the same pool — though we have not found where the game applies that buff, only where it reads it."
   },
   {
     "id": "gnarled-woodsprite",
