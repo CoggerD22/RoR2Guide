@@ -4292,3 +4292,58 @@ model that has never been checked in the regime it is being applied to cannot �
 arithmetic is clean, and even when it is the third time in a row it has disagreed.
 
 Coverage unchanged at 208 of 217; the count is not what moved.
+
+### 3j.84 the dot-zone model, read instead of argued — and the reason for holding back changes
+
+§3j.83 held two items back because our reading of `ProjectileDotZone`'s fire/reset pair was
+"confirmed only where `fireFrequency < resetFrequency`". That was the wrong reason, and the way
+to find out was to stop reasoning about the model and read it.
+
+`OverlapAttack`:
+
+```csharp
+if (ignoredHealthComponentList.Contains(hurtBox.healthComponent)) return false;   // Fire()
+...
+public void addIgnoredHitList(HealthComponent component) { … ignoredHealthComponentList.Add(component); }
+public void ResetIgnoredHealthComponents() { ignoredHealthComponentList.Clear(); … }
+```
+
+And `ProjectileDotZone.ResetOverlap()` does not clear the list — it **constructs a brand-new
+`OverlapAttack`**, so the ignore list is discarded wholesale and `retriggerTimeout` (default
+`+infinity`, the only thing that could expire entries on its own) never comes into play.
+
+So the effective hit rate on a single target is **`min(fireFrequency, resetFrequency)`**,
+**unconditionally**. The ratio between them changes the answer but not the mechanism, and the
+"untested direction" caveat was describing a limit in my reasoning, not in the code.
+
+#### Which leaves a better reason, and it is not a smaller one
+
+With the model settled, the numbers are: Sawmerang **200% per second per saw** (stated 100%),
+Electric Boomerang **400% per stack per second** (stated 120%). Neither was corrected, and the
+tell is inside Electric Boomerang itself:
+
+| Component | Computed | Stated | Ratio |
+|---|---|---|---|
+| Slice (`ProjectileOverlapAttack`) | `3.1 × 0.4n` = **124%** | 120% | **1.03** |
+| Lingering (`ProjectileDotZone`) | `10 × 0.4n` = **400%** | 120% | **3.33** |
+
+Both figures derive from the *same* fired `projectileDamage.damage`. They cannot both be
+compared against the same description unless the two clauses measure different things — and the
+one that lines up almost exactly is the one measuring a **single event**, while the one that is
+wildly off is measuring a **rate**.
+
+That points at the answer: these are instantaneous rates *while the target is inside the
+hitbox*, and a boomerang in flight overlaps an enemy for a fraction of a second, not a whole
+one. The description's "per second" is plausibly describing a pass. Without a contact duration
+the two quantities are not comparable, and a factor-of-3.33 disagreement between
+non-comparable quantities is not evidence of anything.
+
+Recorded on both items, with the model's derivation, so the next person starts from "we need
+the contact duration" rather than re-deriving the ignore list.
+
+#### The shape of the last three passes
+
+Molotov moved because a chain of pointers closed. Encrusted Key moved because a pointer
+resolved in-bundle. These two did not move, twice, for two *different* reasons — and the second
+reason only became visible after removing the first. **Being wrong about why you are uncertain
+is its own kind of error**, and it is invisible while the conclusion happens to be right.

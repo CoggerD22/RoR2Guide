@@ -414,7 +414,9 @@ test("Sawmerang applies no bleed, and its contact rate stays unattributed", () =
   const bleed = x.stacking.find((s) => /Bleed applied/.test(s.stat))!;
   expect(bleed.base).toBe(0);
   expect(bleed.formula).toMatch(/damageType/);
-  expect(x.stacking.find((s) => /Blade contact/.test(s.stat))?.formula).toMatch(/NOT reconciled/);
+  expect(x.stacking.find((s) => /Blade contact/.test(s.stat))?.formula).toMatch(
+    /not comparable without a contact duration/,
+  );
 });
 
 /**
@@ -756,9 +758,15 @@ test("dot-zone-derived corrections exist only where the model was confirmed", ()
     const x = items.find((i) => i.id === id)!;
     expect(x.confidence, id).toBe("langfile"); // fire 30 > reset 10 — untested direction
   }
-  expect(
-    items.find((i) => i.id === "electric-boomerang")!.stacking.find((s) =>
-      /Impact damage/.test(s.stat),
-    )!.formula,
-  ).toMatch(/untested direction/);
+  // The reason changed and is worth pinning, because the first one is now wrong: the model
+  // is READ, not inferred, and holds in both regimes. What blocks a correction is that the
+  // figure is an instantaneous rate while inside the hitbox, and a projectile in flight does
+  // not stay inside anything for a second — so it is not comparable to a "per second" claim.
+  for (const id of ["sawmerang", "electric-boomerang"]) {
+    const x = items.find((i) => i.id === id)!;
+    const dot = x.stacking.find((s) => /contact|over time/i.test(s.stat))!;
+    expect(dot.formula, id).toMatch(/read rather than inferred/);
+    expect(dot.formula, id).toMatch(/INSIDE THE HITBOX/);
+    expect(dot.formula, id).toMatch(/min\(fireFrequency, resetFrequency\)/);
+  }
 });
