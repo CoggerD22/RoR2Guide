@@ -191,14 +191,22 @@ function main(): number {
       // substring of a display name we deliberately wrote fires a false positive — naming
       // "Tri-Tip Dagger" tripped the rule for Ceremonial Dagger, whose cachedName is
       // "Dagger". Searching the remainder means only unlabelled references survive.
-      let stripped = prose;
+      // Apostrophes are normalised first. Writing "Paul’s Goat Hoof" with a typographic
+      // quote left the straight-quoted display name unmatched, so the strip missed it and
+      // "Hoof" was reported as an unlabelled reference to Paul's Goat Hoof — a false
+      // positive produced purely by punctuation. The dataset uses straight quotes; prose
+      // written by hand does not always.
+      const flat = (s: string) => s.replace(/[‘’ʼ]/g, "'").replace(/[“”]/g, '"');
+      const flatProse = flat(prose);
+      let stripped = flatProse;
       for (const display of [...ours].sort((a, b) => b.length - a.length)) {
-        if (stripped.includes(display)) stripped = stripped.split(display).join(" ");
+        const d = flat(display);
+        if (stripped.includes(d)) stripped = stripped.split(d).join(" ");
       }
       for (const [cachedName, display] of byCachedName) {
         if (display === it.name) continue;
         if (!new RegExp(`\\b${cachedName}\\b`).test(stripped)) continue;
-        if (prose.includes(display)) continue; // deliberate, and labelled
+        if (flatProse.includes(flat(display))) continue; // deliberate, and labelled
         errors.push(
           `${it.name}: cites the internal name "${cachedName}", which belongs to ` +
             `"${display}" — either this is the wrong item's mechanic, or name "${display}" ` +

@@ -5120,7 +5120,7 @@
         "base": 20,
         "perStack": 0,
         "type": "none",
-        "formula": "RecalculateStats: `if (HasBuff(RoR2Content.Buffs.BugWings)) num98 += 0.2f` — additive into the same movement pool as Paul's Goat Hoof, not a separate multiplier. The BuffDef (bdBugWings) ships in this item's own bundle, ror2-base-jetpack. NOT established: where the buff is APPLIED. The equipment's passiveBuffDef is null, JetpackController never calls AddBuff, and `Buffs.BugWings` is read exactly once in all of RoR2.dll (at IL level) — the read above. So the effect and its magnitude are verified; the trigger is not, and the safe reading is that it is active while the wings are."
+        "formula": "RecalculateStats: `if (HasBuff(RoR2Content.Buffs.BugWings)) num98 += 0.2f` — additive into the same movement pool as Paul’s Goat Hoof, not a separate multiplier. So IF the buff is active the +20% is exact. What we could not establish is that anything applies it: Buffs.BugWings is loaded once in the whole assembly at IL level (that read), the equipment’s passiveBuffDef is null, JetpackController never calls AddBuff, and a reference scan over this item’s own bundle finds NOTHING pointing at the bdBugWings asset that ships there. Any application would have to be cross-bundle or outside RoR2.dll, which this tooling cannot follow — so the magnitude is verified and the trigger is not."
       }
     ],
     "tags": [

@@ -319,7 +319,12 @@ test("Milky Chrysalis: the +20% is verified as an effect, not as a trigger", () 
   const ms = x.stacking.find((s) => /Movement speed/.test(s.stat))!;
   expect(ms.base).toBe(20);
   expect(ms.formula).toMatch(/BugWings/);
-  expect(ms.formula).toMatch(/NOT established/);
+  // The boundary is now scoped three ways: the assembly, the equipment def, and the
+  // item's own bundle. All three came back empty, so the trigger is genuinely unfound
+  // rather than unsearched.
+  expect(ms.formula).toMatch(/could not establish/);
+  expect(ms.formula).toMatch(/at IL level/);
+  expect(ms.formula).toMatch(/own bundle/);
 });
 
 /**

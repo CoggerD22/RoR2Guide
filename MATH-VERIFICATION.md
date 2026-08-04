@@ -4148,3 +4148,45 @@ description rule. The pattern is worth stating plainly: **every discipline I hav
 memory for has eventually failed, and every one I turned into a check has held.** The interval
 between the Milky Chrysalis error and finding it was four passes; the interval between writing
 the name-collision rule and it catching me was ten minutes.
+
+### 3j.81 the Milky Chrysalis boundary, scoped three ways — and an apostrophe that broke a rule
+
+Two passes ago Milky Chrysalis's `+20%` was "not in `RecalculateStats`" (false). One pass ago
+it was "we have not found where the buff is applied" (true but vague). Now it is bounded:
+
+- **The assembly.** `Buffs.BugWings` is loaded **once** in all of `RoR2.dll` at IL level — the
+  `RecalculateStats` read itself. Nothing calls `AddBuff` with it.
+- **The equipment.** `Jetpack`'s `passiveBuffDef` resolves to `{fileID: 0, pathID: 0}` — null.
+  So it is not the standard equipment-passive mechanism.
+- **The item's own bundle.** A reference scan over every `PPtr` in `ror2-base-jetpack`, at any
+  depth, finds **nothing pointing at the `bdBugWings` asset that ships there.**
+
+Three searches, three empty results, each named. Any application would have to be cross-bundle
+(where `m_FileID != 0` makes the pointer unresolvable in this direction) or outside the
+assembly, and this tooling cannot follow either. So: **magnitude verified, trigger unfound**,
+and the record says which searches were run rather than implying the game lacks the mechanism.
+
+That is the shape §3j.80's rule was written to force, and this is the first record written
+under it.
+
+#### An apostrophe defeated the name-collision rule
+
+Writing the above, I described the pool as "additive with **Paul's Goat Hoof**" — using a
+typographic apostrophe. The dataset's display name uses a straight one. The strip step
+therefore did not match, `Hoof` survived into the residue, and the §3j.77 rule reported an
+unlabelled reference to an item I had just named.
+
+The rule was right to fire and wrong about why, which is the worst kind of check: it would have
+trained me to write around it. Both comparisons now normalise `’ ‘ ʼ` to `'` and `" "` to `"`
+before matching. The dataset is straight-quoted; prose written by hand is not reliably so, and
+a check that depends on which apostrophe someone typed is a check that fails at random.
+
+Worth noting the sequence: the rule caught a real defect in §3j.77 within ten minutes, and
+produced its first false positive here, on the fourth day of use, from punctuation. Both are
+information. A check that has never fired is untested; a check that fires wrongly and gets
+narrowed is being calibrated. The failure mode to fear is the third one — a check that fires
+wrongly and gets *worked around*.
+
+No coverage change: 207 of 217. This pass tightened a boundary and repaired a rule rather than
+verifying a new item, which is the correct trade when the alternative is a record that reads
+more confident than the search behind it.
