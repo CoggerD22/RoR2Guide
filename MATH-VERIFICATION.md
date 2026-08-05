@@ -4441,3 +4441,53 @@ more precise about what it was always trying to say. The count of things it catc
 gone down.
 
 Coverage unchanged at 208 of 217.
+
+### 3j.87 re-examining a claim I had already published twice
+
+Reading `OverlapAttack` for the dot-zone question (§3j.84) surfaced a field I had not accounted
+for: **`retriggerTimeout`**. Entries can leave the ignore list on their own —
+`cleanupRetriggerList()` drains a queue inside `Fire()`, releasing anything whose timeout has
+elapsed. That is a **third** escape, alongside the timed reset and a manual
+`ResetOverlapAttack()` call.
+
+I had published "each saw hits a given enemy once" on **two** items — Sawmerang (§3j.68) and
+Electric Boomerang (§3j.83) — having checked only the first two escapes. If
+`ProjectileOverlapAttack` set `retriggerTimeout`, both records were wrong, and both are
+statements that contradict the game's own descriptions. A confident correction resting on an
+incomplete search is worse than no correction.
+
+It is assigned in **exactly two places in the game**:
+
+```
+EntityStates.Chef/RolyPoly.cs:358        attack.retriggerTimeout = 0.5f;
+EntityStates.FriendUnit/KineticAura.cs:147   attack.retriggerTimeout = refreshTime;
+```
+
+Neither is `ProjectileOverlapAttack`, which leaves the default `float.PositiveInfinity`, and
+the guard `if (retriggerTimeout != float.PositiveInfinity)` means nothing is ever even queued
+for removal. **The claim holds** — now on all three conditions, and both records say so rather
+than implying two checks were the whole search.
+
+#### The same read handed us a mechanic we had missed
+
+`KineticAura` is **Orphaned Core's** launch attack, and it *does* set the timeout — to
+`refreshTime`, which is **1.5 seconds**. So the Solus unit is emphatically **not**
+one-hit-per-enemy the way a boomerang is: the same target becomes hittable again every 1.5s,
+which is why a unit pinballing around one large enemy keeps doing damage. That was absent from
+the record entirely.
+
+#### Why this pass was worth spending on something already "done"
+
+Nothing here was flagged. `data:audit` was clean, 128 tests passed, and both Sawmerang and
+Electric Boomerang read as finished work. The prompt to look again came from having read a
+*different* part of `OverlapAttack` for a *different* item and noticing a field with
+consequences for a claim made elsewhere.
+
+That is not a repeatable process, which is the uncomfortable part. The guards built over the
+last four passes catch **unscoped** claims and **misattributed** names; they cannot catch a
+claim that is scoped, attributed, well-evidenced on the conditions checked, and simply missing
+a condition. The only defence found so far is the one that worked here: when a shared mechanism
+turns out to be more complex than assumed, go back to **everything that already depends on it**
+rather than only the item in hand.
+
+Coverage unchanged at 208 of 217; one claim strengthened, one mechanic added.

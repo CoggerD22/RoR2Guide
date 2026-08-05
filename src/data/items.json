@@ -3007,7 +3007,7 @@
         "base": 1,
         "perStack": 0,
         "type": "none",
-        "formula": "The slice is a ProjectileOverlapAttack with resetInterval = -1, and the reset is guarded by `if (resetInterval >= 0f)` so a negative value disables it; BoomerangProjectile never calls ResetOverlapAttack either. Structurally identical to Sawmerang, down to the prefab flags (travelSpeed 60, distanceMultiplier 0.6, isStunAndPierce true) — and the same consequence: the description's 'Can strike enemies on the way back' does not happen. Each enemy takes the slice once, outbound or returning, whichever comes first."
+        "formula": "The slice is a ProjectileOverlapAttack with resetInterval = -1, and the reset is guarded by `if (resetInterval >= 0f)` so a negative value disables it; BoomerangProjectile never calls ResetOverlapAttack either. Structurally identical to Sawmerang, down to the prefab flags (travelSpeed 60, distanceMultiplier 0.6, isStunAndPierce true) — and the same consequence: the description's 'Can strike enemies on the way back' does not happen. Each enemy takes the slice once, outbound or returning, whichever comes first. Checked three ways, because OverlapAttack has three separate escapes from its ignore list: the timed reset (disabled here by resetInterval = -1), a manual ResetOverlapAttack() call (BoomerangProjectile never makes one), and retriggerTimeout, which expires entries on its own inside Fire() via cleanupRetriggerList(). That last one is assigned in exactly TWO places in the game — Chef's RolyPoly at 0.5s and the FriendUnit KineticAura at its refreshTime — and ProjectileOverlapAttack is neither, so it keeps the default of positive infinity and nothing ever leaves the list."
       }
     ],
     "tags": [
@@ -3204,6 +3204,13 @@
         "perStack": 0,
         "type": "none",
         "formula": "EntityStates.FriendUnit.FriendUnitLovesYou: curseStacksToRemove = 5 within cleanseRadius = 15, over baseDuration = 5s."
+      },
+      {
+        "stat": "Seconds before the same enemy can be launched into again",
+        "base": 1.5,
+        "perStack": 0,
+        "type": "none",
+        "formula": "EntityStates.FriendUnit.KineticAura sets `attack.retriggerTimeout = refreshTime` (1.5s). OverlapAttack then queues each victim for removal from its ignore list at `Time.realtimeSinceStartup + retriggerTimeout`, and cleanupRetriggerList() drains that queue on every Fire(). So the unit is NOT one-hit-per-enemy the way a boomerang is — the same target becomes hittable again every 1.5 seconds, which is why a Solus unit pinballing around one large enemy keeps dealing damage."
       }
     ],
     "tags": [
@@ -5390,7 +5397,7 @@
         "base": 400,
         "perStack": 0,
         "type": "none",
-        "formula": "ProjectileOverlapAttack on the Sawmerang prefab: damageCoefficient = 4 with resetInterval = -1. The reset is guarded by `if (resetInterval >= 0f)`, so a negative value disables it entirely and the ignore list is never cleared — 400% per saw per enemy, and the 60Hz fireFrequency only governs how often it looks for NEW targets."
+        "formula": "ProjectileOverlapAttack on the Sawmerang prefab: damageCoefficient = 4 with resetInterval = -1. The reset is guarded by `if (resetInterval >= 0f)`, so a negative value disables it entirely and the ignore list is never cleared — 400% per saw per enemy, and the 60Hz fireFrequency only governs how often it looks for NEW targets. Checked three ways, because OverlapAttack has three separate escapes from its ignore list: the timed reset (disabled here by resetInterval = -1), a manual ResetOverlapAttack() call (BoomerangProjectile never makes one), and retriggerTimeout, which expires entries on its own inside Fire() via cleanupRetriggerList(). That last one is assigned in exactly TWO places in the game — Chef's RolyPoly at 0.5s and the FriendUnit KineticAura at its refreshTime — and ProjectileOverlapAttack is neither, so it keeps the default of positive infinity and nothing ever leaves the list."
       },
       {
         "stat": "Blade contact damage (%/s, up to)",

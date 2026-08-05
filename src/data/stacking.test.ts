@@ -840,3 +840,34 @@ test("component prose obeys the same negative-claim rule as the data", async () 
   }
   expect(unscoped, unscoped.join(" | ")).toEqual([]);
 });
+
+/**
+ * A published claim re-examined rather than trusted. "Each saw hits a given enemy once"
+ * rested on two conditions; OverlapAttack has THREE escapes from its ignore list, and the
+ * third — retriggerTimeout, which expires entries inside Fire() — had not been checked. Had
+ * ProjectileOverlapAttack set it, both records would have been wrong.
+ *
+ * It is assigned in exactly two places in the game, neither of them that component. The same
+ * read gave Orphaned Core a mechanic we had missed: its aura DOES set it, so the Solus unit
+ * is not one-hit-per-enemy.
+ */
+test("the hits-once claim is closed on all three OverlapAttack escapes", () => {
+  for (const [id, stat] of [
+    ["sawmerang", /Damage per saw/],
+    ["electric-boomerang", /Times one enemy can be sliced/],
+  ] as const) {
+    const x = items.find((i) => i.id === id)!;
+    const r = x.stacking.find((s) => stat.test(s.stat))!;
+    expect(r.formula, id).toMatch(/resetInterval = -1/);
+    expect(r.formula, id).toMatch(/ResetOverlapAttack\(\) call/);
+    expect(r.formula, id).toMatch(/retriggerTimeout/);
+    expect(r.formula, id).toMatch(/exactly TWO places/);
+  }
+});
+
+test("Orphaned Core's unit CAN re-hit, every 1.5s", () => {
+  const x = items.find((i) => i.id === "orphaned-core")!;
+  const r = x.stacking.find((s) => /launched into again/.test(s.stat))!;
+  expect(r.base).toBe(1.5); // KineticAura: attack.retriggerTimeout = refreshTime
+  expect(r.formula).toMatch(/cleanupRetriggerList/);
+});
