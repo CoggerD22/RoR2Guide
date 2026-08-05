@@ -4491,3 +4491,50 @@ turns out to be more complex than assumed, go back to **everything that already 
 rather than only the item in hand.
 
 Coverage unchanged at 208 of 217; one claim strengthened, one mechanic added.
+
+### 3j.88 the "go back to everything depending on it" defence, run and then automated
+
+§3j.87 ended by admitting the defence it had used was manual and unrepeatable: when a shared
+mechanism turns out to be more complex than assumed, go back to **everything already depending
+on it**. So this pass ran that sweep properly, and then turned it into a check.
+
+Ten records across five items reason about `OverlapAttack`'s ignore list:
+
+| Item | Claim | Status after the sweep |
+|---|---|---|
+| Sawmerang | hits once per saw | closed on all three in §3j.87 |
+| Electric Boomerang | hits once per throw | closed on all three in §3j.87 |
+| Orphaned Core | re-hittable every 1.5s | added in §3j.87 |
+| Molotov (6-Pack) | puddle 100%/s | rate, not a count — reset 3/s vs fire 1/s means every fire hits regardless |
+| **Volcanic Egg** | **ram hits once per enemy** | **cited only the reset period** |
+
+Volcanic Egg was the one still resting on a partial search. Checked: `FireballVehicle`'s
+object initialiser constructs its `OverlapAttack` with eleven fields and **`retriggerTimeout`
+is not among them**, so it keeps `float.PositiveInfinity`; the manual
+`ResetIgnoredHealthComponents()` runs on a period of `1/0.00001` = **100,000 seconds**; and
+there is no timed `resetInterval` on that path. The claim holds, and now says so.
+
+#### The check
+
+A record that reasons about the ignore list **in order to claim a hit count** must mention
+`retriggerTimeout`. Records that cite the same machinery to explain a **rate** are exempt —
+they are not claiming a count, and the fire/reset cadence really is the whole of that story.
+That distinction matters: a blanket rule would have forced irrelevant boilerplate onto
+Molotov's puddle and taught me to satisfy the checker rather than the question.
+
+Verified by deletion rather than injection this time — stripping the retrigger sentence from
+Volcanic Egg fails the suite by item and row name.
+
+#### What this does and does not solve
+
+It converts one specific incompleteness into a permanent guard, for one mechanism, on one kind
+of claim. It does **not** generalise: nothing stops the same failure on the next shared
+mechanism whose complexity I underestimate. The honest summary is that §3j.87's lesson was
+right and its pessimism was too — the sweep is repeatable **per mechanism**, once you know the
+mechanism is worth sweeping, and knowing that still comes from reading code for an unrelated
+reason.
+
+What is now true and was not before: every hit-count claim in the dataset has been checked
+against the complete model, and none can silently regress.
+
+Coverage unchanged at 208 of 217.

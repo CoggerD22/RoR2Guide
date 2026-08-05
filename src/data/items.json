@@ -5327,7 +5327,7 @@
         "base": 500,
         "perStack": 0,
         "type": "none",
-        "formula": "FireballVehicle prefab: overlapDamageCoefficient = 5 at overlapFireFrequency = 15. The hit rate looks like 15/s, but overlapResetFrequency = 0.00001 makes the reset period 100,000 seconds — the ignore list is never cleared, so each enemy takes the 500% exactly ONCE no matter how long you stay inside them."
+        "formula": "FireballVehicle prefab: overlapDamageCoefficient = 5 at overlapFireFrequency = 15. The hit rate looks like 15/s, but overlapResetFrequency = 0.00001 makes the reset period 100,000 seconds — the ignore list is never cleared, so each enemy takes the 500% exactly ONCE no matter how long you stay inside them. Closed on all three of OverlapAttack’s escapes from its ignore list: the manual ResetIgnoredHealthComponents() call fires on a period of 1/0.00001 = 100,000 seconds, there is no timed resetInterval on this path, and retriggerTimeout keeps its default of positive infinity — FireballVehicle’s object initialiser never sets it, and the only two assignments in the game are Chef’s RolyPoly and the FriendUnit KineticAura."
       },
       {
         "stat": "Detonation damage (%)",

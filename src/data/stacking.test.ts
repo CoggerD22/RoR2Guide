@@ -871,3 +871,32 @@ test("Orphaned Core's unit CAN re-hit, every 1.5s", () => {
   expect(r.base).toBe(1.5); // KineticAura: attack.retriggerTimeout = refreshTime
   expect(r.formula).toMatch(/cleanupRetriggerList/);
 });
+
+/**
+ * §3j.87 found that a shared mechanism had a third escape I had not checked, and that two
+ * published claims rested on the incomplete search. The defence proposed there was manual —
+ * "go back to everything depending on it" — so here it is as a check instead.
+ *
+ * OverlapAttack lets a target leave its ignore list three ways: a timed `resetInterval`, a
+ * manual `ResetOverlapAttack()` / `ResetIgnoredHealthComponents()` call, and `retriggerTimeout`
+ * expiring entries inside Fire(). Any record that reasons about that list in order to claim a
+ * HIT COUNT ("once per enemy", "hits once") has to address all three, because addressing two
+ * of them is how the Sawmerang and Electric Boomerang records were nearly wrong.
+ *
+ * Records that merely cite the machinery to explain a RATE are exempt — they are not claiming
+ * a count, and the fire/reset cadence is the whole of that story.
+ */
+test("hit-count claims from OverlapAttack address all three of its escapes", () => {
+  const COUNT_CLAIM = /once per enemy|once, ever|hits? a given enemy once|can be sliced|once no matter/i;
+  const incomplete: string[] = [];
+
+  for (const it of items) {
+    for (const st of it.stacking) {
+      const f = st.formula ?? "";
+      if (!COUNT_CLAIM.test(st.stat) && !COUNT_CLAIM.test(f)) continue;
+      if (!/OverlapAttack|ignore list|resetInterval|ResetIgnored/i.test(f)) continue;
+      if (!/retriggerTimeout/.test(f)) incomplete.push(`${it.name} — ${st.stat}`);
+    }
+  }
+  expect(incomplete, incomplete.join(" | ")).toEqual([]);
+});
