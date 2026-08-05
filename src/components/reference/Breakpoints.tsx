@@ -67,6 +67,37 @@ export function Breakpoints() {
 
   return (
     <div className="flex flex-col gap-8">
+      {/*
+        Every curve on this page takes a stack count as its input, and nothing on the site
+        had ever said what the game counts as a stack. `Inventory.UpdateEffectiveItemStacks`
+        sums three separate collections and can zero the lot — a caveat that applies to every
+        number in the dataset, so it belongs once, here, rather than on 217 records.
+      */}
+      <section>
+        <h3 className="mb-1 font-display text-lg font-semibold text-foreground">
+          What counts as a stack
+        </h3>
+        <p className="mb-3 max-w-2xl text-xs leading-relaxed text-muted-foreground">
+          Every formula below is fed by{" "}
+          <code className="rounded bg-surface-2 px-1">GetItemCountEffective</code>, and
+          &ldquo;effective&rdquo; is doing real work.{" "}
+          <code className="rounded bg-surface-2 px-1">UpdateEffectiveItemStacks</code> adds
+          three collections together &mdash; the items you{" "}
+          <span className="text-foreground">picked up</span>, items you are currently{" "}
+          <span className="text-foreground">channeling</span>, and{" "}
+          <span className="text-foreground">temporary</span> items &mdash; so a borrowed or
+          channeled copy counts exactly as much as one you own, on every curve here.
+        </p>
+        <p className="max-w-2xl text-xs leading-relaxed text-muted-foreground">
+          It can also go to <span className="text-foreground">zero</span>: while an inventory
+          is disabled, every item that can be removed reports a count of 0, which is what
+          &ldquo;disable items&rdquo; effects actually do. Items flagged as non-removable
+          &mdash; a survivor&rsquo;s built-in passives, world-unique items &mdash; keep
+          working, because the reset is gated on{" "}
+          <code className="rounded bg-surface-2 px-1">canRemove</code>.
+        </p>
+      </section>
+
       {/* Critical strike */}
       <section>
         <h3 className="mb-1 font-display text-lg font-semibold text-foreground">Guaranteed crits</h3>

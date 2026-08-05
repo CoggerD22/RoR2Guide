@@ -908,3 +908,15 @@ test("§9: the codex finally shows the equipment cooldown it has always held", a
   ).toBeVisible();
   await expect(reassurance.getByText(/never runs/)).toBeVisible();
 });
+
+test("§9: the Breakpoints tab says what the game counts as a stack", async ({ page }) => {
+  // Every curve on that page takes a stack count as input, and nothing on the site had ever
+  // said what a stack IS. Inventory.UpdateEffectiveItemStacks sums picked-up, channeled and
+  // temporary items, and zeroes removable ones while an inventory is disabled.
+  await page.goto("/reference");
+  await page.getByRole("button", { name: "Breakpoints" }).click();
+  await expect(page.getByRole("heading", { name: "What counts as a stack" })).toBeVisible();
+  await expect(page.getByText(/channeling/)).toBeVisible();
+  await expect(page.getByText(/every item that can be removed reports a count of 0/)).toBeVisible();
+  await expect(page.getByText(/canRemove/)).toBeVisible();
+});

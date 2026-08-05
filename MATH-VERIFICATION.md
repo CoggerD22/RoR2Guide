@@ -4538,3 +4538,58 @@ What is now true and was not before: every hit-count claim in the dataset has be
 against the complete model, and none can silently regress.
 
 Coverage unchanged at 208 of 217.
+
+### 3j.89 the input every curve on the site takes, and nobody had defined
+
+The last two passes established a method: when a shared mechanism turns out to be more complex
+than assumed, sweep everything that depends on it. The obvious next question is **which shared
+mechanism does this dataset lean on hardest**, and the answer is not close.
+
+Every stacking curve, every breakpoint table, every "per stack" figure takes **a stack count**
+as its input — and that count comes from `GetItemCountEffective`. In roughly a hundred passes
+of verification work I had never once asked what *effective* means.
+
+```csharp
+private void UpdateEffectiveItemStacks(ItemIndex itemIndex)
+{
+    int stackValue  = permanentItemStacks.GetStackValue(itemIndex);
+    int stackValue2 = channeledItemStacks.GetStackValue(itemIndex);
+    int itemStacks  = tempItemsStorage.GetItemStacks(itemIndex);
+    num = stackValue + stackValue2 + itemStacks;
+    …
+    if (inventoryDisabled && ItemCatalog.GetItemDef(itemIndex).canRemove) num = 0;
+    effectiveItemStacks.SetStackValue(itemIndex, num);
+}
+```
+
+Two facts that apply to **every number in the dataset**:
+
+- A stack is the sum of **three** collections — items you picked up, items you are currently
+  **channeling**, and **temporary** items. A borrowed or channeled copy feeds every curve on
+  the site exactly as hard as one you own. Nothing on the site said so.
+- The whole count **drops to zero** while an inventory is disabled — which is what "disable
+  items" effects mechanically *are*, including the one Of One Mind's death explosion applies.
+  And the reset is gated on `canRemove`, so survivor passives and world-unique items keep
+  working through it.
+
+#### Where it belongs
+
+Not on 217 records. It is a property of the *input* to every formula, so it goes once, at the
+head of the Breakpoints tab, above the curves it qualifies. That tab already explains how
+stacking curves behave; it had never explained what they are counting.
+
+This is the §9 omission class in its purest form: nothing was wrong, every number was right,
+and a reader had no way to learn that "3 stacks" might include a temporary copy that will
+expire, or that a single debuff can zero the lot. The site's premise is *the answers the game
+makes hard to find*, and this is the answer underneath all the others.
+
+#### On the method
+
+Three passes ago the defence against incomplete models was "go back to everything depending on
+it", and I noted that knowing *which* mechanism to sweep still came from reading code for an
+unrelated reason. This pass suggests a cheaper heuristic: **sweep the mechanisms with the most
+dependents first.** `GetItemCountEffective` is cited by name in only four formulas but is the
+silent input to all 217, and that gap — between how often something is *mentioned* and how much
+rests on it — is a usable signal for where to look next.
+
+Coverage unchanged at 208 of 217.
