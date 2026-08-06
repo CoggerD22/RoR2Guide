@@ -957,3 +957,16 @@ test("§9: the difficulty coefficient is defined, including what Eclipse does no
   await expect(page.getByText(/steps, once a minute/)).toBeVisible();
   await expect(page.getByText(/only one of them ticks/)).toBeVisible();
 });
+
+test("§9: proc coefficient is defined, not just glossed", async ({ page }) => {
+  // 18 item records cite procCoefficient by name; the site only ever said it "scales how
+  // often it triggers". It does two jobs and has a hard-stop case, all of which matter.
+  await page.goto("/reference");
+  await page.getByRole("button", { name: "Breakpoints" }).click();
+  await expect(page.getByText(/chance x procCoefficient/)).toBeVisible();
+  // Linear, NOT the hyperbolic curve the tables above use — the easy thing to get wrong.
+  await expect(page.getByText(/none of the hyperbolic softening/)).toBeVisible();
+  // It scales durations too, and zero is a hard stop.
+  await expect(page.getByText(/8f x procCoefficient/)).toBeVisible();
+  await expect(page.getByText(/hard stop, not a small number/)).toBeVisible();
+});

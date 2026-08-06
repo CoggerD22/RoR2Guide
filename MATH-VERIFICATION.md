@@ -4748,3 +4748,56 @@ defined. The pattern is now clear enough to name: **a term used inside a verifie
 inherits the formula's air of authority without inheriting any of its verification.** Writing
 "`25 x difficultyCoefficient^1.25`" looks like a complete answer, and is only complete if the
 reader already knows the part we did not write down.
+
+### 3j.93 stop guessing which term to define — extract them
+
+Four passes found four undefined shared terms by intuition. §3j.92 named why they exist —
+*a term cited inside a verified formula inherits the formula's authority without inheriting
+its verification* — which is a description of a **class**, and classes can be enumerated.
+
+So: pull every identifier-shaped token out of all 217 records' formulas, rank by how many
+records lean on it, and check each against everything a reader can actually see.
+
+The ranking is noisy (an `[a-z]{8,}` pattern happily matches "description" and "multiplied"),
+but the top real entry is unambiguous:
+
+| Term | Records | Explained anywhere? |
+|---|---|---|
+| `CharacterBody.RecalculateStats` | 25 | yes |
+| **`procCoefficient`** | **18** | **one sentence** |
+| `damageCoefficient` | 16 | contextually |
+| `levelScale` | 7 | no |
+| `blastRadius` | 7 | contextually |
+
+`procCoefficient` was the largest gap, and the site's entire treatment of it was *"a skill's
+proc coefficient scales how often it triggers on-hit items"* — true, and not enough to use.
+28 uses in `GlobalEventManager`, doing **two** different jobs:
+
+- **Chances scale linearly.** `LocalCheckRoll(chance * damageInfo.procCoefficient, …)` — a 0.5
+  hit is exactly half as likely, with none of the hyperbolic softening the tables above it
+  use. Getting this wrong in the other direction is easy, because every *stacking* curve on
+  that page is hyperbolic.
+- **Durations scale too.** `AddTimedBuff(Buffs.HealingDisabled, 8f * damageInfo.procCoefficient)`
+  — Malachite's healing-disable is eight seconds only at coefficient 1.
+- **Zero is a hard stop, not a small number.** `OnHitAllProcess` opens with
+  `if (damageInfo.procCoefficient == 0f …) return;`, so nothing you own fires at all.
+
+That completes the on-hit story the last four passes have been assembling, and it is worth
+seeing as one thing rather than four:
+
+| Input | Question it answers |
+|---|---|
+| `GetItemCountEffective` | how many of the item do you *effectively* have |
+| Sure Proc | does the roll happen at all |
+| `ProcChainMask` | is this effect still eligible on this chain |
+| **`procCoefficient`** | **how likely, and for how long** |
+
+#### On the method
+
+The extraction is crude and I am not going to pretend otherwise — it needs a human to
+separate `levelScale` from "multiplied". But it converts *"which mechanism should I look at
+next?"*, which had been four passes of intuition, into a ranked list I can work down. The four
+terms found by instinct all appear in the top of that list, which is the encouraging part: the
+instinct was right, and now it does not have to be.
+
+`levelScale` (7 records, genuinely undefined) is the next one down.

@@ -245,6 +245,28 @@ coeff    = (base + timeRate x floor(minutes)) x 1.15^stagesCleared`}
           all &mdash; and why the coefficient on a secondary hit is what decides how far one
           gets.
         </p>
+        {/*
+          The last of the four on-hit inputs, and the one 18 item records lean on by name
+          while the site only ever glossed it in a sentence (MATH-VERIFICATION §3j.93).
+          28 uses in GlobalEventManager, and it does two different jobs.
+        */}
+        <p className="mb-3 max-w-2xl text-xs leading-relaxed text-muted-foreground">
+          <span className="text-foreground">Proc coefficient</span> is the multiplier that hit
+          carries, and it does two jobs.{" "}
+          <code className="rounded bg-surface-2 px-1">GlobalEventManager</code> uses it{" "}
+          <span className="text-foreground">linearly</span> &mdash; a chance becomes{" "}
+          <code className="rounded bg-surface-2 px-1">chance x procCoefficient</code>, so a 0.5
+          hit really is half as likely to proc, with none of the hyperbolic softening the
+          stacking curves above use. It also scales <em>durations</em>: Malachite&rsquo;s
+          healing-disable is{" "}
+          <code className="rounded bg-surface-2 px-1">8f x procCoefficient</code> seconds, not
+          a flat 8. And a coefficient of exactly{" "}
+          <span className="text-foreground">0</span> is a hard stop, not a small number
+          &mdash; <code className="rounded bg-surface-2 px-1">OnHitAllProcess</code> returns
+          immediately, so nothing you own triggers at all. That is why a skill&rsquo;s
+          coefficient, listed per survivor on the Stat Lab, is often worth more than its
+          damage.
+        </p>
         <div className="overflow-x-auto rounded-xl border border-border bg-surface">
           <table className="w-full min-w-[34rem] text-sm">
             <thead>
