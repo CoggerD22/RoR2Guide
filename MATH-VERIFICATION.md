@@ -4851,3 +4851,45 @@ fails if the word reappears anywhere.
 
 The method earned its keep on its first real use: four passes of intuition found four *missing*
 definitions, and the ranked list immediately found a *wrong* one.
+
+### 3j.95 sweeping the term that caught me twice — 13 exact, 3 explained, 0 wrong
+
+`damageCoefficient` was next on §3j.93's ranked list: **16 records**, the most-cited unit in
+the dataset, and the one that has produced two near-misses. Aurelionite's prefabs carry `0.1`
+and `1.0` against a stated 15% and 150%; Electric Boomerang's carries `3.1` against a stated
+120%. Both looked like the game contradicting itself, and in both cases the **fired** damage
+was pre-scaled — `× 1.5f` for one, `× 0.4f × n` for the other. A coefficient multiplies
+whatever value it was handed, and that is not always your base damage.
+
+Having been caught twice, the question is how many of the other fourteen are wrong. So: parse
+every cited coefficient, multiply by 100, compare against the base the record publishes.
+
+**13 exact. 3 mismatched, all three already documented:**
+
+| Record | Coefficient implies | Published | Why |
+|---|---|---|---|
+| Electric Boomerang — impact | 310% | 120% | fired with `damage × 0.4f × n`; 3.1 × 0.4 = 1.24 |
+| Electric Boomerang — DoT | 100% | 120% | same pre-scaled chain |
+| Sawmerang — blade contact | 20% | 200% | a **rate**: 0.2 × 10 hits/s, not a per-hit figure |
+
+Nothing unexplained. That is the outcome I wanted and could not have assumed — the term that
+burned me twice is consistent in every other place it appears, and the three exceptions are
+exactly the three already carrying notes.
+
+#### The invariant
+
+A record citing `damageCoefficient = X` must publish `base = 100X`, **or its formula must say
+why not** — a pre-scaling chain, an explicit rate, or a flagged open question. A test now
+enforces it across all 217 records, verified by injecting a `7f` coefficient against a base of
+300 and watching it fail by item and row.
+
+What makes this one worth having is that it catches the *specific* mistake I actually make.
+The two near-misses were not carelessness — the prefab value genuinely looks like the answer,
+and it takes a second lookup to find the multiplication upstream. This check is that second
+lookup, run automatically, on every record, forever.
+
+#### Where the ranked list stands
+
+Four terms defined (§3j.89–93), one invented term caught and split (§3j.94), one swept and
+pinned (this). `blastRadius` (7 records) is next, and I expect it to be dull — a radius is a
+radius — which is itself worth confirming rather than assuming.

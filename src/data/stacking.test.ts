@@ -945,3 +945,34 @@ test("no record uses the invented term levelScale", () => {
   }
   expect(offenders, offenders.join(" | ")).toEqual([]);
 });
+
+/**
+ * `damageCoefficient` is the most-cited unit in the dataset (16 records) and the one that
+ * caught me twice — Aurelionite's 0.1/1.0 and Electric Boomerang's 3.1 both looked like
+ * outright contradictions of the game's text until the FIRED damage turned out to be
+ * pre-scaled. A coefficient multiplies whatever value it was handed, which is not always
+ * your base damage.
+ *
+ * So: a record citing `damageCoefficient = X` must publish `base = 100X`, or its formula must
+ * say why not. Sweeping all 16 found 13 exact and 3 explained (both Electric Boomerang rows,
+ * fired with `damage * 0.4f * n`; Sawmerang's contact row, which is a rate rather than a
+ * per-hit figure). No unexplained mismatches — this pins that.
+ */
+test("a cited damageCoefficient matches the published base, or explains itself", () => {
+  // Phrases that reconcile a mismatch: a pre-scaling chain, or an explicit rate/open note.
+  const RECONCILED = /fired with|per second|instantaneous rate|NOT resolved|not comparable/i;
+  const unexplained: string[] = [];
+
+  for (const it of items) {
+    for (const st of it.stacking) {
+      const f = st.formula ?? "";
+      const m = /damageCoefficient\s*=\s*([0-9]*\.?[0-9]+)/.exec(f);
+      if (!m) continue;
+      const implied = parseFloat(m[1]) * 100;
+      if (Math.abs(implied - st.base) < 0.5) continue;
+      if (RECONCILED.test(f)) continue;
+      unexplained.push(`${it.name} — ${st.stat}: coefficient implies ${implied}%, base is ${st.base}`);
+    }
+  }
+  expect(unexplained, unexplained.join(" | ")).toEqual([]);
+});
