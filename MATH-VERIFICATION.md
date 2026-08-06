@@ -4643,3 +4643,47 @@ Two passes, two mechanics that silently qualify the entire dataset, both found b
 "what is unverified?" but **"what does everything depend on?"** The remaining `langfile` count
 did not move for either, and both are more useful to a reader than any of the nine items still
 on that list.
+
+### 3j.91 why proc chains stop — the third dataset-wide mechanic in three passes
+
+Continuing the "most dependents first" sweep. After stack counts (§3j.89) and the roll gate
+(§3j.90), the third is `ProcChainMask`, and the site had **zero** mentions of it: not in a
+formula, not in a component, nowhere.
+
+It is a bitmask over the 28 entries of `ProcType`, and the whole mechanism is three lines:
+
+```csharp
+public void AddProc(ProcType procType) { mask |= (uint)(1 << (int)procType); }
+public bool HasProc(ProcType procType) { return (mask & (1 << (int)procType)) != 0; }
+```
+
+`GlobalEventManager` reads `!damageInfo.procChainMask.HasProc(X)` at **21 separate gates**
+before firing effect X, and every effect that spawns follow-up damage stamps its own type onto
+the mask it passes along. So **each proc type fires at most once per chain**: missiles never
+launch missiles, chain lightning never re-chains off its own bolts, a boomerang cannot spawn a
+boomerang.
+
+The half that is easy to state wrongly, and matters more: **different types still trigger one
+another.** That is why proc chains exist at all, and it is why the proc coefficient on a
+*secondary* hit decides how far one travels. Writing "effects can't chain" would have been
+both simpler and false; the test asserts the qualifier is present, not just the rule.
+
+#### Three passes, three mechanics, one question
+
+| Pass | Mechanism | Qualifies |
+|---|---|---|
+| §3j.89 | `GetItemCountEffective` | every stack count on the site |
+| §3j.90 | `LocalCheckRoll` / Sure Proc | every "% chance on hit" |
+| §3j.91 | `ProcChainMask` | every on-hit effect's ability to trigger another |
+
+None of the three was flagged by any check. None moved the coverage number. All three were
+found by asking **"what does everything depend on?"** rather than "what is still unverified?",
+and each turned out to be a fact a player would actually want — the kind the game makes hardest
+to find, because it is never printed on any item.
+
+Between them they now define the three inputs every on-hit calculation on the site takes: how
+many of an item you effectively have, whether the roll happens at all, and whether the effect
+is still eligible to fire. Those were previously assumed by 217 records and stated by none.
+
+The `langfile` list is unchanged at nine, and I think that is the right trade: the remaining
+nine are individually hard and narrow, while these three qualify everything.

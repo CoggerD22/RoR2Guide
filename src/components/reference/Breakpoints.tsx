@@ -184,6 +184,25 @@ export function Breakpoints() {
           (<code className="rounded bg-surface-2 px-1">ignoreSureProc: true</code>): an
           elite&rsquo;s chance to drop its equipment on death.
         </p>
+        {/*
+          The other half of the on-hit story, and the reason proc chains terminate. 21 of the
+          gates in GlobalEventManager are `!procChainMask.HasProc(X)`, and each effect stamps
+          its own type on the chain it spawns — so a type fires at most once per chain.
+          Same placement rule: qualifies the class, so it sits with the class.
+        */}
+        <p className="mb-3 max-w-2xl text-xs leading-relaxed text-muted-foreground">
+          Chains also <span className="text-foreground">terminate by type</span>. Every hit
+          carries a <code className="rounded bg-surface-2 px-1">procChainMask</code> &mdash; a
+          bitmask over the game&rsquo;s 28 proc types &mdash; and an effect that spawns
+          follow-up damage stamps its own type onto it. Twenty-one separate gates in{" "}
+          <code className="rounded bg-surface-2 px-1">GlobalEventManager</code> read{" "}
+          <code className="rounded bg-surface-2 px-1">!HasProc(…)</code> before firing, so a
+          given effect can fire <span className="text-foreground">at most once per chain</span>:
+          missiles never launch more missiles, chain lightning never re-chains off its own
+          bolts. Different types still trigger each other, which is why proc chains happen at
+          all &mdash; and why the coefficient on a secondary hit is what decides how far one
+          gets.
+        </p>
         <div className="overflow-x-auto rounded-xl border border-border bg-surface">
           <table className="w-full min-w-[34rem] text-sm">
             <thead>

@@ -932,3 +932,15 @@ test("§9: the on-hit table says a parry overrides every chance in it", async ({
   // The single documented exception must be named, not rounded off to "always".
   await expect(page.getByText(/ignoreSureProc: true/)).toBeVisible();
 });
+
+test("§9: the on-hit table explains why proc chains terminate", async ({ page }) => {
+  // 21 gates in GlobalEventManager read !procChainMask.HasProc(X), and each effect stamps
+  // its own type on the chain it spawns — so a type fires at most once per chain.
+  await page.goto("/reference");
+  await page.getByRole("button", { name: "Breakpoints" }).click();
+  await expect(page.getByText(/terminate by type/)).toBeVisible();
+  await expect(page.getByText(/at most once per chain/)).toBeVisible();
+  await expect(page.getByText(/missiles never launch more missiles/)).toBeVisible();
+  // Must not overstate it: different types DO still trigger one another.
+  await expect(page.getByText(/Different types still trigger each other/)).toBeVisible();
+});
