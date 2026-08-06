@@ -89,7 +89,10 @@ left, bold white name, gray body with highlighted numeric values.
 
 ### Next up
 
-- Opinion layer (rule #7) — `/content/guides/*.md` is designed but **unbuilt**. The site
-  is currently all facts, no guidance. Infrastructure first; opinions need a human author.
+- Opinion layer (rule #7) — **built but parked**, not unbuilt: `src/components/guides/`,
+  `src/content/guides.ts` and `content/guides/_template.md` all exist, and `src/router.tsx`
+  carries the note explaining how to re-enable (restore two imports + routes, plus the nav
+  entry in `src/lib/nav.ts`). It stays parked while the site is facts-only — the missing
+  piece is written guides, and those need a human author.
 - Proc tail: split genuinely non-damaging skills (dashes, beacons) from the truly
   unknown ones so the UI can say "no proc" instead of "unverified".

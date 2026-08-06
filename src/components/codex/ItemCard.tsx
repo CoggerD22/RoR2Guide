@@ -88,7 +88,15 @@ export function ItemCard({ item, onSelect }: ItemCardProps) {
         {!item.verified && (
           <span
             className="absolute right-1.5 top-1.5 size-2 rounded-full bg-amber-400"
-            title="Unverified — pending logbook confirmation"
+            /*
+              The wording, not the dot. "Pending logbook confirmation" described how this
+              project verified things in M1 — reading the in-game logbook. It has verified
+              against decompiled code and serialized assets since §6A, so if this branch
+              ever rendered it would tell a reader we work in a way we abandoned. The
+              branch is currently unreachable (every record is verified:true) which is
+              exactly why it went unnoticed (PLAN §9.1).
+            */
+            title="Not yet checked against the game's code or assets"
           />
         )}
       </button>

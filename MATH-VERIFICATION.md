@@ -5004,3 +5004,53 @@ mechanics, one invented term, one swept unit and one half-stated one. It now end
 that asks the question automatically for every token we write from here on. The ranked list
 that started it is exhausted of real entries — what remains below `blastRadius` is English
 prose the pattern mistakes for identifiers.
+
+### 3j.98 §9.3 cross-cutting — 45 tooltips, and the two that had gone stale
+
+The last unaudited surface on §9.3's list. Every `title` and `aria-label` in the app: **45 of
+them**, extracted and read one by one, because a tooltip is a claim that happens to be small.
+
+Forty-three are accurate. Two were describing a version of this project that no longer exists.
+
+**`ItemCard`: "Unverified — pending logbook confirmation."** The in-game logbook was how M1
+verified things. Nothing has been verified that way since §6A — the standard has been
+decompiled code and serialized assets for the whole life of the verification programme. If
+that dot ever rendered it would tell a reader we work in a way we abandoned.
+
+**`CLAUDE.md`: the opinion layer "is designed but **unbuilt**".** It is built and *parked*.
+`src/components/guides/`, `src/content/guides.ts` and `content/guides/_template.md` all exist,
+and `src/router.tsx` carries a precise note on re-enabling it — restore two imports and routes,
+plus the nav entry. What is missing is written guides, which need a human author. "Unbuilt"
+would send someone to write infrastructure that is already there.
+
+#### Both were unreachable, and that is the point
+
+The ItemCard dot renders only when `verified: false`, and **every record is `verified: true`**.
+The CLAUDE.md line describes a directory most work never touches. Neither could be seen by
+using the site or running the suite, and both had been read past dozens of times in this
+session alone.
+
+That is the §9 thesis in its least glamorous form. The audit found them not by testing
+behaviour — there is no behaviour — but by **enumerating a category and reading every member**,
+which is the only method that reaches things nothing exercises.
+
+#### The check
+
+Not the wording — vocabulary. `logbook` was M1's verification source and has not been one
+since; if it reappears in a user-facing string, something has been copied forward from a model
+of the project that no longer holds. A test walks every `.tsx`, strips comments (which may
+legitimately discuss the old model), and fails on the word.
+
+#### §9.3 is now complete
+
+| Surface | Pass |
+|---|---|
+| Shell, Codex, Planner | §3j.58 |
+| Stat Lab | §3j.59, §3j.61 |
+| Reference, Survivors | §3j.60, §3j.64 |
+| **Cross-cutting** | **this** |
+
+Per §9.5, done is not "no findings" — it is that every surface has been read with the §9.1
+questions asked, every finding fixed or recorded, and the unexaminable named. What remains
+unexaminable is unchanged and worth restating: **behaviour under real play.** Nothing here
+substitutes for someone holding the item and watching the number.

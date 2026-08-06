@@ -1014,3 +1014,38 @@ test("Remote Caffeinator's SweetSpot band is recorded, not rounded to one number
   expect(impact.formula).toMatch(/within 8m/);
   expect(impact.formula).toMatch(/QUARTER/);
 });
+
+/**
+ * §9.3 cross-cutting: tooltips are claims too, and two of them had gone stale — describing
+ * how the project worked at M1 rather than how it works now. Both were UNREACHABLE, which is
+ * exactly why they survived: a dead branch is never read, and never re-read.
+ *
+ * This pins the vocabulary rather than the wording. "logbook" was the M1 verification source
+ * and has not been one since §6A; if it reappears in a user-facing string, something has been
+ * copied forward from a model of the project that no longer holds.
+ */
+test("no user-facing string describes verification by in-game logbook", async () => {
+  const { readdirSync, readFileSync } = await import("node:fs");
+  const { join, relative } = await import("node:path");
+
+  const files: string[] = [];
+  const walk = (d: string) => {
+    for (const e of readdirSync(d, { withFileTypes: true })) {
+      const p = join(d, e.name);
+      if (e.isDirectory()) walk(p);
+      else if (/\.tsx$/.test(e.name)) files.push(p);
+    }
+  };
+  walk("src/components");
+  expect(files.length).toBeGreaterThan(20);
+
+  const offenders: string[] = [];
+  for (const f of files) {
+    // Only what ships to a reader; the explanatory comments may discuss the old model.
+    const visible = readFileSync(f, "utf8")
+      .replace(/\/\*[\s\S]*?\*\//g, " ")
+      .replace(/^\s*\/\/.*$/gm, " ");
+    if (/logbook/i.test(visible)) offenders.push(relative(".", f).split("\\").join("/"));
+  }
+  expect(offenders, offenders.join(" | ")).toEqual([]);
+});
