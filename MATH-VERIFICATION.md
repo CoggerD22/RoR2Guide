@@ -4948,3 +4948,59 @@ and stopped. The test found the sixth.
 That is the second time this session a check has caught something in the same pass that wrote
 it (§3j.77 was the first). Both times the check knew the rule better than I was applying it,
 which is the whole argument for writing rules down as code rather than as resolutions.
+
+### 3j.97 checking my own vocabulary against the game's
+
+§3j.94 caught `levelScale` — a word I invented, used in seven records, which asserted a
+mechanism *in its own name* and was wrong about it. The uncomfortable part of that entry was
+the admission at the end: **nothing in the pipeline distinguishes a token I coined from one I
+copied out of the game.** This is that distinction, made mechanical.
+
+Every camelCase token in every formula, checked against 90 MB of decompiled C#. **273 tokens;
+259 exist in the game.** The 14 that do not, reviewed one by one:
+
+| Kind | Tokens | Verdict |
+|---|---|---|
+| Deliberate shorthand of mine | `quickFixMultiplier`, `levelFactor`, `healthMultiplier` | fine — each named after *what sets it*, not after a mechanism it claims |
+| Readable stand-ins for real parameters | `hitDamage`, `bodyDamage`, `previousFrac`, `irradiantPearls`, `maxGuards`, `beadLevels` | fine, and checked |
+| Asset names | `dtLockbox`, `dtVoidLockbox`, `dtVoidChest`, `cscMinorConstructOnKill`, `bdBugWings` | real game identifiers that live in bundles rather than the assembly |
+
+No second `levelScale`. That is the result I wanted and, again, could not have assumed.
+
+The two I trusted least were Runic Lens's `hitDamage` and `bodyDamage`, since a stand-in for a
+damage term is exactly where a wrong assumption hides. `MeteorAttackOnHighDamageUtil`:
+
+```csharp
+public static int CalculateOverspill(DamageInfo damageInfo, float attackerBodyDamage)
+    => (int)(damageInfo.damage / attackerBodyDamage);
+```
+
+`hitDamage / bodyDamage` is an honest rename of exactly that. Checked rather than assumed,
+which is the point of having flagged them at all.
+
+#### The rule
+
+A camelCase token in a formula must **exist in the decompile** or appear in an explicit
+`COINED_OK` list with a comment saying what it stands for. Deliberate shorthand is often
+*clearer* than the game's own `num79` — the failure was never coining, it was **coining
+silently**. Now a new invention fails the build and has to be justified in the same commit
+that introduces it.
+
+Verified by replaying the original bug: putting `levelScale` back on Bison Steak produces
+
+```
+✗ "levelScale" appears in a formula (Bison Steak) but exists nowhere in the decompiled
+  source — if it is deliberate shorthand, add it to COINED_OK; if it names a mechanism,
+  that name is an unverified claim
+```
+
+The audit still runs in 1.7 seconds, and skips gracefully where `.decompiled` is absent — CI
+keeps passing without the game install.
+
+#### Where this leaves the term sweep
+
+Started at §3j.89 as "what does everything depend on?", ran through four undefined shared
+mechanics, one invented term, one swept unit and one half-stated one. It now ends with a check
+that asks the question automatically for every token we write from here on. The ranked list
+that started it is exhausted of real entries — what remains below `blastRadius` is English
+prose the pattern mistakes for identifiers.

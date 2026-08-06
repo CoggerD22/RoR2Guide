@@ -14,7 +14,7 @@
  *
  * If items.json is absent (pre-data), the audit passes with a note.
  */
-import { existsSync, readFileSync } from "node:fs";
+import { existsSync, readFileSync, readdirSync } from "node:fs";
 import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import {
@@ -156,6 +156,67 @@ function main(): number {
         );
       }
     }
+  }
+
+  // --- Coined terms (MATH-VERIFICATION §3j.97) -----------------------------
+  // `levelScale` was a word I invented, used in seven records, that asserted a mechanism in
+  // its own name and read as verified because nothing distinguishes a token copied out of
+  // the game from one made up. It was wrong — it conflated a level factor with the Quick Fix
+  // multiplier — and it survived months of review.
+  //
+  // So: every camelCase token in a formula must either exist in the decompiled source or be
+  // an ACKNOWLEDGED coinage. Deliberate shorthand is fine and often clearer than the game's
+  // `num79`; what is not fine is coining silently.
+  const COINED_OK = new Set([
+    // Ours, and named after what sets them rather than after a mechanism they assert.
+    "quickFixMultiplier",
+    "levelFactor",
+    "healthMultiplier",
+    // Readable stand-ins for real parameters, checked against their call sites.
+    "hitDamage", // damageInfo.damage
+    "bodyDamage", // characterBody.damage
+    "previousFrac", // Monitor's previousHealthFraction
+    "irradiantPearls", // the ShinyPearl count
+    "maxGuards",
+    "beadLevels",
+    // Asset names. Real game identifiers that live in bundles, not in the assembly.
+    "dtLockbox",
+    "dtVoidLockbox",
+    "dtVoidChest",
+    "cscMinorConstructOnKill",
+    "bdBugWings",
+  ]);
+  const decompiledDir = resolve(root, ".decompiled");
+  if (existsSync(decompiledDir)) {
+    let haystack = "";
+    const collect = (dir: string) => {
+      for (const e of readdirSync(dir, { withFileTypes: true })) {
+        const p = resolve(dir, e.name);
+        if (e.isDirectory()) collect(p);
+        else if (e.name.endsWith(".cs")) haystack += readFileSync(p, "utf8");
+      }
+    };
+    collect(decompiledDir);
+    const unacknowledged = new Map<string, string[]>();
+    for (const it of items) {
+      for (const st of it.stacking) {
+        for (const m of (st.formula ?? "").matchAll(/\b([a-z]+[A-Z][A-Za-z0-9]*)\b/g)) {
+          const t = m[1];
+          if (COINED_OK.has(t) || haystack.includes(t)) continue;
+          if (!unacknowledged.has(t)) unacknowledged.set(t, []);
+          unacknowledged.get(t)!.push(it.name);
+        }
+      }
+    }
+    for (const [term, where] of unacknowledged) {
+      errors.push(
+        `"${term}" appears in a formula (${[...new Set(where)].slice(0, 3).join(", ")}) but ` +
+          `exists nowhere in the decompiled source — if it is deliberate shorthand, add it to ` +
+          `COINED_OK in data-audit.ts; if it names a mechanism, that name is an unverified claim`,
+      );
+    }
+  } else {
+    warnings.push("coined terms not checked (.decompiled absent — run scripts/decompile.sh)");
   }
 
   // --- Name collisions in our own prose (MATH-VERIFICATION §3j.77) ---------
