@@ -238,7 +238,7 @@
         "base": 25,
         "perStack": 25,
         "type": "linear",
-        "formula": "maxHealth += n * (25f x levelScale) (CharacterBody.RecalculateStats). Linear, and the 25 scales with level like every flat-health item."
+        "formula": "maxHealth += n * (25f x quickFixMultiplier) (CharacterBody.RecalculateStats). Linear. CORRECTION: an earlier version of this record said the 25 scales with level. It does not — flat health items carry no level term at all. `quickFixMultiplier` is 1 by default and becomes 1 + 0.5 + 0.15 x (n - 1) with n Quick Fixes (RecalculateStats num79 for health, num84 for regen) — it is NOT a level term."
       }
     ],
     "tags": [
@@ -3279,14 +3279,14 @@
         "base": 40,
         "perStack": 40,
         "type": "linear",
-        "formula": "maxHealth += n * (40f x levelScale) (CharacterBody.RecalculateStats). Linear."
+        "formula": "maxHealth += n * (40f x quickFixMultiplier) (CharacterBody.RecalculateStats). Linear, and no level term. `quickFixMultiplier` is 1 by default and becomes 1 + 0.5 + 0.15 x (n - 1) with n Quick Fixes (RecalculateStats num79 for health, num84 for regen) — it is NOT a level term."
       },
       {
         "stat": "Base health regen (hp/s)",
         "base": 1.6,
         "perStack": 1.6,
         "type": "linear",
-        "formula": "regen += n * 1.6f x levelScale (CharacterBody.RecalculateStats). Linear, and it is item regen, so it scales with level."
+        "formula": "regen: the item's term is `n * 1.6f x levelFactor`, and the SUM of all item-regen terms is then multiplied by quickFixMultiplier — `(base + items x levelFactor) x quickFixMultiplier`. So item regen scales with BOTH, unlike item health which scales only with Quick Fix. `levelFactor` is 1 + 0.2 x (level - 1) (RecalculateStats num85). `quickFixMultiplier` is 1 by default and becomes 1 + 0.5 + 0.15 x (n - 1) with n Quick Fixes (RecalculateStats num79 for health, num84 for regen) — it is NOT a level term."
       }
     ],
     "tags": [
@@ -3469,7 +3469,7 @@
         "base": 10,
         "perStack": 10,
         "type": "linear",
-        "formula": "maxHealth += (pearls + irradiantPearls) * (0.1f x levelScale) (CharacterBody.RecalculateStats) - the two Pearls share one accumulator, so they stack with each other."
+        "formula": "maxHealth multiplier += (pearls + irradiantPearls) * (0.1f x quickFixMultiplier) (CharacterBody.RecalculateStats) — the two Pearls share one accumulator, so they stack with each other. No level term. `quickFixMultiplier` is 1 by default and becomes 1 + 0.5 + 0.15 x (n - 1) with n Quick Fixes (RecalculateStats num79 for health, num84 for regen) — it is NOT a level term."
       }
     ],
     "tags": [
@@ -3495,7 +3495,7 @@
         "base": 10,
         "perStack": 10,
         "type": "linear",
-        "formula": "Shares Pearl's health accumulator, `(pearls + irradiant) * 0.1f`, and adds its own regen term `n * 0.1f x levelScale` plus crit - the 'ALL stats' claim is several separate additions, not one multiplier."
+        "formula": "Shares Pearl's health accumulator, `(pearls + irradiant) * (0.1f x quickFixMultiplier)`, and adds its own regen term `n * 0.1f x levelFactor` (which the item-regen sum then multiplies by quickFixMultiplier) plus crit — the 'ALL stats' claim is several separate additions, not one multiplier, and the health and regen halves scale differently. `levelFactor` is 1 + 0.2 x (level - 1) (RecalculateStats num85). `quickFixMultiplier` is 1 by default and becomes 1 + 0.5 + 0.15 x (n - 1) with n Quick Fixes (RecalculateStats num79 for health, num84 for regen) — it is NOT a level term."
       }
     ],
     "tags": [
@@ -6264,7 +6264,7 @@
         "base": 2.5,
         "perStack": 2.5,
         "type": "linear",
-        "formula": "regen += 2.5f * n x levelScale (CharacterBody.RecalculateStats). Linear."
+        "formula": "regen term = `2.5f * n x levelFactor`, with the item-regen sum then multiplied by quickFixMultiplier. Linear in stacks. `levelFactor` is 1 + 0.2 x (level - 1) (RecalculateStats num85). `quickFixMultiplier` is 1 by default and becomes 1 + 0.5 + 0.15 x (n - 1) with n Quick Fixes (RecalculateStats num79 for health, num84 for regen) — it is NOT a level term."
       }
     ],
     "tags": [
@@ -6289,7 +6289,7 @@
         "base": 50,
         "perStack": 15,
         "type": "linear",
-        "formula": "The item raises the level-scaling multiplier itself: `levelScale += 0.5f + 0.15f * (n - 1)` (CharacterBody.RecalculateStats), so +50% at one stack and +15% per stack thereafter. Because it scales that shared multiplier, it amplifies every per-level health and regen source at once — which is why the description says it does not affect bonuses from leveling up: those are applied elsewhere."
+        "formula": "This item IS the multiplier the records above call quickFixMultiplier: `m += 0.5f + 0.15f * (n - 1)` from a base of 1 (RecalculateStats num79 on the health side, num84 on the regen side), so +50% at one stack and +15% per stack after. It amplifies flat health items, percentage health items and the item-regen sum. It is NOT a level-scaling term — the separate level factor, 1 + 0.2 x (level - 1), applies to item regen only and is unaffected by this item."
       }
     ],
     "tags": [
@@ -6339,14 +6339,14 @@
         "base": 50,
         "perStack": 50,
         "type": "linear",
-        "formula": "maxHealth += n * (50f x levelScale) (CharacterBody.RecalculateStats). Linear."
+        "formula": "maxHealth += n * (50f x quickFixMultiplier) (CharacterBody.RecalculateStats). Linear, no level term. `quickFixMultiplier` is 1 by default and becomes 1 + 0.5 + 0.15 x (n - 1) with n Quick Fixes (RecalculateStats num79 for health, num84 for regen) — it is NOT a level term."
       },
       {
         "stat": "Maximum health (%)",
         "base": 5,
         "perStack": 5,
         "type": "linear",
-        "formula": "The percentage term is a separate addition, `healthMultiplier += n * (0.05f x levelScale)`, so the flat 50 and the 5% do not compound — they are summed independently like Titanic Knurl's two effects."
+        "formula": "The percentage term is a separate addition, `healthMultiplier += n * (0.05f x quickFixMultiplier)`, so the flat 50 and the 5% do not compound — they are summed independently like Titanic Knurl's two effects. `quickFixMultiplier` is 1 by default and becomes 1 + 0.5 + 0.15 x (n - 1) with n Quick Fixes (RecalculateStats num79 for health, num84 for regen) — it is NOT a level term."
       }
     ],
     "tags": [

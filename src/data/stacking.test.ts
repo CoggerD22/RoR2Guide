@@ -900,3 +900,48 @@ test("hit-count claims from OverlapAttack address all three of its escapes", () 
   }
   expect(incomplete, incomplete.join(" | ")).toEqual([]);
 });
+
+/**
+ * §3j.93's term extraction found `levelScale` — my own invention, used in seven records,
+ * conflating TWO unrelated multipliers in RecalculateStats:
+ *
+ *   num85 = 1 + 0.2 x (level - 1)          a real level factor, on ITEM REGEN terms
+ *   num79 / num84 = 1 + 0.5 + 0.15(n-1)    the QUICK FIX multiplier, on flat health,
+ *                                           percentage health, and the item-regen sum
+ *
+ * Flat health items carry no level term at all, and seven records said otherwise. statMath.ts
+ * had it right throughout — the error was confined to prose, which is exactly where the
+ * verified/langfile split cannot see it.
+ */
+test("flat health items scale with Quick Fix, not with level", () => {
+  for (const id of ["bison-steak", "titanic-knurl", "seared-steak"]) {
+    const x = items.find((i) => i.id === id)!;
+    const hp = x.stacking.find((s) => s.stat === "Maximum health")!;
+    expect(hp.formula, id).toMatch(/quickFixMultiplier/);
+    expect(hp.formula, id).not.toMatch(/levelScale/);
+  }
+  // Bison Steak carries the correction explicitly, since the old claim was published.
+  expect(
+    items.find((i) => i.id === "bison-steak")!.stacking.find((s) => s.stat === "Maximum health")!
+      .formula,
+  ).toMatch(/CORRECTION/);
+});
+
+test("item REGEN scales with both level and Quick Fix", () => {
+  const knurl = items.find((i) => i.id === "titanic-knurl")!;
+  const regen = knurl.stacking.find((s) => /regen/i.test(s.stat))!;
+  expect(regen.formula).toMatch(/levelFactor/);
+  expect(regen.formula).toMatch(/quickFixMultiplier/);
+  // statMath models the level half; assert the two never merge back into one name.
+  expect(regen.formula).not.toMatch(/levelScale/);
+});
+
+test("no record uses the invented term levelScale", () => {
+  const offenders: string[] = [];
+  for (const it of items) {
+    for (const st of it.stacking) {
+      if (/levelScale/.test(st.formula ?? "")) offenders.push(`${it.name} — ${st.stat}`);
+    }
+  }
+  expect(offenders, offenders.join(" | ")).toEqual([]);
+});

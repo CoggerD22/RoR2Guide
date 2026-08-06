@@ -4801,3 +4801,53 @@ terms found by instinct all appear in the top of that list, which is the encoura
 instinct was right, and now it does not have to be.
 
 `levelScale` (7 records, genuinely undefined) is the next one down.
+
+### 3j.94 `levelScale` was my own invention, and it was two different multipliers
+
+The term extraction from §3j.93 listed `levelScale` at seven records and "explained: no". It
+is explained nowhere because **it does not exist in the game.** I made the name up, and used
+it for two unrelated things.
+
+`RecalculateStats`, eleven lines apart:
+
+```csharp
+float num79 = 1f;  if (num60 > 0) num79 += 0.5f + 0.15f * (num60 - 1);   // health side
+float num84 = 1f;  if (num60 > 0) num84 += 0.5f + 0.15f * (num60 - 1);   // regen side
+float num85 = 1f + num72 * 0.2f;                                          // num72 = level - 1
+```
+
+`num60` is **`DLC3Content.Items.BonusHealthBoost` — Quick Fix**. So `num79`/`num84` are a
+*Quick Fix* multiplier, and only `num85` is a level factor. They are applied to different
+things:
+
+| Quantity | Level factor (`num85`) | Quick Fix (`num79`/`num84`) |
+|---|---|---|
+| Flat item health (Bison Steak 25, Knurl 40, Seared Steak 50) | **no** | yes |
+| Percentage item health (Pearl 10%, Seared Steak 5%) | **no** | yes |
+| Item regen terms (Knurl 1.6, Hearty Stew 2.5, Irradiant 0.1) | yes | yes (on the sum) |
+
+Seven records said flat health items "scale with level like every flat-health item". **They
+carry no level term at all.** Nine rows across eight items rewritten, with the two multipliers
+named separately and Bison Steak carrying an explicit `CORRECTION:` since the wrong claim was
+published.
+
+Quick Fix's own record was inside-out as a result: it described itself as raising "the
+level-scaling multiplier". It raises *its own* multiplier, which is not the level one, and the
+level factor is entirely unaffected by it.
+
+#### Two things worth separating
+
+**`statMath.ts` was right the whole time.** It applies a level factor to item regen and none to
+flat health — exactly correct. `pnpm data:verify` has been passing because the *calculator*
+matched the game; the error lived only in the prose beside it. That is the failure mode
+§3j.80 named — prose is where the `verified`/`langfile` split cannot see — and this is a
+sharper instance, because the number was right and the *explanation* of the number was wrong.
+
+**Inventing a name is how it happened.** Neither `levelScale` nor `quickFixMultiplier` appears
+in the decompile; both are mine. `quickFixMultiplier` is honest because it names the thing
+that sets it. `levelScale` asserted a mechanism in its own name, and once written it read as
+verified — nothing in the pipeline distinguishes a term I coined from one I copied. A test now
+fails if the word reappears anywhere.
+
+The method earned its keep on its first real use: four passes of intuition found four *missing*
+definitions, and the ranked list immediately found a *wrong* one.
