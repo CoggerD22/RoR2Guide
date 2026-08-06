@@ -920,3 +920,15 @@ test("§9: the Breakpoints tab says what the game counts as a stack", async ({ p
   await expect(page.getByText(/every item that can be removed reports a count of 0/)).toBeVisible();
   await expect(page.getByText(/canRemove/)).toBeVisible();
 });
+
+test("§9: the on-hit table says a parry overrides every chance in it", async ({ page }) => {
+  // Sure Proc qualifies every "% chance on hit" number in the dataset. A parry grants the
+  // buff; the next skill hit consumes it and LocalCheckRoll short-circuits to true.
+  await page.goto("/reference");
+  await page.getByRole("button", { name: "Breakpoints" }).click();
+  await expect(page.getByText(/A parry makes your next skill hit ignore all of this/)).toBeVisible();
+  await expect(page.getByText(/ProcType\.SureProc/)).toBeVisible();
+  await expect(page.getByText(/every on-hit effect you own, at 100%/)).toBeVisible();
+  // The single documented exception must be named, not rounded off to "always".
+  await expect(page.getByText(/ignoreSureProc: true/)).toBeVisible();
+});

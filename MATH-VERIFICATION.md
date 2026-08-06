@@ -4593,3 +4593,53 @@ silent input to all 217, and that gap — between how often something is *mentio
 rests on it — is a usable signal for where to look next.
 
 Coverage unchanged at 208 of 217.
+
+### 3j.90 Sure Proc — the mechanic that makes every chance in the dataset a 100%
+
+The heuristic from §3j.89 was "sweep the mechanisms with the most dependents first". After
+`GetItemCountEffective` (the input to every stacking number), the next densest is
+`LocalCheckRoll` — the gate behind **every "% chance on hit" figure the site publishes**. Its
+signature carries a parameter I had read past a dozen times:
+
+```csharp
+bool LocalCheckRoll(float percentChance, CharacterMaster master, bool ignoreSureProc)
+{
+    if (!ignoreSureProc) { if (!sureProc) return Util.CheckRoll(percentChance, master); return true; }
+    return Util.CheckRoll(percentChance, master);
+}
+```
+
+`if (!sureProc) … return true;` — when `sureProc` is set the roll **does not happen**. The
+stated chance is irrelevant and the effect simply fires.
+
+Traced end to end:
+
+- **Earned** in `HealthComponent`, on the parry path — the same branch that rejects the damage,
+  grants 0.5s of hidden invincibility and refunds 75% of the equipment cooldown also does
+  `body.AddBuff(DLC3Content.Buffs.SureProc)`.
+- **Spent** on the next damage you deal *from a skill*
+  (`damageInfo.damageType.damageSource & DamageSource.SkillMask`), which removes the buff and
+  stamps `ProcType.SureProc` onto that hit's `procChainMask`.
+- **Consumed** by every `LocalCheckRoll` on that hit, all of which short-circuit to `true`.
+
+So: **parry, then hit something with a skill, and every on-hit item you own procs at once, at
+100%, regardless of its printed chance.** Tougher Times' block sits on a different path, but
+Ghor's Tome, Sentient Meat Hook, Tentabauble, Stun Grenade, Bandolier, Electric Boomerang and
+the rest are all gated by this call.
+
+Exactly **one** roll in the game opts out — `ignoreSureProc: true` appears once, against
+eleven `false` — and it is an elite's chance to drop its equipment on death. Naming that
+exception matters: "always, except once" is a checkable claim, and "always" would have been
+wrong.
+
+#### Placement, again
+
+Same reasoning as §3j.89 and worth stating as a settled rule: **a property of a whole class of
+numbers goes once, beside the class.** This one qualifies every chance in the on-hit table, so
+it sits directly above that table rather than being copied onto every proc item — where it
+would be 20 identical paragraphs nobody reads, and 20 places to drift.
+
+Two passes, two mechanics that silently qualify the entire dataset, both found by asking not
+"what is unverified?" but **"what does everything depend on?"** The remaining `langfile` count
+did not move for either, and both are more useful to a reader than any of the nine items still
+on that list.

@@ -164,6 +164,26 @@ export function Breakpoints() {
           whereas Tentabauble applies the coefficient <em>inside</em> the curve, so a
           half-proc-coefficient hit does not simply halve either one.
         </p>
+        {/*
+          Sure Proc qualifies every chance in this table and every "% chance on hit" number
+          in the dataset, and nothing on the site mentioned it. Same placement logic as
+          "what counts as a stack": a property of the whole class goes once, beside the
+          class, not onto 217 records.
+        */}
+        <p className="mb-3 max-w-2xl rounded-lg border border-emerald-400/25 bg-emerald-400/5 px-3 py-2 text-xs leading-relaxed text-muted-foreground">
+          <strong className="font-semibold text-emerald-300/90">
+            A parry makes your next skill hit ignore all of this.
+          </strong>{" "}
+          Parrying grants the hidden <span className="text-foreground">Sure Proc</span> buff.
+          The next damage you deal <em>from a skill</em> consumes it and stamps{" "}
+          <code className="rounded bg-surface-2 px-1">ProcType.SureProc</code> onto that hit,
+          and every roll below then returns true regardless of its chance &mdash;{" "}
+          <code className="rounded bg-surface-2 px-1">LocalCheckRoll</code> short-circuits to{" "}
+          <span className="text-foreground">true</span> without rolling. One hit, every
+          on-hit effect you own, at 100%. Exactly one roll in the game opts out
+          (<code className="rounded bg-surface-2 px-1">ignoreSureProc: true</code>): an
+          elite&rsquo;s chance to drop its equipment on death.
+        </p>
         <div className="overflow-x-auto rounded-xl border border-border bg-surface">
           <table className="w-full min-w-[34rem] text-sm">
             <thead>
