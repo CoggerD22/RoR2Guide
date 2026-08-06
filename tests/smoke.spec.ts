@@ -944,3 +944,16 @@ test("§9: the on-hit table explains why proc chains terminate", async ({ page }
   // Must not overstate it: different types DO still trigger one another.
   await expect(page.getByText(/Different types still trigger each other/)).toBeVisible();
 });
+
+test("§9: the difficulty coefficient is defined, including what Eclipse does not do", async ({ page }) => {
+  // Four item formulas scale by it, chest prices ride on it, and it was never defined.
+  await page.goto("/reference");
+  await page.getByRole("button", { name: "Breakpoints" }).click();
+  await expect(page.getByRole("heading", { name: "The difficulty coefficient" })).toBeVisible();
+  await expect(page.getByText(/0\.0506 x scalingValue/)).toBeVisible();
+  // Eclipse sharing Monsoon's 3 is the non-obvious half.
+  await expect(page.getByText(/every Eclipse level is also 3/)).toBeVisible();
+  // The two curves diverge: floored for the coefficient, raw for monster level.
+  await expect(page.getByText(/steps, once a minute/)).toBeVisible();
+  await expect(page.getByText(/only one of them ticks/)).toBeVisible();
+});

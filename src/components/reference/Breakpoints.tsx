@@ -98,6 +98,48 @@ export function Breakpoints() {
         </p>
       </section>
 
+      {/*
+        The fourth shared input (MATH-VERIFICATION §3j.92). Four published item formulas
+        scale by difficultyCoefficient — Roll of Pennies, Ghor's Tome, Brittle Crown,
+        Defiant Gouge — as do chest prices and Artifact of Kin's spawn budget, and the site
+        had never said what it is. Note the two curves come apart: the coefficient uses
+        FLOORED minutes, ambientLevel uses the raw value.
+      */}
+      <section>
+        <h3 className="mb-1 font-display text-lg font-semibold text-foreground">
+          The difficulty coefficient
+        </h3>
+        <p className="mb-3 max-w-2xl text-xs leading-relaxed text-muted-foreground">
+          Several items scale their payout by it, chest prices ride on it, and it is what
+          makes a run get harder. <code className="rounded bg-surface-2 px-1">Run.cs</code>:
+        </p>
+        <pre className="mb-3 overflow-x-auto rounded-xl border border-border bg-surface p-3 text-[11px] leading-relaxed text-muted-foreground">
+{`base     = 0.7 + 0.3 x players
+timeRate = 0.0506 x scalingValue x players^0.2
+coeff    = (base + timeRate x floor(minutes)) x 1.15^stagesCleared`}
+        </pre>
+        <p className="mb-3 max-w-2xl text-xs leading-relaxed text-muted-foreground">
+          <span className="text-foreground">scalingValue</span> is{" "}
+          <span className="text-foreground">1</span> on Drizzle,{" "}
+          <span className="text-foreground">2</span> on Rainstorm and{" "}
+          <span className="text-foreground">3</span> on Monsoon &mdash; and{" "}
+          <em>every Eclipse level is also 3</em>. Eclipse does not scale this curve at all; it
+          stacks its own separate modifiers. Solo on Rainstorm the run starts at exactly{" "}
+          <span className="text-foreground">1.0</span> and gains{" "}
+          <span className="text-foreground">0.1012</span> per minute, while each stage cleared
+          multiplies the whole thing by 1.15 &mdash; so late in a run, clearing stages moves
+          it far faster than the clock does.
+        </p>
+        <p className="max-w-2xl text-xs leading-relaxed text-muted-foreground">
+          One subtlety worth having: the coefficient uses{" "}
+          <code className="rounded bg-surface-2 px-1">Mathf.Floor</code> of the minutes, so it
+          rises in <span className="text-foreground">steps, once a minute</span>. Monster
+          level is computed from the same inputs <em>without</em> the floor, so it climbs{" "}
+          <span className="text-foreground">continuously</span>. Two curves, same run, and
+          only one of them ticks.
+        </p>
+      </section>
+
       {/* Critical strike */}
       <section>
         <h3 className="mb-1 font-display text-lg font-semibold text-foreground">Guaranteed crits</h3>

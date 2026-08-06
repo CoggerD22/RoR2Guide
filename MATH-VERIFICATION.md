@@ -4687,3 +4687,64 @@ is still eligible to fire. Those were previously assumed by 217 records and stat
 
 The `langfile` list is unchanged at nine, and I think that is the right trade: the remaining
 nine are individually hard and narrow, while these three qualify everything.
+
+### 3j.92 the difficulty coefficient — four published formulas rode on an undefined term
+
+Fourth pass of "most dependents first". Four item records scale their payout by
+`difficultyCoefficient` — **Roll of Pennies, Ghor's Tome, Brittle Crown, Defiant Gouge** — as
+do chest prices, Artifact of Kin's spawn budget and the Bulwark encounter cost. The site
+published all of them and never once said what the term meant.
+
+`Run.RecalculateDifficultyCoefficentInternal`:
+
+```
+base     = 0.7 + 0.3 x players
+timeRate = 0.0506 x scalingValue x players^0.2
+coeff    = (base + timeRate x floor(minutes)) x 1.15^stagesCleared
+```
+
+`scalingValue` comes from `DifficultyCatalog`, and reading the constructor calls gives the
+fact that is genuinely hard to find elsewhere:
+
+| Difficulty | scalingValue |
+|---|---|
+| Drizzle | 1 |
+| Rainstorm | 2 |
+| Monsoon | 3 |
+| **Eclipse 1 – 8** | **3** |
+
+**Every Eclipse level shares Monsoon's 3.** Eclipse does not scale this curve at all — it
+stacks its own separate modifiers. A reader who assumes "Eclipse 8 must scale harder than
+Monsoon" is wrong about the mechanism, if not about the experience.
+
+Solo on Rainstorm the run starts at exactly **1.0** (`0.7 + 0.3`) and gains **0.1012** per
+minute, while each stage cleared multiplies the entire expression by **1.15** — so late in a
+run, clearing a stage moves the coefficient far more than the clock does.
+
+#### The detail I would have missed by skimming
+
+```csharp
+float num2 = Mathf.Floor(num * (1f / 60f));            // difficultyCoefficient
+...
+float num10 = (num4 + num7 * (num * (1f / 60f))) * …;  // ambientLevel — no floor
+```
+
+The coefficient uses **floored** minutes and therefore rises in **steps, once a minute**.
+Monster level is computed from the same inputs **without** the floor and climbs
+**continuously**. Two curves, same run, same variables, and only one of them ticks. The lines
+are eleven apart and differ by one function call.
+
+#### Four passes, four shared inputs
+
+| Pass | Term | Silently qualified |
+|---|---|---|
+| §3j.89 | `GetItemCountEffective` | every stack count |
+| §3j.90 | Sure Proc | every "% chance on hit" |
+| §3j.91 | `ProcChainMask` | every on-hit effect's eligibility |
+| §3j.92 | `difficultyCoefficient` | four payouts, every price, every spawn budget |
+
+Each was published-adjacent for months, cited in formulas as a bare identifier, and never
+defined. The pattern is now clear enough to name: **a term used inside a verified formula
+inherits the formula's air of authority without inheriting any of its verification.** Writing
+"`25 x difficultyCoefficient^1.25`" looks like a complete answer, and is only complete if the
+reader already knows the part we did not write down.
