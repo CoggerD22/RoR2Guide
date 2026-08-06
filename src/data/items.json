@@ -2099,7 +2099,7 @@
         "base": 7,
         "perStack": 0,
         "type": "none",
-        "formula": "blastRadius = 7 on the DynamiteProjectile prefab (ror2-dlc3 items bundle for DronesDropDynamite), thrown with force = 500 in a random direction (Random.onUnitSphere)."
+        "formula": "blastRadius = 7 on the DynamiteProjectile prefab (ror2-dlc3 items bundle for DronesDropDynamite), thrown with force = 500 in a random direction (Random.onUnitSphere). DynamiteProjectile's falloffModel is None, so the full damage lands anywhere inside the 7m — distance from the stick does not matter at all."
       }
     ],
     "tags": [
@@ -5601,7 +5601,7 @@
         "base": 250,
         "perStack": 0,
         "type": "none",
-        "formula": "blastDamageCoefficient = 2.5 in a blastRadius of 7 on each bomblet."
+        "formula": "blastDamageCoefficient = 2.5 in a blastRadius of 7 on each bomblet. MolotovSingleProjectile's falloffModel is None, so each bomblet deals its full 250% anywhere inside its 7m; the six overlapping blasts do not taper toward their edges."
       },
       {
         "stat": "Burn total per bomblet (%)",
@@ -5707,7 +5707,7 @@
         "base": 2000,
         "perStack": 0,
         "type": "none",
-        "formula": "VendingMachineProjectile: blastDamageCoefficient = 20 in a blastRadius of 16, at blastProcCoefficient 1."
+        "formula": "VendingMachineProjectile: blastDamageCoefficient = 20 in a blastRadius of 16, at blastProcCoefficient 1. The falloff is SweetSpot, which is a step rather than a taper: BlastAttack computes `1 - (distance > radius/2 ? 0.75 : 0)`, so the full 2000% lands within 8m of the impact and everything from 8m to the 16m edge takes exactly a QUARTER of it — 500%. Nothing in the description hints at an inner and outer band."
       },
       {
         "stat": "Healing per target (% of their max health)",
@@ -6184,7 +6184,7 @@
         "base": 100,
         "perStack": 0,
         "type": "none",
-        "formula": "CollectiveDeathProjectile: blastDamageCoefficient = 1 in a blastRadius of 11. Deaths inside a collective are chained with delayBetweenDeaths = 0.8f, so members fall in sequence rather than all at once."
+        "formula": "CollectiveDeathProjectile: blastDamageCoefficient = 1 in a blastRadius of 11. Deaths inside a collective are chained with delayBetweenDeaths = 0.8f, so members fall in sequence rather than all at once. CollectiveDeathProjectile's falloffModel is None — the full 100% applies across the whole 11m rather than tapering."
       }
     ],
     "tags": [
@@ -6235,7 +6235,7 @@
         "base": 7.5,
         "perStack": 0,
         "type": "none",
-        "formula": "hitCircleRadius = 7.5f, with the outer ring's blastRadius 3 and the centre's 3.5."
+        "formula": "hitCircleRadius = 7.5f, with the outer ring's blastRadius 3 and the centre's 3.5. The two projectiles also differ in falloff, which is why the outer ring feels so much weaker than its 15% suggests at the edge: the outer AffixAurelionitePreStrikeProjectile uses falloffModel Linear over its 3m (full value only at the centre of each ring, tapering to zero at the rim), while the AffixAurelioniteCenterProjectile uses None over 3.5m and lands its full 150% anywhere inside."
       }
     ],
     "tags": [

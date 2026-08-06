@@ -976,3 +976,41 @@ test("a cited damageCoefficient matches the published base, or explains itself",
   }
   expect(unexplained, unexplained.join(" | ")).toEqual([]);
 });
+
+/**
+ * A blast radius without its falloff model is half an answer, and five of seven blast
+ * records published one without the other. BlastAttack has FIVE models and they are not
+ * variations on a theme:
+ *
+ *   None          full damage anywhere inside the radius
+ *   Linear        1 - d/r        -> ZERO at the rim
+ *   SweetSpot     1 - (d > r/2 ? 0.75 : 0)  -> a CLIFF: full inside half, 25% beyond
+ *   HalfLinear    tapers to 50%
+ *   QuarterLinear tapers to 25%
+ *
+ * "600% in 8m" means something entirely different under None than under Linear, so any
+ * record that publishes a blast radius has to say which.
+ */
+test("every record citing a blast radius states its falloff model", () => {
+  const MODELS = /falloffModel is (None|Linear|SweetSpot|HalfLinear|QuarterLinear)|falloffModel = None|falloff is SweetSpot|falloffModel = Linear|blastFalloffModel = None|falloffModel = None/;
+  const silent: string[] = [];
+  for (const it of items) {
+    for (const st of it.stacking) {
+      const f = st.formula ?? "";
+      if (!/blastRadius/.test(f)) continue;
+      if (MODELS.test(f) || /falloff/i.test(f)) continue;
+      silent.push(`${it.name} — ${st.stat}`);
+    }
+  }
+  expect(silent, silent.join(" | ")).toEqual([]);
+});
+
+test("Remote Caffeinator's SweetSpot band is recorded, not rounded to one number", () => {
+  const x = items.find((i) => i.id === "remote-caffeinator")!;
+  const impact = x.stacking.find((s) => /Impact damage/.test(s.stat))!;
+  expect(impact.base).toBe(2000);
+  expect(impact.formula).toMatch(/SweetSpot/);
+  // The consequence, not just the model name: an inner band and an outer quarter.
+  expect(impact.formula).toMatch(/within 8m/);
+  expect(impact.formula).toMatch(/QUARTER/);
+});

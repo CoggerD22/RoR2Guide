@@ -4893,3 +4893,58 @@ lookup, run automatically, on every record, forever.
 Four terms defined (§3j.89–93), one invented term caught and split (§3j.94), one swept and
 pinned (this). `blastRadius` (7 records) is next, and I expect it to be dull — a radius is a
 radius — which is itself worth confirming rather than assuming.
+
+### 3j.96 the dull term wasn't — a blast radius without its falloff is half an answer
+
+I predicted `blastRadius` (7 records) would be dull, and said that was worth confirming rather
+than assuming. It was worth confirming.
+
+The sweep found no arithmetic inconsistency — a radius is a radius, and the two records that
+publish one as their own value are both exact. But it surfaced the question the sweep was not
+looking for: **five of the seven published a blast radius without saying whether the damage
+tapers across it.** `BlastAttack` has **five** falloff models, and they are not variations on a
+theme:
+
+```csharp
+case FalloffModel.None:          num2 = 1f;
+case FalloffModel.Linear:        num2 = 1f - Mathf.Clamp01(num / radius);
+case FalloffModel.SweetSpot:     num2 = 1f - ((num > radius / 2f) ? 0.75f : 0f);
+case FalloffModel.HalfLinear:    num2 = 1f - Mathf.Clamp01(num / radius) * 0.5f;
+case FalloffModel.QuarterLinear: num2 = 1f - Mathf.Clamp01(num / radius) * 0.75f;
+```
+
+**Linear reaches zero at the rim.** So "600% in 8 metres" under Linear delivers 600% at the
+exact centre and nothing at the edge, while the same sentence under None delivers 600%
+everywhere inside. Same words, entirely different item.
+
+And **SweetSpot is a cliff, not a taper** — full damage inside half the radius, a flat 25%
+beyond it.
+
+#### What the missing halves turned out to be
+
+| Record | Model | Consequence |
+|---|---|---|
+| Box of Dynamite | None | full 240% anywhere in 7m |
+| Molotov (6-Pack) | None | each bomblet's full 250% across its 7m |
+| Of One Mind | None | full 100% across the whole 11m |
+| **Remote Caffeinator** | **SweetSpot** | **2000% within 8m, then exactly 500% out to 16m** |
+| Aurelionite's Blessing | Linear (outer) / None (centre) | the ring tapers to nothing; the centre does not |
+
+Remote Caffeinator is the one worth the pass on its own. Its description gives a single damage
+number, and the item actually has an **inner and an outer band with a fourfold step between
+them**. Nothing in the game's text hints at it, and I had published the 2000% with a radius
+and no model — technically true, and misleading in the way a half-stated mechanic always is.
+
+Aurelionite's is the subtler one: the outer ring and the centre use *different models*, which
+explains why the ring feels weaker than its stated 15% suggests. That asymmetry is invisible
+unless you read both prefabs.
+
+#### The test, and what caught the last one
+
+A record citing `blastRadius` must state its falloff model. Writing it flagged **Aurelionite's
+Blessing**, which I had not thought to check — I had gone looking for the five I knew about
+and stopped. The test found the sixth.
+
+That is the second time this session a check has caught something in the same pass that wrote
+it (§3j.77 was the first). Both times the check knew the rule better than I was applying it,
+which is the whole argument for writing rules down as code rather than as resolutions.
