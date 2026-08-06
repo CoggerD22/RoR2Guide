@@ -77,15 +77,31 @@ left, bold white name, gray body with highlighted numeric values.
 - [x] Math verification pass (see `MATH-VERIFICATION.md` for the full log)
       - Stat engine rebuilt against the decompiled `CharacterBody.RecalculateStats()`;
         two real bugs fixed (item regen scales with level; Irradiant Pearl also grants crit).
-      - items.json 100% verified (0 `verified:false`); survivors verified field-by-field
-        against the body **prefabs** (190/190) — those values are NOT in RoR2.dll.
+      - items.json 100% verified (0 `verified:false`), of which **208/217 are traced to
+        code or assets**; the remaining 9 are 4 quest items with no mechanic, 2 equipment
+        fully described by `consumedOnUse`, and 3 open questions each carrying the exact
+        arithmetic that would settle them. `coverage-floor.json` ratchets this and
+        `data:audit` fails if it drops. Survivors verified field-by-field against the body
+        **prefabs** (190/190) — those values are NOT in RoR2.dll.
       - Artifact + shrine numbers confirmed against their behavior classes.
       - `pnpm data:verify` locks coefficients and survivor stats, and runs in CI.
       - Every record carries a `confidence` tag (code > asset > langfile > wiki),
         badged in the codex. Nothing is wiki-only any more.
-      - Proc coefficients: `src/data/skills.json`, 78/125 loadout skills verified with
-        provenance, surfaced in the Stat Lab. The rest are honestly marked unverified —
-        never guessed (see MATH-VERIFICATION §3c).
+      - Proc coefficients: `src/data/skills.json`, **106/125** loadout skills verified with
+        provenance, surfaced in the Stat Lab. The other **19 have no damage path at all**
+        (dashes, stance swaps, turret placements) and are labelled "no direct damage" rather
+        than unverified — **0 skills are genuinely unknown** (§3j.47, §3j.64).
+
+- [x] §9 surface audit — every page and component read with "what does a reader conclude?"
+      asked explicitly (`PLAN.md` §9). Findings and method in `MATH-VERIFICATION.md`
+      §3j.58–§3j.98. Notable: the Stat Lab was a second unaudited implementation of the
+      game's arithmetic; "N base, +M per stack" was false on 28 non-linear rows; four shared
+      terms every formula depended on had never been defined.
+- [x] Guards, not resolutions. Each of these turned a repeated mistake into a failing build:
+      coverage ratchet; internal-name collisions; unscoped negative claims; coined terms
+      absent from the decompile; `damageCoefficient` vs published base; blast radius without
+      a falloff model; hit-count claims vs all three `OverlapAttack` escapes; stale
+      verification vocabulary.
 
 ### Next up
 
@@ -94,5 +110,6 @@ left, bold white name, gray body with highlighted numeric values.
   carries the note explaining how to re-enable (restore two imports + routes, plus the nav
   entry in `src/lib/nav.ts`). It stays parked while the site is facts-only — the missing
   piece is written guides, and those need a human author.
-- Proc tail: split genuinely non-damaging skills (dashes, beacons) from the truly
-  unknown ones so the UI can say "no proc" instead of "unverified".
+- In-game observation. Everything reachable by reading code and assets has been read;
+  what is left is behaviour under real play — see "unexaminable" in `MATH-VERIFICATION.md`
+  §3j.98. Nothing on this site substitutes for holding the item and watching the number.

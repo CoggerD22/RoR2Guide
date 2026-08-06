@@ -1049,3 +1049,32 @@ test("no user-facing string describes verification by in-game logbook", async ()
   }
   expect(offenders, offenders.join(" | ")).toEqual([]);
 });
+
+/**
+ * CLAUDE.md's Status section is itself a claim, and it had drifted twice: it advertised
+ * 78/125 procs verified when the number was 106, and listed a "proc tail" as pending work
+ * that had been finished passes earlier. Documentation about verification going stale is a
+ * particularly poor failure for this project.
+ *
+ * These pin the two counts the Status section quotes, so the next drift fails the build
+ * rather than quietly misinforming whoever reads it next.
+ */
+test("CLAUDE.md's quoted verification counts match the data", async () => {
+  const { readFileSync } = await import("node:fs");
+  const claude = readFileSync("CLAUDE.md", "utf8");
+
+  const skills = JSON.parse(readFileSync("src/data/skills.json", "utf8")) as Array<{
+    skills: Array<{ verified: boolean; damaging?: boolean }>;
+  }>;
+  const all = skills.flatMap((s) => s.skills);
+  const verified = all.filter((k) => k.verified).length;
+  const noDamage = all.filter((k) => !k.verified && k.damaging === false).length;
+  const unknown = all.length - verified - noDamage;
+
+  expect(claude, "proc count in Status").toContain(`${verified}/${all.length}`);
+  expect(claude, "no-damage-path count").toContain(`${noDamage} have no damage path`);
+  expect(unknown, "Status claims 0 unknown procs").toBe(0);
+
+  const traced = items.filter((i) => i.confidence === "code" || i.confidence === "asset").length;
+  expect(claude, "traced-item count in Status").toContain(`${traced}/${items.length}`);
+});

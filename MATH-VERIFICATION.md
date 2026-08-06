@@ -5054,3 +5054,46 @@ Per §9.5, done is not "no findings" — it is that every surface has been read 
 questions asked, every finding fixed or recorded, and the unexaminable named. What remains
 unexaminable is unchanged and worth restating: **behaviour under real play.** Nothing here
 substitutes for someone holding the item and watching the number.
+
+### 3j.99 the status section was itself out of date
+
+§3j.98 found a stale claim in `CLAUDE.md` while auditing tooltips. Having found one, the
+obvious move was to check the rest of that file rather than assume it was the only one. It
+was not.
+
+**"Proc coefficients: 78/125 loadout skills verified … the rest are honestly marked
+unverified."** The real number is **106/125**, and "the rest" is not unverified at all — 19
+have no damage path and **0 are genuinely unknown** (§3j.47, §3j.64). The sentence understated
+the work by 28 skills and mischaracterised the remainder.
+
+**"Next up: proc tail — split genuinely non-damaging skills from the truly unknown ones so
+the UI can say 'no proc' instead of 'unverified'."** That is a verbatim description of work
+finished in §3j.64. Anyone picking the project up would have started on a task that was done,
+and found the code already doing it.
+
+Also corrected: the item line now records that **208 of 217 are traced to code or assets**,
+with the remaining 9 characterised rather than left as a bare count — 4 quest items with no
+mechanic, 2 equipment fully described by `consumedOnUse`, 3 open questions each carrying the
+arithmetic that would settle them. And §9 and the guards, neither of which the Status section
+mentioned at all, are now listed.
+
+#### Why this matters more than it looks
+
+This is a project whose entire premise is that unverified claims must not read as verified.
+Its own status file was making claims about the verification and getting them wrong. The
+failure mode is identical to the one §9 was written for — **correct work, false description**
+— aimed at the next person to open the repository instead of at a player.
+
+And the drift direction is worth noting: every stale claim understated or mis-stated *completed*
+work. Nothing overstated it. That is the cheerful version of the failure, and it still sends
+someone to redo finished work.
+
+#### The check
+
+Two counts the Status section quotes are now derived and asserted: procs verified out of total,
+and items traced out of total. Verified by putting the old `78/125` back and watching it fail
+by name. Prose around them can be rewritten freely; the numbers cannot drift.
+
+`Next up` now has exactly two entries, and both are honest about needing something this process
+cannot supply: **written guides need a human author**, and **in-game observation needs someone
+holding the item**. Everything reachable by reading code and assets has been read.
