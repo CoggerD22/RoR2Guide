@@ -97,11 +97,18 @@ left, bold white name, gray body with highlighted numeric values.
       §3j.58–§3j.98. Notable: the Stat Lab was a second unaudited implementation of the
       game's arithmetic; "N base, +M per stack" was false on 28 non-linear rows; four shared
       terms every formula depended on had never been defined.
-- [x] Guards, not resolutions. Each of these turned a repeated mistake into a failing build:
-      coverage ratchet; internal-name collisions; unscoped negative claims; coined terms
-      absent from the decompile; `damageCoefficient` vs published base; blast radius without
-      a falloff model; hit-count claims vs all three `OverlapAttack` escapes; stale
-      verification vocabulary.
+- [x] Guards, not resolutions — each turns a repeated mistake into a failing build. Two
+      tiers, and the difference matters:
+      - **Enforced in CI** (`pnpm test:unit`, no game install needed): coverage ratchet;
+        unscoped negative claims in data AND component prose; `damageCoefficient` vs the
+        published base; blast radius without a falloff model; hit-count claims vs all three
+        `OverlapAttack` escapes; the invented term `levelScale`; stale verification
+        vocabulary ("logbook"); Status counts vs the data; schema fields vs `PLAN.md`.
+      - **Local only** — needs the game install, so CI reports them skipped rather than
+        passed: internal-name collisions, coined terms absent from the decompile, and unlock
+        gating. `.decompiled/` and `.gamedata/` are Gearbox's data and must never be
+        committed (rule above), so this is a permanent limit, not a TODO. Run
+        `pnpm data:audit` locally before pushing data work.
 
 ### Next up
 

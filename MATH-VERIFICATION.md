@@ -5144,3 +5144,56 @@ Every one describes work that was **done better than the description admits**. T
 noticing about this kind of drift: it does not exaggerate, it lags. And a lagging description
 of a verification project is still a false claim about verification — which is the one thing
 this repository exists to refuse.
+
+### 3j.101 do the guards actually guard? Nine do; three cannot
+
+Ten passes of this session ended with "and now a check enforces it". §3j.99 then wrote that
+list into `CLAUDE.md` as *"each of these turned a repeated mistake into a failing build"*.
+That sentence deserved the same treatment as every other claim here, so: **which of them
+actually fail a build, and where?**
+
+Measured by hiding `.gamedata/` and `.decompiled/` — which is exactly the state CI runs in,
+since both are Gearbox's data and must never be committed:
+
+```
+⚠ coined terms not checked (.decompiled absent)
+⚠ internal-name collisions not checked (.gamedata/itemdefs.json absent)
+⚠ unlock gating not cross-checked (.gamedata/achievements.json absent)
+No fatal errors.
+Tests  140 passed
+```
+
+**Nine guards run everywhere.** They live in `test:unit` and read only committed data: the
+coverage ratchet, unscoped negatives (data *and* component prose), `damageCoefficient` vs
+published base, blast falloff, the three `OverlapAttack` escapes, `levelScale`, stale
+verification vocabulary, Status counts, schema-vs-`PLAN.md`.
+
+**Three cannot.** The name-collision rule (§3j.77), the coined-term rule (§3j.97) and unlock
+gating all need the game install. In CI they report *skipped*, and skipped reads exactly like
+passed if nobody looks.
+
+The claim was therefore wrong for two of the guards I was proudest of — the two written
+specifically because I kept making the same mistake. Corrected into two explicit tiers, with
+the reason stated: **this is a permanent limit, not a TODO.** No amount of work moves them into
+CI without committing data that must not be committed.
+
+#### And the workflow file had no reader either
+
+`deploy.yml` decides whether any of this gates publication, and nothing checked it. A gate
+deleted from CI passes every local suite — the failure would be invisible in exactly the way
+the last four passes have been about.
+
+So it has a reader now: the four gate commands must appear in `deploy.yml`, **and must precede
+the build**, since a check that runs after publication has already lost. Verified by deleting
+the `pnpm test:unit` step and watching the suite fail by step name.
+
+#### The shape of the last five passes
+
+Tooltips, `CLAUDE.md`, `PLAN.md`, and now the workflow. Every one is a document that describes
+the work rather than doing it, and every one had drifted — always by **understating** what was
+finished, and always in a place with no reader that would notice.
+
+The pattern is worth naming for whoever comes next: **the further a claim sits from the code,
+the less likely anything checks it, and documentation sits furthest of all.** A verification
+project that lets its own description go stale is failing at the thing it exists to do — just
+one level up from the data.

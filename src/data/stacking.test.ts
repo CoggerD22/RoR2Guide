@@ -1117,3 +1117,27 @@ test("every item/skill schema field is documented in PLAN.md", async () => {
   );
   expect(undocumented, undocumented.join(" | ")).toEqual([]);
 });
+
+/**
+ * The deploy workflow is a document with no reader, and it is the one that decides whether
+ * any of these guards actually gate anything. A guard removed from CI still passes locally,
+ * which is precisely how it would go unnoticed.
+ *
+ * Note what this does NOT claim: three audit rules (internal-name collisions, coined terms,
+ * unlock gating) need `.decompiled`/`.gamedata`, which are Gearbox's data and must never be
+ * committed. They report as skipped in CI. That is a permanent limit and CLAUDE.md says so.
+ */
+test("the deploy workflow still gates publication on every runnable check", async () => {
+  const { readFileSync } = await import("node:fs");
+  const wf = readFileSync(".github/workflows/deploy.yml", "utf8");
+
+  for (const step of ["pnpm typecheck", "pnpm data:audit", "pnpm data:verify", "pnpm test:unit"]) {
+    expect(wf, `${step} must run in deploy.yml`).toContain(step);
+  }
+  // And they must precede the build, or a failing check would still publish.
+  const buildAt = wf.indexOf("pnpm build");
+  expect(buildAt).toBeGreaterThan(-1);
+  for (const step of ["pnpm typecheck", "pnpm data:audit", "pnpm test:unit"]) {
+    expect(wf.indexOf(step), `${step} must come before the build`).toBeLessThan(buildAt);
+  }
+});
