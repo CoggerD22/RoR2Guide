@@ -41,9 +41,11 @@ milestone (M0 → M6) and do not pull in future-phase features early.
   and survivors.json vs the body prefabs).
 - Ground truth beyond the language files comes from the game install, via two local,
   git-ignored extractors (never commit their output — it's Gearbox's data):
-  `scripts/decompile.sh` → `.decompiled/` (C#: formulas/coefficients — note RoR2.dll is
-  not the only assembly with RoR2 code; `Assembly-CSharp.dll` has more, so check both
-  before claiming something is absent) and
+  `scripts/decompile.sh` → `.decompiled/` (C#: formulas/coefficients. Before claiming
+  something is absent from "the game code", scan every `Managed/*.dll` for the identifier
+  rather than only the decompile — a cross-assembly reference stores the member name in the
+  referencing assembly, so one grep over 143 DLLs settles it. `Assembly-CSharp.dll` looks
+  like a second source of RoR2 code but is type-forwarders and middleware only, §3j.107) and
   `scripts/extract-bodies.py` → `.gamedata/` (Unity prefabs: survivor base stats,
   which are NOT in RoR2.dll). Re-run both after a game patch, then `pnpm data:verify`.
   Also run `python scripts/check-extractor-health.py` after a patch or a UnityPy upgrade:

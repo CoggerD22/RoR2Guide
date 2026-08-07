@@ -5443,10 +5443,16 @@ Assembly-CSharp.dll   135 KB
 RoR2.dll              5.9 MB
 ```
 
-`Assembly-CSharp.dll` contains **RoR2 code** — `RoR2.CharacterAI`, `RoR2.EntityLogic`,
-`RoR2.UI`, `RoR2.Achievements.*`, classes like `BuffPassengerWhileSeated`. **We had never
-decompiled it.** `scripts/decompile.sh` takes `RoR2.dll` and nothing else, and it has done
-since Phase 0.
+`Assembly-CSharp.dll` appeared to contain **RoR2 code** — a raw string scan showed
+`RoR2.CharacterAI`, `RoR2.EntityLogic`, `RoR2.UI`, `RoR2.Achievements.*` and class names like
+`BuffPassengerWhileSeated`. **We had never decompiled it.** `scripts/decompile.sh` takes
+`RoR2.dll` and nothing else, and it has done since Phase 0.
+
+> **Corrected in §3j.107.** Those names are `[assembly: TypeForwardedTo(...)]` attributes —
+> 2,039 of them — not implementations. The assembly forwards RoR2 types to `RoR2.dll` and
+> implements only graphics and audio middleware. Reading a string scan as evidence of
+> *contents* was the mistake; the strings were references, and every one of those types is
+> implemented in `RoR2.dll` where we had already read it.
 
 So every claim in this log of the form *"loaded once in the whole assembly"* — Chaos's
 `friendlyFireDamageScale` with zero callers, Essence of Heresy's single `AddTimedBuff` site,
@@ -5490,3 +5496,61 @@ Nine passes of this session rest on reading the decompile. The decompile was mis
 assembly the whole time, and nothing noticed — because the missing piece is small, and because
 every conclusion drawn from the incomplete input happened to be correct. **The claims were
 lucky, not sound.** They are sound now.
+
+### 3j.107 correcting §3j.106 — the second assembly contains no game code at all
+
+§3j.106 re-checked three assembly-scoped claims against `Assembly-CSharp.dll` and found them
+intact. The rule established several passes earlier says do not stop at the item in hand: when
+a shared foundation turns out to be incomplete, go back to **everything** resting on it. This
+log has far more than three claims resting on the decompile.
+
+So, before sweeping them: what is actually *in* that assembly?
+
+**Eighteen types.** `AudioSpline`, `SoundTrigger`, `FogControl`, `MirrorReflection`,
+`BlurredBackground`, four `NGSS_*` shadow classes, `ChefUnlockFXManager`. Two namespaces, both
+third-party asset-store packages: `JBooth.VertexPainterPro` and `LeTai.Asset.TranslucentImage`.
+
+Mentions of `ItemDef`, `BuffDef`, `RecalculateStats`, `GetItemCount`, `damageCoefficient`:
+**two**, and both are this —
+
+```csharp
+[assembly: TypeForwardedTo(typeof(BuffDef))]
+[assembly: TypeForwardedTo(typeof(ItemDef))]
+```
+
+There are **2,039** such attributes. A type-forward is the *opposite* of an implementation: it
+says "this type lives in another assembly; go there." `BuffPassengerWhileSeated` is forwarded
+here and implemented in `RoR2/BuffPassengerWhileSeated.cs`, where it had already been read.
+
+#### The correction
+
+§3j.106 said the assembly "contains RoR2 code — `RoR2.CharacterAI`, `RoR2.EntityLogic`,
+`RoR2.UI`, classes like `BuffPassengerWhileSeated`." **That was wrong**, and wrong in a way
+worth naming: I read a **raw string scan** as evidence of *contents*. Those strings were
+references — the names of forwarded types and `using` directives — not implementations. The
+entry is corrected in place.
+
+The practical consequence is that the sweep §3j.106 implied is unnecessary: **no
+assembly-scoped claim in this log could have been affected**, because the second assembly
+contains no mechanics to have missed. The three re-checks were not three lucky survivals out
+of many; they were three samples of a set that was never at risk.
+
+What survives from §3j.106 is the part that mattered anyway:
+
+- The **cross-bundle reverse scan** works, via each `SerializedFile`'s externals table. That
+  is a real capability the project did not have, and it is what closed Milky Chrysalis.
+- The **cheap decisive test** for "is this referenced anywhere else?" — a raw byte scan of all
+  143 `Managed/*.dll` for the identifier, since a cross-assembly member reference stores the
+  member *name* in the referencing assembly's metadata. One grep, no decompiling.
+- `decompile.sh` and `CLAUDE.md` now say **that**, rather than "check both assemblies", which
+  would have sent the next person to decompile middleware.
+
+#### On correcting a correction
+
+Two passes ago the lesson was that a claim inherits authority from the confident work around
+it. §3j.106 was itself a confident entry about scope, written in the same breath as a genuine
+finding, and its central characterisation was mistaken. The finding held; the framing did not.
+
+The reason it got caught is that this pass started by asking *what is in there?* rather than
+accepting the previous pass's answer. **The most useful thing to distrust is the entry you
+wrote last** — it is the one with the least distance between conviction and evidence.
