@@ -2,6 +2,14 @@
 #
 # Decompile RoR2.dll for LOCAL math verification (MATH-VERIFICATION.md Phase 0).
 #
+# NOTE (§3j.106): RoR2.dll is not the only assembly carrying RoR2 code.
+# Assembly-CSharp.dll holds RoR2.CharacterAI, RoR2.EntityLogic, RoR2.UI and more.
+# It is small (135 KB vs 5.9 MB) but real, and every "not in the assembly" claim
+# must be checked against BOTH. A raw byte scan of Managed/*.dll for the identifier
+# is the cheap decisive test: a cross-assembly field reference stores the field NAME
+# in the referencing assembly's metadata, so if the name appears in only one DLL,
+# only that DLL can reference it.
+#
 # Output goes to ./.decompiled/ which is git-ignored — decompiled game code is
 # copyrighted and MUST NOT be committed. The repo keeps only derived facts.
 #

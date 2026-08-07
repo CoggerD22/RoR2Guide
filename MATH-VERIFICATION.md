@@ -5420,3 +5420,73 @@ attackable *because* §3j.84 had recorded exactly what was missing rather than "
 
 That is the argument for writing open questions as specifications: **"we need the contact
 duration" is a task; "unresolved" is a shrug.**
+
+### 3j.106 RoR2.dll was never the whole assembly
+
+Attacking the last reachable blocker — *where is `Buffs.BugWings` applied?* — produced a
+finding much larger than the item.
+
+The recorded obstacle (§3j.81) was that `m_FileID != 0` pointers cannot be followed backwards.
+That is only true if you ignore the **externals table**: every `SerializedFile` lists the CABs
+it references, and `m_FileID` indexes into it. So the reverse scan is possible — find the
+target's CAB and pathID, find the bundles whose externals include that CAB, and search only
+those for a matching pointer.
+
+**22 of 1,472 bundles reference the jetpack CAB. Not one points at `bdBugWings`.**
+
+#### The much bigger thing
+
+Checking whether another assembly could apply it, I looked at what sits beside `RoR2.dll`:
+
+```
+Assembly-CSharp.dll   135 KB
+RoR2.dll              5.9 MB
+```
+
+`Assembly-CSharp.dll` contains **RoR2 code** — `RoR2.CharacterAI`, `RoR2.EntityLogic`,
+`RoR2.UI`, `RoR2.Achievements.*`, classes like `BuffPassengerWhileSeated`. **We had never
+decompiled it.** `scripts/decompile.sh` takes `RoR2.dll` and nothing else, and it has done
+since Phase 0.
+
+So every claim in this log of the form *"loaded once in the whole assembly"* — Chaos's
+`friendlyFireDamageScale` with zero callers, Essence of Heresy's single `AddTimedBuff` site,
+this one — was scoped to **one of two assemblies** while being written as though it covered
+the game.
+
+Decompiled it (5,038 lines) and re-checked all three. **All three survive: zero occurrences of
+any of them in `Assembly-CSharp.dll`.** The conclusions were right; the *scope stated for them*
+was not.
+
+Then the decisive, cheap test I should have run months ago — a cross-assembly field reference
+stores the field **name** in the referencing assembly's metadata, so a raw byte scan of every
+managed DLL settles it:
+
+```
+DLLs scanned: 143
+  BugWings                -> ['RoR2.dll']
+  friendlyFireDamageScale -> ['RoR2.dll']
+  LunarDetonationCharge   -> ['RoR2.dll']
+```
+
+Only one assembly out of 143 can reference any of them.
+
+#### Milky Chrysalis, closed
+
+Nothing in any assembly applies `Buffs.BugWings`; nothing in any bundle references the asset;
+`passiveBuffDef` is null; `JetpackController` never calls `AddBuff`. On that evidence **the
+description's +20% movement speed is unreachable** — the buff exists, is read by
+`RecalculateStats`, and is never granted.
+
+The number stays as the game states it, with the finding recorded beside it. A negative this
+strong should be *surfaced*, not used to silently overwrite the game's own text — and the test
+now asserts the record carries the **scope** of the search, because "nothing applies it"
+without a stated scope is exactly the §3j.80 failure that started this thread.
+
+`decompile.sh` and `CLAUDE.md` now warn about the second assembly.
+
+#### What this says about the foundation
+
+Nine passes of this session rest on reading the decompile. The decompile was missing an
+assembly the whole time, and nothing noticed — because the missing piece is small, and because
+every conclusion drawn from the incomplete input happened to be correct. **The claims were
+lucky, not sound.** They are sound now.

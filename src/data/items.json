@@ -5134,7 +5134,7 @@
         "base": 20,
         "perStack": 0,
         "type": "none",
-        "formula": "RecalculateStats: `if (HasBuff(RoR2Content.Buffs.BugWings)) num98 += 0.2f` — additive into the same movement pool as Paul’s Goat Hoof, not a separate multiplier. So IF the buff is active the +20% is exact. What we could not establish is that anything applies it: Buffs.BugWings is loaded once in the whole assembly at IL level (that read), the equipment’s passiveBuffDef is null, JetpackController never calls AddBuff, and a reference scan over this item’s own bundle finds NOTHING pointing at the bdBugWings asset that ships there. Any application would have to be cross-bundle or outside RoR2.dll, which this tooling cannot follow — so the magnitude is verified and the trigger is not."
+        "formula": "RecalculateStats: `if (HasBuff(RoR2Content.Buffs.BugWings)) num98 += 0.2f` — additive into the same movement pool as Paul’s Goat Hoof. So IF the buff were active the +20% would be exact. NOTHING APPLIES IT, and the search is now exhaustive in both places a reference could live: (1) across all 143 managed assemblies, the name BugWings appears in RoR2.dll ALONE, whose four occurrences are the BuffDef declaration and that single read — Assembly-CSharp.dll, decompiled for this check, has none; (2) a cross-bundle reverse scan resolving m_FileID through each SerializedFile’s externals table found 22 bundles referencing the jetpack CAB and NOT ONE pointing at the bdBugWings asset. The equipment’s passiveBuffDef is also null and JetpackController never calls AddBuff. On this evidence the description’s +20% movement speed is unreachable — the buff exists, is read, and is never granted. Left as the game states it because a negative of this kind should be surfaced, not silently overwritten."
       }
     ],
     "tags": [
@@ -5149,7 +5149,7 @@
     "confidence": "langfile",
     "cooldown": 60,
     "activated": true,
-    "descriptionNote": "The flight is a 15s window with a x3 dash on jump every 0.5s, and it ends with your fall speed clamped to -5 rather than dropping you. The +20% movement speed is real and is additive with your other movement items — `Buffs.BugWings` adds 0.2 to the same pool — though we have not found where the game applies that buff, only where it reads it."
+    "descriptionNote": "The flight is a 15s window with a x3 dash on jump every 0.5s, and it ends with your fall speed clamped to -5 rather than dropping you. The description also promises +20% movement speed: that effect is real in RecalculateStats but we can find nothing anywhere in the game that applies the buff it depends on — see the row below for the scope of that search."
   },
   {
     "id": "gnarled-woodsprite",

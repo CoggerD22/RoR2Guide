@@ -313,19 +313,24 @@ test("Forgive Me Please only ticks while the doll is stuck", () => {
  * name resembles neither the item nor the controller. The claim is now split — effect and
  * magnitude verified, application site still open.
  */
-test("Milky Chrysalis: the +20% is verified as an effect, not as a trigger", () => {
+test("Milky Chrysalis: nothing applies the buff its +20% depends on", () => {
   const x = items.find((i) => i.id === "milky-chrysalis")!;
-  expect(x.confidence).toBe("langfile"); // still, because the trigger is unfound
+  expect(x.confidence).toBe("langfile");
   expect(x.stacking.find((s) => /Flight duration/.test(s.stat))?.base).toBe(15);
+
   const ms = x.stacking.find((s) => /Movement speed/.test(s.stat))!;
   expect(ms.base).toBe(20);
   expect(ms.formula).toMatch(/BugWings/);
-  // The boundary is now scoped three ways: the assembly, the equipment def, and the
-  // item's own bundle. All three came back empty, so the trigger is genuinely unfound
-  // rather than unsearched.
-  expect(ms.formula).toMatch(/could not establish/);
-  expect(ms.formula).toMatch(/at IL level/);
-  expect(ms.formula).toMatch(/own bundle/);
+
+  // The claim is now a CLOSED negative, so what it must carry is the SCOPE of the search.
+  // A "nothing applies it" that does not say where it looked is the §3j.80 failure again.
+  // Both places a reference could live: every managed assembly, and every bundle.
+  expect(ms.formula).toMatch(/143 managed assemblies/);
+  expect(ms.formula).toMatch(/Assembly-CSharp/); // the second assembly, decompiled and checked
+  expect(ms.formula).toMatch(/externals table/); // the cross-bundle reverse scan
+  expect(ms.formula).toMatch(/NOTHING APPLIES IT/);
+  // And it must not quietly rewrite the game's own number on the strength of a negative.
+  expect(ms.formula).toMatch(/Left as the game states it/);
 });
 
 /**
