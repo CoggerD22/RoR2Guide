@@ -5253,3 +5253,57 @@ The second attempt, replacing every occurrence, failed as designed.
 
 Six documents, six drifts, every one understating finished work. The repository now has a
 reader for each of them.
+
+### 3j.103 verifying the verifiers — every guard, broken on purpose
+
+§3j.102 ended on a line that turned out to be aimed at me: **a guard that passes when you try
+to break it has not been verified, it has been assumed.** Two injections that pass needed a
+second, harder attempt to actually fail. So the obvious question is which of the twelve guards
+built this session have genuinely been proven to bite, and which I merely believe do.
+
+Going through them, each broken deliberately and restored:
+
+| Guard | Mutation | Failed? |
+|---|---|---|
+| Internal-name collisions | cite `VendingMachine` on Executive Card | ✓ by item and term |
+| Unscoped negative claims (data) | note reading "not in the game code at all" | ✓ by record |
+| Unscoped negatives (component prose) | same string in `DlcBadge.tsx` | ✓ by filename |
+| Coined terms | put `levelScale` back on Bison Steak | ✓ with both remedies named |
+| `damageCoefficient` vs base | `7f` against a base of 300 | ✓ by item and row |
+| Blast falloff | (fired unprompted on Aurelionite's Blessing) | ✓ found one I had missed |
+| `OverlapAttack` escapes | delete the retrigger sentence from Volcanic Egg | ✓ by row |
+| `CLAUDE.md` counts | restore the stale `78/125` | ✓ by count |
+| Schema vs `PLAN.md` | remove every mention of `triggered` | ✓ by field |
+| CI gates | delete the `pnpm test:unit` step | ✓ by step |
+| README | drift the traced count everywhere | ✓ on the second attempt |
+| **Logbook vocabulary** | **inject a logbook claim into a component** | **✓ — untested until now** |
+
+The last one had never been broken on purpose. It works.
+
+#### The ratchet was tested in the wrong direction
+
+`coverage-floor.json` has fired repeatedly this session — every time coverage *rose* and the
+floor needed raising. That is its cosmetic direction. Its actual job is to catch a **silent
+downgrade**, and I had never once tested that. Setting Crowbar back to `langfile`:
+
+```
+✗ coverage regression: 207 items are code/asset-verified but the floor is 208.
+  Verification must not go backwards — if a downgrade is genuinely correct, lower
+  src/data/coverage-floor.json deliberately and say why.
+```
+
+It works, and the message tells you what to do. But "it has fired a lot" was never evidence
+for the thing it exists to prevent — it had only ever fired on the *easy* side, and I had been
+reading that as reassurance for six weeks of passes.
+
+#### The general point
+
+Twelve guards, twelve deliberate breakages, twelve confirmed. That is a boring result and it
+is the only kind that means anything: **a check nobody has watched fail is a check nobody has
+tested.** The two-attempt injections are the proof that this is not paranoia — in both cases my
+first mutation left the claim standing elsewhere in the file, the suite passed, and had I
+stopped there I would have recorded a verified guard that was verifying nothing.
+
+Worth stating as a rule, since it generalises past this repository: **when you break something
+to prove a test catches it, and the test passes, the default assumption is that your mutation
+was too weak — not that the code is fine.**
