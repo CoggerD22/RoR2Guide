@@ -937,6 +937,24 @@ interface Item {
   verified: boolean;
 }
 ```
+
+**Fields added after the original draft.** The block above is the Phase-1 schema; verification
+work since has added six, and `src/data/schema.ts` is the authority. Each exists because a
+record could not be stated honestly without it — the reason matters more than the field:
+
+| Field | On | Why it had to exist |
+|---|---|---|
+| `confidence` | Item | `code` \| `asset` \| `langfile` \| `wiki`. `verified: boolean` could not distinguish "traced to the game's code" from "transcribed from its text", so 161 records once carried the same authority as the traced ones (§6B.3). |
+| `capStacks` | StackingEntry | A HARD ceiling, in stacks, past which copies do nothing. Drives the planner's "caps at N" badge. Absent when the ceiling scales with stacks — Hiker's Boots has a cap but no fixed `capStacks`. |
+| `descriptionNote` | Item | Used when the game's own text is wrong or incomplete. The UI renders it as "The game's text above is inaccurate", so it is the one field that openly contradicts the quote above it (Encrusted Key, Halcyon Seed, Molotov). |
+| `cooldown` / `activated` | Item (equipment) | Asset cooldown, and whether pressing the key does anything. `activated: false` means no `EquipmentSlot` handler — the nine elite Aspects — where stating the asset cooldown would imply an operative number (§3j.65). |
+| `consumedOnUse` | Item (equipment) | A cooldown of `0` reads as "reusable instantly" when it means "there is nothing to recharge". Seed of Life and Trophy Hunter's Tricorn (§3j.65). |
+| `triggered` | Item (equipment) | The third activation state: no handler, but the cooldown IS spent — by an in-world event rather than the key. Executive Card only (§3j.76). |
+| `damaging` | Skill | `false` = the skill's own state has no damage path, so it has no proc coefficient to find. Distinguishes "no answer exists" from "we do not know" (§3j.47). |
+
+`data:audit` enforces the relationships between these — a `triggered` item must be
+`activated: false`, a `consumedOnUse` item must have a `0` cooldown, and an `activated: false`
+item may not state a cooldown unless it is `triggered`.
 2. **Names/descriptions**: parse the JSON language files from the user's game install
    (exact, current-patch text) if available; otherwise transcribe from wiki.gg.
 3. **Numbers & stacking**: from wiki.gg item pages + its Item Stacking page. Do this

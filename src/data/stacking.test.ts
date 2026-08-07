@@ -1078,3 +1078,42 @@ test("CLAUDE.md's quoted verification counts match the data", async () => {
   const traced = items.filter((i) => i.confidence === "code" || i.confidence === "asset").length;
   expect(claude, "traced-item count in Status").toContain(`${traced}/${items.length}`);
 });
+
+/**
+ * PLAN.md is declared "the source of truth for scope, schema, and milestones", and four
+ * schema fields did not appear in it at all — `capStacks`, `descriptionNote`,
+ * `consumedOnUse`, `triggered`. Each carries semantics a contributor cannot infer:
+ * `capStacks` means a HARD ceiling and is deliberately absent where the ceiling scales;
+ * `descriptionNote` is the one field that openly contradicts the game's own text.
+ *
+ * A field can be added to schema.ts in one commit and stay undocumented forever, because
+ * nothing reads the plan. This fails the build instead.
+ */
+test("every item/skill schema field is documented in PLAN.md", async () => {
+  const { readFileSync } = await import("node:fs");
+  const plan = readFileSync("PLAN.md", "utf8");
+  const schema = readFileSync("src/data/schema.ts", "utf8");
+
+  const declared = [
+    ...new Set([...schema.matchAll(/^ {4}([a-zA-Z][A-Za-z0-9]*)\s*:\s*z\./gm)].map((m) => m[1])),
+  ];
+  expect(declared.length).toBeGreaterThan(20); // fail loudly if the parse ever breaks
+
+  // Generic names (name, tags, icon…) are described in prose rather than by identifier;
+  // the ones that matter are those carrying a rule someone could get wrong.
+  const MUST_BE_NAMED = [
+    "confidence",
+    "capStacks",
+    "descriptionNote",
+    "cooldown",
+    "activated",
+    "consumedOnUse",
+    "triggered",
+    "damaging",
+    "perStack",
+  ];
+  const undocumented = MUST_BE_NAMED.filter(
+    (f) => declared.includes(f) && !plan.includes(f),
+  );
+  expect(undocumented, undocumented.join(" | ")).toEqual([]);
+});

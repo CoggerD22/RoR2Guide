@@ -5097,3 +5097,50 @@ by name. Prose around them can be rewritten freely; the numbers cannot drift.
 `Next up` now has exactly two entries, and both are honest about needing something this process
 cannot supply: **written guides need a human author**, and **in-game observation needs someone
 holding the item**. Everything reachable by reading code and assets has been read.
+
+### 3j.100 the source of truth for the schema did not mention four schema fields
+
+`CLAUDE.md` names `PLAN.md` as "the source of truth for scope, schema, and milestones", and
+tells every contributor to read it in full before doing anything. Having found two stale
+claims in `CLAUDE.md` (§3j.98, §3j.99), the larger document was the obvious next place to
+look.
+
+Its mechanically-checkable surface is clean: every path it names exists, every `pnpm` command
+it gives is in `package.json`, no checklist item is left open. The gap is in the part that
+cannot be checked by existence — **the schema block is the Phase-1 draft, and four fields
+added since appear nowhere in the file at all:**
+
+- **`capStacks`** — a *hard* ceiling in stacks. Deliberately absent where the ceiling scales
+  with stacks, which is a rule nobody could infer: Hiker's Boots has a cap and no `capStacks`.
+- **`descriptionNote`** — the field that makes the UI print *"The game's text above is
+  inaccurate"*. The single most consequential field in the schema, and undocumented.
+- **`consumedOnUse`** — exists because a cooldown of `0` reads as "reusable instantly".
+- **`triggered`** — the third activation state, no handler but a real cooldown.
+
+Documented now as a delta table, with **why each had to exist** rather than what type it is —
+the type is in `schema.ts` and always will be; the reason is the part that gets lost. Plus the
+cross-field rules `data:audit` enforces, which were also written down nowhere.
+
+#### The failure mode, stated plainly
+
+A field can be added to `schema.ts` in one commit and stay undocumented forever, because
+**nothing reads the plan.** Tests read the code, the audit reads the data, CI reads both — the
+document that new contributors are told to read first is the one thing with no reader that
+would notice it going stale.
+
+So it has one now: the fields carrying a rule someone could get wrong must appear in `PLAN.md`
+by name. Verified by removing every mention of `triggered` and watching the suite fail by field
+name.
+
+#### Three documents, three drifts, one shape
+
+| Document | Stale claim |
+|---|---|
+| `ItemCard` tooltip | verification "pending logbook confirmation" — a method abandoned at §6A |
+| `CLAUDE.md` | 78/125 procs verified (really 106); finished work listed as pending |
+| `PLAN.md` | schema block predates four fields, including the one that contradicts the game |
+
+Every one describes work that was **done better than the description admits**. That is worth
+noticing about this kind of drift: it does not exaggerate, it lags. And a lagging description
+of a verification project is still a false claim about verification — which is the one thing
+this repository exists to refuse.
