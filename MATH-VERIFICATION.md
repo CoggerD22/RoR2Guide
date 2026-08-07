@@ -5371,3 +5371,52 @@ now the tools. Each level had the same defect: something that had never been rea
 assumed correct because nothing had ever contradicted it.
 
 `.decompiled/` and `.gamedata/` are the floor. Below the extractors there is only the game.
+
+### 3j.105 the contact duration, measured — the rate was real and unreachable
+
+§3j.84 stopped on a named blocker rather than a vague one: *"these are instantaneous rates
+while the target is inside the hitbox, and a projectile in flight overlaps an enemy for a
+fraction of a second — we need a contact duration we do not have."* Having exhausted the
+levels below the data, that blocker was the thing left worth attacking.
+
+It is measurable. Both boomerangs carry a `HitBoxGroup` named "Buzzsaw" with a single box:
+
+| Projectile | Hitbox `localScale` | travelSpeed |
+|---|---|---|
+| Sawmerang | 0.85 × 0.34 × 0.85 | 60 |
+| StunAndPierceBoomerang | 1.00 × 0.20 × 1.00 | 60 |
+
+A straight pass overlaps a target for roughly `(box depth + target depth) / 60` — on the order
+of **0.03–0.05 seconds**. The dot zone can re-hit a target only once per
+`1 / resetFrequency` = **0.1 s**.
+
+**The contact is shorter than a single reset window.** So a fly-through lands *at most one*
+lingering tick, often zero — and the "200% per second" figure computed in §3j.84 is an
+instantaneous rate that a normal pass never sustains. Both records now carry the measurement
+and the bound.
+
+#### What this does and does not settle
+
+It removes the appearance of a contradiction. A computed 200%/s against a stated 100%/s looked
+like the game's text being wrong by 2×; it is actually a rate that requires a full second of
+contact the projectile cannot deliver in flight. The two quantities were never comparable, and
+now the *reason* is a measurement rather than a suspicion.
+
+It does **not** tell me what the description's "per second" clause means. The one place
+sustained contact is plausible is the turnaround — `transitionDuration = 1` holds the
+projectile near-stationary at the far end of its arc — which would give up to a full second
+inside the hitbox and land the sustained rate exactly. That is an inference from a constant,
+not something traced, and it is written into the record as an inference and into no number.
+
+Both items stay `langfile` on that basis. A bound is not an answer, and the honest position is
+that the gap narrowed rather than closed.
+
+#### On going back up the stack
+
+The last several passes worked downward — guards, documents, tools — until there was nothing
+below the extractors but the game. Coming back up to the one blocker I had named precisely
+enough to attack turned out to be the most productive thing available, and it was only
+attackable *because* §3j.84 had recorded exactly what was missing rather than "unresolved".
+
+That is the argument for writing open questions as specifications: **"we need the contact
+duration" is a task; "unresolved" is a shrug.**

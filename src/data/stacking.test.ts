@@ -1176,3 +1176,27 @@ test("the README describes the project as it is", async () => {
   const traced = items.filter((i) => i.confidence === "code" || i.confidence === "asset").length;
   expect(readme).toContain(`${traced} of ${items.length}`);
 });
+
+/**
+ * §3j.84 named "we need the contact duration" as the blocker on both boomerangs' per-second
+ * figures. It is measured now: the hitbox is one box and the projectile travels at 60 m/s,
+ * so a straight pass overlaps a target for ~0.03-0.05s — shorter than the 0.1s reset window
+ * that gates a re-hit. The instantaneous rate is real; a normal pass never sustains it.
+ *
+ * This pins the bound, and pins that the remaining gap is still stated rather than closed.
+ */
+test("both boomerangs bound their contact duration instead of implying a sustained rate", () => {
+  for (const [id, re] of [
+    ["sawmerang", /Blade contact/],
+    ["electric-boomerang", /Damage over time/],
+  ] as const) {
+    const x = items.find((i) => i.id === id)!;
+    const row = x.stacking.find((s) => re.test(s.stat))!;
+    expect(row.formula, id).toMatch(/CONTACT DURATION, now measured/);
+    expect(row.formula, id).toMatch(/SHORTER THAN ONE 0\.1s reset window/);
+    expect(row.formula, id).toMatch(/localScale/); // the actual measurement, not a claim
+    // The honest half: measuring the bound did not settle what the text means.
+    expect(row.formula, id).toMatch(/Still NOT established/);
+    expect(x.confidence, id).toBe("langfile");
+  }
+});
