@@ -1134,10 +1134,45 @@ test("the deploy workflow still gates publication on every runnable check", asyn
   for (const step of ["pnpm typecheck", "pnpm data:audit", "pnpm data:verify", "pnpm test:unit"]) {
     expect(wf, `${step} must run in deploy.yml`).toContain(step);
   }
+  // The Playwright suite runs in ci.yml only — deploy.yml deliberately keeps the publish
+  // gate fast. But 46 end-to-end tests silently ceasing to run is the same failure, so
+  // the other workflow needs a reader too.
+  const ci = readFileSync(".github/workflows/ci.yml", "utf8");
+  expect(ci, "Playwright must run somewhere").toContain("pnpm test");
+  expect(ci, "unit tests must run in ci.yml too").toContain("pnpm test:unit");
   // And they must precede the build, or a failing check would still publish.
   const buildAt = wf.indexOf("pnpm build");
   expect(buildAt).toBeGreaterThan(-1);
   for (const step of ["pnpm typecheck", "pnpm data:audit", "pnpm test:unit"]) {
     expect(wf.indexOf(step), `${step} must come before the build`).toBeLessThan(buildAt);
   }
+});
+
+/**
+ * The README is the repository's front door and had said "M0 — Skeleton (current)" through
+ * every milestone and the entire verification programme — the most consequential stale
+ * document found, because it is the first thing anyone reads.
+ *
+ * Pinning the two claims that would mislead hardest: the status line, and the scripts table
+ * (which omitted data:verify, data:diff and test:unit, and called data:audit "stubbed").
+ */
+test("the README describes the project as it is", async () => {
+  const { readFileSync } = await import("node:fs");
+  const readme = readFileSync("README.md", "utf8");
+  const pkg = JSON.parse(readFileSync("package.json", "utf8")) as {
+    scripts: Record<string, string>;
+  };
+
+  expect(readme, "must not still advertise M0").not.toMatch(/M0 — Skeleton \(current\)/);
+  expect(readme, "must not claim data:audit is stubbed").not.toMatch(/stubbed until M1/);
+
+  // Every verification-facing script a contributor needs must be listed.
+  for (const s of ["data:audit", "data:verify", "data:diff", "test:unit"]) {
+    expect(pkg.scripts[s], `${s} should exist`).toBeTruthy();
+    expect(readme, `${s} must appear in the README`).toContain(s);
+  }
+
+  // The traced-item count is quoted; keep it honest the same way CLAUDE.md's is.
+  const traced = items.filter((i) => i.confidence === "code" || i.confidence === "asset").length;
+  expect(readme).toContain(`${traced} of ${items.length}`);
 });

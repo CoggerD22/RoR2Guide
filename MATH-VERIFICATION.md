@@ -5197,3 +5197,59 @@ The pattern is worth naming for whoever comes next: **the further a claim sits f
 the less likely anything checks it, and documentation sits furthest of all.** A verification
 project that lets its own description go stale is failing at the thing it exists to do — just
 one level up from the data.
+
+### 3j.102 the front door still said "M0 — Skeleton"
+
+Four passes of auditing documents that describe the work, and the one nobody had opened was
+the first one anybody opens. `README.md`, verbatim:
+
+> **Project status**
+> **M0 — Skeleton (current).** App shell, theme tokens, routing, and deploy pipeline.
+> Sections beyond the shell render "Coming in Mx" placeholders until their milestone lands.
+
+Every milestone has landed. The stat engine has been rebuilt against decompiled code, 208 of
+217 items traced, every surface audited. Anyone arriving at the repository was told it was a
+skeleton with placeholder pages.
+
+It was wrong about nearly everything checkable:
+
+| Claim | Reality |
+|---|---|
+| "M0 — Skeleton (current)" | M0–M6 done, plus the whole verification programme |
+| "Later milestones add Zustand, Fuse.js, Zod" | all three shipped |
+| `data:audit` "(stubbed until M1)" | a 700-line audit with nine enforced rules |
+| Scripts table | omitted `data:verify`, `data:diff`, `test:unit` entirely |
+| "CI runs typecheck → data audit → build → smoke test" | also verify and unit tests, across two workflows |
+| Deploy: Netlify/Cloudflare `_redirects` | true, but the actual deploy is GitHub Pages with a `404.html` fallback |
+
+Rewritten to describe the project as it is, including the two things a newcomer most needs and
+could not have learned: **the extractors need a local game install and their output must never
+be committed**, and **three audit rules therefore cannot run in CI** (§3j.101). Also added the
+thing the README never said at all — *why* this project exists rather than pointing at a wiki,
+with three examples where the game's own text is demonstrably wrong.
+
+#### What is now guarded
+
+The README's status line and its scripts table, plus the traced-item count, are asserted
+against `package.json` and the data. And `ci.yml` gained the reader `deploy.yml` got last
+pass: the Playwright suite runs **only** in `ci.yml`, so 46 end-to-end tests could have stopped
+running without a single local failure.
+
+Both injections needed two attempts, which is worth recording. Changing one of two occurrences
+of `208 of 217` did not fail the test — correctly, since the claim was still present elsewhere.
+**A guard that passes when you try to break it has not been verified; it has been assumed.**
+The second attempt, replacing every occurrence, failed as designed.
+
+#### Documents audited, and the count
+
+| Document | Stale claim | Now |
+|---|---|---|
+| `ItemCard` tooltip | "pending logbook confirmation" | fixed + vocabulary guarded |
+| `CLAUDE.md` | 78/125 procs; finished work as pending | fixed + counts guarded |
+| `PLAN.md` | schema block missing four fields | documented + guarded |
+| `deploy.yml` | nothing checked it gated anything | guarded |
+| `ci.yml` | nothing checked it ran Playwright | guarded |
+| **`README.md`** | **"M0 — Skeleton (current)"** | **rewritten + guarded** |
+
+Six documents, six drifts, every one understating finished work. The repository now has a
+reader for each of them.
