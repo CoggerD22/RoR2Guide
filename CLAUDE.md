@@ -44,6 +44,11 @@ milestone (M0 → M6) and do not pull in future-phase features early.
   `scripts/decompile.sh` → `.decompiled/` (C#: formulas/coefficients) and
   `scripts/extract-bodies.py` → `.gamedata/` (Unity prefabs: survivor base stats,
   which are NOT in RoR2.dll). Re-run both after a game patch, then `pnpm data:verify`.
+  Also run `python scripts/check-extractor-health.py` after a patch or a UnityPy upgrade:
+  the extractors swallow load/read exceptions by design, and a skipped bundle looks
+  identical to a game that contains less. It reports 0 for every swallow class today
+  (1472 bundles, 224,435 MonoBehaviours) — a non-zero count invalidates the "complete
+  input" assumption behind everything in `.gamedata/`.
 - Data files: `/src/data/items.json`, `/src/data/survivors.json`, schemas in
   `/src/data/schema.ts`. Icons in `/public/icons/<id>.png`.
 - Commit data work tier-by-tier (one tier per PR/commit) so it can be spot-checked

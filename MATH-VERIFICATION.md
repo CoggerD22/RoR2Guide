@@ -5307,3 +5307,67 @@ stopped there I would have recorded a verified guard that was verifying nothing.
 Worth stating as a rule, since it generalises past this repository: **when you break something
 to prove a test catches it, and the test passes, the default assumption is that your mutation
 was too weak — not that the code is fine.**
+
+### 3j.104 the 50 swallowed exceptions under everything
+
+The last thing in this repository with no reader: **the extractors themselves.** Everything in
+`.gamedata/` comes out of them, `data:verify`'s "190/190 survivors" rests on them, and this
+session found **two** silent-failure bugs in one — a noise filter dropping every field ending
+in "Player" (§3j.73), and records discarded whole for having only array-valued fields
+(§3j.70). Both returned a plausible smaller answer instead of an error.
+
+So: how many more of that shape are there? Scanning the family for the two constructs that
+produced both bugs:
+
+```
+extract-procs.py               swallowed-exc: 7
+extract-loadouts.py            swallowed-exc: 6
+extract-component-fields.py    swallowed-exc: 5
+extract-skill-unlocks.py       swallowed-exc: 5
+extract-bodies.py              swallowed-exc: 4
+… 25 scripts, 50+ in total
+```
+
+Each is individually defensible — one corrupt asset should not abort an extraction. Together
+they are the most dangerous construct in the project, for the reason both bugs demonstrated:
+**a failure that skips input looks exactly like a game that contains less.**
+
+#### Measuring rather than reading
+
+Auditing 25 scripts by eye would be slow and unconvincing. But the swallows fall into
+**classes**, and the dominant ones are properties of the game install plus the UnityPy version
+rather than of any one script — so measuring a class once covers every extractor that uses it.
+
+Instrumented across the whole install:
+
+| Class | Result |
+|---|---|
+| Language files that fail to parse | **0** of 39 |
+| Bundles that fail to load | **0** of 1,472 |
+| Typetrees that fail to read | **0** of 224,435 MonoBehaviours |
+| Owner names that fail to resolve | **0** |
+
+Every swallow class is **inert**. `extract-bodies.py`'s four skips hide nothing, and its 241
+bodies match `bodies.json` exactly — so the 190/190 survivor claim rests on complete input,
+which had been assumed for the entire life of the project and never checked.
+
+#### Making it repeatable
+
+A one-off measurement is worth little, because the thing it measures is a property of *this*
+install and *this* UnityPy. `scripts/check-extractor-health.py` reports all four classes and
+exits non-zero if any becomes non-empty. Documented in `CLAUDE.md` next to the extractors, to
+run after a game patch or a library upgrade.
+
+Its message says what a failure means, which matters more than the count: a non-zero result
+does **not** prove an extraction is wrong — it proves the *"0 skipped"* assumption behind every
+number in `.gamedata/` no longer holds, and the affected extractor needs looking at before any
+of its output is trusted again.
+
+#### The closing symmetry
+
+This session began by verifying the game's numbers, and has spent its last several passes
+verifying the things that verify them — the guards (§3j.103), the documents (§3j.98–102), and
+now the tools. Each level had the same defect: something that had never been read, quietly
+assumed correct because nothing had ever contradicted it.
+
+`.decompiled/` and `.gamedata/` are the floor. Below the extractors there is only the game.
