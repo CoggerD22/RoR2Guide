@@ -4,6 +4,7 @@ import { describe, expect, it, test } from "vitest";
 import { items } from "./items";
 import { perStackMeaning, hyperbolicCurve } from "@/lib/stacking";
 import { ARTIFACTS, SHRINES } from "./reference";
+import skills from "./skills.json";
 
 /**
  * Regression tests for stacking values that were WRONG when derived from the game's
@@ -740,6 +741,25 @@ test("every negative claim in published prose is scoped or hedged", () => {
       sh.name,
       [["mechanic", sh.mechanic ?? ""], ["cost", sh.cost ?? ""]],
     ]),
+    // skills.json is 19 SURVIVOR WRAPPERS, each holding a nested `skills` array — the first
+    // version of this extension mapped the wrappers and read only `survivor` and `body`,
+    // never reaching any of the 125 skills. That is the same failure as the falloff guard,
+    // committed inside the fix for it: a guard that runs, passes, and inspects nothing.
+    // `procSource` is the field that carries our provenance claims, so it is the one that
+    // could ever hold an unscoped negative.
+    ...(skills as Array<{ survivor: string; skills: Array<Record<string, unknown>> }>).flatMap(
+      (w) =>
+        (w.skills ?? []).map((sk): [string, Array<[string, string]>] => [
+          `skill:${w.survivor}/${String(sk.name)}`,
+          Object.entries(sk)
+            .filter(([, v]) => typeof v === "string")
+            .map(([k, v]): [string, string] => [k, v as string]),
+        ]),
+    ),
+    // survivors.json is deliberately absent: it carries no free prose at all. Every string
+    // field on it is an identifier (id, name, dlc, wiki, confidence, gameName), so there is
+    // no claim there to be unscoped. Recorded rather than silently omitted, so the next
+    // reader knows this was checked and not overlooked.
   ];
   for (const [owner, parts] of records) {
     const it = { name: owner };
@@ -971,8 +991,16 @@ test("a cited damageCoefficient matches the published base, or explains itself",
   for (const it of items) {
     for (const st of it.stacking) {
       const f = st.formula ?? "";
-      const m = /damageCoefficient\s*=\s*([0-9]*\.?[0-9]+)/.exec(f);
+      // The coefficient is rarely called plain `damageCoefficient` in the code we quote:
+      // blastDamageCoefficient, overlapDamageCoefficient, secondBombDamageCoefficient,
+      // mainBeamDamageCoefficient. A case-sensitive match on the bare name inspected 16 of
+      // the 34 rows that name one — see the falloff guard for the same failure, found first.
+      const m = COEFF_SELECTOR.exec(f);
       if (!m) continue;
+      // Only compare where `base` is a damage percentage. `childrenDamageCoefficient = 1` on
+      // Molotov's "Bomblets" row is an inheritance multiplier and its base is a COUNT (6);
+      // comparing the two would be arithmetic between unrelated units.
+      if (!/damage/i.test(st.stat)) continue;
       const implied = parseFloat(m[1]) * 100;
       if (Math.abs(implied - st.base) < 0.5) continue;
       if (RECONCILED.test(f)) continue;
@@ -981,6 +1009,15 @@ test("a cited damageCoefficient matches the published base, or explains itself",
   }
   expect(unexplained, unexplained.join(" | ")).toEqual([]);
 });
+
+/**
+ * Both selectors below are module-level so the guards and the coverage meta-guard read the
+ * SAME pattern. Inlining them is how the falloff rule drifted to inspecting 8 of 29 rows
+ * without anything noticing.
+ */
+const AREA_SELECTOR =
+  /blastRadius|BlastAttack|blastAttack|DelayBlast|blast|explosion|explode|burst radius/i;
+const COEFF_SELECTOR = /[A-Za-z]*[Dd]amageCoefficient\s*(?:=|of)?\s*([0-9]*\.?[0-9]+)/;
 
 /**
  * A blast radius without its falloff model is half an answer, and five of seven blast
@@ -1009,7 +1046,7 @@ test("every record citing a blast radius states its falloff model", () => {
       // all. The stat name said "Explosion radius (m)" the whole time — which is precisely
       // what the reader sees, and the better thing to trust.
       const subject = `${st.stat} ${f}`;
-      if (!/blastRadius|BlastAttack|blastAttack|DelayBlast|blast|explosion|explode|burst radius/i.test(subject)) continue;
+      if (!AREA_SELECTOR.test(subject)) continue;
       if (MODELS.test(f) || /falloff/i.test(f)) continue;
       silent.push(`${it.name} — ${st.stat}`);
     }
@@ -1278,4 +1315,64 @@ test("Electric Boomerang's slice scales with stacks, whatever the text implies",
   // The residual gap stays open and stays labelled — 1.24n computed vs 1.20n stated.
   expect(impact.formula).toMatch(/NOT resolved/);
   expect(x.confidence).toBe("langfile");
+});
+
+/**
+ * The guard-of-guards.
+ *
+ * §3j.109's finding was not that one record was wrong — it was that a PASSING guard had been
+ * inspecting 8 rows out of 29 for its whole life, because it keyed on one spelling of the
+ * concept it policed. A green test with a narrow selector and a green test with a wide one
+ * look identical from outside. The only difference visible from outside is HOW MANY ROWS THE
+ * SELECTOR ADMITS, so that is what gets asserted here.
+ *
+ * These floors do not encode a desired answer, only a reach: they fail when a selector is
+ * narrowed, a dataset stops being read, or a nesting level is skipped. Rows may legitimately
+ * be added, so the assertions are floors and not equalities.
+ */
+describe("guard coverage", () => {
+  test("the falloff guard still inspects every area row, not one spelling of them", () => {
+    let n = 0;
+    for (const it of items)
+      for (const st of it.stacking)
+        if (AREA_SELECTOR.test(`${st.stat} ${st.formula ?? ""}`)) n++;
+    // 20 at the time of writing; it was 8 when the selector read only "blastRadius" in the
+    // formula text. A deliberately wider probe (any `radius`, SphereSearch, "explo") matches
+    // 29 rows, but the extra 9 are wards, tethers and reveal radii — area effects that are
+    // not BlastAttacks and so have no falloff model to state. Demanding one of them would
+    // invite a fabricated answer, which is why the selector stops at blast vocabulary.
+    expect(n).toBeGreaterThanOrEqual(20);
+  });
+
+  test("the damageCoefficient guard still reads prefixed coefficient names", () => {
+    let n = 0;
+    for (const it of items)
+      for (const st of it.stacking)
+        if (COEFF_SELECTOR.test(st.formula ?? "") && /damage/i.test(st.stat)) n++;
+    // 28 now; 16 when the pattern was case-sensitive on the bare name, which missed
+    // blastDamageCoefficient, overlapDamageCoefficient, secondBombDamageCoefficient...
+    expect(n).toBeGreaterThanOrEqual(28);
+  });
+
+  test("the negative-claim guard still descends into every nested skill", () => {
+    const wrappers = skills as Array<{ skills: unknown[] }>;
+    // 19 wrappers, 125 skills. Reading the wrappers alone — which the first version of the
+    // extension did — inspects 19 records and none of the prose.
+    expect(wrappers.length).toBe(19);
+    expect(wrappers.reduce((a, w) => a + (w.skills?.length ?? 0), 0)).toBe(125);
+  });
+
+  test("the hit-count guard skips no row that makes a hit-count claim", () => {
+    const COUNT_CLAIM = /once per enemy|once, ever|hits? a given enemy once|can be sliced|once no matter/i;
+    const skipped: string[] = [];
+    for (const it of items)
+      for (const st of it.stacking) {
+        const f = st.formula ?? "";
+        if (!COUNT_CLAIM.test(st.stat) && !COUNT_CLAIM.test(f)) continue;
+        // A row may only claim a hit count if it also shows the mechanism that bounds it.
+        if (!/OverlapAttack|ignore list|resetInterval|ResetIgnored/i.test(f))
+          skipped.push(`${it.name} — ${st.stat}`);
+      }
+    expect(skipped, skipped.join(" | ")).toEqual([]);
+  });
 });

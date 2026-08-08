@@ -5655,3 +5655,60 @@ only the second one is a guard.
 
 Proven by restoring Will-o'-the-wisp's original formula verbatim: it escaped the old rule for
 the whole life of that rule, and fails the new one.
+
+### 3j.110 asking every guard how many rows it inspects
+
+§3j.109 ended on a rule: *ask a guard how many rows it inspects, not just whether it passes.*
+This pass applies it to the other guards, which is the part that is easy to skip once the
+interesting finding is already written down.
+
+Four population-scanning guards, measured against the population they claim:
+
+| guard | inspected | population | verdict |
+|---|---|---|---|
+| `damageCoefficient` vs published base | **16** | 34 rows naming a coefficient | **narrow** — case-sensitive on the bare name |
+| hit-count claims vs `OverlapAttack` | 3 | 3 rows making the claim | complete |
+| negative claims scoped/hedged | items + artifacts + shrines | **+ skills.json** | **blind to a whole dataset** |
+| falloff (fixed last pass) | 20 | 20 blast rows | complete |
+
+The coefficient guard had the identical defect to the falloff guard: the code we quote almost
+never says plain `damageCoefficient`. It says `blastDamageCoefficient`,
+`overlapDamageCoefficient`, `secondBombDamageCoefficient`, `mainBeamDamageCoefficient`. Widened
+to `[A-Za-z]*[Dd]amageCoefficient`, it now reads **28** rows instead of 16.
+
+It found **no new errors** — those fifteen records were already right. Worth stating plainly:
+widening a selector is not a technique for finding bugs, it is a technique for making a green
+result mean something. Last pass it surfaced three SweetSpot cliffs; this pass it surfaced
+nothing, and both outcomes are the guard working.
+
+One real exclusion: `childrenDamageCoefficient = 1` sits on Molotov's **Bomblets** row, whose
+`base` is a count of 6. Comparing them is arithmetic between unrelated units, so the guard now
+only compares where the stat is a damage stat.
+
+#### The same mistake, inside the fix for it
+
+Extending the negative-claim guard to `skills.json` produced a version that mapped the file's
+top level and read `survivor` and `body`. `skills.json` is **19 survivor wrappers** holding
+**125 nested skills**, so the extension ran, passed, and inspected none of the prose it was
+added to police. Written minutes after diagnosing that exact failure elsewhere.
+
+It surfaced because the deliberate-breakage injection printed `skill:undefined (undefined)` —
+the guard fired, but on a field name it had invented, which is what a mutation landing outside
+the intended surface looks like. **A passing breakage test is not proof the guard reaches the
+right rows; it proves it reaches *some* row.** The re-run injects into `mul-t / Rebar Puncher`
+by name.
+
+`survivors.json` is now excluded *explicitly*: every string on it is an identifier, so there is
+no claim there to be unscoped. Recorded rather than silently omitted, so the next reader can
+tell a checked absence from an overlooked one.
+
+#### The guard-of-guards
+
+Both selectors are now module constants shared by the guard and a `guard coverage` block that
+asserts **floors on rows admitted**: 20 area rows, 28 coefficient rows, 19 wrappers → 125
+skills, 0 skipped hit-count claims. Floors, not equalities, so rows can still be added.
+
+Proven by reverting both selectors to their original text. The instructive part: with the
+narrowed falloff selector the **falloff guard itself still passes** — its seven visible rows
+all state a model now. Only the coverage floor fails. A guard cannot detect its own blindness,
+which is the whole reason this block exists.
