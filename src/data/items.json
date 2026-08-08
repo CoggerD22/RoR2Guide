@@ -1418,7 +1418,7 @@
         "base": 250,
         "perStack": 250,
         "type": "linear",
-        "formula": "damageCoefficient = 2.5f * n via Util.OnHitProcDamage (GlobalEventManager). Linear from the first stack. The blast is delivered as a direct DamageInfo with `procCoefficient = 1f` and `crit = damageInfo.crit`, so it procs on-hit items at FULL rate and crits exactly when the hit that triggered it crit. The slow is Buff.Slow80 for 3s per stack. Both bands fire from ONE trigger in GlobalEventManager: the hit must satisfy `damageInfo.damage / characterBody.damage >= 4f` — the description's \"400% damage\" is a RATIO against your own base damage, not an absolute — and the wearer must hold the shared ElementalRingsReady buff, which is removed once before either ring fires. Holding both bands therefore does NOT give two independent procs: one qualifying hit spends the single readiness buff and fires whichever rings you own. The recharge is applied as ten stacked ElementalRingsCooldown buffs of 1s to 10s, and ProcType.Rings is stamped on the damage so ring damage cannot retrigger a ring."
+        "formula": "damageCoefficient = 2.5f * n via Util.OnHitProcDamage (GlobalEventManager). Linear from the first stack. The blast is delivered as a direct DamageInfo with `procCoefficient = 1f` and `crit = damageInfo.crit`, so it procs on-hit items at FULL rate and crits exactly when the hit that triggered it crit. The slow is Buff.Slow80 for 3s per stack. Both bands fire from ONE trigger in GlobalEventManager: the hit must satisfy `damageInfo.damage / characterBody.damage >= 4f` — the description's \"400% damage\" is a RATIO against your own base damage, not an absolute — and the wearer must hold the shared ElementalRingsReady buff, which is removed once before either ring fires. Holding both bands therefore does NOT give two independent procs: one qualifying hit spends the single readiness buff and fires whichever rings you own. The recharge is applied as ten stacked ElementalRingsCooldown buffs of 1s to 10s, and ProcType.Rings is stamped on the damage so ring damage cannot retrigger a ring. Despite the name, this is NOT a BlastAttack and has no falloff model or radius at all: it is a single DamageInfo passed to the triggering victim's own healthComponent.TakeDamage, so it hits exactly one enemy and distance never enters into it. The 'blast' is the visual effect (IceRingExplosion), not the damage delivery."
       }
     ],
     "tags": [
@@ -1449,7 +1449,7 @@
         "base": 300,
         "perStack": 300,
         "type": "linear",
-        "formula": "tornado damageCoefficient = 3f x n (GlobalEventManager). Linear: 300% TOTAL per stack. The tornado is a FireTornado projectile and the FireProjectileInfo sets no procCoefficient, so its rate lives on that prefab. NOW ESTABLISHED, and it is the strongest possible answer: FireTornado carries projectileController.procCoefficient = 1.0 but overlapProcCoefficient = 0.0, and the effective rate is their PRODUCT — so the tornado procs NOTHING at all. Runald's blast, by contrast, is a direct DamageInfo at 1f. Two items described as a matched pair sit at opposite ends of this scale. Crit is inherited (`crit = damageInfo.crit`). The reason the description says TOTAL is visible in the arithmetic: damage is `OnHitProcDamage(..., 3n) / lifetime * resetInterval`, i.e. the 300% is divided across the tornado's lifetime and paid out per overlap tick. Both bands fire from ONE trigger in GlobalEventManager: the hit must satisfy `damageInfo.damage / characterBody.damage >= 4f` — the description's \"400% damage\" is a RATIO against your own base damage, not an absolute — and the wearer must hold the shared ElementalRingsReady buff, which is removed once before either ring fires. Holding both bands therefore does NOT give two independent procs: one qualifying hit spends the single readiness buff and fires whichever rings you own. The recharge is applied as ten stacked ElementalRingsCooldown buffs of 1s to 10s, and ProcType.Rings is stamped on the damage so ring damage cannot retrigger a ring. Projectile proc rate is a PRODUCT of two serialized fields on the same prefab, neither of them in the C#: `attack.procCoefficient = projectileController.procCoefficient * overlapProcCoefficient`. (This projectile deals its damage by overlap, not by detonating; a detonating projectile uses the equivalent blastProcCoefficient field instead.)"
+        "formula": "tornado damageCoefficient = 3f x n (GlobalEventManager). Linear: 300% TOTAL per stack. The tornado is a FireTornado projectile and the FireProjectileInfo sets no procCoefficient, so its rate lives on that prefab. NOW ESTABLISHED, and it is the strongest possible answer: FireTornado carries projectileController.procCoefficient = 1.0 but overlapProcCoefficient = 0.0, and the effective rate is their PRODUCT — so the tornado procs NOTHING at all. Runald's blast, by contrast, is a direct DamageInfo at 1f. Two items described as a matched pair sit at opposite ends of this scale. Crit is inherited (`crit = damageInfo.crit`). The reason the description says TOTAL is visible in the arithmetic: damage is `OnHitProcDamage(..., 3n) / lifetime * resetInterval`, i.e. the 300% is divided across the tornado's lifetime and paid out per overlap tick. Both bands fire from ONE trigger in GlobalEventManager: the hit must satisfy `damageInfo.damage / characterBody.damage >= 4f` — the description's \"400% damage\" is a RATIO against your own base damage, not an absolute — and the wearer must hold the shared ElementalRingsReady buff, which is removed once before either ring fires. Holding both bands therefore does NOT give two independent procs: one qualifying hit spends the single readiness buff and fires whichever rings you own. The recharge is applied as ten stacked ElementalRingsCooldown buffs of 1s to 10s, and ProcType.Rings is stamped on the damage so ring damage cannot retrigger a ring. Projectile proc rate is a PRODUCT of two serialized fields on the same prefab, neither of them in the C#: `attack.procCoefficient = projectileController.procCoefficient * overlapProcCoefficient`. (This projectile deals its damage by overlap, not by detonating; a detonating projectile uses the equivalent blastProcCoefficient field instead.) The tornado has no falloff model either: it is a ProjectileOverlapAttack, which hits whatever is inside its hitbox for the same amount regardless of distance from the centre, rather than a BlastAttack with a radius to fall off across."
       }
     ],
     "tags": [
@@ -2192,7 +2192,7 @@
         "base": 100,
         "perStack": 10,
         "type": "linear",
-        "formula": "HealthComponent.GetShieldBoosterDamage: baseDamage = body.damage + body.maxShield * (1f + 0.1f * (n - 1)) — 100% base damage plus 100% of max shield at one stack, +10% of max shield per stack. The blast is 12.5m radius with procCoefficient 1 and 500 force, none of which the description mentions."
+        "formula": "HealthComponent.GetShieldBoosterDamage: baseDamage = body.damage + body.maxShield * (1f + 0.1f * (n - 1)) — 100% base damage plus 100% of max shield at one stack, +10% of max shield per stack. The blast is 12.5m radius with procCoefficient 1 and 500 force, none of which the description mentions. falloffModel = None, so every enemy inside the 12.5m sphere takes the full amount — the radius is a hard edge, not a gradient."
       },
       {
         "stat": "Shield granted (% of max health)",
@@ -2992,10 +2992,10 @@
       },
       {
         "stat": "Impact damage (%)",
-        "base": 120,
-        "perStack": 120,
+        "base": 124,
+        "perStack": 124,
         "type": "linear",
-        "formula": "The projectile is fired ONCE with `characterBody.damage * 0.4f * n` — a single value, linear in the stack count with NO constant term — and both damage components on the prefab multiply that same value by their own coefficient. The slice is a ProjectileOverlapAttack at damageCoefficient 3.1, so it lands 3.1 x 0.4n = 1.24n. STRUCTURAL FINDING: because both effects read one fired value, they scale identically, so the description's split — a flat \"120% base damage\" slice alongside a \"120% (+120% per stack)\" lingering effect — cannot be right. One fired value cannot be flat for one consumer and scaling for another. The slice scales with stacks; the text does not say so. NOT resolved: the residual 4% (1.24n computed against 1.20n stated), small enough to be a rounding convention in the description and too small to correct a published number on. Two properties of the throw: crit is characterBody.RollCrit(), an INDEPENDENT roll rather than the triggering hit’s crit (Ukulele inherits; this does not), and the FireProjectileInfo sets no procCoefficient at all, so the boomerang’s proc rate is whatever the StunAndPierceBoomerang prefab carries. NOW ESTABLISHED by extracting the prefab: StunAndPierceBoomerang carries TWO damage components with different rates. The slice is a ProjectileOverlapAttack at overlapProcCoefficient 1.0, and with the controller's own 1.0 the product is a full 1.0 — the boomerang's impact procs on-hit items at full rate. The lingering damage is a second component at 0.2, so the same throw procs at two different rates depending on which of its two effects lands. Projectile proc rate is a PRODUCT of two serialized fields on the same prefab, neither of them in the C#: `attack.procCoefficient = projectileController.procCoefficient * overlapProcCoefficient`. (This projectile deals its damage by overlap, not by detonating; a detonating projectile uses the equivalent blastProcCoefficient field instead.)"
+        "formula": "The projectile is fired ONCE with `characterBody.damage * 0.4f * n` — a single value, linear in the stack count with NO constant term — and both damage components on the prefab multiply that same value by their own coefficient. The slice is a ProjectileOverlapAttack at damageCoefficient 3.1, so it lands 3.1 x 0.4n = 1.24n. STRUCTURAL FINDING: because both effects read one fired value, they scale identically, so the description's split — a flat \"120% base damage\" slice alongside a \"120% (+120% per stack)\" lingering effect — cannot be right. One fired value cannot be flat for one consumer and scaling for another. The slice scales with stacks; the text does not say so. RESOLVED, and the published figure is now the code-derived one. Both inputs are verified: `0.4f` is read from GlobalEventManager and the prefab StunAndPierceBoomerang carries damageCoefficient 3.0999999046325684 (float 3.1). Their PRODUCT OF TWO COEFFICIENTS is 1.24 exactly, and unlike this item’s lingering component there is no rate confound to argue about — the slice is a single ProjectileOverlapAttack with resetInterval = -1, so it hits each enemy once for that amount. 1.20 is not reachable from 0.4 x 3.1 by any rounding, and the likeliest explanation is a prefab tweak from 3.0 to 3.1 that the description never followed. Published as 124% under the same rule that corrected Resonance Disc: code and assets outrank the description (PLAN §6A.2). Two properties of the throw: crit is characterBody.RollCrit(), an INDEPENDENT roll rather than the triggering hit’s crit (Ukulele inherits; this does not), and the FireProjectileInfo sets no procCoefficient at all, so the boomerang’s proc rate is whatever the StunAndPierceBoomerang prefab carries. NOW ESTABLISHED by extracting the prefab: StunAndPierceBoomerang carries TWO damage components with different rates. The slice is a ProjectileOverlapAttack at overlapProcCoefficient 1.0, and with the controller's own 1.0 the product is a full 1.0 — the boomerang's impact procs on-hit items at full rate. The lingering damage is a second component at 0.2, so the same throw procs at two different rates depending on which of its two effects lands. Projectile proc rate is a PRODUCT of two serialized fields on the same prefab, neither of them in the C#: `attack.procCoefficient = projectileController.procCoefficient * overlapProcCoefficient`. (This projectile deals its damage by overlap, not by detonating; a detonating projectile uses the equivalent blastProcCoefficient field instead.)"
       },
       {
         "stat": "Damage over time (%/s)",
@@ -3021,7 +3021,7 @@
     "wiki": "https://riskofrain2.wiki.gg/wiki/Electric_Boomerang",
     "verified": true,
     "confidence": "langfile",
-    "descriptionNote": "The 15% chance does NOT scale with stacks — extra copies raise the boomerang's damage only. It also scales linearly with the hit's proc coefficient, and cannot be triggered by Electrocution damage or by another boomerang. The description also implies the slice is a flat 120% while only the lingering damage grows: that cannot be so. Both come from one fired value of `damage x 0.4 x stacks`, so both grow together and neither has a floor at zero stacks. Separately, the boomerang suppresses Tri-Tip Dagger's bleed: GlobalEventManager skips its BleedOnHit proc when the projectile is flagged isStunAndPierce, so the two items anti-synergise in a way neither description mentions."
+    "descriptionNote": "Two of the three numbers here are off. The slice deals 124%, not 120%: it is fired with 40% of your damage per stack and the prefab multiplies that by 3.1. The 15% chance does NOT scale with stacks — extra copies raise the boomerang’s damage only — and it scales linearly with the hit’s proc coefficient, so a half-proc hit is 7.5%. The description also implies the slice is a flat 120% while only the lingering damage grows; that cannot be so, since both effects come from one fired value of damage x 0.4 x stacks and therefore grow together. The lingering figure is left as the game states it, because the code’s 400%/s is an instantaneous rate that a normal fly-through never sustains — see the formula. Separately, the boomerang suppresses Tri-Tip Dagger’s bleed: GlobalEventManager skips its BleedOnHit proc when the projectile is flagged isStunAndPierce."
   },
   {
     "id": "growth-nectar",
@@ -3067,7 +3067,7 @@
         "base": 150,
         "perStack": 50,
         "type": "linear",
-        "formula": "MeteorAttackOnHighDamageBodyBehavior.CalculateDamage: multiplier = 20f + overspill * (1.5f + 0.5f * (n - 1)), i.e. a 2000% base meteor plus 150% (+50% per stack) per 100% of overspill damage. UNDOCUMENTED: the multiplier is hard-capped at 75f, so the meteor can never exceed 7500% base damage. The blast has radius 10m and procCoefficient 0.5."
+        "formula": "MeteorAttackOnHighDamageBodyBehavior.CalculateDamage: multiplier = 20f + overspill * (1.5f + 0.5f * (n - 1)), i.e. a 2000% base meteor plus 150% (+50% per stack) per 100% of overspill damage. UNDOCUMENTED: the multiplier is hard-capped at 75f, so the meteor can never exceed 7500% base damage. The blast has radius 10m and procCoefficient 0.5. falloffModel = None on that 10m blast, so the whole meteor payload — including the capped 7500% ceiling — lands in full anywhere inside the radius."
       }
     ],
     "tags": [
@@ -4978,8 +4978,23 @@
     "tier": "equipment",
     "dlc": "base",
     "pickupText": "Fire a ball of energy that electrocutes nearby enemies before detonating.",
-    "description": "Fire preon tendrils that zap enemies within 35m for 400% base damage per zap. On contact, detonate in a 20m explosion for 8000% base damage. Firing knocks you backwards. Cooldown: 140s.",
-    "stacking": [],
+    "description": "Fires preon tendrils, zapping enemies within 35m for up to 600% damage/second. On contact, detonate in an enormous 20m explosion for 4000% damage. Cooldown: 140s.",
+    "stacking": [
+      {
+        "stat": "Detonation damage (%)",
+        "base": 8000,
+        "perStack": 0,
+        "type": "none",
+        "formula": "EquipmentSlot fires Prefabs/Projectiles/BeamSphere with `characterBody.damage * 2f`, and BeamSphere's ProjectileExplosion carries blastDamageCoefficient = 40 with calculateTotalDamage = 0. `blastAttack.baseDamage = projectileDamage.damage * blastDamageCoefficient`, so the blast is a PRODUCT OF TWO COEFFICIENTS: 2 x 40 = 80x base damage, i.e. 8000%. The game's 4000% is exactly the prefab coefficient with the x2 fire multiplier left out. falloffModel = 2 is SweetSpot, which is a CLIFF and not a taper: the full 8000% lands within HALF the 20m radius, and a flat QUARTER of it (2000%) from 10m out to 20m. blastProcCoefficient 1.0 against a controller procCoefficient of 1.0, so the blast procs on-hit items at full rate."
+      },
+      {
+        "stat": "Tendril zap damage (%)",
+        "base": 400,
+        "perStack": 0,
+        "type": "none",
+        "formula": "BeamSphere also carries a ProjectileProximityBeamController: damageCoefficient = 2.0, attackInterval = 0.05, attackFireCount = 1, listClearInterval = 0.33, attackRange = 35, procCoefficient = 0.1. `lightningOrb.damageValue = projectileDamage.damage * damageCoefficient`, and projectileDamage.damage is already `characterBody.damage * 2f`, so each zap is 2 x 2 = 400% base damage. The controller fires 20 times a second but the hit list only clears every 0.33s, so ONE target can be zapped about 3 times a second — roughly 1200% per second, against the 600%/second the game states. That is the same factor of two as the detonation, from the same omitted x2. Zaps proc at only 0.1."
+      }
+    ],
     "tags": [
       "damage",
       "aoe",
@@ -4995,7 +5010,7 @@
     },
     "cooldown": 140,
     "activated": true,
-    "descriptionNote": "Both damage figures were previously stated at half their real value. The projectile is fired with `characterBody.damage * 2f` (EquipmentSlot), and both effects multiply that: the blast is `projectileDamage.damage * blastDamageCoefficient` with a coefficient of 40 (ProjectileExplosion), giving 8000%; each tendril zap is `projectileDamage.damage * damageCoefficient` with a coefficient of 2 (ProjectileProximityBeamController), giving 400%. The blast uses SweetSpot falloff, so 8000% is the centre value and it tapers toward the 20m edge. Zaps fire every 0.05s with a 0.33s per-target refresh and carry a proc coefficient of only 0.1."
+    "descriptionNote": "Both of the game's damage figures are half their real value, and for the same reason: the projectile is fired with `characterBody.damage * 2f`, and the printed numbers are computed as though it were fired with 1x. The detonation is 8000%, not 4000%; a single target takes roughly 1200% per second from the tendrils, not 600%. Two mechanics the text omits entirely: firing is NOT instant — `bfgChargeTimer = 2f` holds the shot for two seconds before the projectile spawns — and it shoves you, via `healthComponent.TakeDamageForce(aimRay.direction * -1500f, alwaysApply: true)`, which cannot be resisted. One caveat pulling the other way: the blast is SweetSpot, so the full 8000% lands only within 10m of the 20m radius and everything beyond takes a quarter."
   },
   {
     "id": "the-back-up",
@@ -6374,7 +6389,7 @@
         "base": 2,
         "perStack": 2,
         "type": "linear",
-        "formula": "master.luck += 2f + (n - 1) * m, where m is 1 at one stack and 2 beyond (CharacterBody.RecalculateStats) — so +2 luck at one stack and +2 per stack after. Gated entirely on the UltimateMealBoost buff (the at-full-health condition), and it feeds the same `luck` value as 57 Leaf Clover (+1 each) and Purity (-1 each), so the three combine."
+        "formula": "master.luck += 2f + (n - 1) * num121, where num121 is 2 whenever you hold more than one Ultimate Meal and 1 otherwise (CharacterBody.RecalculateStats). The 1 case is unreachable arithmetic — at n = 1 the term it multiplies is zero — so the result is simply +2 luck at one stack and +2 per stack after: 2, 4, 6, 8. Gated entirely on the UltimateMealBoost buff (the at-full-health condition). It feeds the same `luck` value as 57 Leaf Clover (+1 each) and Purity (-1 each), and that value is ASSIGNED rather than accumulated, so the three combine into one final figure."
       }
     ],
     "tags": [

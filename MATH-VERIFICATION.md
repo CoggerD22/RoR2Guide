@@ -6200,3 +6200,83 @@ game's verbatim 1000%) and exempts code-verified records carrying a `description
 comment names the precedent, which is the reason the next task is a sweep rather than a
 celebration: **"Preon Accumulator's blast is 8000%, not the 4000% the game claims."** This bug
 shape has been found in this dataset before.
+
+### 3j.120 sweeping the 4x bug shape, and finding two guards that could not match anything
+
+§3j.119 fixed Resonance Disc. The point of that fix was never the one item — `data:diff`'s own
+comment records the same shape found before ("Preon Accumulator's blast is 8000%, not the 4000%
+the game claims"), so the question was how many more there are.
+
+**Every item projectile, checked against its prefab.** Six named projectile prefabs are fired
+from `GlobalEventManager`, plus `CommonAssets` pointers. Of those, `ElementalRingVoidBlackHole`,
+`FireMeatBall`, `LightningStake` and `StickyBomb` all carry `blastDamageCoefficient = 1.0` —
+no second multiplication, so the shape cannot occur. Sawmerang checks out at 1.0 x 4.0 = 400%.
+Molotov checks out. Only two items multiply twice, and both were already known.
+
+**Electric Boomerang: 120% -> 124%.** `0.4f` (code) x `damageCoefficient 3.1` (prefab) = 1.24
+exactly. This had been carried as "NOT resolved: the residual 4%" since §3j.108 on the grounds
+that it was too small to correct a published number on. That reasoning does not survive
+§3j.119: the same rule that moved Resonance Disc by 4x moves this by 4%, and *size is not a
+criterion for whether the code outranks the description*. The lingering row is deliberately
+left at the game's figure, because its 400%/s is an instantaneous rate a fly-through never
+sustains — a different question with a different answer.
+
+#### Preon Accumulator: the numbers were right and in the wrong field
+
+The corrections were sound (8000% blast, 400%/zap — both verified again here: fired with
+`characterBody.damage * 2f`, `BeamSphere` carries `blastDamageCoefficient = 40` and a
+`ProjectileProximityBeamController` at `damageCoefficient = 2.0`). They had been written **into
+the `description` field**, which `ItemDetail` renders directly above the sentence *"The game's
+text above is inaccurate."* That sentence is only true if the text above is the game's.
+
+A sweep settled the scale: of 217 items, **exactly one** replaced a number the game states.
+The dataset is otherwise disciplined, so this was a single lapse rather than a practice. The
+description is now verbatim again (`EQUIPMENT_BFG_DESC` + the house-style cooldown suffix), and
+the verified figures live in `stacking` rows where every other item keeps them.
+
+Three things came out of re-verifying it:
+
+- Both of the game's figures are **half** their real values, for one reason: they are computed
+  as though the projectile were fired at 1x rather than `2f`. 4000 vs 8000, and 600%/s vs the
+  ~1200%/s that `listClearInterval = 0.33` allows. A single omitted multiplier explains both.
+- The note said the blast "tapers toward the 20m edge". **SweetSpot does not taper** — it is
+  full damage within half the radius and a flat quarter beyond. Written by a pass that had
+  already identified the model correctly.
+- Two mechanics the description omits entirely: `bfgChargeTimer = 2f` holds the shot for two
+  seconds before the projectile spawns, and
+  `healthComponent.TakeDamageForce(aimRay.direction * -1500f, alwaysApply: true)` shoves the
+  firer backwards unresistably.
+
+#### Two guards that could not match anything
+
+Adding a rule against describing SweetSpot as a taper produced five failures — on the five
+records that describe it **correctly**, because "NOT a taper" contains the word. Fixing that
+with a negation-stripping regex did nothing, and the reason is the finding of this pass:
+
+> The regex was authored through a shell heredoc, where `\b` is a valid escape for **BACKSPACE
+> (0x08)**. The file ended up holding a literal control character where the word-boundary
+> assertion should be, so the pattern required an actual backspace in the text.
+
+A scan for that class found a second instance, and a worse one: `AREA_SELECTOR`'s `\bblast\b`
+branch had the same corruption. It was dead, and four rows describing a blast had been escaping
+the falloff rule entirely — **Runald's Band, Kjaro's Band, Kinetic Dampener, Runic Lens**.
+Repaired, the selector went from 20 rows to 27, and all four are now resolved: Kinetic Dampener
+and Runic Lens are real BlastAttacks at `falloffModel = None`; Runald's "ice blast" is not a
+blast at all but a single `DamageInfo` handed to one victim; Kjaro's tornado is a
+`ProjectileOverlapAttack` with no radius to fall off across.
+
+Neither `tsc`, nor eslint, nor vitest flags a control character inside a regex literal. The
+coverage floor read 20 and passed. **This is the narrow-selector failure in its purest form:
+not merely too narrow, but unmatchable — and every run said PASS.** There is now a guard that no
+source file may contain `\0 \a \b \v \f \e` as a literal control character, proven by
+re-injecting the exact corruption.
+
+#### One more rule widened
+
+The audit rule comparing a formula's stated "N at 1 stack" against `base` ran only on
+non-linear rows: **7 inspected, 33 skipped**. Both errors it was best placed to catch — Electric
+Boomerang and Resonance Disc — were on `linear` rows. It now runs on everything except
+`hyperbolic` (whose `base` is an amplification input by design). Widening it surfaced one
+mismatch, a false positive from Ultimate Meal's phrasing "m is 1 at one stack", which described
+a multiplier rather than a value; the record now names `num121` and explains that its 1 case is
+unreachable arithmetic.

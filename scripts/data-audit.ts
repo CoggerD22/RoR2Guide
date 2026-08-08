@@ -143,9 +143,13 @@ function main(): number {
   const ONE_STACK = /([0-9]+(?:\.[0-9]+)?)\s*(?:%|s|m)?\s*(?:at|@)\s*(?:1|one)\s*stack/i;
   for (const it of items) {
     for (const entry of it.stacking) {
-      if (entry.type !== "exponential" && entry.type !== "special" && entry.type !== "reciprocal") {
-        continue;
-      }
+      // HYPERBOLIC stays excluded for the reason given above — its `base` is an
+      // amplification input, not the value the player sees, so the comparison is meaningless.
+      // Everything else is now checked, LINEAR INCLUDED. Restricting this to non-linear rows
+      // inspected 7 rows while skipping 33, and the two errors it was best placed to catch —
+      // Electric Boomerang's 120-vs-124 and Resonance Disc's 1000-vs-4000 — were both on
+      // linear rows (MATH-VERIFICATION §3j.120).
+      if (entry.type === "hyperbolic") continue;
       if (!entry.formula) continue;
       const m = ONE_STACK.exec(entry.formula);
       if (!m) continue;

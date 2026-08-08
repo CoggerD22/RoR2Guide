@@ -656,9 +656,15 @@ test("Electric Boomerang's 15% chance does not scale with stacks", () => {
   expect(chance.base).toBe(15);
   expect(chance.perStack).toBe(0); // `LocalCheckRoll(15f * procCoefficient)` — no stack term
   expect(chance.formula).toMatch(/NO stack term/);
-  // Still langfile: 0.4 x 3.1 = 1.24 against a stated 1.20, unattributed.
+  // Still `langfile`, but for a NARROWER reason than when this test was written. The impact
+  // is now code+asset derived (§3j.120 corrected it to 124%). What keeps the record on
+  // `langfile` is one row: the lingering damage still publishes the GAME's 120%/s, because
+  // the code's 400%/s is an instantaneous rate a fly-through never sustains. One
+  // description-sourced number in a record means the record is not fully traced — fail
+  // closed (PLAN §6B.3) — even though three of its four rows now are.
   expect(x.confidence).toBe("langfile");
-  expect(x.stacking.find((s) => /Impact damage/.test(s.stat))?.formula).toMatch(/NOT resolved/);
+  const dotRow = x.stacking.find((s) => /Damage over time/i.test(s.stat))!;
+  expect(dotRow.formula).toMatch(/instantaneous rate/);
 });
 
 /**
@@ -1023,7 +1029,7 @@ test("a cited damageCoefficient matches the published base, or explains itself",
  * without anything noticing.
  */
 const AREA_SELECTOR =
-  /blastRadius|BlastAttack|blastAttack|DelayBlast|blast|explosion|explode|burst radius/i;
+  /blastRadius|BlastAttack|blastAttack|DelayBlast|\bblast\b|explosion|explode|burst radius/i;
 const COEFF_SELECTOR = /[A-Za-z]*[Dd]amageCoefficient\s*(?:=|of)?\s*([0-9]*\.?[0-9]+)/;
 
 /**
@@ -1322,15 +1328,25 @@ test("Electric Boomerang's slice scales with stacks, whatever the text implies",
   const x = items.find((i) => i.id === "electric-boomerang")!;
   const impact = x.stacking.find((s) => /Impact damage/.test(s.stat))!;
 
-  // Not flat: the row now carries a per-stack term, matching the single fired value.
-  expect(impact.perStack).toBe(120);
+  // Not flat: the row carries a per-stack term, matching the single fired value.
   expect(impact.formula).toMatch(/STRUCTURAL FINDING/);
   expect(impact.formula).toMatch(/NO constant term/);
-  expect(x.descriptionNote).toMatch(/both grow together/);
+  expect(x.descriptionNote).toMatch(/grow together/);
 
-  // The residual gap stays open and stays labelled — 1.24n computed vs 1.20n stated.
-  expect(impact.formula).toMatch(/NOT resolved/);
-  expect(x.confidence).toBe("langfile");
+  // §3j.120: the 4% is CLOSED, and the published figure is now the code-derived one.
+  // 0.4f (GlobalEventManager) x damageCoefficient 3.1 (StunAndPierceBoomerang prefab) = 1.24
+  // exactly. This row previously published the description's 120% with the gap flagged
+  // "NOT resolved"; it was resolvable all along by reading the prefab, and 1.20 is not
+  // reachable from 0.4 x 3.1 by any rounding.
+  expect(impact.base).toBe(124);
+  expect(impact.perStack).toBe(124);
+  expect(impact.formula).toMatch(/RESOLVED/);
+  expect(impact.formula).not.toMatch(/NOT resolved/);
+  // The lingering row is a DIFFERENT case and deliberately still carries the game's figure:
+  // its 400%/s is an instantaneous rate a fly-through never sustains.
+  const dot = x.stacking.find((s) => /Damage over time/i.test(s.stat))!;
+  expect(dot.base).toBe(120);
+  expect(dot.formula).toMatch(/instantaneous rate/);
 });
 
 /**
@@ -1352,12 +1368,15 @@ describe("guard coverage", () => {
     for (const it of items)
       for (const st of it.stacking)
         if (AREA_SELECTOR.test(`${st.stat} ${st.formula ?? ""}`)) n++;
-    // 20 at the time of writing; it was 8 when the selector read only "blastRadius" in the
-    // formula text. A deliberately wider probe (any `radius`, SphereSearch, "explo") matches
-    // 29 rows, but the extra 9 are wards, tethers and reveal radii — area effects that are
-    // not BlastAttacks and so have no falloff model to state. Demanding one of them would
-    // invite a fabricated answer, which is why the selector stops at blast vocabulary.
-    expect(n).toBeGreaterThanOrEqual(20);
+    // 27 now. The history is the point: 8 when the selector read only blastRadius in
+    // the formula text, 20 once it also read the stat name, and 27 after the \bblast\b
+    // branch was repaired — it had been holding a literal backspace character and matching
+    // nothing (§3j.120). Each of those three numbers came from a run that PASSED.
+    //
+    // A wider probe (any `radius`, SphereSearch, explo) matches 29, but the remainder are
+    // wards, tethers and reveal radii — not BlastAttacks, so they have no falloff model to
+    // state, and demanding one would invite a fabricated answer.
+    expect(n).toBeGreaterThanOrEqual(27);
   });
 
   test("the damageCoefficient guard still reads prefixed coefficient names", () => {
@@ -1698,4 +1717,116 @@ test("no NEW item attack row goes silent on its proc coefficient", () => {
       expect(st.formula ?? "").not.toMatch(/rate is NOT established here/);
     }
   }
+});
+
+/**
+ * §3j.120: SweetSpot is the falloff model most often described wrongly, because its NAME
+ * suggests a gradient and its behaviour is a step. `BlastAttack.FalloffModel.SweetSpot` is
+ * `1 - (d > r/2 ? 0.75 : 0)`: full damage inside HALF the radius, then a flat QUARTER out to
+ * the rim. Nothing tapers, gradually reduces, or falls off with distance within either band.
+ *
+ * Preon Accumulator's note said the blast "tapers toward the 20m edge" — written by a pass
+ * that had already correctly identified the model. Naming the model right and describing it
+ * wrong is worse than omitting it, because the specific name reads as evidence of care.
+ */
+test("no record describes SweetSpot as a taper", () => {
+  // "NOT a taper" / "a cliff rather than a taper" are the CORRECT descriptions, so the word
+  // alone cannot be the signal — the first version of this guard failed on all five records
+  // that describe the model properly. Strip negated mentions first, then look for what is
+  // left. (A guard whose own selector misfires is the failure this file keeps recording;
+  // catching it in the guard's first run rather than months later is the only difference.)
+  const NEGATED = /\b(?:not|never|rather than|instead of|as opposed to)\s+(?:a\s+|an\s+)?taper/gi;
+  const TAPER = /taper|gradual|falls? off (?:smoothly|with distance)|diminish|scales? down with distance/i;
+  const offenders: string[] = [];
+
+  const check = (owner: string, where: string, text: string) => {
+    if (!text || !/SweetSpot/i.test(text)) return;
+    // Only inspect the sentence(s) that actually mention the model.
+    for (const sentence of text.split(/(?<=\.)\s+/)) {
+      if (!/SweetSpot/i.test(sentence)) continue;
+      const withoutNegations = sentence.replace(NEGATED, "");
+      if (TAPER.test(withoutNegations)) {
+        offenders.push(`${owner} (${where}): "${sentence.trim()}"`);
+      }
+    }
+  };
+
+  for (const it of items) {
+    check(it.name, "descriptionNote", it.descriptionNote ?? "");
+    for (const st of it.stacking) check(it.name, st.stat, st.formula ?? "");
+  }
+  for (const r of [...ARTIFACTS, ...SHRINES]) check(r.name, "mechanic", r.mechanic ?? "");
+
+  expect(offenders, offenders.join(" | ")).toEqual([]);
+
+  // And every SweetSpot record must state the consequence, not just the name.
+  const named = items.filter(
+    (it) =>
+      /SweetSpot/i.test(it.descriptionNote ?? "") ||
+      it.stacking.some((s) => /SweetSpot/i.test(s.formula ?? "")),
+  );
+  expect(named.length).toBeGreaterThanOrEqual(4);
+  for (const it of named) {
+    const all = `${it.descriptionNote ?? ""} ${it.stacking.map((s) => s.formula ?? "").join(" ")}`;
+    expect(all, `${it.name} names SweetSpot without saying what it does`).toMatch(
+      /QUARTER|quarter/,
+    );
+  }
+});
+
+/**
+ * §3j.120: a guard that cannot match anything, because of how it was WRITTEN.
+ *
+ * `AREA_SELECTOR` contained `\bblast\b` and the NEGATED regex below contained `\b(?:not|...)`.
+ * Both were authored through a shell heredoc, where `\b` is a valid escape for BACKSPACE
+ * (0x08) — so the files ended up holding a literal control character where the word-boundary
+ * assertion should be. The regexes then required an actual backspace in the text and silently
+ * matched nothing:
+ *
+ *   AREA_SELECTOR  the `\bblast\b` branch was dead; four rows describing a blast escaped the
+ *                  falloff rule entirely (Runald's, Kjaro's, Kinetic Dampener, Runic Lens)
+ *   NEGATED        every correct "NOT a taper" phrasing was reported as an offender
+ *
+ * This is the narrow-selector failure in its purest form: the selector was not merely too
+ * narrow, it was unmatchable, and nothing about a passing run said so. Neither `tsc` nor
+ * eslint nor vitest flags a control character inside a regex literal.
+ *
+ * So: no source file may contain one. The escapes that survive this way are \0 \a \b \v \f
+ * and \e — all valid in shells and in Python, none of them intended in a TypeScript regex.
+ */
+test("no source file contains a control character from a botched escape", async () => {
+  const { readdirSync, readFileSync } = await import("node:fs");
+  const { join } = await import("node:path");
+
+  const BAD: Record<string, string> = {
+    "\u0000": "\\0",
+    "\u0007": "\\a",
+    "\u0008": "\\b",
+    "\u000b": "\\v",
+    "\u000c": "\\f",
+    "\u001b": "\\e",
+  };
+
+  const files: string[] = [];
+  const walk = (d: string) => {
+    for (const e of readdirSync(d, { withFileTypes: true })) {
+      if (e.name === "node_modules" || e.name === "__pycache__") continue;
+      const p = join(d, e.name);
+      if (e.isDirectory()) walk(p);
+      else if (/\.(ts|tsx|mjs|js)$/.test(e.name)) files.push(p);
+    }
+  };
+  walk("src");
+  walk("scripts");
+
+  const offenders: string[] = [];
+  for (const f of files) {
+    const text = readFileSync(f, "utf8");
+    for (const [ch, name] of Object.entries(BAD)) {
+      if (!text.includes(ch)) continue;
+      const line = text.split("\n").findIndex((l) => l.includes(ch)) + 1;
+      offenders.push(`${f}:${line} contains a literal ${name} control character`);
+    }
+  }
+  expect(offenders, offenders.join(" | ")).toEqual([]);
 });
