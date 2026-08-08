@@ -1449,3 +1449,57 @@ describe("artifact mechanics re-read against their managers", () => {
     expect(artifact("Artifact of Evolution").mechanic).toMatch(/first stage/);
   });
 });
+
+/**
+ * §3j.114: the shrine records were the last place on the site where our own documentation
+ * said the numbers were unverified. They said it wrongly — the costs HAD been read from the
+ * prefabs, and the doc comment claiming otherwise outlived that by several passes. Re-running
+ * the extraction settled it and turned up two real errors in the process.
+ *
+ * These pin the arithmetic that a plausible-looking edit would quietly undo.
+ */
+describe("shrine constants", () => {
+  const shrine = (n: string) => SHRINES.find((x) => x.name === n)!;
+
+  test("Shrine of Blood truncates to 93%, and charges combined health", () => {
+    const b = shrine("Shrine of Blood");
+    // 100 * (1 - (1 - 0.75)^2) = 93.75, and Networkcost is an (int) cast. The published
+    // figure was 93.75 for as long as the record existed.
+    expect(b.cost).toContain("93%");
+    expect(b.cost).not.toContain("93.75");
+    // fullCombinedHealth is max health PLUS max shield, which changes the answer on any
+    // Transcendence build — the record said "max health".
+    expect(b.cost).toContain("combined health");
+    expect(b.mechanic).toMatch(/fullCombinedHealth/);
+    expect(b.mechanic).toMatch(/46\.5%/);
+    expect(b.mechanic).toMatch(/NonLethal \| BypassArmor/);
+  });
+
+  test("Shrine of Chance escalates per attempt but caps on wins", () => {
+    const c = shrine("Shrine of Chance");
+    // The distinction the old record collapsed: a failure costs gold and raises the price
+    // without consuming one of the two uses.
+    expect(c.cost).toContain("per attempt");
+    expect(c.mechanic).toMatch(/SUCCESSES only|successfulPurchaseCount is\s+incremented solely/);
+    expect(c.mechanic).toMatch(/54\.71%/);
+    // The failure chance is derivable from the serialized weights, which is why it is
+    // trustworthy rather than merely transcribed.
+    expect(c.mechanic).toMatch(/10\.1\/22\.3/);
+  });
+
+  test("costs that were hedged are now exact, and the free one is genuinely free", () => {
+    expect(shrine("Altar of Gold").cost).toBe("200 gold");
+    expect(shrine("Shrine of Shaping").cost).toBe("30 Soul");
+    // ShrineBoss carries cost = 20 with costType = None. Reading the integer without the
+    // enum would have "corrected" a right answer into a wrong one.
+    expect(shrine("Shrine of the Mountain").cost).toBe("Free");
+  });
+
+  test("half the shrines now carry a mechanic, and none claims to be unverified", () => {
+    expect(SHRINES.filter((x) => x.mechanic).length).toBeGreaterThanOrEqual(6);
+    for (const x of SHRINES) {
+      // The cost strings are prefab-derived now; nothing should describe them as ours.
+      expect(x.cost).not.toMatch(/approx|roughly|about \d/i);
+    }
+  });
+});

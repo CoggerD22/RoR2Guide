@@ -5869,3 +5869,65 @@ were accurate the whole time and still left three artifacts misdescribed.
 
 The falloff guard now also reads `reference.ts`, so blast claims are policed wherever we make
 them rather than only in `items.json`.
+
+### 3j.114 the shrines, and a disclaimer that outlived its own truth
+
+Following §3j.113's rule — *"verified" is always verified against a question* — to the shrines
+produced a contradiction before it produced any data. Three places in the repo disagreed:
+
+- `ShrineRef.cost`'s doc comment: *"OUR editorial one-line cost summary — NOT game data, NOT
+  code-verified."*
+- The file header: *"SHRINES.cost is OUR editorial summary, not game data."*
+- `ReferencePage.tsx`: *"This said 'Our summary, not game data' — which stopped being true when
+  the costs were re-read from each shrine prefab's PurchaseInteraction."*
+
+The UI was right and the data file's own documentation was stale — Shrine of Blood's entry
+already carried the prefab constants in a comment. But an assertion that something *was*
+verified is not verification, and `.gamedata/` held nothing about shrines, so there was no
+re-checkable artifact behind any of it. Settled by extracting them again:
+
+```
+python scripts/extract-component-fields.py costType costMultiplierPerPurchase maxPurchaseCount failureWeight
+```
+
+**All twelve cost summaries were correct.** Two that had been hedged are now exact (Altar of
+Gold = 200 Money, Shrine of Shaping = 30 SoulCost), and one near-miss is worth recording:
+`ShrineBoss` carries `cost = 20` with `costType = None`. Reading the integer without resolving
+the enum would have "corrected" *Free* — the right answer — into *20 gold*.
+
+#### Two real errors, both from stopping one step early
+
+**Shrine of Blood published 93.75%.** The escalation is not a multiplier at all:
+
+```csharp
+Networkcost = (int)(100f * (1f - Mathf.Pow(1f - cost/100f, costMultiplierPerPurchase)))
+```
+
+With the serialized `2.0` that is `1 − (1−c)²` — *take the same fraction of what is left again*
+— giving 50, 75, 93.75. The previous pass computed the float and stopped **before the `(int)`
+cast**: the shrine charges **93%**, and gold follows at 46.5% rather than 46.9%. The cost is
+also a fraction of `fullCombinedHealth`, max health **plus max shield**, not max health; and
+it is dealt as damage flagged `NonLethal | BypassArmor`.
+
+**Shrine of Chance escalated on the wrong event.** The record said "×1.4 per success". The
+refresh multiplies `Networkcost` after *every* attempt, while the limit of 2 increments only on
+a win. Failures therefore cost gold, raise the price, and do not consume the shrine. Success is
+54.71%, and that number is not merely transcribed — `failureWeight 10.1` against rewards
+totalling 12.2 gives 10.1/22.3 = 0.45291, matching the serialized `failureChance` exactly.
+
+#### New ground
+
+Four shrines gained a mechanic they never had (6 of 12 now): the Woods ward heals 1.5% max
+health every 0.25s — **6%/s** — in a radius of 12m growing 8m per purchase; Shrine of Order
+picks **uniformly over the distinct items you hold**, not weighted by stack size, one tier at a
+time, skipping `ObjectiveRelated` and `PowerShape`; Halcyon's three tiers share *identical*
+reward weights, so a higher tier buys more offers rather than better ones; Combat is genuinely
+free and spends 100 director credits.
+
+#### The thing to carry
+
+A disclaimer is a claim. *"Not verified"* was the false statement here, and false in the
+direction that looks humble — it told readers a prefab-derived figure was a guess and sent them
+to a worse source to check it. Stale caution reads as safe and is not: **it is as wrong as
+stale confidence, and much less likely to be re-examined**, because nobody audits a claim that
+undersells itself.

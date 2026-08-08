@@ -92,7 +92,13 @@ left, bold white name, gray body with highlighted numeric values.
         arithmetic that would settle them. `coverage-floor.json` ratchets this and
         `data:audit` fails if it drops. Survivors verified field-by-field against the body
         **prefabs** (190/190) — those values are NOT in RoR2.dll.
-      - Artifact + shrine numbers confirmed against their behavior classes.
+      - Artifact + shrine numbers confirmed against their behavior classes **and their
+        prefabs** — the behaviour classes alone are not enough, since `maxPurchaseCount`,
+        `costMultiplierPerPurchase` and the drop weights are all serialized (§5.0.2). Note
+        the scope of "numbers": confirming every figure in a record says nothing about
+        whether the record mentions everything the code does, and re-reading all 13 artifact
+        managers found three that did not (§3j.113). Shrine costs are prefab-derived, not
+        editorial; 6 of 12 shrines carry a verified mechanic (§3j.114).
       - `pnpm data:verify` locks coefficients and survivor stats, and runs in CI.
       - Every record carries a `confidence` tag (code > asset > langfile > wiki),
         badged in the codex. Nothing is wiki-only any more.

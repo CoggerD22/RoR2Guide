@@ -24,7 +24,9 @@ import type { Dlc } from "./schema";
  * fact, and the stage mapping is structural (token name + SceneDef.stageOrder).
  *
  * Still hand-entered / wiki-sourced: the Ambry codes (they live in asset prefabs,
- * not text). SHRINES.cost is OUR editorial summary, not game data.
+ * not text). SHRINES.cost is NO LONGER in that category — every one of the twelve is read
+ * from its prefab's PurchaseInteraction and re-checkable with
+ * `python scripts/extract-component-fields.py costType costMultiplierPerPurchase`.
  *
  * Artifacts carry their Bulwark's Ambry activation code as a 3-row glyph string
  * (● circle, ■ square, ▲ triangle, ♦ diamond).
@@ -310,8 +312,16 @@ export const LOADOUT_UNLOCKS: SurvivorLoadout[] = [
 export interface ShrineRef {
   name: string;
   /**
-   * OUR editorial one-line cost summary — NOT game data, NOT code-verified.
-   * Must be rendered visibly labelled as ours (PLAN §5.0.2, "Editorial").
+   * The shrine's cost, READ FROM ITS PREFAB — `PurchaseInteraction.cost` + `costType`, plus
+   * `costMultiplierPerPurchase` / `maxPurchaseCount` from the `Shrine*Behavior` beside it.
+   * This began as an editorial summary and stopped being one; the doc comment saying it was
+   * "NOT code-verified" outlived that by several passes (MATH-VERIFICATION §3j.114).
+   *
+   * All twelve were re-extracted and matched, which is why two that had been hedged are now
+   * exact: the Altar of Gold is 200 Money, and Shrine of Shaping is 30 SoulCost. Note
+   * `ShrineBoss` carries `cost = 20` with `costType = None` — the number is inert and the
+   * Shrine of the Mountain really is free, which is only visible if you resolve the enum
+   * rather than reading the integer.
    */
   cost: string;
   /**
@@ -345,27 +355,58 @@ export interface ShrineRef {
 export const SHRINES: ShrineRef[] = [
   {
     name: "Shrine of Chance",
-    cost: "17 gold, x1.4 per success (max 2)",
+    cost: "17 gold, x1.4 per attempt (max 2 wins)",
     description: "When activated by a survivor the Shrine of Chance has a chance to drop an item of random rarity or a random equipment item.",
+    // ShrineChanceBehavior (code) + the shrinechance prefab (constants):
+    //   PurchaseInteraction.cost = 17, costType = Money, costMultiplierPerPurchase = 1.4,
+    //   maxPurchaseCount = 2, failureChance = 0.4529, failureWeight = 10.1,
+    //   tier1Weight = 8, tier2Weight = 2, tier3Weight = 0.2, equipmentWeight = 2
+    mechanic:
+      "Two things the description leaves out, and they pull in opposite directions. The cost " +
+      "rises by x1.4 after EVERY attempt (the refresh multiplies Networkcost regardless of " +
+      "outcome), but the limit of 2 counts SUCCESSES only — successfulPurchaseCount is " +
+      "incremented solely on a win — so failures cost you gold, raise the price, and do not " +
+      "use the shrine up. Success is rng.nextNormalizedFloat > failureChance with " +
+      "failureChance = 0.4529, i.e. 54.71% per attempt. That figure is exactly the serialized " +
+      "weights: failureWeight 10.1 against rewards totalling 12.2 gives 10.1/22.3 = 0.45291. " +
+      "On a win the reward is drawn from dtShrineChance weighted tier1 8, tier2 2, tier3 0.2, " +
+      "equipment 2 — so a win is a white 65.6% of the time and a red 1.6% of the time. Holding " +
+      "the Chance Doll (ExtraShrineItem) adds a 30% + 10%-per-stack roll to draw from a " +
+      "separate table instead.",
   },
   {
     name: "Shrine of Blood",
-    cost: "50% -> 75% -> 93.75% of max health (max 3)",
+    cost: "50% -> 75% -> 93% of combined health (max 3)",
     description: "When activated by a survivor the Shrine of Blood consumes a percentage of the survivors health in exchange for gold equal to half the amount of HP taken.",
     // ShrineBloodBehavior (code) + the shrineblood prefab (constants):
     //   maxPurchaseCount = 3, goldToPaidHpRatio = 0.5, costMultiplierPerPurchase = 2,
     //   PurchaseInteraction.cost = 50, costType = PercentHealth
     //   Networkcost = 100 * (1 - (1 - cost/100)^costMultiplierPerPurchase)
     mechanic:
-      "Costs a percentage of MAXIMUM health, and that cost compounds after each use: " +
-      "50%, then 75%, then 93.75%. Limited to 3 uses, after which the shrine is spent. " +
-      "Gold gained is half the health paid — 25%, 37.5%, then 46.9% of your max health " +
-      "converted to gold. The in-game description mentions neither the escalation nor the cap.",
+      "Costs a percentage of fullCombinedHealth — max health PLUS max shield, not max health " +
+      "alone — and the escalation is not a multiplication. Each use recomputes the cost as " +
+      "100 * (1 - (1 - cost/100)^2), i.e. the shrine takes the same fraction of what you have " +
+      "LEFT again, and the result is truncated to an int: 50%, then 75%, then 93% (the " +
+      "unrounded 93.75 never reaches the shrine). Limited to 3 uses. Gold gained is half the " +
+      "health paid (goldToPaidHpRatio = 0.5), also truncated — 25%, 37.5%, then 46.5% of " +
+      "combined health. The payment is dealt as damage flagged NonLethal | BypassArmor, so " +
+      "armor does not reduce it and it cannot kill you, and it is refused outright unless your " +
+      "CURRENT combined health is at least the cost percentage. Two seconds pass before the " +
+      "shrine can be used again. The in-game description mentions neither the escalation nor " +
+      "the cap.",
   },
   {
     name: "Shrine of Combat",
     cost: "Free",
     description: "When activated by a survivor a group of enemies already found in the stage will spawn around the Shrine of Combat.",
+    // shrinecombat prefab: PurchaseInteraction.cost = 0, costType = None,
+    //   baseMonsterCredit = 100, monsterCreditCoefficientPerPurchase = 2, maxPurchaseCount = 1
+    mechanic:
+      "Genuinely free: the prefab's PurchaseInteraction has cost 0 and costType None. It " +
+      "spends baseMonsterCredit = 100 director credits on the wave and can be used once " +
+      "(maxPurchaseCount = 1), with monsterCreditCoefficientPerPurchase = 2 scaling the budget " +
+      "if a use is granted. The Collective variant is a different prefab with a split budget: " +
+      "baseLeaderMonsterCredit = 120 and baseSupportMonsterCredit = 70.",
   },
   {
     name: "Shrine of the Mountain",
@@ -375,20 +416,51 @@ export const SHRINES: ShrineRef[] = [
   {
     name: "Shrine of Order",
     cost: "1 Lunar Coin",
+    // shrinerestack prefab: PurchaseInteraction.cost = 1, costType = LunarCoin,
+    //   costMultiplierPerPurchase = 2, maxPurchaseCount = 1.
+    //   Algorithm: Inventory.ShrineRestackInventory.
+    mechanic:
+      "Inventory.ShrineRestackInventory works one item TIER at a time, and only on tiers whose " +
+      "ItemTierDef has canRestack. Within a tier it gathers every item you hold that is not " +
+      "tagged ObjectiveRelated or PowerShape, totals the stacks, zeroes all of them, then picks " +
+      "ONE of those item types with rng.NextElementUniform and hands back the whole total as " +
+      "that item. Uniform over the DISTINCT items you held, not weighted by how many of each — " +
+      "so holding nine of one white and one of another gives each an equal chance of being the " +
+      "survivor. Permanent and temporary stacks are counted and restored separately.",
     description: "When activated by a survivor the Shrine of Order randomly selects an item from each tier of rarity and turns all items of the same rarity into the selected item of that tier.",
   },
   {
     name: "Shrine of the Woods",
     cost: "25 gold, x1.5 per use (max 3)",
+    // shrinehealing prefab: PurchaseInteraction.cost = 25, costType = Money,
+    //   costMultiplierPerPurchase = 1.5, maxPurchaseCount = 3, baseRadius = 12,
+    //   radiusBonusPerPurchase = 8; the ward itself: healFraction = 0.015, interval = 0.25
+    mechanic:
+      "The ward heals 1.5% of maximum health every 0.25s — 6% per second — to everyone inside " +
+      "it, and it persists for the rest of the stage rather than for a duration. Each purchase " +
+      "widens it: baseRadius = 12m plus radiusBonusPerPurchase = 8m per use, so 12m, 20m, then " +
+      "28m at the three-use cap. The description gives none of these numbers.",
     description: "When activated by a survivor the Shrine of the Woods will create a circular field around it that heals all allies when inside it.",
   },
   {
     name: "Shrine of Shaping",
-    cost: "An offering of Soul",
+    cost: "30 Soul",
     description: "An offering of Soul reduces all living Survivors' health by 30%, but revives all dead Survivors and gives an extra life to all living Survivors.",
   },
   {
     name: "Halcyon Shrine",
+    // shrinehalcyonite prefab: lowGoldCost 75, midGoldCost 150, maxGoldCost 300,
+    //   automaticallyScaleCostWithDifficulty = 1, radius 30, maxTargets 4, tickRate 5,
+    //   goldDrainValue 1, monsterCredit 100, rewardOptionCount 3; drop tables
+    //   dtShrineHalcyoniteTier1/2/3 all weight tier1 0.65, tier2 0.30, tier3 0.05.
+    mechanic:
+      "The shrine drains gold rather than charging a price: it pulls from up to maxTargets = 4 " +
+      "survivors within a 30m radius at tickRate 5, and the three reward tiers are reached at " +
+      "75, 150 and 300 gold drained, each scaled by the run's difficulty coefficient " +
+      "(automaticallyScaleCostWithDifficulty is set). It also spends monsterCredit = 100 on " +
+      "guardians. All three tiers share the same reward weighting — dtShrineHalcyoniteTier1, " +
+      "Tier2 and Tier3 are weighted identically at tier1 0.65, tier2 0.30, tier3 0.05 — so a " +
+      "higher tier buys MORE offers (rewardOptionCount = 3), not better odds per offer.",
     cost: "Siphons gold within 30m; tiers at 75 / 150 / 300 (scales with difficulty)",
     description: "A Shrine created from a shard from Meridian imbued with Aurelionite's energy. When the Shrine is activated it begins siphoning gold from nearby Survivors up until a maximum gold amount has been stored. After the first tier has been reached, the player can interact with the Shrine early and ending the gold siphon or wait till the final tier is reached. Interacting with the Shrine summons a slumbering Halcyonite and on its defeat an Aurelionite Fragment will drop. Depending on the amount of gold drained the Fragment gains more options and allow more items to be selected from the Fragment.",
   },
@@ -404,7 +476,7 @@ export const SHRINES: ShrineRef[] = [
   },
   {
     name: "Altar of Gold",
-    cost: "Large gold sum",
+    cost: "200 gold",
     description: "A rare and expensive shrine that will spawn a Gold Portal once the Teleporter Event has finished, allowing the player to travel to the Gilded Coast.",
   },
   {
