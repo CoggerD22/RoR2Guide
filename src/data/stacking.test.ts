@@ -1537,3 +1537,77 @@ test("no skill describes an established provenance as unverified", () => {
     /FireSonicBoom/,
   );
 });
+
+/**
+ * §3j.116, continuing the §3j.115 pattern: a principle enforced in only some of the places it
+ * applies. "Fail closed" (PLAN §6B.3) says a record we have not traced must not LOOK like one
+ * we have. Nine components touch item numbers; four carry a confidence signal.
+ *
+ * Checked, and most of the gap is not a gap: PlannerPage only filters by stacking TYPE and
+ * renders no values, StatLabPage computes from statItems.ts (locked by data:verify), and
+ * Breakpoints carries its own per-row `verified` field and renders it as <VerifiedTag>.
+ *
+ * One real hole remains. RunPlanRail publishes an item's hard CAP — a bare number, with no
+ * badge and no tooltip. All four capped items are code-verified today, so nothing is wrong on
+ * screen; the point is that nothing would notice if that changed. This is the cheap half of
+ * fail-closed: rather than adding a badge to a rail that has no room for one, require that
+ * only traced records can reach it.
+ */
+test("every number rendered without a confidence signal comes from a traced record", () => {
+  const TRACED = new Set(["code", "asset"]);
+
+  // RunPlanRail: `item.stacking[].cap`, rendered bare.
+  const cappedButUntraced = items
+    .filter((it) => it.stacking.some((s) => s.cap))
+    .filter((it) => !TRACED.has(it.confidence ?? ""))
+    .map((it) => `${it.name} (${it.confidence}) — cap shown in the run planner with no badge`);
+
+  expect(cappedButUntraced, cappedButUntraced.join(" | ")).toEqual([]);
+});
+
+/**
+ * §3j.116: the recurring failure this project actually has is not a wrong number. It is a fix
+ * applied to the SURFACE where a bug was noticed rather than to the CONCEPT. Three instances
+ * now, all involving skill proc coefficients:
+ *
+ *   1. The Stat Lab learned to show "no damage path"; SurvivorDetail went on saying "proc
+ *      unverified" — its own comment records the same skill being described two ways on two
+ *      pages, "and the wrong way here".
+ *   2. The Stat Lab was fixed for the 21-skill conflation; `procProvenance()` was not, so the
+ *      same skills kept calling themselves unverified everywhere that string appears (§3j.115).
+ *   3. The falloff and coined-term guards each policed the file they were born in (§3j.109,
+ *      §3j.112).
+ *
+ * A number is guarded by a value assertion. A concept has to be guarded structurally: any
+ * component that renders a proc coefficient must also handle the case where there is no
+ * coefficient to render. Both do today — this fails if a third surface appears without it,
+ * which is exactly how the first two instances arose.
+ */
+test("every surface rendering a proc coefficient handles the no-damage-path case", async () => {
+  const { readdirSync, readFileSync } = await import("node:fs");
+  const { join } = await import("node:path");
+
+  const files: string[] = [];
+  const walk = (d: string) => {
+    for (const e of readdirSync(d, { withFileTypes: true })) {
+      const p = join(d, e.name);
+      if (e.isDirectory()) walk(p);
+      else if (/\.tsx$/.test(e.name)) files.push(p);
+    }
+  };
+  walk("src/components");
+
+  const offenders: string[] = [];
+  for (const f of files) {
+    const src = readFileSync(f, "utf8");
+    // Does this component render a proc VALUE (as opposed to merely mentioning the word)?
+    if (!/\{\s*\w+\.proc\s*\}/.test(src)) continue;
+    // Then it must distinguish "no coefficient exists" from "coefficient unknown".
+    if (/damaging === false/.test(src)) continue;
+    offenders.push(f);
+  }
+  expect(
+    offenders,
+    `these render a proc coefficient without handling damaging === false: ${offenders.join(", ")}`,
+  ).toEqual([]);
+});

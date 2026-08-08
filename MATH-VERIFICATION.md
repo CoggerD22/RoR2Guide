@@ -5981,3 +5981,48 @@ This project has spent most of its passes looking for claims that assert too muc
 looks for claims that assert too little, and nothing would — an unverified label never triggers
 a correction, never contradicts the code, and reads as diligence. That is exactly why the
 `skills.ts` bug survived being diagnosed, named, and fixed once already, three files away.
+
+### 3j.116 the recurring failure is not a wrong number
+
+§3j.115 found `procProvenance()` still labelling 21 established skills "unverified" — after the
+same conflation had been diagnosed, named, and fixed in the Stat Lab. That is worth counting,
+because it is the third instance of one shape:
+
+1. The Stat Lab learned to show "no damage path"; `SurvivorDetail` went on saying *"proc
+   unverified"*. Its own comment records the result — the same skill described two ways on two
+   pages, *"and the wrong way here"*.
+2. The Stat Lab was fixed for the 21-skill conflation; `procProvenance()` was not (§3j.115).
+3. The falloff and coined-term rules each policed only the file they were born in (§3j.109,
+   §3j.112).
+
+**The recurring failure in this project is not a wrong number. It is a fix applied to the
+surface where a bug was noticed rather than to the concept.** Every one of these was found by
+someone looking at a *different* screen and noticing the disagreement — never by the fix itself.
+
+#### Sweeping for it
+
+Nine components touch item numbers; four carry a confidence signal. Most of that gap is not a
+gap: `PlannerPage` filters by stacking TYPE and renders no values, `StatLabPage` computes from
+`statItems.ts` (locked by `data:verify`), and `Breakpoints` carries a per-row `verified` field
+and renders it as `<VerifiedTag>`.
+
+One real hole: `RunPlanRail` publishes an item's hard **cap** as a bare number, no badge, no
+tooltip. All four capped items are code-verified today, so nothing on screen is wrong — but
+nothing would notice if that changed. Guarded rather than redesigned: only traced records may
+carry a cap. Proven by giving Sawmerang (`langfile`) one.
+
+The proc rule came out clean — both surfaces gate on `verified` and both branch on
+`damaging === false`. So it is now guarded **structurally**: any component rendering a proc
+value must also handle the no-coefficient case. A number is guarded by asserting a value; a
+concept has to be guarded by asserting that every place it applies implements it.
+
+#### On the breakage test that passed
+
+Flipping one `damaging === false` in `SurvivorDetail` left the suite green. The recorded rule
+applied exactly as written — *when you break something to prove a test catches it and the test
+passes, assume your mutation was too weak* — and it was: the file contains **two** occurrences
+and `.replace(x, y, 1)` changed one. Removing both fails the test.
+
+The same rule has now caught three weak mutations across this work. It is the single most
+reliable thing in the log, and it earns its keep precisely because a passing breakage test is
+indistinguishable from a working guard until you check the count.
