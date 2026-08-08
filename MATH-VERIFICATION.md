@@ -6145,3 +6145,58 @@ against my errors caught an error in the fix for a different one.**
 And the ratchet itself had the §3j.109 defect: keyed on `procCoefficient`, it reported Resonance
 Disc as silent when its row already read *"Beam proc coefficient is 1.0"*. Written three passes
 after documenting that exact failure. It now matches both spellings.
+
+### 3j.119 the 4x error was real — Resonance Disc explodes for 4000%, not 1000%
+
+§3j.118 left this as an open question rather than a correction, because one link rested on
+name similarity. That link is now **followed rather than matched**.
+
+`scripts/resolve-state-refs.py` (new) resolves object-valued fields in EntityStateConfiguration
+assets. `extract-state-fields.py` reads only fields that parse as numbers out of
+`serializedFieldsCollection`; prefab pointers live in `fieldValue.objectValue` as a PPtr and
+were simply invisible to it.
+
+```
+EntityStates.LaserTurbine.FireMainBeamState.secondBombPrefab
+    -> LaserTurbineBomb   [m_FileID=0  m_PathID=1198976041846065181  via same-file]
+```
+
+Every link in the chain is now read:
+
+1. `GetDamage()` returns `ownerBody.damage x GetItemCountEffective(LaserTurbine)`.
+2. `FireMainBeamState` fires with `damage = GetDamage() * secondBombDamageCoefficient`; that
+   coefficient is **10.0**, from the EntityStateConfiguration.
+3. `ProjectileManager` assigns `ProjectileDamage.damage = fireProjectileInfo.damage` unmodified.
+4. The pointer resolves to `LaserTurbineBomb` — **followed, not guessed**.
+5. That prefab carries `blastDamageCoefficient = 4.0` with `calculateTotalDamage = 0`, so there
+   is no alternative damage path.
+6. `ProjectileExplosion` computes `blastAttack.baseDamage = projectileDamage.damage *
+   blastDamageCoefficient`, and `ProjectileImpactExplosion` overrides only `Awake`,
+   `GetRandomDirectionForChild` and `OnValidate` — **not the damage**.
+
+**10 x 4 = 40x base damage per stack. 4000%, not 1000%.**
+
+The record published the **intermediate projectile damage as though it were the damage dealt.**
+
+The control that confirms the shape rather than a mis-reading: the beam rows are unaffected and
+remain correct at 300%, because `FireMainBeamState` builds a `BulletAttack` **directly** with
+`damage = GetDamage() * mainBeamDamageCoefficient` and never passes through a prefab. Same
+state, same method, two damage paths — only the one crossing a prefab boundary was wrong.
+
+Also recorded: falloff is **SweetSpot** in a 14m radius (resolved from
+`BlastAttack.FalloffModel`, not read as the integer `2` — §3j.114's `costType` near-miss), so
+the 4000% lands within 7m and a quarter of it beyond. That quarter is **1000%** — exactly the
+number the game prints, which is either a coincidence or the origin of the description.
+
+#### What the guards did
+
+The `damageCoefficient`-vs-base rule fired immediately: the record cites `4.0` and publishes
+4000%. Rather than widen its numeric tolerance — which would have silently accepted the very
+error it exists to catch — it was taught a **new reconciliation category**: `PRODUCT OF TWO
+COEFFICIENTS`, for a code-side coefficient multiplied again on a prefab.
+
+`data:diff` stayed silent, correctly. It compares our transcribed `description` (still the
+game's verbatim 1000%) and exempts code-verified records carrying a `descriptionNote`. Its own
+comment names the precedent, which is the reason the next task is a sweep rather than a
+celebration: **"Preon Accumulator's blast is 8000%, not the 4000% the game claims."** This bug
+shape has been found in this dataset before.

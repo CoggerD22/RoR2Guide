@@ -985,8 +985,14 @@ test("no record uses the invented term levelScale", () => {
  * per-hit figure). No unexplained mismatches — this pins that.
  */
 test("a cited damageCoefficient matches the published base, or explains itself", () => {
-  // Phrases that reconcile a mismatch: a pre-scaling chain, or an explicit rate/open note.
-  const RECONCILED = /fired with|per second|instantaneous rate|NOT resolved|not comparable/i;
+  // Phrases that reconcile a mismatch: a pre-scaling chain, an explicit rate/open note, or a
+  // PRODUCT — a coefficient in the code multiplied again by one on the projectile prefab.
+  // That last category was discovered on Resonance Disc (§3j.119): the record legitimately
+  // cites blastDamageCoefficient = 4.0 while publishing 4000%, because the bomb is fired with
+  // 10x already applied. Naming it is better than widening the numeric tolerance, which would
+  // have silently accepted the 4x error this guard exists to catch.
+  const RECONCILED =
+    /fired with|per second|instantaneous rate|NOT resolved|not comparable|PRODUCT OF TWO COEFFICIENTS/i;
   const unexplained: string[] = [];
 
   for (const it of items) {

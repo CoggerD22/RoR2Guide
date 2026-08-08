@@ -2722,10 +2722,10 @@
     "stacking": [
       {
         "stat": "Explosion damage (% base)",
-        "base": 1000,
-        "perStack": 1000,
+        "base": 4000,
+        "perStack": 4000,
         "type": "linear",
-        "formula": "LaserTurbineBaseState.GetDamage returns ownerBody.damage * n, and FireMainBeamState applies secondBombDamageCoefficient = 10.0 (EntityStateConfiguration asset) - 1000% at one stack, linear in stacks. OPEN QUESTION — the published 1000% may be short by 4x. A prefab named `LaserTurbineBomb` IS in the extracted set and carries blastDamageCoefficient 4.0, blastProcCoefficient 1.0, blastRadius 14, falloffModel 2 (= SweetSpot: full within 7m, a quarter from 7m to 14m), on a controller procCoefficient of 1.0. The damage chain is exact where it is readable: GetDamage() returns ownerBody.damage x LaserTurbine count, the fire site sets projectileDamage.damage = GetDamage() x secondBombDamageCoefficient (10.0, from the EntityStateConfiguration), and ProjectileExplosion computes blastAttack.baseDamage = projectileDamage.damage x blastDamageCoefficient. If LaserTurbineBomb IS secondBombPrefab, the bomb lands 10 x 4 = 40x base damage per stack — 4000%, not 1000%. The ONE unproven link is exactly that identification: the EntityStateConfiguration stores a prefab REFERENCE, and that pointer has not been resolved to a named asset, so name similarity is the only evidence. The published figure is left unchanged until it is, because a 4x correction on a guess is worse than a known gap."
+        "formula": "RESOLVED, and the published 1000% was the WRONG NUMBER — it was the intermediate projectile damage, not what the blast deals. Every link is read: (1) LaserTurbineBaseState.GetDamage() returns ownerBody.damage x the LaserTurbine stack count; (2) FireMainBeamState fires secondBombPrefab with `damage = GetDamage() * secondBombDamageCoefficient`, and that coefficient is 10.0 in the EntityStateConfiguration; (3) ProjectileManager assigns `ProjectileDamage.damage = fireProjectileInfo.damage` unmodified; (4) secondBombPrefab resolves to the prefab LaserTurbineBomb — the POINTER was followed (m_FileID 0, m_PathID 1198976041846065181) rather than matched by name, via scripts/resolve-state-refs.py; (5) that prefab carries blastDamageCoefficient = 4.0 with calculateTotalDamage = 0, so there is no alternative damage path; (6) ProjectileExplosion computes `blastAttack.baseDamage = projectileDamage.damage * blastDamageCoefficient`, and ProjectileImpactExplosion overrides only Awake, GetRandomDirectionForChild and OnValidate — not the damage. So the published base is a PRODUCT OF TWO COEFFICIENTS — the bomb lands 10 x 4 = 40x base damage per stack: 4000% at one stack, not the 1000% the in-game text states. The falloff is SweetSpot in a 14m radius (falloffModel = 2, resolved from BlastAttack.FalloffModel rather than read as an integer), so that 4000% applies within 7m and a QUARTER of it — 1000% — from 7m out to 14m. Proc coefficient is the product of the controller's 1.0 and blastProcCoefficient 1.0, i.e. full rate. The contrast that confirms the shape: the beam rows are NOT affected, because FireMainBeamState builds a BulletAttack directly with `damage = GetDamage() * mainBeamDamageCoefficient` and never passes through a prefab."
       },
       {
         "stat": "Pierce & return damage (% base)",
@@ -2743,7 +2743,8 @@
     "icon": "/icons/resonance-disc.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Resonance_Disc",
     "verified": true,
-    "confidence": "code"
+    "confidence": "code",
+    "descriptionNote": "The in-game text understates the explosion by 4x. It says 1000% base damage, which is the damage handed to the BOMB PROJECTILE, not the damage the blast deals — the bomb prefab multiplies it again by 4, so the explosion is 4000% per stack. There is a real caveat that pulls the other way, and the text omits it too: the blast is SweetSpot, so the full amount lands only within 7m of the 14m radius and everything beyond takes a quarter (1000%) — which is, coincidentally, the number the description prints. The pierce and return beams are exactly as stated at 300% per stack; only the explosion is wrong."
   },
   {
     "id": "defensive-microbots",
