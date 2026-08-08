@@ -2993,7 +2993,7 @@
         "base": 120,
         "perStack": 120,
         "type": "linear",
-        "formula": "The prefab carries TWO damage components. The slice is a ProjectileOverlapAttack at damageCoefficient = 3.1, overlapProcCoefficient = 1; the lingering damage is a ProjectileDotZone at damageCoefficient = 1, fireFrequency = 30, resetFrequency = 10, lifetime = -1, overlapProcCoefficient = 0.2. GlobalEventManager fires the projectile with `characterBody.damage * 0.4f * n`, so the slice lands 3.1 x 0.4n = 1.24n — 124% at one stack against a stated 120%. NOT resolved: the 4% gap on the slice, and the dot zone, whose reset-capped rate computes far above the stated 120% per second. Our reading of the fire/reset pair is only independently confirmed where fireFrequency < resetFrequency (Molotov (6-Pack)), and here it is 30 against 10 — the untested direction. Numbers left as the game states them."
+        "formula": "The projectile is fired ONCE with `characterBody.damage * 0.4f * n` — a single value, linear in the stack count with NO constant term — and both damage components on the prefab multiply that same value by their own coefficient. The slice is a ProjectileOverlapAttack at damageCoefficient 3.1, so it lands 3.1 x 0.4n = 1.24n. STRUCTURAL FINDING: because both effects read one fired value, they scale identically, so the description's split — a flat \"120% base damage\" slice alongside a \"120% (+120% per stack)\" lingering effect — cannot be right. One fired value cannot be flat for one consumer and scaling for another. The slice scales with stacks; the text does not say so. NOT resolved: the residual 4% (1.24n computed against 1.20n stated), small enough to be a rounding convention in the description and too small to correct a published number on."
       },
       {
         "stat": "Damage over time (%/s)",
@@ -3019,7 +3019,7 @@
     "wiki": "https://riskofrain2.wiki.gg/wiki/Electric_Boomerang",
     "verified": true,
     "confidence": "langfile",
-    "descriptionNote": "The 15% chance does NOT scale with stacks — extra copies raise the boomerang's damage only. It also scales linearly with the hit's proc coefficient, and cannot be triggered by Electrocution damage or by another boomerang. Separately, the boomerang suppresses Tri-Tip Dagger's bleed: GlobalEventManager skips its BleedOnHit proc when the projectile is flagged isStunAndPierce, so the two items anti-synergise in a way neither description mentions."
+    "descriptionNote": "The 15% chance does NOT scale with stacks — extra copies raise the boomerang's damage only. It also scales linearly with the hit's proc coefficient, and cannot be triggered by Electrocution damage or by another boomerang. The description also implies the slice is a flat 120% while only the lingering damage grows: that cannot be so. Both come from one fired value of `damage x 0.4 x stacks`, so both grow together and neither has a floor at zero stacks. Separately, the boomerang suppresses Tri-Tip Dagger's bleed: GlobalEventManager skips its BleedOnHit proc when the projectile is flagged isStunAndPierce, so the two items anti-synergise in a way neither description mentions."
   },
   {
     "id": "growth-nectar",

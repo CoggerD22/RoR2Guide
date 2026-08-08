@@ -1205,3 +1205,32 @@ test("both boomerangs bound their contact duration instead of implying a sustain
     expect(x.confidence, id).toBe("langfile");
   }
 });
+
+/**
+ * Electric Boomerang's description splits the item into a FLAT slice ("120% base damage") and
+ * a SCALING lingering effect ("120% (+120% per stack)"). That split is structurally
+ * impossible, and the argument needs no measurement:
+ *
+ *   damage6 = characterBody.damage * 0.4f * itemCountEffective20;
+ *
+ * One fired value, linear in n with no constant term, read by BOTH damage components on the
+ * prefab. One value cannot be flat for one consumer and scaling for another — so the slice
+ * scales too, and nothing about the item has a floor at zero stacks.
+ *
+ * Worth keeping as a test because it is a conclusion drawn from SHAPE rather than from a
+ * number, and shape arguments are the ones a later edit quietly breaks.
+ */
+test("Electric Boomerang's slice scales with stacks, whatever the text implies", () => {
+  const x = items.find((i) => i.id === "electric-boomerang")!;
+  const impact = x.stacking.find((s) => /Impact damage/.test(s.stat))!;
+
+  // Not flat: the row now carries a per-stack term, matching the single fired value.
+  expect(impact.perStack).toBe(120);
+  expect(impact.formula).toMatch(/STRUCTURAL FINDING/);
+  expect(impact.formula).toMatch(/NO constant term/);
+  expect(x.descriptionNote).toMatch(/both grow together/);
+
+  // The residual gap stays open and stays labelled — 1.24n computed vs 1.20n stated.
+  expect(impact.formula).toMatch(/NOT resolved/);
+  expect(x.confidence).toBe("langfile");
+});

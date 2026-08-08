@@ -5554,3 +5554,44 @@ finding, and its central characterisation was mistaken. The finding held; the fr
 The reason it got caught is that this pass started by asking *what is in there?* rather than
 accepting the previous pass's answer. **The most useful thing to distrust is the entry you
 wrote last** — it is the one with the least distance between conviction and evidence.
+
+### 3j.108 Electric Boomerang — a shape argument where the number would not settle it
+
+The last open arithmetic question in the dataset was a 4% gap: the slice computes to 1.24n
+(`damageCoefficient` 3.1 x a fired `damage * 0.4f * n`) against a stated 120%. Two passes have
+now failed to close it, and it is too small to justify overwriting a published number.
+
+This pass stopped chasing the 4% and looked at the **shape** of the description instead:
+
+> "...slices through enemies dealing **120% base damage** and deals an additional
+> **120% (+120% per stack)** base damage per second..."
+
+That is a flat slice next to a scaling lingering effect. But the projectile is fired **once**:
+
+```csharp
+float damage6 = characterBody.damage * 0.4f * (float)itemCountEffective20;
+```
+
+One value. Linear in `n`, with **no constant term**. Both damage components on the prefab read
+that same `projectileDamage.damage` and multiply it by their own coefficient. **One fired value
+cannot be flat for one consumer and scaling for another.** So the description's split is not
+merely imprecise, it is structurally impossible, and the slice scales with stacks whether or
+not the text says so. The absent constant term says something further: nothing about this item
+has a floor that survives at zero stacks — every effect is purely proportional to the count.
+
+`perStack` on the impact row goes from absent to 120, and the note now says both effects grow
+together.
+
+#### Why this is worth a log entry
+
+The 4% is **still open**, and is recorded as open. What changed is that a question I could not
+answer numerically turned out to be answerable structurally — and the structural answer was the
+more useful one, because it corrects how the item stacks rather than a rounding digit.
+
+Three passes were spent trying to make 1.24 equal 1.20. The relationship between the two
+clauses was visible in the same line of code the whole time. **When a number will not close,
+check whether the claim around it is even self-consistent** — the arithmetic can be the least
+informative thing in a description.
+
+The test that pins this asserts a conclusion drawn from shape rather than from a measurement,
+which is the kind a later edit breaks quietly, without any number looking wrong.
