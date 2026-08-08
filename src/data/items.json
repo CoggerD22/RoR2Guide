@@ -3360,7 +3360,8 @@
     "wiki": "https://riskofrain2.wiki.gg/wiki/Shatterspleen",
     "verified": true,
     "confidence": "code",
-    "corruptedBy": "newly-hatched-zoea"
+    "corruptedBy": "newly-hatched-zoea",
+    "descriptionNote": "The explosion is not uniform, and the single number above is the best case. falloffModel is SweetSpot: full damage within HALF the 16m radius, then a flat QUARTER of it from 8m out to 16m. That applies to the 15%-of-max-health term as well, because both are summed into one blast damage value — so at the rim a boss explosion deals a quarter of what the text implies. The radius is fixed at 16m no matter how many you hold."
   },
   {
     "id": "halcyon-seed",
@@ -4822,7 +4823,8 @@
     "icon": "/icons/voidsent-flame.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Voidsent_Flame",
     "verified": true,
-    "confidence": "code"
+    "confidence": "code",
+    "descriptionNote": "The explosion is not uniform. falloffModel is SweetSpot, so the stated damage lands within HALF the radius and everything beyond takes a flat QUARTER of it — at one stack, full damage inside 6m and a quarter from 6m to 12m. It also trails the kill by 0.2s rather than detonating instantly."
   },
   {
     "id": "benthic-bloom",

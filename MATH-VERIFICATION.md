@@ -5712,3 +5712,39 @@ Proven by reverting both selectors to their original text. The instructive part:
 narrowed falloff selector the **falloff guard itself still passes** — its seven visible rows
 all state a model now. Only the coverage floor fails. A guard cannot detect its own blindness,
 which is the whole reason this block exists.
+
+### 3j.111 right in the formula is not the same as read
+
+The three SweetSpot corrections from §3j.109 went into `stacking[].formula`. `ItemDetail`
+renders that field as **11px muted mono** beneath the row, while the row header carries the
+headline number at full weight. So the correction was true, published, and positioned exactly
+where a reader sizing up the item would not look — the number they *do* read is the one that
+overstates by 4x across most of the blast volume.
+
+Only Will-o'-the-wisp had a `descriptionNote`, which is the field that renders in the amber
+callout **above the fold**. Shatterspleen and Voidsent Flame now have one too, each naming the
+model *and* its consequence in plain words, so the point survives a reader who has never heard
+of SweetSpot.
+
+Shatterspleen is the starkest: its radius is a fixed 16m at any stack count, and the
+15%-of-max-health term is summed into the same blast damage value as the base-damage term, so
+**both are quartered beyond 8m**. The percent-max-health figure is exactly what players size
+that item by against bosses.
+
+#### A scope note on the callout, checked rather than assumed
+
+The amber box has one fixed header: *"The game's text above is inaccurate."* Since the notes
+now cover both flat contradictions and material omissions, that header was worth testing rather
+than trusting. Reading all **51** notes: the overwhelming majority are genuine contradictions
+(Prison Matrix multiplying rather than adding, Genesis Loop's pre-reduction 30s, Light Flux
+Pauldron's reciprocal penalty), and the omission cases are ones where the plain reading is
+wrong anyway — a single damage number printed for a blast that deals a quarter of it across
+four fifths of its volume is inaccurate *in effect*, not merely incomplete.
+
+So the header stands, as a **judgement made and recorded**, not an oversight. If notes ever
+drift toward pure addenda, it needs splitting; today it does not.
+
+The general point is the one worth carrying: this project's failure mode has stopped being
+wrong data and become **correctly-recorded data in a place nobody reads**. Verification puts a
+fact in the file. Only layout decides whether anyone meets it — which is what §9 was for, and
+why the falloff work was not finished when the formulas were right.

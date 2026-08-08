@@ -1376,3 +1376,26 @@ describe("guard coverage", () => {
     expect(skipped, skipped.join(" | ")).toEqual([]);
   });
 });
+
+/**
+ * §9 follow-through on the falloff corrections: being RIGHT in the formula is not the same as
+ * being READ. ItemDetail renders `formula` as 11px muted mono beneath the row, while the row
+ * header shows the headline number at full weight — so a correction that lives only in the
+ * formula is true and invisible. `descriptionNote` is the field that renders in the amber
+ * callout above the fold.
+ *
+ * All three SweetSpot items materially overstate themselves without it: a reader sizing up
+ * Shatterspleen from "400% + 15% max HP in 16m" is reading the best case for under a fifth of
+ * the blast volume.
+ */
+test("every SweetSpot item warns above the fold, not only in its formula", () => {
+  for (const id of ["will-o-the-wisp", "shatterspleen", "voidsent-flame"]) {
+    const x = items.find((i) => i.id === id)!;
+    expect(x.descriptionNote, `${id} has no above-the-fold warning`).toBeTruthy();
+    // The model by name, and the consequence in plain words — a reader should not need to
+    // know what "SweetSpot" means to take the point.
+    expect(x.descriptionNote).toMatch(/SweetSpot/);
+    expect(x.descriptionNote).toMatch(/QUARTER/i);
+    expect(x.descriptionNote).toMatch(/HALF|6m|8m/i);
+  }
+});
