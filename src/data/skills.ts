@@ -31,5 +31,15 @@ export function procProvenance(source: string): string {
   if (source.startsWith("projectile")) return "game asset (projectile prefab)";
   if (source.startsWith("code:explicit")) return "game code (explicit value)";
   if (source.startsWith("code:default")) return "game code (attack default 1.0)";
+  // `code:no-damage-path` is a VERIFIED ABSENCE, established by
+  // scripts/classify-nondamaging-skills.py — Tactical Dive does not have an unknown proc
+  // coefficient, it has no attack. schema.ts already says conflating the two "is the mirror
+  // of this project's usual failure and just as misleading", and the Stat Lab was fixed for
+  // it; this function was not, so 21 skills still described themselves as unverified here.
+  if (source.startsWith("code:no-damage-path")) return "game code (no damage-dealing path)";
+  // Everything else prefixed `code:` names the exact site the value was read from, e.g.
+  // `code:FireSonicBoom.CalculateProcCoefficient=0f`. A proc of 0 that was READ is not a
+  // proc that is unknown.
+  if (source.startsWith("code:")) return `game code (${source.slice(5)})`;
   return "not yet verified";
 }

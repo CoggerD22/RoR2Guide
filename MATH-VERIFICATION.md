@@ -5931,3 +5931,53 @@ direction that looks humble — it told readers a prefab-derived figure was a gu
 to a worse source to check it. Stale caution reads as safe and is not: **it is as wrong as
 stale confidence, and much less likely to be re-examined**, because nobody audits a claim that
 undersells itself.
+
+### 3j.115 the inverse audit: where does the site claim LESS than it knows?
+
+§3j.114 ended on stale caution being as wrong as stale confidence and much less likely to be
+re-examined. That is a testable claim about this repo, so: every hedge in the data and
+components, checked against what is actually known.
+
+**One real bug.** `procProvenance()` in `skills.ts` ends `return "not yet verified"`, and
+**21 of 125 skills** reached it — every skill whose `procSource` is neither a `code:explicit`
+nor a `code:default` prefix. All 21 are established:
+
+- **19** are `code:no-damage-path` — a *verified absence*, produced by
+  `classify-nondamaging-skills.py`. Tactical Dive does not have an unknown proc coefficient;
+  it has no attack.
+- **2** carry a proc coefficient of **zero read from a named site**
+  (`code:FireSonicBoom.CalculateProcCoefficient=0f`, `code:FireFlower2`). A proc of 0 that was
+  *read* is not a proc that is unknown.
+
+The sharp part: `schema.ts` already carries the principle, in these words —
+
+> *Conflating them made the Stat Lab report 21 skills as unverified when 19 of them have
+> nothing to verify… Reporting a known thing as unknown is the mirror of this project's usual
+> failure and just as misleading.*
+
+That comment was written when the **Stat Lab** was fixed. `procProvenance()` was not, so the
+same 21 skills went on describing themselves as unverified everywhere else that string appears.
+A principle can be stated, agreed with, and enforced in exactly one of the places it applies.
+
+**One stale hedge.** `reference.ts` still announced the verified-mechanic layer as "still to be
+built" — with 20 of 20 artifacts and 6 of 12 shrines carrying a traced mechanic directly
+beneath it.
+
+**Two hedges checked and found correct**, which is the other half of an audit. The
+`ItemDetail` "not yet code-verified" banner and the `ItemTooltip` "curve unverified" dot both
+look over-broad on the data — they key on `confidence`, and 6 of the 9 `langfile` items have no
+mechanic at all. But both sit inside guards that require stacking rows to exist
+(`item.stacking.length > 0`, `types.length > 0`), so neither ever renders for those six. They
+fire only on Electric Boomerang, Sawmerang and Milky Chrysalis — all three of which have a
+genuine open question or an unreachable claim, and all three of which carry a
+`descriptionNote` giving the specifics. No change.
+
+I had concluded otherwise from the data alone before reading the JSX. Worth recording: the
+condition that decides whether a warning is fair was **not in the file the warning was about**.
+
+#### The asymmetry
+
+This project has spent most of its passes looking for claims that assert too much. Nothing
+looks for claims that assert too little, and nothing would — an unverified label never triggers
+a correction, never contradicts the code, and reads as diligence. That is exactly why the
+`skills.ts` bug survived being diagnosed, named, and fixed once already, three files away.

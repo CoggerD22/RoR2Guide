@@ -5,6 +5,7 @@ import { items } from "./items";
 import { perStackMeaning, hyperbolicCurve } from "@/lib/stacking";
 import { ARTIFACTS, SHRINES } from "./reference";
 import skills from "./skills.json";
+import { procProvenance } from "./skills";
 
 /**
  * Regression tests for stacking values that were WRONG when derived from the game's
@@ -1502,4 +1503,37 @@ describe("shrine constants", () => {
       expect(x.cost).not.toMatch(/approx|roughly|about \d/i);
     }
   });
+});
+
+/**
+ * §3j.115, the inverse audit: where does the site claim LESS than it knows?
+ *
+ * schema.ts already states the principle — conflating "no damage path" with "unknown proc"
+ * made the Stat Lab report 21 skills as unverified when 19 have nothing to verify, and
+ * "reporting a known thing as unknown is the mirror of this project's usual failure and just
+ * as misleading". The Stat Lab was fixed. `procProvenance()` was not, so every one of those
+ * skills still described its own provenance as "not yet verified" wherever that string is
+ * shown.
+ *
+ * All 21 are established: 19 have no damage-dealing path, and 2 have a proc coefficient of
+ * ZERO read from a named site (FireSonicBoom, FireFlower2). A proc of 0 that was read is not
+ * a proc that is unknown.
+ */
+test("no skill describes an established provenance as unverified", () => {
+  const all = (skills as Array<{ skills: Array<{ name: string; procSource?: string }> }>).flatMap(
+    (w) => w.skills,
+  );
+  const stillUnknown = all
+    .filter((sk) => procProvenance(sk.procSource ?? "") === "not yet verified")
+    .map((sk) => `${sk.name} (${sk.procSource})`);
+
+  // CLAUDE.md's claim is "0 skills are genuinely unknown". The UI must agree with it.
+  expect(stillUnknown, stillUnknown.join(" | ")).toEqual([]);
+
+  // And the two categories must stay distinguishable, not merged into one vague label.
+  expect(procProvenance("code:no-damage-path")).toMatch(/no damage-dealing path/);
+  expect(procProvenance("code:no-damage-path")).not.toMatch(/verified|unknown/i);
+  expect(procProvenance("code:FireSonicBoom.CalculateProcCoefficient=0f")).toMatch(
+    /FireSonicBoom/,
+  );
 });

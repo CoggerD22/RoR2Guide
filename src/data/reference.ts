@@ -18,8 +18,12 @@ import type { Dlc } from "./schema";
  * visible in ShrineBloodBehavior + the shrine prefab's serialized fields. So:
  *   - SHRINES.description and ARTIFACTS.effect are **quoted text**, NOT verified
  *     mechanics, and the UI must present them as quotes.
- *   - The verified-mechanic layer (code formula + prefab constants) is still to be
- *     built; see PLAN §5.0.3 for the re-verification backlog.
+ *   - The verified-mechanic layer (code formula + prefab constants) is BUILT, not pending:
+ *     20 of 20 artifacts and 6 of 12 shrines carry a `mechanic` traced to a behaviour class
+ *     plus its prefab. The six shrines without one have code-verified costs and no separate
+ *     mechanism worth a paragraph. This line said "still to be built" for several passes
+ *     after it stopped being true (MATH-VERIFICATION §3j.114–115) — a stale hedge is a false
+ *     claim like any other, and the one nobody re-reads.
  * BAZAAR_DREAMS is exempt — the Seer literally speaks those lines, so quoting IS the
  * fact, and the stage mapping is structural (token name + SceneDef.stageOrder).
  *
