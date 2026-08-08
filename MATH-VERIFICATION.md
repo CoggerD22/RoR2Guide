@@ -5804,3 +5804,68 @@ removing that source: 322, and it fails.
 A guard is not a rule plus a regex. It is a rule, a regex, **and a stated surface** — and the
 surface is the part that rots silently, because nothing about a passing run reveals how much of
 the dataset it read.
+
+### 3j.113 the artifacts were verified for numbers, not for completeness
+
+§3j.112 found `cutHpCount` by guard, and verifying that one word forced a read of
+`SwarmsArtifactManager`, which turned out to contain three effects the record never mentioned.
+That is a bad way to find things. The status line said *"Artifact + shrine numbers confirmed
+against their behavior classes"* — and every word of that is true, which is the problem:
+**numbers** were confirmed. Swarms' gaps were not numbers. They were other effects in the same
+handler.
+
+So: all 13 managers in `RoR2.Artifacts`, 1,173 lines, re-read against the 20 records.
+
+Most held up well — several already flag "Undocumented:" effects and cite specifics (Chaos's
+zero-caller `friendlyFireDamageScale`, Command's stripped interactable pool, Vengeance's
+`num78 *= 10f`). Three did not.
+
+#### Sacrifice: the headline number was missing entirely
+
+The record described *what* drops but never *how often*. The chance is not the flat 5% it
+looks like in the source:
+
+```csharp
+Util.CheckRoll(Util.GetExpAdjustedDropChancePercent(5f, damageReport.victim.gameObject))
+// -> baseChancePercent * Mathf.Log(spawnValue + 1, 2f)
+```
+
+**5 × log₂(spawnValue + 1) percent.** 5% is only the value for a monster worth 1; anything the
+director pays more for drops considerably more often, and the log flattens the gain as monsters
+get larger. Per-monster `spawnValue` lives on body prefabs outside the extracted set, so the
+per-monster chance is stated as **not established** rather than filled in with a plausible
+table. Also newly recorded: surviving interactables are re-weighted by
+`weightScalarWhenSacrificeArtifactEnabled` (the mix changes, not just the amount), and
+same-team kills of owned minions do not roll at all.
+
+#### Two artifacts share an input, and nothing said so
+
+Swarms halves `DeathRewards.spawnValue`. Sacrifice's drop chance *reads* `spawnValue`. So
+running both lowers each kill's drop chance while doubling the kills — a real interaction
+between two artifacts, visible only by reading both managers, and hinted at by neither
+description. Both records now carry it, in both directions.
+
+#### Spite was wrong
+
+> "one extra bomb per 4 units of radius"
+
+```csharp
+Mathf.Min(maxBombCount, Mathf.CeilToInt(victimBody.bestFitRadius * extraBombPerRadius * cvSpiteBombCoefficient.value))
+// extraBombPerRadius = 4f, spite_bomb_coefficient defaults to 0.5
+```
+
+That is `radius × 2` — **two bombs per unit of radius**, not one per four. The relationship was
+inverted, and the constant in the prose (`bombSpawnRadiusCoefficient = 4`) belongs to the
+scatter *sphere*, not the count — the same misfiling as Executive Card / Remote Caffeinator
+(§3j.66). Also added: `falloffModel = None`, `procCoefficient = 0.75` (bombs *do* proc, at
+three-quarters), and `crit = false` (they never crit).
+
+#### The lesson is about status lines
+
+"Verified" is always verified *against a question*. Confirming every number in a record leaves
+untouched the question of whether the record mentions everything the code does — and a status
+line that records the first invites the reader to assume the second. The counts in `CLAUDE.md`
+were accurate the whole time and still left three artifacts misdescribed.
+
+The falloff guard now also reads `reference.ts`, so blast claims are policed wherever we make
+them rather than only in `items.json`.

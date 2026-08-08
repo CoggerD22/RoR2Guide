@@ -1051,6 +1051,15 @@ test("every record citing a blast radius states its falloff model", () => {
       silent.push(`${it.name} — ${st.stat}`);
     }
   }
+  // reference.ts publishes blast claims too — Artifact of Spite's bombs are a 7m DelayBlast.
+  // Same claim class, same rule; a guard that stops at the file it was born in is the blind
+  // spot §3j.112 was about.
+  for (const r of [...ARTIFACTS, ...SHRINES]) {
+    const t = `${r.mechanic ?? ""} ${"cost" in r ? (r.cost ?? "") : ""}`;
+    if (!AREA_SELECTOR.test(t)) continue;
+    if (MODELS.test(t) || /falloff/i.test(t)) continue;
+    silent.push(`reference.ts — ${r.name}`);
+  }
   expect(silent, silent.join(" | ")).toEqual([]);
 });
 
@@ -1398,4 +1407,45 @@ test("every SweetSpot item warns above the fold, not only in its formula", () =>
     expect(x.descriptionNote).toMatch(/QUARTER/i);
     expect(x.descriptionNote).toMatch(/HALF|6m|8m/i);
   }
+});
+
+/**
+ * §3j.113: verifying one coined term in Artifact of Swarms forced a read of its manager and
+ * found three unmentioned effects. Sweeping the rest of RoR2.Artifacts the same way found two
+ * more records that were incomplete in the same way, and one that was WRONG:
+ *
+ *   Spite's bomb count is ceil(bestFitRadius x 4 x 0.5) — about two bombs per unit of radius.
+ *   The record said "one extra bomb per 4 units of radius", inverting the relationship and
+ *   borrowing bombSpawnRadiusCoefficient, which sets the scatter SPHERE and not the count.
+ *
+ * Pinned because it is the kind of claim that reads plausibly in either direction.
+ */
+describe("artifact mechanics re-read against their managers", () => {
+  const artifact = (n: string) => ARTIFACTS.find((a) => a.name === n)!;
+
+  test("Spite's bomb count scales UP with radius, and states its blast properties", () => {
+    const m = artifact("Artifact of Spite").mechanic!;
+    expect(m).toMatch(/extraBombPerRadius = 4/);
+    expect(m).toMatch(/spite_bomb_coefficient/);
+    expect(m).toMatch(/TWO bombs per unit/i);
+    // The three blast properties the artifact's own text never gives.
+    expect(m).toMatch(/falloffModel is None/);
+    expect(m).toMatch(/procCoefficient is 0\.75/);
+    expect(m).toMatch(/never critically strike|crit is hard-set to false/);
+  });
+
+  test("Sacrifice's drop chance is logarithmic, not the flat 5% it looks like", () => {
+    const m = artifact("Artifact of Sacrifice").mechanic!;
+    expect(m).toMatch(/5 x log2\(spawnValue \+ 1\)/);
+    // The boundary is stated rather than filled in with a plausible per-monster table.
+    expect(m).toMatch(/not in the extracted asset set|not established here/);
+  });
+
+  test("Swarms and Sacrifice are recorded as sharing an input", () => {
+    // spawnValue is halved by one artifact and read by the other's drop chance. Neither
+    // description hints at it, and the link is only visible if both managers are read.
+    expect(artifact("Artifact of Swarms").mechanic).toMatch(/log2\(spawnValue \+ 1\)/);
+    expect(artifact("Artifact of Swarms").mechanic).toMatch(/expReward|goldReward/);
+    expect(artifact("Artifact of Evolution").mechanic).toMatch(/first stage/);
+  });
 });
