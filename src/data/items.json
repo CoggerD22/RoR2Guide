@@ -445,14 +445,14 @@
         "base": 12,
         "perStack": 4,
         "type": "linear",
-        "formula": "radius = 8f + 4f * n + victimBody.radius (GlobalEventManager.ProcIgniteOnKill). 12m at one stack, +4m per stack, PLUS the killed enemy's own collider radius — so the burst is measurably larger around big targets, which the description does not mention."
+        "formula": "radius = 8f + 4f * n + victimBody.radius (GlobalEventManager.ProcIgniteOnKill). 12m at one stack, +4m per stack, PLUS the killed enemy's own collider radius — so the burst is measurably larger around big targets, which the description does not mention. The 150% impact blast uses falloffModel = None — full damage to the rim — and fires at procCoefficient 0f, so it cannot chain. It rolls its own crit against the attacker's crit chance (or is forced by SureProc), and the burn it applies is upgraded by StrengthenBurnUtils.CheckDotForUpgrade if the attacker carries a burn-strengthening item."
       },
       {
         "stat": "Burn damage (% base)",
         "base": 150,
         "perStack": 75,
         "type": "linear",
-        "formula": "burn totalDamage = (1 + n) * 0.75f * attackerBody.damage (ProcIgniteOnKill) - 150% at one stack, +75% per stack. The separate 150% impact blast is a fixed `damage * 1.5f` and does NOT stack."
+        "formula": "burn totalDamage = (1 + n) * 0.75f * attackerBody.damage (ProcIgniteOnKill) - 150% at one stack, +75% per stack. The separate 150% impact blast is a fixed `damage * 1.5f` and does NOT stack. The burn is applied by a SphereSearch over the same radius, which has no falloff concept: every distinct enemy found inside is ignited for the full amount regardless of distance."
       }
     ],
     "tags": [
@@ -1025,14 +1025,14 @@
         "base": 12,
         "perStack": 2.4,
         "type": "linear",
-        "formula": "radius = 12f + 2.4f * (n - 1) (GlobalEventManager). Linear."
+        "formula": "radius = 12f + 2.4f * (n - 1) (GlobalEventManager, on the DelayBlast component). Linear. falloffModel = SweetSpot, which is NOT a taper but a cliff: full damage within HALF the radius, a flat QUARTER of it beyond that out to the rim. At one stack that is 100% inside 6m and 25% from 6m to 12m."
       },
       {
         "stat": "Explosion damage (% base)",
         "base": 350,
         "perStack": 280,
         "type": "linear",
-        "formula": "damageCoefficient = 3.5f * (1f + (n - 1) * 0.8f) (GlobalEventManager). Written multiplicatively but linear in n: 350% at 1 stack, then +280% (= 350% x 0.8) per stack."
+        "formula": "damageCoefficient = 3.5f * (1f + (n - 1) * 0.8f) (GlobalEventManager). Written multiplicatively but linear in n: 350% at 1 stack, then +280% (= 350% x 0.8) per stack. This is the damage inside the SweetSpot inner half only (falloffModel = SweetSpot) — beyond half the radius the blast deals a QUARTER of it (87.5% at one stack), so the single published number applies to less than a fifth of the sphere's volume."
       }
     ],
     "tags": [
@@ -1044,7 +1044,8 @@
     "icon": "/icons/will-o-the-wisp.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Will-o%27-the-wisp",
     "verified": true,
-    "confidence": "code"
+    "confidence": "code",
+    "descriptionNote": "Three things the description omits. The explosion is NOT uniform: falloffModel is SweetSpot, so the stated damage applies within half the radius and drops to a flat quarter beyond it. It is delayed by 0.5s (DelayBlast.maxTimer), not instant. And DelayBlast leaves procCoefficient at its default of 1, so unlike Brilliant Behemoth's and Gasoline's explosions this one procs on-hit items normally."
   },
   {
     "id": "hopoo-feather",
@@ -1620,14 +1621,14 @@
         "base": 5,
         "perStack": 2,
         "type": "linear",
-        "formula": "targets = 5 + 2 * (n - 1) (HealthComponent). Linear."
+        "formula": "targets = 5 + 2 * (n - 1) (HealthComponent). Linear. Three things follow from the orbs. Each carries procCoefficient 0.5 (dropped to 0 outright if the wearer is an Invading Doppelganger), so razorwire procs on-hit items at half rate. Crit is rolled ONCE for the whole burst — every orb crits or none does. And each orb's procChainMask is pre-stamped with ProcType.Thorns, so razorwire cannot retrigger itself."
       },
       {
         "stat": "Burst radius (m)",
         "base": 25,
         "perStack": 10,
         "type": "linear",
-        "formula": "radius = 25f + 10f * (n - 1) (HealthComponent). Linear."
+        "formula": "radius = 25f + 10f * (n - 1) (HealthComponent). Linear. This is NOT a blast and has no falloff model: HealthComponent runs a SphereSearch of that radius, filters to distinct enemy entities, orders them BY DISTANCE, and fires one LightningOrb at each of the nearest `targets`. Everyone hit takes the full 160% wherever they stood inside the sphere — distance decides WHO is hit, not how hard."
       }
     ],
     "tags": [
@@ -2224,7 +2225,7 @@
         "base": 4,
         "perStack": 2.5,
         "type": "linear",
-        "formula": "blast radius = (1.5 + 2.5n) x procCoefficient metres (GlobalEventManager). Code-verified at proc 1.0: 4m at 1, 6.5m at 2, 9m at 3, 11.5m at 4. Two things the in-game description omits: it says +1.5m per stack but the code adds 2.5m, and the radius is multiplied by the triggering attack’s proc coefficient, so a 0.5-proc hit explodes at half size."
+        "formula": "blast radius = (1.5 + 2.5n) x procCoefficient metres (GlobalEventManager). Code-verified at proc 1.0: 4m at 1, 6.5m at 2, 9m at 3, 11.5m at 4. Two things the in-game description omits: it says +1.5m per stack but the code adds 2.5m, and the radius is multiplied by the triggering attack’s proc coefficient, so a 0.5-proc hit explodes at half size. falloffModel = None, so damage is full anywhere inside the sphere — there is no taper and no sweet spot. The blast itself fires at procCoefficient 0f, so it cannot trigger further on-hit items (it inherits the triggering hit's crit, damageType and procChainMask)."
       }
     ],
     "tags": [
@@ -2724,14 +2725,14 @@
         "base": 1000,
         "perStack": 1000,
         "type": "linear",
-        "formula": "LaserTurbineBaseState.GetDamage returns ownerBody.damage * n, and FireMainBeamState applies secondBombDamageCoefficient = 10.0 (EntityStateConfiguration asset) - 1000% at one stack, linear in stacks."
+        "formula": "LaserTurbineBaseState.GetDamage returns ownerBody.damage * n, and FireMainBeamState applies secondBombDamageCoefficient = 10.0 (EntityStateConfiguration asset) - 1000% at one stack, linear in stacks. UNVERIFIED FALLOFF: the second bomb is a projectile (`secondBombPrefab`), so its blast radius and falloff model live on that prefab rather than in FireMainBeamState, and the prefab is not present in the extracted asset set. The damage figure above is code-derived and holds; how it falls off with distance is not established here, and is not guessed at."
       },
       {
         "stat": "Pierce & return damage (% base)",
         "base": 300,
         "perStack": 300,
         "type": "linear",
-        "formula": "Same GetDamage() x mainBeamDamageCoefficient = 3.0 (asset) - 300%, linear. The charge condition is confirmed by the same asset: killChargesRequired = 4 within killChargeDuration = 7s. Beam proc coefficient is 1.0."
+        "formula": "Same GetDamage() x mainBeamDamageCoefficient = 3.0 (asset) - 300%, linear. The charge condition is confirmed by the same asset: killChargesRequired = 4 within killChargeDuration = 7s. Beam proc coefficient is 1.0. The beam is a BulletAttack, not a BlastAttack, and its falloffModel is None — full damage along the whole beam, with no drop-off at range."
       }
     ],
     "tags": [
@@ -3339,14 +3340,14 @@
         "base": 400,
         "perStack": 400,
         "type": "linear",
-        "formula": "damageCoefficient = 4f * (1 + (n - 1)) (GlobalEventManager) - algebraically 4n. Linear."
+        "formula": "damageCoefficient = 4f * (1 + (n - 1)) (GlobalEventManager) - algebraically 4n. Linear. falloffModel = SweetSpot, which is a cliff rather than a taper: full damage within HALF the radius, then a flat QUARTER of it out to the rim. The radius is a fixed 16f regardless of stacks, so the full-damage core is 8m and everything from 8m to 16m takes a quarter. maxTimer = 0f, so unlike the other DelayBlast items this one detonates immediately."
       },
       {
         "stat": "Explosion bonus (% of enemy max HP)",
         "base": 15,
         "perStack": 15,
         "type": "linear",
-        "formula": "0.15f * (1 + (n - 1)) of victimBody.maxHealth, added to the base damage (GlobalEventManager). Linear."
+        "formula": "0.15f * (1 + (n - 1)) of victimBody.maxHealth, added to the base damage (GlobalEventManager). Linear. This term is summed into the SAME DelayBlast.baseDamage as the base-damage term (`OnKillProcDamage(...) + victimBody.maxHealth * 0.15n`), so falloffModel = SweetSpot applies to it identically: beyond 8m the percent-max-health component is also quartered. It is 15% per stack of the VICTIM's maxHealth, evaluated at the moment of death."
       }
     ],
     "tags": [
@@ -4800,14 +4801,14 @@
         "base": 12,
         "perStack": 2.4,
         "type": "linear",
-        "formula": "radius = 12f + 2.4f * (n - 1) (HealthComponent). Linear."
+        "formula": "radius = 12f + 2.4f * (n - 1) (HealthComponent). Linear. falloffModel = SweetSpot, which is a cliff rather than a taper: full damage within HALF the radius, then a flat QUARTER of it out to the rim. At one stack that is full damage within 6m and a quarter from 6m to 12m."
       },
       {
         "stat": "Explosion damage (% base)",
         "base": 260,
         "perStack": 156,
         "type": "linear",
-        "formula": "damageCoefficient = 2.6f * (1f + (n - 1) * 0.6f) (HealthComponent). Linear in n: 260% at one stack, +156% (= 260% x 0.6) per stack."
+        "formula": "damageCoefficient = 2.6f * (1f + (n - 1) * 0.6f) (HealthComponent). Linear in n: 260% at one stack, +156% (= 260% x 0.6) per stack. That figure is the inner-half damage only — falloffModel = SweetSpot quarters it beyond half the radius. maxTimer = 0.2f, so the explosion trails the kill by a fifth of a second."
       }
     ],
     "tags": [
@@ -5608,14 +5609,14 @@
         "base": 250,
         "perStack": 0,
         "type": "none",
-        "formula": "The bomblet applies dotIndex 1 (Burn) with calculateTotalDamage = true and totalDamageMultiplier = 2.5, and ProjectileExplosion resolves that as `dotInfo.totalDamage = characterBody.damage * totalDamageMultiplier` — a TOTAL of 250%, not a rate. Impact plus burn is where the description's 500% comes from."
+        "formula": "The bomblet applies dotIndex 1 (Burn) with calculateTotalDamage = true and totalDamageMultiplier = 2.5, and ProjectileExplosion resolves that as `dotInfo.totalDamage = characterBody.damage * totalDamageMultiplier` — a TOTAL of 250%, not a rate. Impact plus burn is where the description's 500% comes from. A DoT has no falloff model: ProjectileExplosion names the blast that DELIVERS it, but the burn itself is applied to whatever the blast hit and ticks for the full total regardless of how far from the impact the victim stood."
       },
       {
         "stat": "Fire puddle damage (% per second, for 7s)",
         "base": 100,
         "perStack": 0,
         "type": "none",
-        "formula": "MolotovProjectileDotZone: damageCoefficient = 1 at fireFrequency = 1, lifetime = 7, overlapProcCoefficient = 0.5, resetFrequency = 3 (so the ignore list clears between fires and everyone inside is hit each tick). ProjectileDotZone computes `attack.damage = damageCoefficient * projectileDamage.damage`, and the puddle's damage is base damage: both hops of the chain use childrenDamageCoefficient = 1, and ProjectileExplosion passes children `projectileDamage.damage * childrenDamageCoefficient`. Every pointer in that chain resolves inside the item's own bundle, so nothing here is inferred — the puddle is 100% per second, against the 200% the description states."
+        "formula": "MolotovProjectileDotZone: damageCoefficient = 1 at fireFrequency = 1, lifetime = 7, overlapProcCoefficient = 0.5, resetFrequency = 3 (so the ignore list clears between fires and everyone inside is hit each tick). ProjectileDotZone computes `attack.damage = damageCoefficient * projectileDamage.damage`, and the puddle's damage is base damage: both hops of the chain use childrenDamageCoefficient = 1, and ProjectileExplosion passes children `projectileDamage.damage * childrenDamageCoefficient`. Every pointer in that chain resolves inside the item's own bundle, so nothing here is inferred — the puddle is 100% per second, against the 200% the description states. The puddle is likewise not a BlastAttack and has no falloff: ProjectileDotZone hits everything inside its area for the same amount each tick, so distance from the centre does not matter."
       }
     ],
     "tags": [

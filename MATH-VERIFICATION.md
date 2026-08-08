@@ -5595,3 +5595,63 @@ informative thing in a description.
 
 The test that pins this asserts a conclusion drawn from shape rather than from a measurement,
 which is the kind a later edit breaks quietly, without any number looking wrong.
+
+### 3j.109 the guard that passed because it was not looking
+
+§3j.108 generalised into a sweep: 69 descriptions pair a flat number with a scaling one. Most
+are legitimate — Crowbar's 90% is a *threshold*, Tri-Tip's 240% bleed genuinely does not scale.
+The narrower shape (two damage numbers sharing one code value) matched only **Gasoline**, and
+Gasoline turned out to be **correct**: `baseDamage = damage * 1.5f` and
+`value = (1 + n) * 0.75f * damage` are two independent variables, so the flat/scaling split is
+real. That matters — it means the description convention is reliable and Electric Boomerang is
+a genuine anomaly rather than loose phrasing.
+
+The sweep found nothing. Reading Gasoline's code to *check* the sweep found something else.
+
+#### The hole
+
+Gasoline's blast is `falloffModel = None`, and our record never said so. There is a guard for
+exactly this — "every record citing a blast radius states its falloff model", written after
+five of seven blast records published a radius without one. It had been passing. It was keyed
+on the literal string `blastRadius` in the formula text, and Gasoline's formula quotes the
+code's own field name: `blastAttack.radius`.
+
+Widening detection to the **stat name as well as the formula** — the stat name is what the
+reader actually sees — took the guard from 8 rows to 29, and produced six corrections:
+
+| item | published as | actually |
+|---|---|---|
+| **Will-o'-the-wisp** | "350% base damage" in 12m | **SweetSpot**: 350% within 6m, **87.5%** from 6–12m |
+| **Shatterspleen** | 400%/stack + 15% max HP in 16m | **SweetSpot**, both terms — quartered beyond 8m |
+| **Voidsent Flame** | 260%/stack in 12m | **SweetSpot**, plus a 0.2s delay |
+| Brilliant Behemoth | radius only | `None`, and fires at `procCoefficient 0f` |
+| Gasoline | radius only | `None`, `procCoefficient 0f`, burn upgraded by `StrengthenBurnUtils` |
+| Razorwire | "Burst radius" | **not a blast at all** — SphereSearch → LightningOrbs, nearest-first |
+
+Three items published a **SweetSpot cliff as though it were a uniform sphere.** SweetSpot is
+the model most damaged by omission because it is the one that is not a taper: full damage
+inside half the radius, a flat quarter beyond. "350% base damage in 12m" describes under a
+fifth of that sphere's volume.
+
+Razorwire is the opposite error and worth as much: "Burst radius (m)" reads like an explosion,
+but distance decides **who** is hit, not how hard — the search orders candidates by distance
+and fires one orb at each of the nearest N, all sharing a single crit roll, each at
+`procCoefficient 0.5`.
+
+Resonance Disc's bomb is left **explicitly unverified**: it is a projectile, its blast lives on
+a prefab absent from the extracted set, and a guessed falloff would be worse than a stated gap.
+
+#### What this says about guards
+
+The three earlier local-only rules are honest about being unenforced. This one was worse: it
+**reported success**. A guard keyed on one spelling of a concept certifies every record that
+happens to spell it differently, and it gets more dangerous over time, because each passing run
+is evidence that the area is covered.
+
+The tell was available: the guard covered 8 rows in a dataset with 29 area effects. **A guard
+should be asked how many rows it inspects, not just whether it passes** — a green test with a
+narrow selector and a green test with a wide one are indistinguishable from the outside, and
+only the second one is a guard.
+
+Proven by restoring Will-o'-the-wisp's original formula verbatim: it escaped the old rule for
+the whole life of that rule, and fails the new one.

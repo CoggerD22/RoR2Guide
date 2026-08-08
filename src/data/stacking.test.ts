@@ -997,17 +997,62 @@ test("a cited damageCoefficient matches the published base, or explains itself",
  * record that publishes a blast radius has to say which.
  */
 test("every record citing a blast radius states its falloff model", () => {
-  const MODELS = /falloffModel is (None|Linear|SweetSpot|HalfLinear|QuarterLinear)|falloffModel = None|falloff is SweetSpot|falloffModel = Linear|blastFalloffModel = None|falloffModel = None/;
+  const MODELS = /falloffModel is (None|Linear|SweetSpot|HalfLinear|QuarterLinear)|falloffModel = (None|Linear|SweetSpot)|falloff is SweetSpot|blastFalloffModel = None/;
   const silent: string[] = [];
   for (const it of items) {
     for (const st of it.stacking) {
       const f = st.formula ?? "";
-      if (!/blastRadius/.test(f)) continue;
+      // Detect the MECHANIC, not one spelling of it, and read the STAT NAME as well as the
+      // formula. Keying on the literal "blastRadius" in the formula alone let
+      // Will-o'-the-wisp publish a SweetSpot blast as though it were uniform: its formula
+      // quoted the code's own field name (`component6.radius`) and never said "blast" at
+      // all. The stat name said "Explosion radius (m)" the whole time — which is precisely
+      // what the reader sees, and the better thing to trust.
+      const subject = `${st.stat} ${f}`;
+      if (!/blastRadius|BlastAttack|blastAttack|DelayBlast|blast|explosion|explode|burst radius/i.test(subject)) continue;
       if (MODELS.test(f) || /falloff/i.test(f)) continue;
       silent.push(`${it.name} — ${st.stat}`);
     }
   }
   expect(silent, silent.join(" | ")).toEqual([]);
+});
+
+/**
+ * The correction the widened guard produced, pinned so it cannot silently revert.
+ *
+ * SweetSpot is the model most damaged by being omitted, because it is the one that is NOT a
+ * taper: full damage inside HALF the radius, then a flat QUARTER out to the rim. A record
+ * that publishes "350% base damage" beside "12m" describes less than a fifth of the sphere's
+ * volume — the other four fifths take 87.5%.
+ */
+test("Will-o'-the-wisp publishes its SweetSpot cliff, not a uniform sphere", () => {
+  const x = items.find((i) => i.id === "will-o-the-wisp")!;
+  const radius = x.stacking.find((s) => /radius/i.test(s.stat))!;
+  const damage = x.stacking.find((s) => /damage/i.test(s.stat))!;
+
+  expect(radius.formula).toMatch(/SweetSpot/);
+  // The consequence in numbers, not just the model's name.
+  expect(radius.formula).toMatch(/6m/);
+  expect(radius.formula).toMatch(/QUARTER/i);
+  // The damage row must not read as if the headline number applied everywhere.
+  expect(damage.formula).toMatch(/QUARTER|87\.5%/i);
+  // And the two facts a reader would otherwise assume from the other item explosions.
+  expect(x.descriptionNote).toMatch(/0\.5s|delay/i);
+  expect(x.descriptionNote).toMatch(/procCoefficient/);
+});
+
+/**
+ * The inverse case: an area effect that is NOT a BlastAttack has no falloff to state, and
+ * demanding one would invite a fabricated answer. SphereSearch finds every distinct entity
+ * inside the radius and treats them identically.
+ */
+test("Gasoline distinguishes its blast from its search", () => {
+  const x = items.find((i) => i.id === "gasoline")!;
+  const radius = x.stacking.find((s) => /radius/i.test(s.stat))!;
+  const burn = x.stacking.find((s) => /Burn damage/i.test(s.stat))!;
+  expect(radius.formula).toMatch(/falloffModel = None/);
+  expect(radius.formula).toMatch(/procCoefficient 0f/);
+  expect(burn.formula).toMatch(/no falloff concept/);
 });
 
 test("Remote Caffeinator's SweetSpot band is recorded, not rounded to one number", () => {
