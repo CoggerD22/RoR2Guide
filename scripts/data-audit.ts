@@ -158,13 +158,82 @@ function main(): number {
     }
   }
 
+  // --- What counts as "our prose" (ONE definition, shared) ------------------
+  // The coined-term rule and the internal-name-collision rule below both police the text we
+  // WRITE, as opposed to the game text we transcribe. They used to build that list
+  // separately and disagreed: collisions read reference.ts, coined terms did not, so 26
+  // camelCase identifiers in the artifact and shrine `mechanic` strings had never been
+  // checked against the decompile — and one of them, `cutHpCount` on Artifact of Swarms, was
+  // a coinage of mine dressed as a game field (MATH-VERIFICATION §3j.112).
+  //
+  // Two guards disagreeing about their own subject is the same failure as a narrow selector
+  // (§3j.109) and is fixed the same way: define the surface once, in one place, and make
+  // every rule read it. Adding a prose field to the schema means adding it HERE, once.
+  const referenceSrc = existsSync(resolve(root, "src/data/reference.ts"))
+    ? readFileSync(resolve(root, "src/data/reference.ts"), "utf8")
+    : "";
+  const quoted = (field: string) =>
+    [...referenceSrc.matchAll(new RegExp(`${field}:\\s*"((?:[^"\\\\]|\\\\.)*)"`, "g"))].map(
+      (m) => m[1],
+    );
+  let skillProse: Array<{ name: string; prose: string }> = [];
+  try {
+    const rawSkills = JSON.parse(readFileSync(skillsPath, "utf8")) as Array<{
+      survivor: string;
+      skills?: Array<{ name?: string; procSource?: string }>;
+    }>;
+    skillProse = rawSkills.flatMap((w) =>
+      (w.skills ?? []).map((sk) => ({
+        name: `skill ${w.survivor}/${sk.name ?? "?"}`,
+        prose: sk.procSource ?? "",
+      })),
+    );
+  } catch {
+    // skills.json is validated properly further down; a parse failure is reported there.
+  }
+  const PROSE_RECORDS: Array<{ name: string; prose: string }> = [
+    ...items.map((it) => ({
+      name: it.name,
+      prose: [
+        it.descriptionNote ?? "",
+        ...it.stacking.map((s) => s.formula ?? ""),
+        ...it.stacking.map((s) => s.cap ?? ""),
+      ]
+        .join("\n")
+        .trim(),
+    })),
+    ...quoted("mechanic").map((t, i) => ({ name: `reference.ts mechanic #${i + 1}`, prose: t })),
+    ...quoted("cost").map((t, i) => ({ name: `reference.ts cost #${i + 1}`, prose: t })),
+    ...skillProse,
+  ].filter((r) => r.prose);
+
+  // Coverage floor for the shared surface, in the spirit of the `guard coverage` block in
+  // stacking.test.ts (§3j.110). Both rules below can pass by inspecting nothing, and nothing
+  // else in this file would notice. This fails if the surface silently shrinks — a dataset
+  // dropped from the list, a field renamed, reference.ts moved — rather than letting the
+  // rules report a clean run over a fraction of what they claim to cover.
+  // 343 records today: ~185 items with prose, 33 reference.ts strings, 125 skill procSources.
+  // The floor has to sit above (343 - smallest dataset) or it cannot detect that dataset
+  // vanishing — at 300 it would have missed reference.ts dropping out entirely, which is the
+  // precise failure this exists to catch. 335 leaves room for a few records to be removed
+  // legitimately while still failing if any one source stops being read.
+  const PROSE_FLOOR = 335;
+  if (PROSE_RECORDS.length < PROSE_FLOOR) {
+    errors.push(
+      `prose surface shrank to ${PROSE_RECORDS.length} records (floor ${PROSE_FLOOR}). The ` +
+        `coined-term and internal-name rules police this list; a smaller list means they now ` +
+        `pass over text nobody is checking. Either a data file stopped being read or a prose ` +
+        `field was renamed.`,
+    );
+  }
+
   // --- Coined terms (MATH-VERIFICATION §3j.97) -----------------------------
   // `levelScale` was a word I invented, used in seven records, that asserted a mechanism in
   // its own name and read as verified because nothing distinguishes a token copied out of
   // the game from one made up. It was wrong — it conflated a level factor with the Quick Fix
   // multiplier — and it survived months of review.
   //
-  // So: every camelCase token in a formula must either exist in the decompiled source or be
+  // So: every camelCase token in our prose must either exist in the decompiled source or be
   // an ACKNOWLEDGED coinage. Deliberate shorthand is fine and often clearer than the game's
   // `num79`; what is not fine is coining silently.
   const COINED_OK = new Set([
@@ -198,19 +267,17 @@ function main(): number {
     };
     collect(decompiledDir);
     const unacknowledged = new Map<string, string[]>();
-    for (const it of items) {
-      for (const st of it.stacking) {
-        for (const m of (st.formula ?? "").matchAll(/\b([a-z]+[A-Z][A-Za-z0-9]*)\b/g)) {
-          const t = m[1];
-          if (COINED_OK.has(t) || haystack.includes(t)) continue;
-          if (!unacknowledged.has(t)) unacknowledged.set(t, []);
-          unacknowledged.get(t)!.push(it.name);
-        }
+    for (const rec of PROSE_RECORDS) {
+      for (const m of rec.prose.matchAll(/\b([a-z]+[A-Z][A-Za-z0-9]*)\b/g)) {
+        const t = m[1];
+        if (COINED_OK.has(t) || haystack.includes(t)) continue;
+        if (!unacknowledged.has(t)) unacknowledged.set(t, []);
+        unacknowledged.get(t)!.push(rec.name);
       }
     }
     for (const [term, where] of unacknowledged) {
       errors.push(
-        `"${term}" appears in a formula (${[...new Set(where)].slice(0, 3).join(", ")}) but ` +
+        `"${term}" appears in published prose (${[...new Set(where)].slice(0, 3).join(", ")}) but ` +
           `exists nowhere in the decompiled source — if it is deliberate shorthand, add it to ` +
           `COINED_OK in data-audit.ts; if it names a mechanism, that name is an unverified claim`,
       );
@@ -249,25 +316,8 @@ function main(): number {
     // found an unscoped negative AND a bare "Lightning" in Artifact of Honor. A guard that
     // only watches the file it was born in is a guard with a blind spot the size of the
     // rest of the dataset.
-    const referenceSrc = existsSync(resolve(root, "src/data/reference.ts"))
-      ? readFileSync(resolve(root, "src/data/reference.ts"), "utf8")
-      : "";
-    const quoted = (field: string) =>
-      [...referenceSrc.matchAll(new RegExp(`${field}:\\s*"((?:[^"\\\\]|\\\\.)*)"`, "g"))].map(
-        (m) => m[1],
-      );
-    const proseRecords: Array<{ name: string; prose: string }> = [
-      ...items.map((it) => ({
-        name: it.name,
-        prose: [it.descriptionNote ?? "", ...it.stacking.map((s) => s.formula ?? "")]
-          .join("\n")
-          .trim(),
-      })),
-      ...quoted("mechanic").map((t, i) => ({ name: `reference.ts mechanic #${i + 1}`, prose: t })),
-      ...quoted("cost").map((t, i) => ({ name: `reference.ts cost #${i + 1}`, prose: t })),
-    ];
 
-    for (const it of proseRecords) {
+    for (const it of PROSE_RECORDS) {
       const prose = it.prose;
       if (!prose) continue;
       // Display names come out FIRST, longest first. Otherwise a short cachedName that is a

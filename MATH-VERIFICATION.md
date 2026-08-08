@@ -5748,3 +5748,59 @@ The general point is the one worth carrying: this project's failure mode has sto
 wrong data and become **correctly-recorded data in a place nobody reads**. Verification puts a
 fact in the file. Only layout decides whether anyone meets it — which is what §9 was for, and
 why the falloff work was not finished when the formulas were right.
+
+### 3j.112 two guards that disagreed about their own subject
+
+The `stacking.test.ts` tier was audited for narrow selectors in §3j.110. The other tier —
+`data-audit.ts`, the local-only rules — had not been. Same question, asked properly: which
+prose does each rule actually read?
+
+They disagreed. Both police the text we **write** rather than the game text we transcribe, and
+each built that list separately:
+
+| surface | strings | camelCase terms | coined-term rule | collision rule |
+|---|---|---|---|---|
+| `items.descriptionNote` | 53 | 26 | ✗ → ✓ | ✓ |
+| `items.stacking.formula` | 289 | 277 | ✓ | ✓ |
+| `items.stacking.cap` | 5 | 1 | ✗ → ✓ | ✗ → ✓ |
+| `reference.ts` mechanic/cost | 33 | 26 | **✗ → ✓** | ✓ |
+| `skills.procSource` | 125 | 6 | ✗ → ✓ | ✗ → ✓ |
+
+The coined-term rule — the one written *because* I invented `levelScale` and shipped it in
+seven records — was reading formulas only. So `descriptionNote`, which renders in the **amber
+callout at the top of an item page**, was never checked, and neither were the 26 camelCase
+identifiers in the artifact and shrine prose.
+
+#### What was hiding there
+
+One term, in Artifact of Swarms: **`cutHpCount`**. Not a game identifier — my shorthand for
+`num33`, written to look like one. Exactly the `levelScale` failure, in the one surface the
+`levelScale` guard could not see.
+
+The surrounding claim was *true* (`SwarmsArtifactManager`, `swarmSpawnCount = 2`, the `CutHp`
+item, and `num78 /= (num33 + 1)` all check out), which is why nothing caught it by reading.
+Verifying it turned up three effects the record omitted, all in the same handler:
+
+- `DeathRewards.spawnValue`, `expReward` and `goldReward` are each **divided by 2**, so every
+  monster is worth half the XP and gold and the doubled count roughly cancels — Swarms is much
+  closer to XP-neutral than "twice the monsters" suggests.
+- Spawns whose placement rule sets `IgnoreSwarmsArtifact` are skipped, as are player-team
+  spawns.
+- The duplicate spawn is re-fired through `DirectorCore.TrySpawnObject` behind an `inSpawn`
+  flag, so copies cannot recurse.
+
+#### The fix is structural, not another patch
+
+Both rules now read one `PROSE_RECORDS` list built in one place. Adding a prose field to the
+schema means adding it there, once, and every rule gains it. Two guards maintaining private
+definitions of their own subject is the same failure as a narrow selector, and patching each
+rule separately would have preserved the condition that produced it.
+
+With a coverage floor, because this tier can also pass by inspecting nothing: **343** records
+today, floor **335**. The floor is deliberately tight — at 300 it would not have caught
+`reference.ts` (33 records) dropping out, which is the exact failure it exists for. Proven by
+removing that source: 322, and it fails.
+
+A guard is not a rule plus a regex. It is a rule, a regex, **and a stated surface** — and the
+surface is the part that rots silently, because nothing about a passing run reveals how much of
+the dataset it read.
