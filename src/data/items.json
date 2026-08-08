@@ -1092,7 +1092,7 @@
         "base": 22,
         "perStack": 2,
         "type": "linear",
-        "formula": "range = 20 (LightningOrb default) + 2n (GlobalEventManager: lightningOrb.range += 2 * n). Code-verified: 22m at 1 stack, 24m at 2, 26m at 3. The description reads \"within 20m (+2m per stack)\", which implies 20m at one stack; the increment applies from the first stack, exactly as with Safer Spaces."
+        "formula": "range = 20 (LightningOrb default) + 2n (GlobalEventManager: lightningOrb.range += 2 * n). Code-verified: 22m at 1 stack, 24m at 2, 26m at 3. The description reads \"within 20m (+2m per stack)\", which implies 20m at one stack; the increment applies from the first stack, exactly as with Safer Spaces. The orb itself fires at procCoefficient = 0.2f, so Ukulele CAN chain into other on-hit items but at a fifth rate, and it inherits the triggering hit’s crit (isCrit = damageInfo.crit) rather than rolling its own. bouncesRemaining = 2n, so one Ukulele reaches three targets in total: the victim plus two bounces."
       }
     ],
     "tags": [
@@ -2994,7 +2994,7 @@
         "base": 120,
         "perStack": 120,
         "type": "linear",
-        "formula": "The projectile is fired ONCE with `characterBody.damage * 0.4f * n` — a single value, linear in the stack count with NO constant term — and both damage components on the prefab multiply that same value by their own coefficient. The slice is a ProjectileOverlapAttack at damageCoefficient 3.1, so it lands 3.1 x 0.4n = 1.24n. STRUCTURAL FINDING: because both effects read one fired value, they scale identically, so the description's split — a flat \"120% base damage\" slice alongside a \"120% (+120% per stack)\" lingering effect — cannot be right. One fired value cannot be flat for one consumer and scaling for another. The slice scales with stacks; the text does not say so. NOT resolved: the residual 4% (1.24n computed against 1.20n stated), small enough to be a rounding convention in the description and too small to correct a published number on."
+        "formula": "The projectile is fired ONCE with `characterBody.damage * 0.4f * n` — a single value, linear in the stack count with NO constant term — and both damage components on the prefab multiply that same value by their own coefficient. The slice is a ProjectileOverlapAttack at damageCoefficient 3.1, so it lands 3.1 x 0.4n = 1.24n. STRUCTURAL FINDING: because both effects read one fired value, they scale identically, so the description's split — a flat \"120% base damage\" slice alongside a \"120% (+120% per stack)\" lingering effect — cannot be right. One fired value cannot be flat for one consumer and scaling for another. The slice scales with stacks; the text does not say so. NOT resolved: the residual 4% (1.24n computed against 1.20n stated), small enough to be a rounding convention in the description and too small to correct a published number on. Two properties of the throw: crit is characterBody.RollCrit(), an INDEPENDENT roll rather than the triggering hit’s crit (Ukulele inherits; this does not), and the FireProjectileInfo sets no procCoefficient at all, so the boomerang’s proc rate is whatever the StunAndPierceBoomerang prefab carries. That prefab is not in the extracted asset set, so the rate is NOT established here."
       },
       {
         "stat": "Damage over time (%/s)",

@@ -1611,3 +1611,83 @@ test("every surface rendering a proc coefficient handles the no-damage-path case
     `these render a proc coefficient without handling damaging === false: ${offenders.join(", ")}`,
   ).toEqual([]);
 });
+
+/**
+ * §3j.117: the largest remaining DATA gap, made visible instead of quietly carried.
+ *
+ * Proc coefficient is a first-order fact in this game — it decides whether an item's own damage
+ * can trigger other items. "Does AtG's missile proc Ukulele?" is among the most common real
+ * questions a player has, and 31 of the 41 rows describing an item-fired attack do not answer
+ * it. §3j.113 found the same omission on Artifact of Spite by accident; this is the item-side
+ * measurement of it.
+ *
+ * Two were closed by reading the code properly, and they differ in a way that shows why the
+ * field matters: Ukulele's orb is `procCoefficient = 0.2f` and INHERITS the triggering hit's
+ * crit, while Electric Boomerang rolls its own crit with `RollCrit()` and sets no proc
+ * coefficient at the fire site at all — its rate lives on a projectile prefab outside the
+ * extracted set, so it is recorded as not established rather than guessed.
+ *
+ * The rest are frozen below. This is a RATCHET, not an exemption: the silent set must stay a
+ * SUBSET of this list, so the debt can shrink but never grow. A new attack row that says
+ * nothing about proc rate fails here and has to be either answered or added deliberately.
+ */
+test("no NEW item attack row goes silent on its proc coefficient", () => {
+  const ATTACK =
+    /BlastAttack|BulletAttack|OverlapAttack|LightningOrb|ProjectileDamage|DelayBlast|OrbManager|GenericDamageOrb|damageCoefficient/i;
+
+  // Frozen 2026-08-08 at 31 rows. Shrinking this list is the work; growing it is a regression.
+  const KNOWN_SILENT = new Set([
+    "atg-missile-mk-1::Missile damage (% TOTAL)",
+    "will-o-the-wisp::Explosion radius (m)",
+    "will-o-the-wisp::Explosion damage (% base)",
+    "runalds-band::Ice blast damage (% TOTAL)",
+    "kjaros-band::Flame tornado damage (% TOTAL)",
+    "razorwire::Burst radius (m)",
+    "ceremonial-dagger::Dagger damage (% base)",
+    "resonance-disc::Explosion damage (% base)",
+    "resonance-disc::Pierce & return damage (% base)",
+    "electric-boomerang::Times one enemy can be sliced per throw",
+    "orphaned-core::Launch damage (%)",
+    "orphaned-core::Knockback damage on heavy targets (%)",
+    "orphaned-core::Seconds before the same enemy can be launched into again",
+    "shatterspleen::Explosion damage (% base)",
+    "shatterspleen::Explosion bonus (% of enemy max HP)",
+    "halcyon-seed::Aurelionite damage (%)",
+    "little-disciple::Wisp damage (%)",
+    "molten-perforator::Magma ball damage (%)",
+    "charged-perforator::Lightning strike damage (%)",
+    "plasma-shrimp::Missile damage (% TOTAL)",
+    "polylute::Lightning hits",
+    "singularity-band::Black hole damage (% TOTAL)",
+    "voidsent-flame::Explosion damage (% base)",
+    "volcanic-egg::Ram damage, once per enemy (%)",
+    "volcanic-egg::Detonation damage (%)",
+    "sawmerang::Damage per saw, once per enemy (%)",
+    "sawmerang::Bleed applied",
+    "molotov-6-pack::Bomblets",
+    "molotov-6-pack::Impact damage per bomblet (%)",
+    "of-one-mind::Death explosion damage (%)",
+    "aurelionites-blessing::Spike damage, inner / outer (%)",
+  ]);
+
+  const newlySilent: string[] = [];
+  for (const it of items) {
+    for (const st of it.stacking) {
+      const f = st.formula ?? "";
+      if (!ATTACK.test(f)) continue;
+      if (/procCoefficient/i.test(f)) continue;
+      const key = `${it.id}::${st.stat}`;
+      if (!KNOWN_SILENT.has(key)) newlySilent.push(key);
+    }
+  }
+  expect(
+    newlySilent,
+    `attack rows with no proc coefficient stated, not on the frozen list: ${newlySilent.join(" | ")}`,
+  ).toEqual([]);
+
+  // The two that were closed must stay closed.
+  const uku = items.find((i) => i.id === "ukulele")!;
+  expect(uku.stacking.some((s) => /procCoefficient = 0\.2f/.test(s.formula ?? ""))).toBe(true);
+  const boom = items.find((i) => i.id === "electric-boomerang")!;
+  expect(boom.stacking.some((s) => /RollCrit\(\)/.test(s.formula ?? ""))).toBe(true);
+});

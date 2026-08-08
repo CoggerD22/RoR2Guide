@@ -6026,3 +6026,48 @@ and `.replace(x, y, 1)` changed one. Removing both fails the test.
 The same rule has now caught three weak mutations across this work. It is the single most
 reliable thing in the log, and it earns its keep precisely because a passing breakage test is
 indistinguishable from a working guard until you check the count.
+
+### 3j.117 the biggest remaining data gap, measured instead of carried
+
+§3j.113 found Artifact of Spite silent on its bombs' `procCoefficient` — by accident, while
+chasing something else. That is a question worth asking of the whole item dataset, so I asked
+it: of the **41** rows that describe an item-fired attack, how many say what proc rate it fires
+at?
+
+**Eight.** And **zero** say anything about crit.
+
+That is not a cosmetic omission. Proc coefficient decides whether an item's own damage can
+trigger other items, and *"does AtG's missile proc Ukulele?"* is among the most common real
+questions a player has about this game. The site answers it for eight rows out of forty-one.
+
+#### Two closed, and they disagree in an instructive way
+
+**Ukulele** — `procCoefficient = 0.2f`, and `isCrit = damageInfo.crit`: the orb inherits the
+triggering hit's crit. It chains into other on-hit items, at a fifth rate.
+
+**Electric Boomerang** — `crit = characterBody.RollCrit()`, an *independent* roll, and the
+`FireProjectileInfo` sets **no** `procCoefficient` at all, so the rate is whatever the
+`StunAndPierceBoomerang` prefab carries. That prefab is not in the extracted set, so it is
+recorded as **not established** rather than assumed to be 1.0.
+
+Two items, adjacent in the same method, differing on both properties. Neither difference is
+guessable from the descriptions, which is the argument for recording the field at all.
+
+#### On the scan that produced this
+
+I wrote a scan that walks each `GetItemCountEffective(...Items.X)` site and reports
+`procCoefficient` assignments in the following block. It over-reported, as designed — 60-line
+windows run past the end of one item's handler into the next, and it confidently attributed
+Loader's lightning orb to AtG. Every value here was verified by opening the file at the line;
+none was taken from the scan. **A scan of this kind is a way to decide what to read, never a
+source of values** — which is the same rule §3j.107 arrived at from the opposite direction,
+where a raw string scan was misread as evidence of contents.
+
+#### The remaining 31 are frozen, not forgiven
+
+A ratchet: the silent set must stay a **subset** of an explicit list of 31. The debt can shrink
+and cannot grow, and a new attack row that says nothing about proc rate fails the build rather
+than joining the pile quietly. Proven by adding one.
+
+This is the honest shape for a gap too large to close in one pass. The alternative — knowing
+the number is 8 of 41 and writing nothing down — is how a gap becomes permanent.
