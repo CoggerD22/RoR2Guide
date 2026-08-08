@@ -6071,3 +6071,77 @@ than joining the pile quietly. Proven by adding one.
 
 This is the honest shape for a gap too large to close in one pass. The alternative — knowing
 the number is 8 of 41 and writing nothing down — is how a gap becomes permanent.
+
+### 3j.118 closing the proc gap, and a number that may be 4x wrong
+
+§3j.117 measured the gap at **8 of 41** attack rows stating a proc coefficient and froze the
+rest. This pass closed most of it: **28 of 41**, ratchet retightened from 31 silent rows to 13.
+
+#### The structural finding
+
+Proc rate for a projectile is not in the C# at all. It is a **product of two serialized fields
+on the same prefab**:
+
+```csharp
+attack.procCoefficient      = projectileController.procCoefficient * overlapProcCoefficient;
+blastAttack.procCoefficient = projectileController.procCoefficient * blastProcCoefficient;
+```
+
+So "what does this item proc at?" needs **two** asset reads plus the code, and reading either
+field alone gives a confidently wrong answer. This is §5.0.2 again, one level deeper: the
+constant is not merely serialized, it is *factored*.
+
+#### Two claims made and reversed inside one pass
+
+Earlier in this same session I wrote, from the code alone, that Kjaro's Band and Electric
+Boomerang had proc rates that were "NOT established here". Extracting the prefabs settled both,
+and they landed at opposite extremes:
+
+- **Kjaro's Band** — `FireTornado` is `procCoefficient 1.0 × overlapProcCoefficient 0.0` = **0**.
+  The tornado procs **nothing**. Runald's Band, its supposed twin, is a direct `DamageInfo` at
+  `procCoefficient = 1f`. The two items players treat as a matched pair sit at opposite ends of
+  this scale, and neither description hints at it.
+- **Electric Boomerang** — the slice is `1.0 × 1.0` = **full rate**, while the lingering
+  component on the same prefab is `0.2`. One throw procs at two different rates depending on
+  which effect lands.
+
+Both reversals are now pinned by tests, including one asserting the old hedge cannot return.
+A re-hedge would read as caution and be a regression — §3j.114's lesson, made executable.
+
+Also closed: AtG's missile and Ceremonial Dagger at 1.0; Sawmerang's contact at 1.0; Molotov's
+bomblet blast at 1.0 against its puddle at 0.5; Will-o'-the-wisp, Shatterspleen and Voidsent
+Flame all at **1.0**, because `DelayBlast` declares `procCoefficient = 1f` and none of the three
+overrides it — unlike Behemoth and Gasoline, explicitly set to `0f`.
+
+#### Resonance Disc: a possible 4x error, deliberately not fixed
+
+`LaserTurbineBomb` turns out to be in the extracted set after all, carrying
+`blastDamageCoefficient = 4.0`, `blastRadius = 14`, `falloffModel = 2` (**SweetSpot** — resolved
+from the enum, not read as an integer, per §3j.114's `costType` near-miss). The damage chain is
+exact wherever it is readable:
+
+```
+GetDamage()            = ownerBody.damage x LaserTurbine count
+projectileDamage.damage = GetDamage() x secondBombDamageCoefficient   // 10.0
+blastAttack.baseDamage  = projectileDamage.damage x blastDamageCoefficient  // 4.0
+```
+
+That is **40x base damage per stack — 4000%, against a published 1000%.**
+
+The published figure is **left unchanged.** Exactly one link is unproven: that
+`LaserTurbineBomb` *is* `secondBombPrefab`. The EntityStateConfiguration stores a prefab
+reference, that pointer has not been resolved to a named asset, and **name similarity is the
+only evidence**. A 4x correction resting on a name is worse than a known gap, so it is recorded
+as an open question carrying the whole arithmetic — the same treatment Electric Boomerang's 4%
+got, at forty times the stake.
+
+#### The guard caught my own prose
+
+Appending a generic explanation mentioning `ProjectileExplosion` to five rows made the falloff
+rule fire: those five items have no detonation at all — they deal damage by overlap — so my own
+sentence implied a blast that does not exist. Reworded rather than exempted. **A guard written
+against my errors caught an error in the fix for a different one.**
+
+And the ratchet itself had the §3j.109 defect: keyed on `procCoefficient`, it reported Resonance
+Disc as silent when its row already read *"Beam proc coefficient is 1.0"*. Written three passes
+after documenting that exact failure. It now matches both spellings.

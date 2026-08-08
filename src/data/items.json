@@ -999,7 +999,7 @@
         "base": 300,
         "perStack": 300,
         "type": "linear",
-        "formula": "missile damageCoefficient = 3f x n (GlobalEventManager). Linear: 300% TOTAL per stack."
+        "formula": "missile damageCoefficient = 3f x n (GlobalEventManager). Linear: 300% TOTAL per stack. MissileUtils.FireMissile passes the triggering hit's crit straight through (`crit = isCrit` from `damageInfo.crit`), so the missile crits exactly when the hit that spawned it crit. Its FireProjectileInfo sets no procCoefficient. Note the pattern: orbs and direct DamageInfo hits set `procCoefficient` in code, while PROJECTILE attacks never do — the rate lives on the projectile prefab. Those prefabs are not in the extracted asset set, so this is recorded as NOT established rather than assumed to be 1.0. NOW ESTABLISHED: MissileProjectile carries procCoefficient = 1.0, so the missile procs on-hit items at full rate. Projectile proc rate is a PRODUCT of two serialized fields on the same prefab, neither of them in the C#: `attack.procCoefficient = projectileController.procCoefficient * overlapProcCoefficient`. (This projectile deals its damage by overlap, not by detonating; a detonating projectile uses the equivalent blastProcCoefficient field instead.)"
       }
     ],
     "tags": [
@@ -1025,14 +1025,14 @@
         "base": 12,
         "perStack": 2.4,
         "type": "linear",
-        "formula": "radius = 12f + 2.4f * (n - 1) (GlobalEventManager, on the DelayBlast component). Linear. falloffModel = SweetSpot, which is NOT a taper but a cliff: full damage within HALF the radius, a flat QUARTER of it beyond that out to the rim. At one stack that is 100% inside 6m and 25% from 6m to 12m."
+        "formula": "radius = 12f + 2.4f * (n - 1) (GlobalEventManager, on the DelayBlast component). Linear. falloffModel = SweetSpot, which is NOT a taper but a cliff: full damage within HALF the radius, a flat QUARTER of it beyond that out to the rim. At one stack that is 100% inside 6m and 25% from 6m to 12m. The explosion is a DelayBlast, which declares `procCoefficient = 1f` and hands it straight to the BlastAttack; this call site does not override it, so the blast procs on-hit items at FULL rate — unlike Brilliant Behemoth and Gasoline, whose blasts are explicitly set to 0f and cannot chain."
       },
       {
         "stat": "Explosion damage (% base)",
         "base": 350,
         "perStack": 280,
         "type": "linear",
-        "formula": "damageCoefficient = 3.5f * (1f + (n - 1) * 0.8f) (GlobalEventManager). Written multiplicatively but linear in n: 350% at 1 stack, then +280% (= 350% x 0.8) per stack. This is the damage inside the SweetSpot inner half only (falloffModel = SweetSpot) — beyond half the radius the blast deals a QUARTER of it (87.5% at one stack), so the single published number applies to less than a fifth of the sphere's volume."
+        "formula": "damageCoefficient = 3.5f * (1f + (n - 1) * 0.8f) (GlobalEventManager). Written multiplicatively but linear in n: 350% at 1 stack, then +280% (= 350% x 0.8) per stack. This is the damage inside the SweetSpot inner half only (falloffModel = SweetSpot) — beyond half the radius the blast deals a QUARTER of it (87.5% at one stack), so the single published number applies to less than a fifth of the sphere's volume. The explosion is a DelayBlast, which declares `procCoefficient = 1f` and hands it straight to the BlastAttack; this call site does not override it, so the blast procs on-hit items at FULL rate — unlike Brilliant Behemoth and Gasoline, whose blasts are explicitly set to 0f and cannot chain."
       }
     ],
     "tags": [
@@ -1418,7 +1418,7 @@
         "base": 250,
         "perStack": 250,
         "type": "linear",
-        "formula": "damageCoefficient = 2.5f * n via Util.OnHitProcDamage (GlobalEventManager). Linear from the first stack."
+        "formula": "damageCoefficient = 2.5f * n via Util.OnHitProcDamage (GlobalEventManager). Linear from the first stack. The blast is delivered as a direct DamageInfo with `procCoefficient = 1f` and `crit = damageInfo.crit`, so it procs on-hit items at FULL rate and crits exactly when the hit that triggered it crit. The slow is Buff.Slow80 for 3s per stack. Both bands fire from ONE trigger in GlobalEventManager: the hit must satisfy `damageInfo.damage / characterBody.damage >= 4f` — the description's \"400% damage\" is a RATIO against your own base damage, not an absolute — and the wearer must hold the shared ElementalRingsReady buff, which is removed once before either ring fires. Holding both bands therefore does NOT give two independent procs: one qualifying hit spends the single readiness buff and fires whichever rings you own. The recharge is applied as ten stacked ElementalRingsCooldown buffs of 1s to 10s, and ProcType.Rings is stamped on the damage so ring damage cannot retrigger a ring."
       }
     ],
     "tags": [
@@ -1449,7 +1449,7 @@
         "base": 300,
         "perStack": 300,
         "type": "linear",
-        "formula": "tornado damageCoefficient = 3f x n (GlobalEventManager). Linear: 300% TOTAL per stack."
+        "formula": "tornado damageCoefficient = 3f x n (GlobalEventManager). Linear: 300% TOTAL per stack. The tornado is a FireTornado projectile and the FireProjectileInfo sets no procCoefficient, so its rate lives on that prefab. NOW ESTABLISHED, and it is the strongest possible answer: FireTornado carries projectileController.procCoefficient = 1.0 but overlapProcCoefficient = 0.0, and the effective rate is their PRODUCT — so the tornado procs NOTHING at all. Runald's blast, by contrast, is a direct DamageInfo at 1f. Two items described as a matched pair sit at opposite ends of this scale. Crit is inherited (`crit = damageInfo.crit`). The reason the description says TOTAL is visible in the arithmetic: damage is `OnHitProcDamage(..., 3n) / lifetime * resetInterval`, i.e. the 300% is divided across the tornado's lifetime and paid out per overlap tick. Both bands fire from ONE trigger in GlobalEventManager: the hit must satisfy `damageInfo.damage / characterBody.damage >= 4f` — the description's \"400% damage\" is a RATIO against your own base damage, not an absolute — and the wearer must hold the shared ElementalRingsReady buff, which is removed once before either ring fires. Holding both bands therefore does NOT give two independent procs: one qualifying hit spends the single readiness buff and fires whichever rings you own. The recharge is applied as ten stacked ElementalRingsCooldown buffs of 1s to 10s, and ProcType.Rings is stamped on the damage so ring damage cannot retrigger a ring. Projectile proc rate is a PRODUCT of two serialized fields on the same prefab, neither of them in the C#: `attack.procCoefficient = projectileController.procCoefficient * overlapProcCoefficient`. (This projectile deals its damage by overlap, not by detonating; a detonating projectile uses the equivalent blastProcCoefficient field instead.)"
       }
     ],
     "tags": [
@@ -2251,7 +2251,7 @@
         "base": 150,
         "perStack": 150,
         "type": "linear",
-        "formula": "dagger damageCoefficient = 1.5f x n (GlobalEventManager). Linear: 150% base per stack."
+        "formula": "dagger damageCoefficient = 1.5f x n (GlobalEventManager). Linear: 150% base per stack. Crit is NOT inherited here: FireProjectileWithoutDamageType is handed `LocalCheckRoll(attackerBody.crit, ...)`, an independent roll against your crit chance — unlike AtG and Ukulele, which pass the triggering hit's crit through. No procCoefficient is set at the call site. Note the pattern: orbs and direct DamageInfo hits set `procCoefficient` in code, while PROJECTILE attacks never do — the rate lives on the projectile prefab. Those prefabs are not in the extracted asset set, so this is recorded as NOT established rather than assumed to be 1.0. NOW ESTABLISHED: DaggerProjectile carries procCoefficient = 1.0 — full rate. Projectile proc rate is a PRODUCT of two serialized fields on the same prefab, neither of them in the C#: `attack.procCoefficient = projectileController.procCoefficient * overlapProcCoefficient`. (This projectile deals its damage by overlap, not by detonating; a detonating projectile uses the equivalent blastProcCoefficient field instead.)"
       }
     ],
     "tags": [
@@ -2725,7 +2725,7 @@
         "base": 1000,
         "perStack": 1000,
         "type": "linear",
-        "formula": "LaserTurbineBaseState.GetDamage returns ownerBody.damage * n, and FireMainBeamState applies secondBombDamageCoefficient = 10.0 (EntityStateConfiguration asset) - 1000% at one stack, linear in stacks. UNVERIFIED FALLOFF: the second bomb is a projectile (`secondBombPrefab`), so its blast radius and falloff model live on that prefab rather than in FireMainBeamState, and the prefab is not present in the extracted asset set. The damage figure above is code-derived and holds; how it falls off with distance is not established here, and is not guessed at."
+        "formula": "LaserTurbineBaseState.GetDamage returns ownerBody.damage * n, and FireMainBeamState applies secondBombDamageCoefficient = 10.0 (EntityStateConfiguration asset) - 1000% at one stack, linear in stacks. OPEN QUESTION — the published 1000% may be short by 4x. A prefab named `LaserTurbineBomb` IS in the extracted set and carries blastDamageCoefficient 4.0, blastProcCoefficient 1.0, blastRadius 14, falloffModel 2 (= SweetSpot: full within 7m, a quarter from 7m to 14m), on a controller procCoefficient of 1.0. The damage chain is exact where it is readable: GetDamage() returns ownerBody.damage x LaserTurbine count, the fire site sets projectileDamage.damage = GetDamage() x secondBombDamageCoefficient (10.0, from the EntityStateConfiguration), and ProjectileExplosion computes blastAttack.baseDamage = projectileDamage.damage x blastDamageCoefficient. If LaserTurbineBomb IS secondBombPrefab, the bomb lands 10 x 4 = 40x base damage per stack — 4000%, not 1000%. The ONE unproven link is exactly that identification: the EntityStateConfiguration stores a prefab REFERENCE, and that pointer has not been resolved to a named asset, so name similarity is the only evidence. The published figure is left unchanged until it is, because a 4x correction on a guess is worse than a known gap."
       },
       {
         "stat": "Pierce & return damage (% base)",
@@ -2994,7 +2994,7 @@
         "base": 120,
         "perStack": 120,
         "type": "linear",
-        "formula": "The projectile is fired ONCE with `characterBody.damage * 0.4f * n` — a single value, linear in the stack count with NO constant term — and both damage components on the prefab multiply that same value by their own coefficient. The slice is a ProjectileOverlapAttack at damageCoefficient 3.1, so it lands 3.1 x 0.4n = 1.24n. STRUCTURAL FINDING: because both effects read one fired value, they scale identically, so the description's split — a flat \"120% base damage\" slice alongside a \"120% (+120% per stack)\" lingering effect — cannot be right. One fired value cannot be flat for one consumer and scaling for another. The slice scales with stacks; the text does not say so. NOT resolved: the residual 4% (1.24n computed against 1.20n stated), small enough to be a rounding convention in the description and too small to correct a published number on. Two properties of the throw: crit is characterBody.RollCrit(), an INDEPENDENT roll rather than the triggering hit’s crit (Ukulele inherits; this does not), and the FireProjectileInfo sets no procCoefficient at all, so the boomerang’s proc rate is whatever the StunAndPierceBoomerang prefab carries. That prefab is not in the extracted asset set, so the rate is NOT established here."
+        "formula": "The projectile is fired ONCE with `characterBody.damage * 0.4f * n` — a single value, linear in the stack count with NO constant term — and both damage components on the prefab multiply that same value by their own coefficient. The slice is a ProjectileOverlapAttack at damageCoefficient 3.1, so it lands 3.1 x 0.4n = 1.24n. STRUCTURAL FINDING: because both effects read one fired value, they scale identically, so the description's split — a flat \"120% base damage\" slice alongside a \"120% (+120% per stack)\" lingering effect — cannot be right. One fired value cannot be flat for one consumer and scaling for another. The slice scales with stacks; the text does not say so. NOT resolved: the residual 4% (1.24n computed against 1.20n stated), small enough to be a rounding convention in the description and too small to correct a published number on. Two properties of the throw: crit is characterBody.RollCrit(), an INDEPENDENT roll rather than the triggering hit’s crit (Ukulele inherits; this does not), and the FireProjectileInfo sets no procCoefficient at all, so the boomerang’s proc rate is whatever the StunAndPierceBoomerang prefab carries. NOW ESTABLISHED by extracting the prefab: StunAndPierceBoomerang carries TWO damage components with different rates. The slice is a ProjectileOverlapAttack at overlapProcCoefficient 1.0, and with the controller's own 1.0 the product is a full 1.0 — the boomerang's impact procs on-hit items at full rate. The lingering damage is a second component at 0.2, so the same throw procs at two different rates depending on which of its two effects lands. Projectile proc rate is a PRODUCT of two serialized fields on the same prefab, neither of them in the C#: `attack.procCoefficient = projectileController.procCoefficient * overlapProcCoefficient`. (This projectile deals its damage by overlap, not by detonating; a detonating projectile uses the equivalent blastProcCoefficient field instead.)"
       },
       {
         "stat": "Damage over time (%/s)",
@@ -3340,14 +3340,14 @@
         "base": 400,
         "perStack": 400,
         "type": "linear",
-        "formula": "damageCoefficient = 4f * (1 + (n - 1)) (GlobalEventManager) - algebraically 4n. Linear. falloffModel = SweetSpot, which is a cliff rather than a taper: full damage within HALF the radius, then a flat QUARTER of it out to the rim. The radius is a fixed 16f regardless of stacks, so the full-damage core is 8m and everything from 8m to 16m takes a quarter. maxTimer = 0f, so unlike the other DelayBlast items this one detonates immediately."
+        "formula": "damageCoefficient = 4f * (1 + (n - 1)) (GlobalEventManager) - algebraically 4n. Linear. falloffModel = SweetSpot, which is a cliff rather than a taper: full damage within HALF the radius, then a flat QUARTER of it out to the rim. The radius is a fixed 16f regardless of stacks, so the full-damage core is 8m and everything from 8m to 16m takes a quarter. maxTimer = 0f, so unlike the other DelayBlast items this one detonates immediately. The explosion is a DelayBlast, which declares `procCoefficient = 1f` and hands it straight to the BlastAttack; this call site does not override it, so the blast procs on-hit items at FULL rate — unlike Brilliant Behemoth and Gasoline, whose blasts are explicitly set to 0f and cannot chain."
       },
       {
         "stat": "Explosion bonus (% of enemy max HP)",
         "base": 15,
         "perStack": 15,
         "type": "linear",
-        "formula": "0.15f * (1 + (n - 1)) of victimBody.maxHealth, added to the base damage (GlobalEventManager). Linear. This term is summed into the SAME DelayBlast.baseDamage as the base-damage term (`OnKillProcDamage(...) + victimBody.maxHealth * 0.15n`), so falloffModel = SweetSpot applies to it identically: beyond 8m the percent-max-health component is also quartered. It is 15% per stack of the VICTIM's maxHealth, evaluated at the moment of death."
+        "formula": "0.15f * (1 + (n - 1)) of victimBody.maxHealth, added to the base damage (GlobalEventManager). Linear. This term is summed into the SAME DelayBlast.baseDamage as the base-damage term (`OnKillProcDamage(...) + victimBody.maxHealth * 0.15n`), so falloffModel = SweetSpot applies to it identically: beyond 8m the percent-max-health component is also quartered. It is 15% per stack of the VICTIM's maxHealth, evaluated at the moment of death. The explosion is a DelayBlast, which declares `procCoefficient = 1f` and hands it straight to the BlastAttack; this call site does not override it, so the blast procs on-hit items at FULL rate — unlike Brilliant Behemoth and Gasoline, whose blasts are explicitly set to 0f and cannot chain."
       }
     ],
     "tags": [
@@ -3539,7 +3539,7 @@
         "base": 300,
         "perStack": 300,
         "type": "linear",
-        "formula": "damageCoefficient = 3f * n via Util.OnHitProcDamage (GlobalEventManager). Linear from the first stack."
+        "formula": "damageCoefficient = 3f * n via Util.OnHitProcDamage (GlobalEventManager). Linear from the first stack. The magma balls are projectiles and the FireProjectileInfo sets no procCoefficient. Note the pattern: orbs and direct DamageInfo hits set `procCoefficient` in code, while PROJECTILE attacks never do — the rate lives on the projectile prefab. Those prefabs are not in the extracted asset set, so this is recorded as NOT established rather than assumed to be 1.0."
       }
     ],
     "tags": [
@@ -3566,7 +3566,7 @@
         "base": 500,
         "perStack": 500,
         "type": "linear",
-        "formula": "lightning damageCoefficient = 5f x n (GlobalEventManager). Linear: 500% per stack."
+        "formula": "lightning damageCoefficient = 5f x n (GlobalEventManager). Linear: 500% per stack. The strike is built with `procCoefficient = 1f` — full rate, one of the few item attacks that is — and `isCrit = LocalCheckRoll(characterBody.crit, master)`, an independent crit roll rather than the triggering hit's."
       }
     ],
     "tags": [
@@ -4643,7 +4643,7 @@
         "base": 40,
         "perStack": 40,
         "type": "linear",
-        "formula": "damageCoefficient = 0.4f * n via Util.OnHitProcDamage (GlobalEventManager) - a flat 40% per stack: 40%, 80%, 120%. Both our data and the in-game description said +50% per stack; the code is unambiguous. Gated on currently having shield. Pocket I.C.B.M.'s multiplier is applied on top."
+        "formula": "damageCoefficient = 0.4f * n via Util.OnHitProcDamage (GlobalEventManager) - a flat 40% per stack: 40%, 80%, 120%. Both our data and the in-game description said +50% per stack; the code is unambiguous. Gated on currently having shield. Pocket I.C.B.M.'s multiplier is applied on top. The missile orb carries `procCoefficient = 0.2f` and `isCrit = damageInfo.crit`, so it chains into other on-hit items at a fifth rate and inherits the triggering hit's crit."
       }
     ],
     "tags": [
@@ -4707,7 +4707,7 @@
         "base": 3,
         "perStack": 3,
         "type": "linear",
-        "formula": "voidLightningOrb.totalStrikes = 3 * n (GlobalEventManager). Linear."
+        "formula": "voidLightningOrb.totalStrikes = 3 * n (GlobalEventManager). Linear. The void lightning orb carries `procCoefficient = 0.2f` and `isCrit = damageInfo.crit` — the same pair as Ukulele, so it chains into other on-hit items at a fifth rate and inherits the triggering hit's crit."
       }
     ],
     "tags": [
@@ -4771,7 +4771,7 @@
         "base": 100,
         "perStack": 100,
         "type": "linear",
-        "formula": "damageCoefficient = 1f * n via Util.OnHitProcDamage (GlobalEventManager). Linear."
+        "formula": "damageCoefficient = 1f * n via Util.OnHitProcDamage (GlobalEventManager). Linear. Crit is inherited (`crit = damageInfo.crit`), but the black hole is a projectile and no procCoefficient is set at the call site. Note the pattern: orbs and direct DamageInfo hits set `procCoefficient` in code, while PROJECTILE attacks never do — the rate lives on the projectile prefab. Those prefabs are not in the extracted asset set, so this is recorded as NOT established rather than assumed to be 1.0."
       }
     ],
     "tags": [
@@ -4809,7 +4809,7 @@
         "base": 260,
         "perStack": 156,
         "type": "linear",
-        "formula": "damageCoefficient = 2.6f * (1f + (n - 1) * 0.6f) (HealthComponent). Linear in n: 260% at one stack, +156% (= 260% x 0.6) per stack. That figure is the inner-half damage only — falloffModel = SweetSpot quarters it beyond half the radius. maxTimer = 0.2f, so the explosion trails the kill by a fifth of a second."
+        "formula": "damageCoefficient = 2.6f * (1f + (n - 1) * 0.6f) (HealthComponent). Linear in n: 260% at one stack, +156% (= 260% x 0.6) per stack. That figure is the inner-half damage only — falloffModel = SweetSpot quarters it beyond half the radius. maxTimer = 0.2f, so the explosion trails the kill by a fifth of a second. The explosion is a DelayBlast, which declares `procCoefficient = 1f` and hands it straight to the BlastAttack; this call site does not override it, so the blast procs on-hit items at FULL rate — unlike Brilliant Behemoth and Gasoline, whose blasts are explicitly set to 0f and cannot chain."
       }
     ],
     "tags": [
@@ -5400,7 +5400,7 @@
         "base": 400,
         "perStack": 0,
         "type": "none",
-        "formula": "ProjectileOverlapAttack on the Sawmerang prefab: damageCoefficient = 4 with resetInterval = -1. The reset is guarded by `if (resetInterval >= 0f)`, so a negative value disables it entirely and the ignore list is never cleared — 400% per saw per enemy, and the 60Hz fireFrequency only governs how often it looks for NEW targets. Checked three ways, because OverlapAttack has three separate escapes from its ignore list: the timed reset (disabled here by resetInterval = -1), a manual ResetOverlapAttack() call (BoomerangProjectile never makes one), and retriggerTimeout, which expires entries on its own inside Fire() via cleanupRetriggerList(). That last one is assigned in exactly TWO places in the game — Chef's RolyPoly at 0.5s and the FriendUnit KineticAura at its refreshTime — and ProjectileOverlapAttack is neither, so it keeps the default of positive infinity and nothing ever leaves the list."
+        "formula": "ProjectileOverlapAttack on the Sawmerang prefab: damageCoefficient = 4 with resetInterval = -1. The reset is guarded by `if (resetInterval >= 0f)`, so a negative value disables it entirely and the ignore list is never cleared — 400% per saw per enemy, and the 60Hz fireFrequency only governs how often it looks for NEW targets. Checked three ways, because OverlapAttack has three separate escapes from its ignore list: the timed reset (disabled here by resetInterval = -1), a manual ResetOverlapAttack() call (BoomerangProjectile never makes one), and retriggerTimeout, which expires entries on its own inside Fire() via cleanupRetriggerList(). That last one is assigned in exactly TWO places in the game — Chef's RolyPoly at 0.5s and the FriendUnit KineticAura at its refreshTime — and ProjectileOverlapAttack is neither, so it keeps the default of positive infinity and nothing ever leaves the list. Proc rate: the Sawmerang prefab carries two damage components, the contact attack at overlapProcCoefficient 1.0 and a second at 0.2, each multiplied by the controller's 1.0. So sustained contact procs at FULL rate. Projectile proc rate is a PRODUCT of two serialized fields on the same prefab, neither of them in the C#: `attack.procCoefficient = projectileController.procCoefficient * overlapProcCoefficient`. (This projectile deals its damage by overlap, not by detonating; a detonating projectile uses the equivalent blastProcCoefficient field instead.)"
       },
       {
         "stat": "Blade contact damage (%/s, up to)",
@@ -5604,7 +5604,7 @@
         "base": 250,
         "perStack": 0,
         "type": "none",
-        "formula": "blastDamageCoefficient = 2.5 in a blastRadius of 7 on each bomblet. MolotovSingleProjectile's falloffModel is None, so each bomblet deals its full 250% anywhere inside its 7m; the six overlapping blasts do not taper toward their edges."
+        "formula": "blastDamageCoefficient = 2.5 in a blastRadius of 7 on each bomblet. MolotovSingleProjectile's falloffModel is None, so each bomblet deals its full 250% anywhere inside its 7m; the six overlapping blasts do not taper toward their edges. Proc rate: MolotovSingleProjectile has blastProcCoefficient 1.0 against a controller procCoefficient of 1.0, so each bomblet's impact blast procs at full rate — while the fire puddle it leaves is a separate component at 0.5. Projectile proc rate is a PRODUCT of two serialized fields on the same prefab, neither of them in the C#: `attack.procCoefficient = projectileController.procCoefficient * overlapProcCoefficient`. (This projectile deals its damage by overlap, not by detonating; a detonating projectile uses the equivalent blastProcCoefficient field instead.)"
       },
       {
         "stat": "Burn total per bomblet (%)",

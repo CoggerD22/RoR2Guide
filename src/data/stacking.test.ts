@@ -1636,36 +1636,20 @@ test("no NEW item attack row goes silent on its proc coefficient", () => {
     /BlastAttack|BulletAttack|OverlapAttack|LightningOrb|ProjectileDamage|DelayBlast|OrbManager|GenericDamageOrb|damageCoefficient/i;
 
   // Frozen 2026-08-08 at 31 rows. Shrinking this list is the work; growing it is a regression.
+  // Frozen at 13 (was 31 when this ratchet was written the same day). Shrinking it is the
+  // work; growing it is a regression.
   const KNOWN_SILENT = new Set([
-    "atg-missile-mk-1::Missile damage (% TOTAL)",
-    "will-o-the-wisp::Explosion radius (m)",
-    "will-o-the-wisp::Explosion damage (% base)",
-    "runalds-band::Ice blast damage (% TOTAL)",
-    "kjaros-band::Flame tornado damage (% TOTAL)",
     "razorwire::Burst radius (m)",
-    "ceremonial-dagger::Dagger damage (% base)",
-    "resonance-disc::Explosion damage (% base)",
-    "resonance-disc::Pierce & return damage (% base)",
     "electric-boomerang::Times one enemy can be sliced per throw",
     "orphaned-core::Launch damage (%)",
     "orphaned-core::Knockback damage on heavy targets (%)",
     "orphaned-core::Seconds before the same enemy can be launched into again",
-    "shatterspleen::Explosion damage (% base)",
-    "shatterspleen::Explosion bonus (% of enemy max HP)",
     "halcyon-seed::Aurelionite damage (%)",
     "little-disciple::Wisp damage (%)",
-    "molten-perforator::Magma ball damage (%)",
-    "charged-perforator::Lightning strike damage (%)",
-    "plasma-shrimp::Missile damage (% TOTAL)",
-    "polylute::Lightning hits",
-    "singularity-band::Black hole damage (% TOTAL)",
-    "voidsent-flame::Explosion damage (% base)",
     "volcanic-egg::Ram damage, once per enemy (%)",
     "volcanic-egg::Detonation damage (%)",
-    "sawmerang::Damage per saw, once per enemy (%)",
     "sawmerang::Bleed applied",
     "molotov-6-pack::Bomblets",
-    "molotov-6-pack::Impact damage per bomblet (%)",
     "of-one-mind::Death explosion damage (%)",
     "aurelionites-blessing::Spike damage, inner / outer (%)",
   ]);
@@ -1675,7 +1659,11 @@ test("no NEW item attack row goes silent on its proc coefficient", () => {
     for (const st of it.stacking) {
       const f = st.formula ?? "";
       if (!ATTACK.test(f)) continue;
-      if (/procCoefficient/i.test(f)) continue;
+      // Matches BOTH `procCoefficient` and the English "proc coefficient". Keying on
+      // the camelCase identifier alone reported Resonance Disc as silent when its row
+      // already said "Beam proc coefficient is 1.0" — §3j.109's failure, inside the
+      // guard written three passes after documenting it.
+      if (/proc\s*coefficient/i.test(f)) continue;
       const key = `${it.id}::${st.stat}`;
       if (!KNOWN_SILENT.has(key)) newlySilent.push(key);
     }
@@ -1690,4 +1678,18 @@ test("no NEW item attack row goes silent on its proc coefficient", () => {
   expect(uku.stacking.some((s) => /procCoefficient = 0\.2f/.test(s.formula ?? ""))).toBe(true);
   const boom = items.find((i) => i.id === "electric-boomerang")!;
   expect(boom.stacking.some((s) => /RollCrit\(\)/.test(s.formula ?? ""))).toBe(true);
+
+  // Two claims made and REVERSED within the same day. Both were published as "not
+  // established" from the code alone, then settled by extracting the prefab — Kjaro's
+  // tornado procs NOTHING (1.0 x 0.0), Electric Boomerang's slice procs at FULL rate
+  // (1.0 x 1.0). Pinned because a later edit restoring the hedge would look like caution.
+  const kjaro = items.find((i) => i.id === "kjaros-band")!;
+  expect(kjaro.stacking.some((s) => /procs NOTHING at all/.test(s.formula ?? ""))).toBe(true);
+  expect(boom.stacking.some((s) => /NOW ESTABLISHED/.test(s.formula ?? ""))).toBe(true);
+  // And no row may still claim these are unresolved.
+  for (const it of [kjaro, boom]) {
+    for (const st of it.stacking) {
+      expect(st.formula ?? "").not.toMatch(/rate is NOT established here/);
+    }
+  }
 });
