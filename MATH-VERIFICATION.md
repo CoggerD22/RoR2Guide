@@ -6327,3 +6327,53 @@ survivor, naming the schema change required. Proven by injecting one onto Comman
 
 This is the same shape as §3j.115's stale caution, inverted: an assumption that is *true* is
 indistinguishable from one that is *checked*, right up until the data moves.
+
+### 3j.122 the proc-coefficient gap is closed — 43 of 43
+
+§3j.117 measured it at **8 of 41** and froze the 31 silent rows as a ratchet, on the reasoning
+that a gap too large for one pass should at least be stopped from growing. It shrank instead,
+so the ratchet is now a hard zero: **every row describing an item-fired attack states the rate
+that attack procs at.**
+
+The answers are the argument for having done it. They are not uniform, and none is guessable:
+
+| rate | items |
+|---|---|
+| **0** | Brilliant Behemoth, Gasoline's blast, **Kjaro's tornado** |
+| 0.1 | Preon's tendrils, Molten Perforator's fire pool |
+| 0.2 | Ukulele, Polylute, Plasma Shrimp, Electric Boomerang's lingering component |
+| 0.5 | Razorwire's orbs, Molotov's puddle |
+| 0.7 | Molten Perforator's impact |
+| 1.0 | most of the rest, including all three DelayBlast items |
+
+Several items differ sharply from the item they are usually paired with. **Runald's Band procs
+at 1.0 and Kjaro's Band procs at 0** — the two halves of a set. Electric Boomerang's own throw
+procs at two different rates depending on which of its effects lands.
+
+Rows that make no attack say so rather than being exempted by a list: Halcyon Seed's row is a
+summon's damage **stat**, not an attack the item fires, and Sawmerang's bleed row records an
+absence. That distinction is the §3j.115 lesson applied while writing rather than afterwards —
+"no coefficient exists" and "coefficient unknown" must not look alike.
+
+#### Two defaults worth naming
+
+Both were found by reading class declarations rather than call sites, which is where a default
+hides:
+
+- `OverlapAttack` declares `public float procCoefficient = 1f`. Orphaned Core's launch never
+  assigns one, so it lands at full rate **by default rather than by choice** — a distinction
+  the record now makes, because a future patch adding an explicit value would look like no
+  change at all.
+- `DelayBlast` declares the same, which is why Will-o'-the-wisp, Shatterspleen and Voidsent
+  Flame all proc fully while Behemoth and Gasoline — which set `0f` outright — do not.
+
+#### The breakage test failed to break anything, again
+
+Stripping the proc statement from Gasoline's burn row left the suite green. The rule applied:
+*assume the mutation was too weak*. It was — that row does not match the attack selector at
+all (no `damageCoefficient`, no attack class), so it was never in the inspected set. Mutating
+AtG's missile row, which is genuinely in scope, fails as it should.
+
+That is the fourth weak mutation this session. The pattern in all four is the same: **the
+mutation landed somewhere the guard was never looking, which is indistinguishable from the
+guard working** — and is exactly the failure the coverage floors exist to make visible.

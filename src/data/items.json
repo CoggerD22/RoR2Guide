@@ -1628,7 +1628,7 @@
         "base": 25,
         "perStack": 10,
         "type": "linear",
-        "formula": "radius = 25f + 10f * (n - 1) (HealthComponent). Linear. This is NOT a blast and has no falloff model: HealthComponent runs a SphereSearch of that radius, filters to distinct enemy entities, orders them BY DISTANCE, and fires one LightningOrb at each of the nearest `targets`. Everyone hit takes the full 160% wherever they stood inside the sphere — distance decides WHO is hit, not how hard."
+        "formula": "radius = 25f + 10f * (n - 1) (HealthComponent). Linear. This is NOT a blast and has no falloff model: HealthComponent runs a SphereSearch of that radius, filters to distinct enemy entities, orders them BY DISTANCE, and fires one LightningOrb at each of the nearest `targets`. Everyone hit takes the full 160% wherever they stood inside the sphere — distance decides WHO is hit, not how hard. Each orb carries procCoefficient 0.5 (0 outright for an Invading Doppelganger), as recorded on the targets row — the radius and the orb count describe one attack."
       }
     ],
     "tags": [
@@ -3009,7 +3009,7 @@
         "base": 1,
         "perStack": 0,
         "type": "none",
-        "formula": "The slice is a ProjectileOverlapAttack with resetInterval = -1, and the reset is guarded by `if (resetInterval >= 0f)` so a negative value disables it; BoomerangProjectile never calls ResetOverlapAttack either. Structurally identical to Sawmerang, down to the prefab flags (travelSpeed 60, distanceMultiplier 0.6, isStunAndPierce true) — and the same consequence: the description's 'Can strike enemies on the way back' does not happen. Each enemy takes the slice once, outbound or returning, whichever comes first. Checked three ways, because OverlapAttack has three separate escapes from its ignore list: the timed reset (disabled here by resetInterval = -1), a manual ResetOverlapAttack() call (BoomerangProjectile never makes one), and retriggerTimeout, which expires entries on its own inside Fire() via cleanupRetriggerList(). That last one is assigned in exactly TWO places in the game — Chef's RolyPoly at 0.5s and the FriendUnit KineticAura at its refreshTime — and ProjectileOverlapAttack is neither, so it keeps the default of positive infinity and nothing ever leaves the list."
+        "formula": "The slice is a ProjectileOverlapAttack with resetInterval = -1, and the reset is guarded by `if (resetInterval >= 0f)` so a negative value disables it; BoomerangProjectile never calls ResetOverlapAttack either. Structurally identical to Sawmerang, down to the prefab flags (travelSpeed 60, distanceMultiplier 0.6, isStunAndPierce true) — and the same consequence: the description's 'Can strike enemies on the way back' does not happen. Each enemy takes the slice once, outbound or returning, whichever comes first. Checked three ways, because OverlapAttack has three separate escapes from its ignore list: the timed reset (disabled here by resetInterval = -1), a manual ResetOverlapAttack() call (BoomerangProjectile never makes one), and retriggerTimeout, which expires entries on its own inside Fire() via cleanupRetriggerList(). That last one is assigned in exactly TWO places in the game — Chef's RolyPoly at 0.5s and the FriendUnit KineticAura at its refreshTime — and ProjectileOverlapAttack is neither, so it keeps the default of positive infinity and nothing ever leaves the list. That single slice lands at a full proc coefficient: overlapProcCoefficient 1.0 on the ProjectileOverlapAttack against a controller procCoefficient of 1.0."
       }
     ],
     "tags": [
@@ -3177,7 +3177,7 @@
         "base": 400,
         "perStack": 400,
         "type": "linear",
-        "formula": "EntityStates.FriendUnit.KineticAura: chargeDamageCoefficient = 4 -> 400%, applied as `attack.damage = chargeDamageCoefficient * damageStat`. The per-stack scaling is NOT in that coefficient: PhysicsProjectileBehavior.UpdateMinionInventory keeps the unit stocked with `(newStack - 1) * 10` BoostDamage items, and BoostDamage is +10% each — so two stacks double the unit's damage stat and three triple it, which reproduces +400% per stack exactly."
+        "formula": "EntityStates.FriendUnit.KineticAura: chargeDamageCoefficient = 4 -> 400%, applied as `attack.damage = chargeDamageCoefficient * damageStat`. The per-stack scaling is NOT in that coefficient: PhysicsProjectileBehavior.UpdateMinionInventory keeps the unit stocked with `(newStack - 1) * 10` BoostDamage items, and BoostDamage is +10% each — so two stacks double the unit's damage stat and three triple it, which reproduces +400% per stack exactly. Proc rate: KineticAura builds its OverlapAttack without assigning procCoefficient, and OverlapAttack declares `public float procCoefficient = 1f`, so the launch lands at FULL rate by default rather than by an explicit choice. The knockback impact (KineticAuraImpact) sets `procCoefficient = 1f` outright."
       },
       {
         "stat": "Speed damage multiplier",
@@ -3198,7 +3198,7 @@
         "base": 1000,
         "perStack": 0,
         "type": "none",
-        "formula": "knockbackDamageCoefficient = 10 with knockbackForce = 8000, used instead of the launch hit when the target's mass is at or above massThresholdForKnockback = 250."
+        "formula": "knockbackDamageCoefficient = 10 with knockbackForce = 8000, used instead of the launch hit when the target's mass is at or above massThresholdForKnockback = 250. Proc rate: KineticAura builds its OverlapAttack without assigning procCoefficient, and OverlapAttack declares `public float procCoefficient = 1f`, so the launch lands at FULL rate by default rather than by an explicit choice. The knockback impact (KineticAuraImpact) sets `procCoefficient = 1f` outright."
       },
       {
         "stat": "Curse stacks cleansed when pet",
@@ -3212,7 +3212,7 @@
         "base": 1.5,
         "perStack": 0,
         "type": "none",
-        "formula": "EntityStates.FriendUnit.KineticAura sets `attack.retriggerTimeout = refreshTime` (1.5s). OverlapAttack then queues each victim for removal from its ignore list at `Time.realtimeSinceStartup + retriggerTimeout`, and cleanupRetriggerList() drains that queue on every Fire(). So the unit is NOT one-hit-per-enemy the way a boomerang is — the same target becomes hittable again every 1.5 seconds, which is why a Solus unit pinballing around one large enemy keeps dealing damage."
+        "formula": "EntityStates.FriendUnit.KineticAura sets `attack.retriggerTimeout = refreshTime` (1.5s). OverlapAttack then queues each victim for removal from its ignore list at `Time.realtimeSinceStartup + retriggerTimeout`, and cleanupRetriggerList() drains that queue on every Fire(). So the unit is NOT one-hit-per-enemy the way a boomerang is — the same target becomes hittable again every 1.5 seconds, which is why a Solus unit pinballing around one large enemy keeps dealing damage. Proc rate: KineticAura builds its OverlapAttack without assigning procCoefficient, and OverlapAttack declares `public float procCoefficient = 1f`, so the launch lands at FULL rate by default rather than by an explicit choice. The knockback impact (KineticAuraImpact) sets `procCoefficient = 1f` outright."
       }
     ],
     "tags": [
@@ -3377,7 +3377,7 @@
         "base": 100,
         "perStack": 0,
         "type": "special",
-        "formula": "damage multiplier = sqrt(n), NOT +50% per stack. GoldTitanManager does `currentBoostDamageCoefficient *= Mathf.Pow(totalItemCount, 0.5f)` and then grants `RoundToInt((coefficient - 1) * 10)` BoostDamage items at +10% each, so the integer rounding makes it stepped: 100% at 1 seed, 140% at 2, 170% at 3, 200% at 4, 220% at 5. The description's '+50% per stack' matches only the first stack and overstates every one after it — 250% vs the real 200% at four seeds."
+        "formula": "damage multiplier = sqrt(n), NOT +50% per stack. GoldTitanManager does `currentBoostDamageCoefficient *= Mathf.Pow(totalItemCount, 0.5f)` and then grants `RoundToInt((coefficient - 1) * 10)` BoostDamage items at +10% each, so the integer rounding makes it stepped: 100% at 1 seed, 140% at 2, 170% at 3, 200% at 4, 220% at 5. The description's '+50% per stack' matches only the first stack and overstates every one after it — 250% vs the real 200% at four seeds. No proc coefficient belongs to this row: it is Aurelionite's own damage STAT, not an attack the item fires. What procs is whatever skill the summon uses, and those coefficients live on its skills rather than on this item."
       },
       {
         "stat": "Aurelionite health (%)",
@@ -3418,7 +3418,7 @@
         "base": 300,
         "perStack": 300,
         "type": "linear",
-        "formula": "wisp damage = body.damage x 3 x n (SprintWispBodyBehavior: damageCoefficient 3). Linear: 300% per stack."
+        "formula": "wisp damage = body.damage x 3 x n (SprintWispBodyBehavior: damageCoefficient 3). Linear: 300% per stack. SprintWispBodyBehavior builds the orb with `procCoefficient = 1f`, so the wisp procs on-hit items at full rate."
       }
     ],
     "tags": [
@@ -3540,7 +3540,7 @@
         "base": 300,
         "perStack": 300,
         "type": "linear",
-        "formula": "damageCoefficient = 3f * n via Util.OnHitProcDamage (GlobalEventManager). Linear from the first stack. The magma balls are projectiles and the FireProjectileInfo sets no procCoefficient. Note the pattern: orbs and direct DamageInfo hits set `procCoefficient` in code, while PROJECTILE attacks never do — the rate lives on the projectile prefab. Those prefabs are not in the extracted asset set, so this is recorded as NOT established rather than assumed to be 1.0."
+        "formula": "damageCoefficient = 3f * n via Util.OnHitProcDamage (GlobalEventManager). Linear from the first stack. The magma balls are projectiles and the FireProjectileInfo sets no procCoefficient. Note the pattern: orbs and direct DamageInfo hits set `procCoefficient` in code, while PROJECTILE attacks never do — the rate lives on the projectile prefab. Those prefabs are not in the extracted asset set, so this is recorded as NOT established rather than assumed to be 1.0. NOW ESTABLISHED from the prefab: FireMeatBall's impact carries blastProcCoefficient 0.7 against a controller procCoefficient of 1.0, so each magma ball procs on-hit items at 70% rate — one of the few item attacks at neither 0 nor 1. falloffModel = 0 (None), so its 7m radius deals full damage to the rim. The lingering pool it leaves (FireMeatBallPool) is a separate component at overlapProcCoefficient 0.1, so the puddle procs at a TENTH rate."
       }
     ],
     "tags": [
@@ -5346,14 +5346,14 @@
         "base": 500,
         "perStack": 0,
         "type": "none",
-        "formula": "FireballVehicle prefab: overlapDamageCoefficient = 5 at overlapFireFrequency = 15. The hit rate looks like 15/s, but overlapResetFrequency = 0.00001 makes the reset period 100,000 seconds — the ignore list is never cleared, so each enemy takes the 500% exactly ONCE no matter how long you stay inside them. Closed on all three of OverlapAttack’s escapes from its ignore list: the manual ResetIgnoredHealthComponents() call fires on a period of 1/0.00001 = 100,000 seconds, there is no timed resetInterval on this path, and retriggerTimeout keeps its default of positive infinity — FireballVehicle’s object initialiser never sets it, and the only two assignments in the game are Chef’s RolyPoly and the FriendUnit KineticAura."
+        "formula": "FireballVehicle prefab: overlapDamageCoefficient = 5 at overlapFireFrequency = 15. The hit rate looks like 15/s, but overlapResetFrequency = 0.00001 makes the reset period 100,000 seconds — the ignore list is never cleared, so each enemy takes the 500% exactly ONCE no matter how long you stay inside them. Closed on all three of OverlapAttack’s escapes from its ignore list: the manual ResetIgnoredHealthComponents() call fires on a period of 1/0.00001 = 100,000 seconds, there is no timed resetInterval on this path, and retriggerTimeout keeps its default of positive infinity — FireballVehicle’s object initialiser never sets it, and the only two assignments in the game are Chef’s RolyPoly and the FriendUnit KineticAura. The ram is an overlap attack at overlapProcCoefficient 1.0, so contact procs on-hit items at full rate — combined with the never-clearing ignore list above, that is exactly one full-rate proc per enemy per ride."
       },
       {
         "stat": "Detonation damage (%)",
         "base": 800,
         "perStack": 0,
         "type": "none",
-        "formula": "blastDamageCoefficient = 8, blastRadius = 8, blastForce = 3000, and blastFalloffModel = None — so unlike most blasts in the game, the full 800% lands anywhere inside the 8m sphere rather than tapering toward the edge."
+        "formula": "blastDamageCoefficient = 8, blastRadius = 8, blastForce = 3000, and blastFalloffModel = None — so unlike most blasts in the game, the full 800% lands anywhere inside the 8m sphere rather than tapering toward the edge. The detonation carries blastProcCoefficient 1.0 against a controller procCoefficient of 1.0 — full rate — in an 8m radius."
       },
       {
         "stat": "Seconds refunded per enemy rammed",
@@ -5430,7 +5430,7 @@
         "base": 0,
         "perStack": 0,
         "type": "none",
-        "formula": "The Sawmerang prefab's ProjectileDamage carries `damageType = { damageType: 0, damageTypeExtended: 0, damageSource: 0 }` — no flags at all, so the saw applies NO bleed and nothing that Tri-Tip Dagger's BleedOnHit path would recognise. The description's 'while bleeding' is flavour for the sustained contact damage above, not a bleed proc."
+        "formula": "The Sawmerang prefab's ProjectileDamage carries `damageType = { damageType: 0, damageTypeExtended: 0, damageSource: 0 }` — no flags at all, so the saw applies NO bleed and nothing that Tri-Tip Dagger's BleedOnHit path would recognise. The description's 'while bleeding' is flavour for the sustained contact damage above, not a bleed proc. No proc coefficient applies to this row: it records the ABSENCE of a bleed, not an attack that could carry one. The saw's own contact rate is on the damage row above."
       }
     ],
     "tags": [
@@ -5613,7 +5613,7 @@
         "base": 6,
         "perStack": 0,
         "type": "none",
-        "formula": "MolotovClusterProjectile: childrenCount = 6, fireChildren = true, scattered over rangePitchDegrees 80 / rangeRollDegrees 360, each child a MolotovSingleProjectile at childrenDamageCoefficient = 1 (full inherited damage)."
+        "formula": "MolotovClusterProjectile: childrenCount = 6, fireChildren = true, scattered over rangePitchDegrees 80 / rangeRollDegrees 360, each child a MolotovSingleProjectile at childrenDamageCoefficient = 1 (full inherited damage). MolotovClusterProjectile carries blastProcCoefficient 1.0 and blastDamageCoefficient 2.5 in a 7m radius at falloffModel 0 (None) — the same figures as each bomblet, since the cluster shell is itself a live projectile rather than a pure carrier."
       },
       {
         "stat": "Impact damage per bomblet (%)",
@@ -6203,7 +6203,7 @@
         "base": 100,
         "perStack": 0,
         "type": "none",
-        "formula": "CollectiveDeathProjectile: blastDamageCoefficient = 1 in a blastRadius of 11. Deaths inside a collective are chained with delayBetweenDeaths = 0.8f, so members fall in sequence rather than all at once. CollectiveDeathProjectile's falloffModel is None — the full 100% applies across the whole 11m rather than tapering."
+        "formula": "CollectiveDeathProjectile: blastDamageCoefficient = 1 in a blastRadius of 11. Deaths inside a collective are chained with delayBetweenDeaths = 0.8f, so members fall in sequence rather than all at once. CollectiveDeathProjectile's falloffModel is None — the full 100% applies across the whole 11m rather than tapering. Proc and falloff from the prefab: blastProcCoefficient 1.0 against a controller procCoefficient of 1.0, so the chain explosion procs at full rate, and falloffModel = 0 (None) — every member of the collective inside the 11m radius takes the full amount."
       }
     ],
     "tags": [
@@ -6233,7 +6233,7 @@
         "base": 150,
         "perStack": 0,
         "type": "none",
-        "formula": "Both projectiles are fired with `attackerBody.damage * aurelioniteAttackDamageCoeff` where that constant is 1.5f, and each prefab then applies its own blastDamageCoefficient: inner 1.0 -> 150%, outer 0.1 -> 15%. Reading either half alone gives the wrong answer, which is why the prefab values (0.1 and 1.0) look nothing like the description's 15% and 150%."
+        "formula": "Both projectiles are fired with `attackerBody.damage * aurelioniteAttackDamageCoeff` where that constant is 1.5f, and each prefab then applies its own blastDamageCoefficient: inner 1.0 -> 150%, outer 0.1 -> 15%. Reading either half alone gives the wrong answer, which is why the prefab values (0.1 and 1.0) look nothing like the description's 15% and 150%. Proc and falloff, both from the prefabs: the main spike (AffixAurelioniteCenterProjectile) is blastProcCoefficient 1.0 x controller 1.0 = full rate, falloffModel = 0 (None) in a 3.5m radius. The telegraph that lands first (AffixAurelionitePreStrikeProjectile) is a tenth of that on BOTH axes — blastDamageCoefficient 0.1 and blastProcCoefficient 0.1 — and uses falloffModel = 1 (Linear), so unlike the main spike it drops to ZERO at the rim of its 3m radius."
       },
       {
         "stat": "Telegraph before the strike lands (s)",
