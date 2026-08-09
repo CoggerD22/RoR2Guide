@@ -16,6 +16,7 @@
       "perLevel": 2.4
     },
     "moveSpeed": 7,
+    "acceleration": 80.0,
     "armor": 0,
     "jumpCount": 1,
     "baseAttackSpeed": 1,
@@ -40,6 +41,7 @@
       "perLevel": 2.4
     },
     "moveSpeed": 7,
+    "acceleration": 80.0,
     "armor": 0,
     "jumpCount": 1,
     "baseAttackSpeed": 1,
@@ -64,6 +66,7 @@
       "perLevel": 2.8
     },
     "moveSpeed": 7,
+    "acceleration": 80.0,
     "armor": 0,
     "jumpCount": 1,
     "baseAttackSpeed": 1,
@@ -88,6 +91,7 @@
       "perLevel": 2.2
     },
     "moveSpeed": 7,
+    "acceleration": 30.0,
     "armor": 12,
     "jumpCount": 1,
     "baseAttackSpeed": 1,
@@ -112,6 +116,7 @@
       "perLevel": 2.4
     },
     "moveSpeed": 7,
+    "acceleration": 40.0,
     "armor": 0,
     "jumpCount": 1,
     "baseAttackSpeed": 1,
@@ -136,6 +141,7 @@
       "perLevel": 2.4
     },
     "moveSpeed": 7,
+    "acceleration": 80.0,
     "armor": 20,
     "jumpCount": 2,
     "baseAttackSpeed": 1,
@@ -160,6 +166,7 @@
       "perLevel": 2.4
     },
     "moveSpeed": 7,
+    "acceleration": 80.0,
     "armor": 0,
     "jumpCount": 1,
     "baseAttackSpeed": 1,
@@ -184,6 +191,7 @@
       "perLevel": 2.4
     },
     "moveSpeed": 7,
+    "acceleration": 80.0,
     "armor": 20,
     "jumpCount": 1,
     "baseAttackSpeed": 1,
@@ -208,6 +216,7 @@
       "perLevel": 3
     },
     "moveSpeed": 7,
+    "acceleration": 80.0,
     "armor": 20,
     "jumpCount": 1,
     "baseAttackSpeed": 1,
@@ -232,6 +241,7 @@
       "perLevel": 2.4
     },
     "moveSpeed": 7,
+    "acceleration": 80.0,
     "armor": 0,
     "jumpCount": 1,
     "baseAttackSpeed": 1,
@@ -256,6 +266,7 @@
       "perLevel": 2.4
     },
     "moveSpeed": 7,
+    "acceleration": 80.0,
     "armor": 20,
     "jumpCount": 1,
     "baseAttackSpeed": 1,
@@ -280,6 +291,7 @@
       "perLevel": 3.6
     },
     "moveSpeed": 8,
+    "acceleration": 80.0,
     "armor": 0,
     "jumpCount": 3,
     "baseAttackSpeed": 1,
@@ -304,6 +316,7 @@
       "perLevel": 2.4
     },
     "moveSpeed": 7,
+    "acceleration": 80.0,
     "armor": 0,
     "jumpCount": 1,
     "baseAttackSpeed": 1,
@@ -328,6 +341,7 @@
       "perLevel": 2.4
     },
     "moveSpeed": 7,
+    "acceleration": 80.0,
     "armor": 0,
     "jumpCount": 1,
     "baseAttackSpeed": 1,
@@ -353,6 +367,7 @@
       "perLevel": 2.4
     },
     "moveSpeed": 7,
+    "acceleration": 80.0,
     "armor": 20,
     "jumpCount": 1,
     "baseAttackSpeed": 1,
@@ -377,6 +392,7 @@
       "perLevel": 2.4
     },
     "moveSpeed": 7,
+    "acceleration": 80.0,
     "armor": 0,
     "jumpCount": 1,
     "baseAttackSpeed": 1,
@@ -402,6 +418,7 @@
       "perLevel": 2.4
     },
     "moveSpeed": 7,
+    "acceleration": 50.0,
     "armor": 0,
     "jumpCount": 1,
     "baseAttackSpeed": 1,
@@ -426,6 +443,7 @@
       "perLevel": 2.4
     },
     "moveSpeed": 7,
+    "acceleration": 80.0,
     "armor": 20,
     "jumpCount": 1,
     "baseAttackSpeed": 1,
@@ -450,6 +468,7 @@
       "perLevel": 2.4
     },
     "moveSpeed": 7,
+    "acceleration": 80.0,
     "armor": 0,
     "jumpCount": 1,
     "baseAttackSpeed": 1,

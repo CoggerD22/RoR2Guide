@@ -93,31 +93,32 @@ interface SurvivorTruth {
   regen: [number, number];
   damage: [number, number];
   moveSpeed: number;
+  acceleration: number;
   armor: number;
   jumpCount: number;
   baseAttackSpeed: number;
 }
 
 const SURVIVOR_TRUTH: Record<string, SurvivorTruth> = {
-  "commando": { body: "CommandoBody", health: [110, 33], regen: [1, 0.2], damage: [12, 2.4], moveSpeed: 7, armor: 0, jumpCount: 1, baseAttackSpeed: 1 },
-  "huntress": { body: "HuntressBody", health: [90, 27], regen: [1, 0.2], damage: [12, 2.4], moveSpeed: 7, armor: 0, jumpCount: 1, baseAttackSpeed: 1 },
-  "bandit": { body: "Bandit2Body", health: [110, 33], regen: [1, 0.2], damage: [12, 2.4], moveSpeed: 7, armor: 0, jumpCount: 1, baseAttackSpeed: 1 },
-  "mul-t": { body: "ToolbotBody", health: [200, 60], regen: [1, 0.2], damage: [11, 2.2], moveSpeed: 7, armor: 12, jumpCount: 1, baseAttackSpeed: 1 },
-  "engineer": { body: "EngiBody", health: [130, 39], regen: [1, 0.2], damage: [14, 2.8], moveSpeed: 7, armor: 0, jumpCount: 1, baseAttackSpeed: 1 },
-  "artificer": { body: "MageBody", health: [110, 33], regen: [1, 0.2], damage: [12, 2.4], moveSpeed: 7, armor: 0, jumpCount: 1, baseAttackSpeed: 1 },
-  "mercenary": { body: "MercBody", health: [110, 33], regen: [1, 0.2], damage: [12, 2.4], moveSpeed: 7, armor: 20, jumpCount: 2, baseAttackSpeed: 1 },
-  "rex": { body: "TreebotBody", health: [130, 39], regen: [1, 0.2], damage: [12, 2.4], moveSpeed: 7, armor: 20, jumpCount: 1, baseAttackSpeed: 1 },
-  "loader": { body: "LoaderBody", health: [160, 48], regen: [2.5, 0.5], damage: [12, 2.4], moveSpeed: 7, armor: 20, jumpCount: 1, baseAttackSpeed: 1 },
-  "acrid": { body: "CrocoBody", health: [160, 48], regen: [2.5, 0.5], damage: [15, 3], moveSpeed: 7, armor: 20, jumpCount: 1, baseAttackSpeed: 1 },
-  "captain": { body: "CaptainBody", health: [110, 33], regen: [1, 0.2], damage: [12, 2.4], moveSpeed: 7, armor: 0, jumpCount: 1, baseAttackSpeed: 1 },
-  "heretic": { body: "HereticBody", health: [440, 132], regen: [-6, -1.2], damage: [18, 3.6], moveSpeed: 8, armor: 0, jumpCount: 3, baseAttackSpeed: 1 },
-  "railgunner": { body: "RailgunnerBody", health: [110, 33], regen: [1, 0.2], damage: [12, 2.4], moveSpeed: 7, armor: 0, jumpCount: 1, baseAttackSpeed: 1 },
-  "void-fiend": { body: "VoidSurvivorBody", health: [110, 33], regen: [1, 0.2], damage: [12, 2.4], moveSpeed: 7, armor: 0, jumpCount: 1, baseAttackSpeed: 1 },
-  "seeker": { body: "SeekerBody", health: [115, 34], regen: [0.75, 0.15], damage: [12, 2.4], moveSpeed: 7, armor: 20, jumpCount: 1, baseAttackSpeed: 1 },
-  "false-son": { body: "FalseSonBody", health: [180, 54], regen: [1, 0.2], damage: [12, 2.4], moveSpeed: 7, armor: 0, jumpCount: 1, baseAttackSpeed: 1 },
-  "chef": { body: "ChefBody", health: [110, 33], regen: [1, 0.2], damage: [12, 2.4], moveSpeed: 7, armor: 0, jumpCount: 1, baseAttackSpeed: 1 },
-  "operator": { body: "DroneTechBody", health: [90, 27], regen: [1, 0.2], damage: [12, 2.4], moveSpeed: 7, armor: 0, jumpCount: 1, baseAttackSpeed: 1 },
-  "drifter": { body: "DrifterBody", health: [170, 52], regen: [1, 0.2], damage: [12, 2.4], moveSpeed: 7, armor: 20, jumpCount: 1, baseAttackSpeed: 1 },
+  "commando": { body: "CommandoBody", health: [110, 33], regen: [1, 0.2], damage: [12, 2.4], moveSpeed: 7, acceleration: 80, armor: 0, jumpCount: 1, baseAttackSpeed: 1 },
+  "huntress": { body: "HuntressBody", health: [90, 27], regen: [1, 0.2], damage: [12, 2.4], moveSpeed: 7, acceleration: 80, armor: 0, jumpCount: 1, baseAttackSpeed: 1 },
+  "bandit": { body: "Bandit2Body", health: [110, 33], regen: [1, 0.2], damage: [12, 2.4], moveSpeed: 7, acceleration: 80, armor: 0, jumpCount: 1, baseAttackSpeed: 1 },
+  "mul-t": { body: "ToolbotBody", health: [200, 60], regen: [1, 0.2], damage: [11, 2.2], moveSpeed: 7, acceleration: 30, armor: 12, jumpCount: 1, baseAttackSpeed: 1 },
+  "engineer": { body: "EngiBody", health: [130, 39], regen: [1, 0.2], damage: [14, 2.8], moveSpeed: 7, acceleration: 80, armor: 0, jumpCount: 1, baseAttackSpeed: 1 },
+  "artificer": { body: "MageBody", health: [110, 33], regen: [1, 0.2], damage: [12, 2.4], moveSpeed: 7, acceleration: 40, armor: 0, jumpCount: 1, baseAttackSpeed: 1 },
+  "mercenary": { body: "MercBody", health: [110, 33], regen: [1, 0.2], damage: [12, 2.4], moveSpeed: 7, acceleration: 80, armor: 20, jumpCount: 2, baseAttackSpeed: 1 },
+  "rex": { body: "TreebotBody", health: [130, 39], regen: [1, 0.2], damage: [12, 2.4], moveSpeed: 7, acceleration: 80, armor: 20, jumpCount: 1, baseAttackSpeed: 1 },
+  "loader": { body: "LoaderBody", health: [160, 48], regen: [2.5, 0.5], damage: [12, 2.4], moveSpeed: 7, acceleration: 80, armor: 20, jumpCount: 1, baseAttackSpeed: 1 },
+  "acrid": { body: "CrocoBody", health: [160, 48], regen: [2.5, 0.5], damage: [15, 3], moveSpeed: 7, acceleration: 80, armor: 20, jumpCount: 1, baseAttackSpeed: 1 },
+  "captain": { body: "CaptainBody", health: [110, 33], regen: [1, 0.2], damage: [12, 2.4], moveSpeed: 7, acceleration: 80, armor: 0, jumpCount: 1, baseAttackSpeed: 1 },
+  "heretic": { body: "HereticBody", health: [440, 132], regen: [-6, -1.2], damage: [18, 3.6], moveSpeed: 8, acceleration: 80, armor: 0, jumpCount: 3, baseAttackSpeed: 1 },
+  "railgunner": { body: "RailgunnerBody", health: [110, 33], regen: [1, 0.2], damage: [12, 2.4], moveSpeed: 7, acceleration: 80, armor: 0, jumpCount: 1, baseAttackSpeed: 1 },
+  "void-fiend": { body: "VoidSurvivorBody", health: [110, 33], regen: [1, 0.2], damage: [12, 2.4], moveSpeed: 7, acceleration: 80, armor: 0, jumpCount: 1, baseAttackSpeed: 1 },
+  "seeker": { body: "SeekerBody", health: [115, 34], regen: [0.75, 0.15], damage: [12, 2.4], moveSpeed: 7, acceleration: 80, armor: 20, jumpCount: 1, baseAttackSpeed: 1 },
+  "false-son": { body: "FalseSonBody", health: [180, 54], regen: [1, 0.2], damage: [12, 2.4], moveSpeed: 7, acceleration: 50, armor: 0, jumpCount: 1, baseAttackSpeed: 1 },
+  "chef": { body: "ChefBody", health: [110, 33], regen: [1, 0.2], damage: [12, 2.4], moveSpeed: 7, acceleration: 80, armor: 0, jumpCount: 1, baseAttackSpeed: 1 },
+  "operator": { body: "DroneTechBody", health: [90, 27], regen: [1, 0.2], damage: [12, 2.4], moveSpeed: 7, acceleration: 80, armor: 0, jumpCount: 1, baseAttackSpeed: 1 },
+  "drifter": { body: "DrifterBody", health: [170, 52], regen: [1, 0.2], damage: [12, 2.4], moveSpeed: 7, acceleration: 80, armor: 20, jumpCount: 1, baseAttackSpeed: 1 },
 };
 
 const r4 = (n: number) => Math.round(n * 10000) / 10000;
@@ -173,6 +174,7 @@ function crossCheckBodies(): string[] {
       ["baseDamage", t.damage[0], b.baseDamage],
       ["levelDamage", t.damage[1], b.levelDamage],
       ["baseMoveSpeed", t.moveSpeed, b.baseMoveSpeed],
+      ["baseAcceleration", t.acceleration, b.baseAcceleration],
       ["baseArmor", t.armor, b.baseArmor],
       ["baseJumpCount", t.jumpCount, b.baseJumpCount],
       ["baseAttackSpeed", t.baseAttackSpeed, b.baseAttackSpeed],
@@ -191,12 +193,30 @@ function crossCheckBodies(): string[] {
     // rather than by construction, so a patch giving any survivor level-scaling armor would
     // silently make every Stat Lab armor figure wrong above level 1 (MATH-VERIFICATION
     // §3j.121).
-    if (b.levelArmor !== undefined && r4(b.levelArmor) !== 0) {
-      drift.push(
-        `${id}.levelArmor: game says ${r4(b.levelArmor)}, but survivors.json stores armor as a ` +
-          `flat number and statMath does not scale it with level — armor needs a ` +
-          `[base, perLevel] pair before this survivor can be shown correctly`,
-      );
+    // EVERY stat statMath treats as non-scaling, checked rather than assumed.
+    // `RecalculateStats` gives armor, attack speed, crit, move speed, jump power and shield
+    // the same `base + level * factor` shape as health and damage. Our schema stores a scalar
+    // for each, and `statMath` never puts them through `scale()`. That is right today —
+    // all six are 0 across all 19 bodies — but right because of what the data happens to
+    // contain, not because of anything the code does. A patch making any of them scale would
+    // silently make the whole sheet wrong above level 1 (MATH-VERIFICATION §3j.121, §3j.124).
+    const FLAT: Array<[string, string]> = [
+      ["levelArmor", "armor"],
+      ["levelAttackSpeed", "baseAttackSpeed"],
+      ["levelCrit", "crit (statMath hardcodes a 1% base)"],
+      ["levelMoveSpeed", "moveSpeed"],
+      ["levelJumpPower", "jump power"],
+      ["levelMaxShield", "shield (assumed 0 unless Transcendence converts health)"],
+    ];
+    for (const [field, modelled] of FLAT) {
+      const v = b[field];
+      if (v !== undefined && r4(v) !== 0) {
+        drift.push(
+          `${id}.${field}: game says ${r4(v)}, but ${modelled} is stored as a flat number and ` +
+            `statMath does not scale it with level — it needs a [base, perLevel] pair before ` +
+            `this survivor can be shown correctly above level 1`,
+        );
+      }
     }
   }
   return drift;

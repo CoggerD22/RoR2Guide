@@ -289,6 +289,15 @@ export const survivorSchema = z
     regen: statScalingSchema,
     damage: statScalingSchema,
     moveSpeed: z.number(),
+    /**
+     * `baseAcceleration` from the body prefab — how fast the survivor reaches top speed,
+     * NOT how fast that top speed is. It is the only base stat that varies across survivors
+     * without appearing anywhere on the site: MUL-T is 30, Artificer 40, False Son 50, and
+     * the other sixteen are 80. MUL-T therefore builds speed at under half the rate of most
+     * of the roster, a handling difference players feel and could not look up
+     * (MATH-VERIFICATION §3j.124).
+     */
+    acceleration: z.number(),
     armor: z.number(),
     jumpCount: z.number().int(),
     baseAttackSpeed: z.number(),

@@ -6429,3 +6429,47 @@ unrecorded:
 `search.test.ts` and `survivorDetail.test.ts` are new: 21 tests over modules that had none,
 including regex metacharacters in a query (which must not throw), filters composing as AND
 rather than either-or, and a matched unlock never also appearing as unmatched.
+
+### 3j.124 a stat that varies across the roster and was on no page
+
+Applying §3j.113's question — *verified against WHICH question?* — to survivors. Their numbers
+match the body prefabs field for field (`data:verify` has enforced that for passes). The other
+question is whether the fields we chose are the ones that matter.
+
+The prefabs carry **22** fields. `survivors.json` carried **7**.
+
+Most of the difference is genuinely uninteresting, and measuring says so: `levelAttackSpeed`,
+`levelCrit`, `levelMoveSpeed`, `levelJumpPower`, `levelMaxShield` and `baseMaxShield` are
+**0 across all 19**, `baseCrit` is 1.0 for all 19 (which is what `statMath` hardcodes), and
+`sprintingSpeedMultiplier` is 1.45 for all 19 — a column identical down every row is noise, so
+it stays off the page deliberately rather than by omission.
+
+One field is different. **`baseAcceleration` varies: MUL-T 30, Artificer 40, False Son 50, and
+the other sixteen 80.** MUL-T builds speed at under half the rate of most of the roster. It is
+a handling difference players feel, it is not derivable from anything the site shows, and the
+game's own character sheet does not show it either. It is now published, prefab-verified, and
+locked by `data:verify` like every other survivor stat.
+
+#### The same "correct by luck" shape, five more times
+
+§3j.121 found armor modelled as flat while `RecalculateStats` scales it. The same is true of
+attack speed, crit, move speed, jump power and shield — all six get `base + level * factor` in
+the game and a bare scalar in our schema, and all six are right only because every relevant
+`level*` field happens to be zero. `data:verify` now checks all six by name, each with the
+schema change it would require. Proven by injecting a `levelMoveSpeed` onto Huntress.
+
+#### The documentation guard was fail-open
+
+Adding `acceleration` to the schema should have failed the rule that every schema field is
+documented in `PLAN.md`. It did not: that rule held an allowlist of **nine field names to
+check**, so a field added later was covered only if someone remembered to extend the list.
+Seven of 35 declared fields were undocumented.
+
+Inverted to fail closed — every declared field must appear in `PLAN.md` unless explicitly
+exempt, and the exemption list holds exactly three names (`moveSpeed`, `jumpCount`,
+`baseAttackSpeed`) where the identifier IS the documentation. `acceleration`, `gameName`,
+`procSource` and `grantedBy` are now documented; none of them means quite what its name
+suggests, which is the test for whether a field needs a sentence. Proven by adding a field.
+
+**An allowlist of things to check is a list someone has to remember to grow. An allowlist of
+exemptions is a list someone has to justify.** Only the second one fails when a person forgets.

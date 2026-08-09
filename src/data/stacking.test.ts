@@ -1208,23 +1208,21 @@ test("every item/skill schema field is documented in PLAN.md", async () => {
   ];
   expect(declared.length).toBeGreaterThan(20); // fail loudly if the parse ever breaks
 
-  // Generic names (name, tags, icon…) are described in prose rather than by identifier;
-  // the ones that matter are those carrying a rule someone could get wrong.
-  const MUST_BE_NAMED = [
-    "confidence",
-    "capStacks",
-    "descriptionNote",
-    "cooldown",
-    "activated",
-    "consumedOnUse",
-    "triggered",
-    "damaging",
-    "perStack",
-  ];
-  const undocumented = MUST_BE_NAMED.filter(
-    (f) => declared.includes(f) && !plan.includes(f),
-  );
-  expect(undocumented, undocumented.join(" | ")).toEqual([]);
+  // INVERTED (§3j.124). This used to be an allowlist of nine field names to check, so a
+  // field added later was documented only if someone remembered to extend the list —
+  // `acceleration` was added and slipped straight through. Fail closed instead: every
+  // declared field must appear in PLAN.md unless it is explicitly exempt here, which makes
+  // the omission a build failure rather than a silent gap.
+  //
+  // Exempt only where the identifier IS the documentation. A reader needs nothing explained
+  // about `moveSpeed` that the name does not already say; that is not true of `capStacks`,
+  // `procSource` or `acceleration`, all of which mean something narrower than they look.
+  const SELF_DESCRIBING = new Set(["moveSpeed", "jumpCount", "baseAttackSpeed"]);
+  const undocumented = declared.filter((f) => !SELF_DESCRIBING.has(f) && !plan.includes(f));
+  expect(
+    undocumented,
+    `schema fields absent from PLAN.md: ${undocumented.join(", ")}`,
+  ).toEqual([]);
 });
 
 /**

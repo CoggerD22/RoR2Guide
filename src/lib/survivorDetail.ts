@@ -81,6 +81,10 @@ export function statRows(s: Survivor): Array<{ label: string; base: string; perL
     { label: "Health regen", base: `${n(s.regen.base)}/s`, perLevel: `${g(s.regen.perLevel)}/s` },
     { label: "Damage", base: n(s.damage.base), perLevel: g(s.damage.perLevel) },
     { label: "Move speed", base: `${n(s.moveSpeed)} m/s` },
+    // Sprint speed is moveSpeed x 1.45 for every survivor, so it is deliberately NOT a
+    // per-survivor row — a column identical down all 19 rows is noise. Acceleration is the
+    // opposite case: it varies, and nothing else on the page implies it.
+    { label: "Acceleration", base: n(s.acceleration) },
     { label: "Armor", base: n(s.armor) },
     { label: "Jumps", base: n(s.jumpCount) },
     { label: "Attack speed", base: `${n(s.baseAttackSpeed)}x` },
