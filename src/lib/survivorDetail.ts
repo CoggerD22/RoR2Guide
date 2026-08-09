@@ -68,7 +68,11 @@ export function getSurvivorDetail(id: string): SurvivorDetail | null {
 
 /** Stat rows for the detail page: base value plus per-level growth where it scales. */
 export function statRows(s: Survivor): Array<{ label: string; base: string; perLevel?: string }> {
-  const n = (v: number) => (Number.isInteger(v) ? String(v) : v.toFixed(2).replace(/0$/, ""));
+  // `.replace(/0$/, "")` stripped only ONE trailing zero, so a non-integer that rounds to
+  // x.00 rendered as "1.0" rather than "1". No survivor stat hits that today — every value
+  // is either an integer or has a real second decimal — so this is a latent case rather than
+  // a live bug, and hardening it changes no current output (verified across all 19).
+  const n = (v: number) => (Number.isInteger(v) ? String(v) : v.toFixed(2).replace(/\.?0+$/, ""));
   // Signed growth: "+33", "-1.2" — a "+" prefix on a negative (Heretic's regen)
   // would read "+-1.2".
   const g = (v: number) => (v < 0 ? n(v) : `+${n(v)}`);

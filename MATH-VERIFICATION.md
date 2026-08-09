@@ -6377,3 +6377,55 @@ AtG's missile row, which is genuinely in scope, fails as it should.
 That is the fourth weak mutation this session. The pattern in all four is the same: **the
 mutation landed somewhere the guard was never looking, which is indistinguishable from the
 guard working** — and is exactly the failure the coverage floors exist to make visible.
+
+### 3j.123 auditing the application, not the data — and a bug on every first keystroke
+
+Every pass so far has audited what the site SAYS. This one audited what it DOES: the seven
+`src/lib` modules with no test file of their own, plus the planner store and the highlighter.
+
+#### The real bug: searching for one letter emptied the codex
+
+`search.ts` configures Fuse with `minMatchCharLength: 2`. The codex filters as you type, so
+**the first keystroke of every search anyone has ever performed rendered an empty codex** —
+"no items match" for a corpus containing Brainstalks, Bison Steak and Bustling Fungus.
+
+Measured rather than assumed, because the behaviour is not even consistent:
+
+```
+minMatchCharLength=2:  "b"=0    "c"=9     "cr"=79
+minMatchCharLength=1:  "b"=187  "c"=217   "cr"=79
+```
+
+So the obvious fix is wrong too. At 1, a single letter matches 187 of 217 items and ranks
+**Topaz Brooch** first for "b" — one character is far too little signal for a fuzzy ranker
+weighing four fields.
+
+What someone typing "b" wants is items whose name BEGINS with b. Queries under two characters
+now take a deterministic path: name-prefix matches first, then anything else containing the
+letter in its name or tags. Two characters and up are unchanged, and a test pins that "cr"
+still finds Crowbar through the fuzzy path.
+
+This is a bug no amount of data verification could have found, and it sat in the most-used
+control on the site.
+
+#### Checked and found sound
+
+Reported because "we looked and it was fine" is the half of an audit that usually goes
+unrecorded:
+
+- **`planUrl.ts`** — 15 tests already, covering malformed suffixes, out-of-range goals, and
+  old links. Solid.
+- **The planner store** — `sanitizeEntry` was hardened in an earlier pass against hostile
+  localStorage. An id that no longer exists survives migration, but cannot reach the screen:
+  the rail derives its list from `allItems.filter(it => plan[it.id]?…)` rather than iterating
+  the plan, so an unknown id is structurally unrenderable.
+- **`highlightNumbers`** — relies on `String.split` with a capture group placing captures at
+  odd indices. Verified across all **488** description, pickup and note strings: reassembly is
+  lossless and no even index carries a number. Correct.
+- **`survivorDetail.statRows`** — one latent case fixed. `.replace(/0$/, "")` strips a single
+  trailing zero, so a non-integer rounding to `x.00` rendered "1.0". No survivor stat hits it
+  today; hardening changed no current output, verified across all 19.
+
+`search.test.ts` and `survivorDetail.test.ts` are new: 21 tests over modules that had none,
+including regex metacharacters in a query (which must not throw), filters composing as AND
+rather than either-or, and a matched unlock never also appearing as unmatched.
