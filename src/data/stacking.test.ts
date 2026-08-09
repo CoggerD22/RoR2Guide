@@ -5,7 +5,8 @@ import { items } from "./items";
 import { perStackMeaning, hyperbolicCurve } from "@/lib/stacking";
 import { ARTIFACTS, SHRINES } from "./reference";
 import { STAT_ITEMS } from "./statItems";
-import { readFileSync } from "node:fs";
+import { readFileSync, readdirSync, existsSync } from "node:fs";
+import { join } from "node:path";
 import skills from "./skills.json";
 import { procProvenance } from "./skills";
 
@@ -1913,4 +1914,55 @@ test("every non-stacking claim on a stackable item cites its evidence", () => {
       .map((s) => `${it.name} — ${s.stat}: type "none" but perStack ${s.perStack}`),
   );
   expect(contradictory, contradictory.join(" | ")).toEqual([]);
+});
+
+/**
+ * §3j.129 — an icon file that EXISTS but is not an image.
+ *
+ * `data:audit` checked `existsSync(iconPath)` and passed. Two files were 407KB of HTML: a
+ * wiki.gg Cloudflare "Just a second..." interstitial, saved with a .png extension when the
+ * icons were originally fetched. Both rendered as a broken image on their item pages, and
+ * every check the project had said the icons were fine — because every check asked whether
+ * the file was THERE, not whether it was a PICTURE.
+ *
+ * This reads the magic bytes. It needs no game install, so unlike the pixel comparison in
+ * `scripts/verify-icons.py` it runs in CI.
+ */
+test("every icon file is actually a PNG, not just present", () => {
+  const notImages: string[] = [];
+  let checked = 0;
+
+  const walk = (dir: string) => {
+    for (const e of readdirSync(dir, { withFileTypes: true })) {
+      const p = join(dir, e.name);
+      if (e.isDirectory()) {
+        walk(p);
+        continue;
+      }
+      checked++;
+      const head = readFileSync(p).subarray(0, 8);
+      const PNG = Buffer.from([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a]);
+      if (!head.equals(PNG)) {
+        const peek = head.toString("utf8").replace(/[^\x20-\x7e]/g, ".");
+        notImages.push(`${p} starts with ${JSON.stringify(peek)}`);
+      }
+    }
+  };
+  walk("public/icons");
+
+  expect(notImages, notImages.join(" | ")).toEqual([]);
+  // Denominator (§3j.126): a walk that finds no files also reports no failures.
+  expect(checked).toBeGreaterThanOrEqual(217);
+});
+
+/**
+ * And the other half: every item's `icon` path must point at a file that exists. This was
+ * already a `data:audit` WARNING, which does not fail the build — a missing icon should.
+ */
+test("every item's icon path resolves to a real file", () => {
+  const missing = items
+    .filter((it) => !existsSync(join("public", it.icon)))
+    .map((it) => `${it.name} -> ${it.icon}`);
+  expect(missing, missing.join(" | ")).toEqual([]);
+  expect(items.length).toBeGreaterThanOrEqual(217);
 });

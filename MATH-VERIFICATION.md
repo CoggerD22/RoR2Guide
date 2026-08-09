@@ -6608,3 +6608,58 @@ exist (`data:audit` enforces that), but whether each PNG depicts the right item 
 question. Comparing them to the game's own icon assets is possible and was not done; asserting
 they are correct on the basis that the filenames match the ids would be exactly the kind of
 denominator-free "verification" this entry is about.
+
+### 3j.129 two icons were HTML pages, and forty "mismatches" that were not
+
+The one surface §3j.128 deliberately left unchecked: whether each `/public/icons/<id>.png`
+actually depicts the item it is named after. `data:audit` checked the file EXISTED. Nothing
+checked it was a picture.
+
+#### The real bug
+
+**`encrypted-cerebellum.png` and `exposed-cerebellum.png` were 407KB of HTML** — a wiki.gg
+Cloudflare *"Just a second…"* interstitial, captured when the icons were originally fetched and
+saved with a `.png` extension. Both rendered as a broken image on their item pages, and every
+check the project had reported the icons as fine, because every check asked whether the file
+was **there** rather than whether it was an **image**.
+
+Replaced from the game's own `pickupIconSprite`, and the second attempt matters: the first
+resized the raw sprite straight to 256x256, but Exposed Cerebellum's sprite is **127x92** —
+squashing that to a square would have published a visibly wrong shape. Scaled to fit
+preserving aspect, centred on a transparent canvas. Both were then opened and looked at:
+Encrypted is the sealed armoured shell with a teal core, Exposed the open pink brain.
+
+A CI guard now reads the magic bytes of all 237 icon files, and a second makes a missing icon
+a build failure rather than the warning it used to be. Proven by replacing Crowbar with an
+HTML page.
+
+#### The forty that were not
+
+The first run of `scripts/verify-icons.py` reported **40+ mismatched icons.** Every one was an
+artifact of my own method, and reporting them would have been the worst outcome of this
+session — a demand to "fix" forty things that were correct.
+
+Two compounding errors, both found by asking why the distances looked like noise:
+
+1. **Framing.** The game's sprites are tightly cropped and not square (Alien Head 115x125,
+   Crowbar 127x124, Exposed Cerebellum 127x92); our PNGs are 256x256 with the art padded
+   inside. Hashing those against each other compares a crop to a canvas. Trimming both to
+   their alpha bounding box first took mismatches from 40+ to **5**.
+2. **Colour.** Item Scrap comes in White, Green, Red and Yellow — four icons with the SAME
+   shape differing only in hue, and a greyscale hash discards exactly that. Hashing the three
+   colour channels took 5 to **1**.
+
+The last one, Hearty Stew, was settled by exporting the game's own sprite and looking at both:
+same bowl, same blue-and-white stripes, same butter and broccoli. The residual distance is a
+systematic difference — our icons carry a tier-coloured outline the game sprites lack — not a
+wrong picture.
+
+**Final: 0 mismatched icons of 217 compared.**
+
+#### The lesson, which is not about icons
+
+A measurement that disagrees with the data is not evidence the data is wrong. It is evidence
+that one of them is wrong. Forty simultaneous "errors" in a dataset that has survived this much
+checking was the tell — a real defect rate does not arrive in a block like that. **The cost of
+believing a broken instrument is not a wasted afternoon; it is forty correct files overwritten
+with wrong ones.**
