@@ -1,4 +1,5 @@
 import { itemById } from "@/data/items";
+import { STAT_ITEMS } from "@/data/statItems";
 import {
   MILESTONES,
   hyperbolicChance,
@@ -34,12 +35,40 @@ interface HyperbolicItem {
 // Note WHERE the proc coefficient sits, because the two differ: Meat Hook multiplies the
 // finished chance by it, Tentabauble folds it INSIDE the amplification. Those are not the
 // same function for proc != 1, so the table below states the assumption.
-const HYPERBOLIC: HyperbolicItem[] = [
-  { id: "tougher-times", stat: "Block an attack", perStackAmp: 15, verified: "code" },
-  { id: "old-guillotine", stat: "Execute elites below", perStackAmp: 13, verified: "code" },
-  { id: "sentient-meat-hook", stat: "Fire hooks on hit", perStackAmp: 20, verified: "code" },
-  { id: "tentabauble", stat: "Root on hit", perStackAmp: 5, verified: "code" },
+/**
+ * The amplification input is READ FROM items.json, not restated here.
+ *
+ * This file's header says "every number is computed from the game's own formulas, not
+ * hand-entered", and for the curves that was true — but the inputs to those curves were four
+ * literals (15, 13, 20, 5) duplicating `stacking[].base`. They agreed when checked, so nothing
+ * was wrong on the page; the defect was that nothing would have noticed if they stopped
+ * agreeing, and a header claiming derivation over a hand-entered table is the kind of
+ * false-by-drift statement this project keeps finding (MATH-VERIFICATION §3j.125).
+ *
+ * `base` on a hyperbolic row is documented as the amplification input fed to
+ * `ConvertAmplificationPercentageIntoReductionPercentage` — exactly what `perStackAmp` means,
+ * so this is the same number and not a coincidence of value.
+ */
+const HYPERBOLIC_SOURCE: Array<{ id: string; stat: string; verified: Verification }> = [
+  { id: "tougher-times", stat: "Block an attack", verified: "code" },
+  { id: "old-guillotine", stat: "Execute elites below", verified: "code" },
+  { id: "sentient-meat-hook", stat: "Fire hooks on hit", verified: "code" },
+  { id: "tentabauble", stat: "Root on hit", verified: "code" },
 ];
+
+/** The hyperbolic row's `base` for an item, or null when the dataset no longer has one. */
+function ampOf(id: string): number | null {
+  const row = itemById.get(id)?.stacking.find((s) => s.type === "hyperbolic");
+  return row ? row.base : null;
+}
+
+// A row whose item lost its hyperbolic entry is DROPPED rather than rendered with a
+// placeholder — a missing curve input must not become a number on the page. The unit test
+// asserts all four still resolve, so dropping one is a build failure, not a silent hole.
+const HYPERBOLIC: HyperbolicItem[] = HYPERBOLIC_SOURCE.flatMap((r) => {
+  const perStackAmp = ampOf(r.id);
+  return perStackAmp === null ? [] : [{ ...r, perStackAmp }];
+});
 
 const CRIT_STACKS = [1, 3, 5, 7, 9, 10];
 const pct = (n: number) => `${n.toFixed(1).replace(/\.0$/, "")}%`;
@@ -63,7 +92,10 @@ function VerifiedTag({ v }: { v: Verification }) {
 }
 
 export function Breakpoints() {
-  const critCap = stacksToCritCap(10); // Lens-Maker's, from 1% base
+  // Lens-Maker's per-stack crit, read from STAT_ITEMS rather than restated as `10`. The
+  // paragraph below says "+10% each", so the literal and the prose have to move together.
+  const lensCrit = STAT_ITEMS["lens-makers-glasses"]?.find((e) => e.target === "critChance");
+  const critCap = stacksToCritCap(lensCrit?.perStack ?? 10); // from the 1% base every body has
 
   return (
     <div className="flex flex-col gap-8">

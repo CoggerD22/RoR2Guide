@@ -18,7 +18,7 @@
  *
  * Exit code: non-zero if any self-consistency mismatch, else 0.
  */
-import { existsSync, readFileSync } from "node:fs";
+import { existsSync, readFileSync, readdirSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { STAT_ITEMS, type StatTarget } from "../src/data/statItems.ts";
@@ -26,6 +26,14 @@ import survivors from "../src/data/survivors.json" with { type: "json" };
 
 const here = dirname(fileURLToPath(import.meta.url));
 const root = resolve(here, "..");
+const ITEMS = join(root, "src", "data", "items.json");
+/**
+ * The game install. Same default and override as the Python extractors, so a machine with a
+ * non-standard Steam library only has to set ROR2_DATA_DIR once.
+ */
+const GAME_DIR =
+  process.env.ROR2_DATA_DIR ??
+  "E:/SteamLibrary/steamapps/common/Risk of Rain 2/Risk of Rain 2_Data";
 
 interface Truth {
   item: string;
@@ -340,6 +348,103 @@ function crossCheckCompleteness(): string[] {
   return gaps;
 }
 
+/**
+ * Equipment cooldowns vs `EquipmentDef.cooldown` on the game's own assets.
+ *
+ * 41 numbers that nothing checked. `data:diff` cannot: the game stores cooldowns OUTSIDE the
+ * description text, which is why the site appends "Cooldown: Ns" itself. All 41 turned out
+ * correct (MATH-VERIFICATION §3j.126) — the gap was that nothing would have said otherwise.
+ *
+ * The mapping is the awkward part. Display name comes from `EQUIPMENT_<X>_NAME` in the
+ * language files, but `<X>` is NOT always the def's cachedName: Sawmerang's def is `Saw` and
+ * Recycler's is `Recycle`, and the ten elite aspects are tokenised by COLOUR (`affixred`)
+ * while their defs are named by ELEMENT (`EliteFireEquipment`). Those aliases are listed
+ * explicitly below rather than guessed at by fuzzy matching, because misfiling one record
+ * onto another item is a mistake this project has already made once (§3j.66).
+ *
+ * What makes the aspect pairing trustworthy rather than assumed: the cooldowns are NOT
+ * uniform. They split 6/4 between 10s and 25s, and every aspect lands on the right one.
+ */
+const EQUIPMENT_TOKEN_ALIAS: Record<string, string> = {
+  sawmerang: "saw",
+  recycler: "recycle",
+  affixred: "elitefireequipment",
+  affixblue: "elitelightningequipment",
+  affixwhite: "eliteiceequipment",
+  affixhaunted: "elitehauntedequipment",
+  affixbead: "elitebeadequipment",
+  affixpoison: "elitepoisonequipment",
+  affixearth: "eliteearthequipment",
+  affixlunar: "elitelunarequipment",
+  affixcollective: "elitecollectiveequipment",
+  affixaurelionite: "eliteaurelioniteequipment",
+};
+
+function crossCheckCooldowns(): { drift: string[]; compared: number; total: number } {
+  const drift: string[] = [];
+  const fieldsPath = join(root, ".gamedata", "component-fields.json");
+  const itemsRaw = JSON.parse(readFileSync(ITEMS, "utf8")) as Array<{
+    name: string;
+    cooldown?: number;
+  }>;
+  const withCooldown = itemsRaw.filter((i) => i.cooldown !== undefined);
+  if (!existsSync(fieldsPath)) return { drift, compared: 0, total: withCooldown.length };
+
+  const dump = JSON.parse(readFileSync(fieldsPath, "utf8")) as Record<
+    string,
+    Array<{ owner?: string; fields?: Record<string, number> }>
+  >;
+  const game = new Map<string, number>();
+  for (const r of dump.cooldown ?? []) {
+    const f = r.fields ?? {};
+    // EquipmentDef-shaped: a cooldown alongside one of its own sibling flags.
+    if (f.cooldown === undefined) continue;
+    if (!("isLunar" in f) && !("enigmaCompatible" in f)) continue;
+    if (r.owner) game.set(r.owner.toLowerCase(), f.cooldown);
+  }
+  if (game.size === 0) return { drift, compared: 0, total: withCooldown.length };
+
+  const tokenOf = equipmentNameToToken();
+  let compared = 0;
+  for (const it of withCooldown) {
+    const raw = tokenOf.get(it.name);
+    if (!raw) continue;
+    const key = EQUIPMENT_TOKEN_ALIAS[raw] ?? raw;
+    const gameCd = game.get(key);
+    if (gameCd === undefined) {
+      drift.push(`${it.name}: no EquipmentDef found (token ${raw} -> ${key})`);
+      continue;
+    }
+    compared++;
+    if (r4(it.cooldown!) !== r4(gameCd)) {
+      drift.push(`${it.name}.cooldown: ours ${it.cooldown} vs game ${r4(gameCd)}`);
+    }
+  }
+  return { drift, compared, total: withCooldown.length };
+}
+
+/** Display name -> the `X` in `EQUIPMENT_X_NAME`, read from the game's language files. */
+function equipmentNameToToken(): Map<string, string> {
+  const out = new Map<string, string>();
+  const dir = join(GAME_DIR, "StreamingAssets", "Language", "en");
+  if (!existsSync(dir)) return out;
+  for (const fn of readdirSync(dir)) {
+    if (!fn.endsWith(".json")) continue;
+    let strings: Record<string, unknown>;
+    try {
+      const raw = readFileSync(join(dir, fn), "utf8").replace(/^\uFEFF/, "");
+      strings = (JSON.parse(raw).strings ?? {}) as Record<string, unknown>;
+    } catch {
+      continue;
+    }
+    for (const [k, v] of Object.entries(strings)) {
+      const m = /^EQUIPMENT_([A-Z0-9_]+)_NAME$/.exec(k);
+      if (m && typeof v === "string") out.set(v.trim(), m[1].toLowerCase());
+    }
+  }
+  return out;
+}
+
 function main() {
   let mismatches = 0;
   const codeMiss: string[] = [];
@@ -388,6 +493,20 @@ function main() {
   const survivorBad = checkSurvivors();
   const nSurv = Object.keys(SURVIVOR_TRUTH).length;
   console.log(`\n${nSurv} survivors x 10 base-stat fields checked against prefab truth.`);
+  // --- equipment cooldowns vs EquipmentDef.cooldown ---
+  const cd = crossCheckCooldowns();
+  if (cd.compared === 0) {
+    console.log(
+      "Equipment cooldowns: skipped (needs .gamedata/component-fields.json — run " +
+        "`python scripts/extract-component-fields.py cooldown` locally).",
+    );
+  } else if (cd.drift.length === 0) {
+    console.log(`Equipment cooldowns: ${cd.compared}/${cd.total} checked against EquipmentDef. \u2713`);
+  } else {
+    console.log("\n\u26a0 Equipment cooldowns differ from the game:");
+    for (const d of cd.drift) console.log(`  - ${d}`);
+  }
+
   const drift = crossCheckBodies();
   if (!existsSync(BODIES)) {
     console.log("Live prefab cross-check: skipped (.gamedata/ absent — run scripts/extract-bodies.py locally).");

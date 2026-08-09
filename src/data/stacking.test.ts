@@ -4,6 +4,8 @@ import { describe, expect, it, test } from "vitest";
 import { items } from "./items";
 import { perStackMeaning, hyperbolicCurve } from "@/lib/stacking";
 import { ARTIFACTS, SHRINES } from "./reference";
+import { STAT_ITEMS } from "./statItems";
+import { readFileSync } from "node:fs";
 import skills from "./skills.json";
 import { procProvenance } from "./skills";
 
@@ -1797,4 +1799,67 @@ test("no source file contains a control character from a botched escape", async 
     }
   }
   expect(offenders, offenders.join(" | ")).toEqual([]);
+});
+
+/**
+ * §3j.125 — numbers that appear BOTH in a component and in a dataset.
+ *
+ * These are not wrong today; every one was checked and matched. The defect is that they were
+ * duplicated rather than derived, so nothing would have noticed them diverging — and
+ * Breakpoints.tsx opens by claiming "every number is computed from the game's own formulas,
+ * not hand-entered" while carrying four hand-entered curve inputs.
+ *
+ * The inputs are now read from the data. What remains duplicated is PROSE, which cannot be
+ * derived, so it is asserted instead: a sentence quoting a number must quote the one the
+ * dataset holds.
+ */
+describe("component prose agrees with the data it describes", () => {
+  const read = (p: string) => readFileSync(p, "utf8");
+
+  test("the hyperbolic table's inputs resolve for all four items", () => {
+    // The table drops a row whose item lost its hyperbolic entry, so a silent drop is
+    // possible by construction. This is what makes it loud.
+    const src = read("src/components/reference/Breakpoints.tsx");
+    const ids = [...src.matchAll(/\{\s*id:\s*"([a-z0-9-]+)",\s*stat:/g)].map((m) => m[1]);
+    expect(ids.length).toBe(4);
+    for (const id of ids) {
+      const row = items.find((i) => i.id === id)?.stacking.find((s) => s.type === "hyperbolic");
+      expect(row, `${id} no longer has a hyperbolic row — the breakpoint table would drop it`).toBeTruthy();
+    }
+  });
+
+  test("ItemDetail's Tougher Times example matches the item's own curve", () => {
+    const src = read("src/components/codex/ItemDetail.tsx");
+    const tt = items.find((i) => i.id === "tougher-times")!;
+    const row = tt.stacking.find((s) => s.type === "hyperbolic")!;
+    // The banner says: reads "15% per stack" but blocks 13% at one stack.
+    expect(src).toMatch(new RegExp(`${row.base}% per stack`));
+    const amp = row.base / 100;
+    const atOne = Math.round((amp / (amp + 1)) * 100);
+    expect(src, `banner should say ${atOne}% at one stack`).toMatch(
+      new RegExp(`blocks ${atOne}%`),
+    );
+  });
+
+  test("the crit paragraph's +10% matches STAT_ITEMS", () => {
+    const src = read("src/components/reference/Breakpoints.tsx");
+    const lens = STAT_ITEMS["lens-makers-glasses"].find((e) => e.target === "critChance")!;
+    expect(src).toMatch(new RegExp(`\\+${lens.perStack}%`));
+    // And the flat +5% items really are flat and really are 5.
+    for (const id of ["predatory-instincts", "harvesters-scythe"]) {
+      const e = STAT_ITEMS[id].find((x) => x.target === "critChance")!;
+      expect(e.base, `${id} crit base`).toBe(5);
+      expect(e.perStack, `${id} is described as one-time`).toBe(0);
+    }
+  });
+
+  test("the Stat Lab's Drizzle hint matches what statMath applies", () => {
+    const src = read("src/components/statlab/StatLabPage.tsx");
+    // statMath: regen x1.5 on Drizzle, and a flat +70 armor after the Pearl multiplier.
+    expect(src).toMatch(/regen x1\.5/i);
+    expect(src).toMatch(/\+70 armor/);
+    const math = read("src/lib/statMath.ts");
+    expect(math).toMatch(/"drizzle" \? 1\.5/);
+    expect(math).toMatch(/difficulty === "drizzle" \? 70 : 0/);
+  });
 });

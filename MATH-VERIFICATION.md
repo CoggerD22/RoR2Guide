@@ -6473,3 +6473,54 @@ suggests, which is the test for whether a field needs a sentence. Proven by addi
 
 **An allowlist of things to check is a list someone has to remember to grow. An allowlist of
 exemptions is a list someone has to justify.** Only the second one fails when a person forgets.
+
+### 3j.125–126 two audits that found nothing wrong, and one check that compared nothing
+
+A pass with no data corrections in it. Recording it anyway, because "we looked and it was
+fine" is the half of an audit that normally goes unwritten — and because the *method* failed
+once in a way worth keeping.
+
+#### Numbers duplicated between a component and a dataset
+
+`Breakpoints.tsx` opens with: *"Every number is computed from the game's own formulas, not
+hand-entered."* Its hyperbolic table then hand-enters four: `perStackAmp: 15, 13, 20, 5`. The
+crit paragraph hardcodes `stacksToCritCap(10)` beside prose reading "+10% each".
+
+**All of them were correct.** Checked against `items.json` and `STAT_ITEMS`: 15/15, 13/13,
+20/20, 5/5, and Lens-Maker's perStack 10. Tougher Times' banner claim in `ItemDetail` — "reads
+15% per stack but blocks 13% at one stack" — recomputes to 13.04% from the item's own curve.
+
+So nothing was wrong on the page. The defect was that **the header claimed derivation over a
+table of literals**, and nothing would have noticed them diverging. The inputs are now read
+from the data, which makes that sentence true; a row whose item loses its hyperbolic entry is
+dropped rather than rendered with a placeholder, and a test asserts all four still resolve.
+What cannot be derived — prose quoting a number — is asserted instead.
+
+**This is the distinction worth being careful about: the values did not need fixing, and were
+not fixed. The duplication did.**
+
+#### Equipment cooldowns: 41 numbers nothing was checking
+
+`data:diff` structurally cannot see them — the game stores cooldowns outside `_DESC`, which is
+why the site appends "Cooldown: Ns" itself. Extracted `EquipmentDef.cooldown` for all 60
+equipment defs and compared. **41/41 correct**, and `data:verify` now checks them every run.
+
+The mapping was the hard part, and the first attempt **silently compared nothing**:
+`itemdefs.json` holds *item* defs, so every equipment lookup returned `None`, and the script
+printed "MISMATCHES: 0" over a comparison set of size zero. It was caught only because the
+script also printed how many it had actually compared.
+
+> A verification that reports success must report its **denominator**. "0 mismatches" and
+> "0 of 41 compared" are the same output otherwise — the same failure as every weak breakage
+> test in this log, in a different costume.
+
+Rebuilt on `EQUIPMENT_<X>_NAME` tokens, with the aliases stated explicitly rather than guessed:
+Sawmerang's def is `Saw`, Recycler's is `Recycle`, and the ten elite aspects are tokenised by
+COLOUR (`affixred`) while their defs are named by ELEMENT (`EliteFireEquipment`). Fuzzy-matching
+those would risk exactly the misfiling of §3j.66.
+
+What makes the aspect pairing evidence rather than assumption: **the cooldowns are not
+uniform.** They split 6/4 between 10s and 25s, and all ten land on the right one.
+
+Also confirmed already covered, so not rebuilt: void corruption pairs are cross-checked against
+the game both ways, and codex completeness asserts every droppable game item is present.
