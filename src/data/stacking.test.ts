@@ -1863,3 +1863,54 @@ describe("component prose agrees with the data it describes", () => {
     expect(math).toMatch(/difficulty === "drizzle" \? 70 : 0/);
   });
 });
+
+/**
+ * §3j.127 — `type: "none"` is a NEGATIVE CLAIM, and this project has learned to distrust those.
+ *
+ * On equipment the claim is trivially true (equipment cannot stack), and 57 of the 79 `none`
+ * rows are that case. The other 22 sit on stackable items and assert something real: "extra
+ * copies do not change this number." That is exactly the shape of claim that needs evidence
+ * rather than silence — the same rule already applied to prose negatives (§3j.71) and to
+ * "no damage path" on skills (§3j.115).
+ *
+ * All 22 already cite the constant or the mechanism, which is why this test passes on the day
+ * it was written. It exists so the 23rd cannot be added as a bare assertion.
+ */
+test("every non-stacking claim on a stackable item cites its evidence", () => {
+  // Something that looks like a real identifier read out of the game, or an explicit
+  // statement that the value is independent of the count.
+  const IDENTIFIER = /[a-z][A-Za-z0-9]*(?:[A-Z][A-Za-z0-9]*)+|\b[A-Z][A-Za-z0-9]*\.[A-Za-z]/;
+  const EXPLICIT =
+    /does not scale|regardless of (?:item count|stacks|how many)|flat|NO stack term|if you hold ANY|independent of/i;
+
+  const bare: string[] = [];
+  let inspected = 0;
+  for (const it of items) {
+    if (it.tier === "equipment" || it.tier === "lunar-equipment") continue;
+    for (const st of it.stacking) {
+      if (st.type !== "none") continue;
+      inspected++;
+      const f = st.formula ?? "";
+      if (!f.trim()) {
+        bare.push(`${it.name} — ${st.stat}: no formula at all`);
+        continue;
+      }
+      if (!IDENTIFIER.test(f) && !EXPLICIT.test(f)) {
+        bare.push(`${it.name} — ${st.stat}: asserts no stacking without naming why`);
+      }
+    }
+  }
+
+  expect(bare, bare.join(" | ")).toEqual([]);
+  // Coverage floor (§3j.110): 22 today. A rule that inspects nothing also passes.
+  expect(inspected).toBeGreaterThanOrEqual(22);
+
+  // And the claim must actually be a claim — `none` with a non-zero perStack is a
+  // contradiction between the type and the number beside it.
+  const contradictory = items.flatMap((it) =>
+    it.stacking
+      .filter((s) => s.type === "none" && s.perStack !== 0)
+      .map((s) => `${it.name} — ${s.stat}: type "none" but perStack ${s.perStack}`),
+  );
+  expect(contradictory, contradictory.join(" | ")).toEqual([]);
+});

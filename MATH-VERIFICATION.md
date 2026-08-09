@@ -6524,3 +6524,42 @@ uniform.** They split 6/4 between 10s and 25s, and all ten land on the right one
 
 Also confirmed already covered, so not rebuilt: void corruption pairs are cross-checked against
 the game both ways, and codex completeness asserts every droppable game item is present.
+
+### 3j.127 every stacking type verified; nothing was wrong
+
+All **291** stacking rows checked against what their formulas actually compute, because a wrong
+`type` is the one data error that renders as a wrong PICTURE — the sparkline plots from it.
+
+| type | rows | verdict |
+|---|---|---|
+| reciprocal | 8 | all genuine `k/n` shapes |
+| exponential | 14 | all genuine `k x r^n` |
+| hyperbolic | 7 | all the game's amplification curve |
+| special | 7 | all curves the standard renderers cannot express |
+| none | 79 | 57 on equipment (trivially true), 22 real claims, all evidenced |
+| linear | 176 | swept for non-linear math; 15 flagged, all false positives |
+
+Two hyperbolic rows deserved a second look and survived it. **Sale Star** reads like a cascade
+(30/15/1% thresholds), but its `perStack: 5` IS the hyperbolic amplification applied from three
+stars up, with the cascade layered on top. **Unstable Transmitter** decays toward 0 rather than
+approaching 100%, which is unlike every other hyperbolic row — but it calls `Util.Hyperbolic`
+literally, and an existing test already records that it draws no curve.
+
+The 15 flagged linear rows are all "multiplied by something that is **not** the stack count" —
+the hit's proc coefficient, the number of charges, `quickFixMultiplier` — plus `Pow(n, 1f)`,
+which is linear, and `13^2`, which is a constant. Linear in n is the only thing the type
+claims, and each is.
+
+**The contract that makes a mistype survivable:** `sparklinePoints` returns `null` for anything
+that is not `linear`, so a non-linear row can never be plotted as a straight line. The
+dangerous direction is the opposite one — a non-linear row mislabelled `linear` WOULD be
+extrapolated — which is why the linear sweep was the part worth doing carefully.
+
+The 22 non-equipment `none` rows are the interesting subset: "extra copies do not change this"
+is a negative claim, the shape this project has repeatedly caught. All 22 already name the
+constant or mechanism (`(n > 0) ? 0.04`, `NO stack term`, `flat regardless of item count`).
+A guard now requires that of the 23rd.
+
+Also re-ran `check-extractor-health.py` after this session's new extractions: **1472 bundles,
+224,435 MonoBehaviours, 39 language files, all four swallow classes at zero.** The "complete
+input" assumption behind every asset-derived number still holds.
