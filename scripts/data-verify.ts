@@ -445,6 +445,93 @@ function equipmentNameToToken(): Map<string, string> {
   return out;
 }
 
+/**
+ * Item TIER and DLC vs the game's own defs.
+ *
+ * Tier is not cosmetic: it picks the colour a reader sees, the drop pool the item belongs to,
+ * and the group the planner files it under. DLC drives a filter. Neither had ever been checked
+ * against the game — the aggregate counts happened to match perfectly, which proves nothing,
+ * since two items swapped between tiers leaves every total identical (MATH-VERIFICATION
+ * §3j.130).
+ *
+ * Items come from `ItemDef.deprecatedTier`; equipment has no item tier at all, so its
+ * normal/lunar split is read from `EquipmentDef.isLunar` instead.
+ */
+const TIER_FROM_GAME: Record<string, string> = {
+  Tier1: "common",
+  Tier2: "uncommon",
+  Tier3: "legendary",
+  Boss: "boss",
+  Lunar: "lunar",
+  VoidTier1: "void-common",
+  VoidTier2: "void-uncommon",
+  VoidTier3: "void-legendary",
+  VoidBoss: "void-boss",
+  FoodTier: "food",
+};
+
+function crossCheckTiers(): { drift: string[]; compared: number; total: number } {
+  const drift: string[] = [];
+  const defsPath = join(root, ".gamedata", "itemdefs.json");
+  const ours = JSON.parse(readFileSync(ITEMS, "utf8")) as Array<{
+    name: string;
+    tier: string;
+    dlc: string;
+  }>;
+  if (!existsSync(defsPath)) return { drift, compared: 0, total: ours.length };
+
+  const defs = JSON.parse(readFileSync(defsPath, "utf8")) as {
+    items?: Array<{ name?: string; token?: string; tier?: string; dlc?: string }>;
+    equipment?: Array<{ name?: string; token?: string; isLunar?: boolean; dlc?: string }>;
+  };
+
+  const itemByName = new Map<string, { tier?: string; dlc?: string }>();
+  for (const r of defs.items ?? []) {
+    if (r.name && r.name !== "?") itemByName.set(r.name, r);
+  }
+  // Equipment `name` is "?" for anything the extraction could not resolve, so fall back to
+  // the language token — the same gap that made the first cooldown pass compare nothing.
+  const langNames = equipmentNameToToken();
+  const tokenToDisplay = new Map<string, string>();
+  for (const [display, token] of langNames) tokenToDisplay.set(token, display);
+  const eqByName = new Map<string, { isLunar?: boolean; dlc?: string }>();
+  for (const r of defs.equipment ?? []) {
+    let display = r.name && r.name !== "?" ? r.name : undefined;
+    if (!display && r.token) {
+      const m = /^EQUIPMENT_([A-Z0-9_]+)_NAME$/.exec(r.token);
+      if (m) display = tokenToDisplay.get(m[1].toLowerCase());
+    }
+    if (display) eqByName.set(display, r);
+  }
+
+  let compared = 0;
+  for (const it of ours) {
+    const isEquip = it.tier === "equipment" || it.tier === "lunar-equipment";
+    if (isEquip) {
+      const g = eqByName.get(it.name);
+      if (!g) continue;
+      compared++;
+      const expect = g.isLunar ? "lunar-equipment" : "equipment";
+      if (it.tier !== expect) {
+        drift.push(`${it.name}.tier: ours ${it.tier}, game isLunar=${g.isLunar} -> ${expect}`);
+      }
+      if (g.dlc && g.dlc !== it.dlc) drift.push(`${it.name}.dlc: ours ${it.dlc}, game ${g.dlc}`);
+      continue;
+    }
+    const g = itemByName.get(it.name);
+    if (!g) continue;
+    compared++;
+    const expect = g.tier ? TIER_FROM_GAME[g.tier] : undefined;
+    if (!expect) {
+      drift.push(`${it.name}: game tier "${g.tier}" has no mapping`);
+    } else if (expect !== it.tier) {
+      drift.push(`${it.name}.tier: ours ${it.tier}, game ${g.tier} -> ${expect}`);
+    }
+    if (g.dlc && g.dlc !== it.dlc) drift.push(`${it.name}.dlc: ours ${it.dlc}, game ${g.dlc}`);
+  }
+  return { drift, compared, total: ours.length };
+}
+
 function main() {
   let mismatches = 0;
   const codeMiss: string[] = [];
@@ -493,6 +580,17 @@ function main() {
   const survivorBad = checkSurvivors();
   const nSurv = Object.keys(SURVIVOR_TRUTH).length;
   console.log(`\n${nSurv} survivors x 10 base-stat fields checked against prefab truth.`);
+  // --- item tier + dlc vs the game's defs ---
+  const tiers = crossCheckTiers();
+  if (tiers.compared === 0) {
+    console.log("Tier/DLC: skipped (needs .gamedata/itemdefs.json — run extract-itemdefs.py).");
+  } else if (tiers.drift.length === 0) {
+    console.log(`Tier + DLC: ${tiers.compared}/${tiers.total} checked against ItemDef/EquipmentDef. \u2713`);
+  } else {
+    console.log("\n\u26a0 Tier/DLC differ from the game:");
+    for (const d of tiers.drift) console.log(`  - ${d}`);
+  }
+
   // --- equipment cooldowns vs EquipmentDef.cooldown ---
   const cd = crossCheckCooldowns();
   if (cd.compared === 0) {

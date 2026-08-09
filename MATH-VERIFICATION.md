@@ -6663,3 +6663,40 @@ that one of them is wrong. Forty simultaneous "errors" in a dataset that has sur
 checking was the tell — a real defect rate does not arrive in a block like that. **The cost of
 believing a broken instrument is not a wasted afternoon; it is forty correct files overwritten
 with wrong ones.**
+
+### 3j.130 tier and DLC — 217 numbers nobody had ever compared
+
+A different question rather than a new surface: not *are the numbers right* but **is the item
+filed under the right kind?** `tier` decides the colour a reader sees, the drop pool the item
+belongs to, and the group the planner files it under. `dlc` drives a filter. Neither had ever
+been checked against the game.
+
+The aggregate counts matched **perfectly** — Tier1 36 ↔ common 36, Tier2 42 ↔ uncommon 42,
+Boss 22, Lunar 20, VoidTier1 5, FoodTier 5, and so on down the list. That is worth exactly
+nothing as evidence: two items swapped between tiers leaves every total identical. So, per
+item:
+
+- **175 items** against `ItemDef.deprecatedTier`
+- **42 equipment** against `EquipmentDef.isLunar`, because equipment has no item tier at all
+- **217/217 tiers correct. 217/217 DLC assignments correct.**
+
+Both are now checked by `data:verify` every run, proven by swapping Crowbar to uncommon and
+Jade Elephant to SotV.
+
+#### A second source, found by accident
+
+`itemdefs.json` turned out to have three sections — `items`, `equipment`, `corruption` — and
+every script that had touched it read `Object.values(d)[0]`, i.e. the items list only. That is
+why the first cooldown attempt found no equipment and silently compared nothing (§3j.126).
+
+The `equipment` section carries `dlc`, `isLunar` **and** `cooldown`, produced by
+`extract-itemdefs.py` walking MonoBehaviours — a completely different pass from
+`extract-component-fields.py`, which selects by field name and is what `data:verify` uses.
+Re-checking the cooldowns against it: **41/41 agree.**
+
+Two extractors, two independent walks over 1472 bundles, same answer. That is a stronger claim
+than either could make alone, and it cost nothing but noticing that a dictionary had more than
+one key.
+
+**Score for this pass: 0 corrections, 434 values verified for the first time** (217 tiers,
+217 DLC), plus 41 cooldowns confirmed twice.
