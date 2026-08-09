@@ -381,8 +381,16 @@ function main(): number {
     for (const kind of ["items", "equipment"] as const) {
       for (const [name, v] of Object.entries(ach[kind])) gated.set(name, v);
     }
+    // A check that reports success must report its DENOMINATOR. `data:verify`'s first
+    // cooldown pass printed "0 mismatches" over a comparison set of size ZERO, because a name
+    // lookup returned nothing for every single item (MATH-VERIFICATION §3j.126). "All checks
+    // passed" and "nothing was compared" must not look identical from outside. This loop is
+    // partly self-protecting — an empty `gated` map would error on all 49 locked items — but
+    // partly is not the same as provably, so the number is printed.
+    let gatingCompared = 0;
     for (const it of items) {
       const g = gated.get(it.name);
+      if (g?.challenge || it.unlock) gatingCompared++;
       if (g?.challenge) {
         if (!it.unlock) {
           errors.push(`"${it.id}" is gated in-game (challenge "${g.challenge}") but has no unlock — the site shows it as freely available`);
@@ -395,6 +403,9 @@ function main(): number {
         errors.push(`"${it.id}" is marked locked but no ItemDef/EquipmentDef gates it`);
       }
     }
+    console.log(
+      `  unlock gating: ${gatingCompared} item(s) cross-checked against the game's achievements.`,
+    );
   } else {
     warnings.push("unlock gating not cross-checked (.gamedata/achievements.json absent — run extract-unlockables.py + extract-achievements.py)");
   }

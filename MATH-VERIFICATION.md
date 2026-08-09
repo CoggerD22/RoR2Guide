@@ -6563,3 +6563,48 @@ A guard now requires that of the 23rd.
 Also re-ran `check-extractor-health.py` after this session's new extractions: **1472 bundles,
 224,435 MonoBehaviours, 39 language files, all four swallow classes at zero.** The "complete
 input" assumption behind every asset-derived number still holds.
+
+### 3j.128 a planned sweep that found no data errors
+
+The previous rounds each found real corrections, so this one was planned deliberately rather
+than followed opportunistically: seven surfaces nothing had checked, ranked by expected yield,
+each with a falsifiable check decided **before** looking.
+
+| surface | result |
+|---|---|
+| numbers duplicated between component and dataset | all correct; **duplication** removed |
+| equipment cooldowns (41) | **41/41 correct**, now checked every run |
+| `type: "none"` rows (79) | all evidenced; 22 real claims, 57 trivially true |
+| non-linear `type` classifications (36) | all correct |
+| linear rows swept for non-linear math (176) | 15 flagged, all false positives |
+| unlock gating (49) | 49/49 compared and matching |
+| `capStacks` (5) | all five verified verbatim in the decompile |
+| Playwright suite quality | two targeted mutations, both caught |
+| extractor health | 1472 bundles, 224,435 MonoBehaviours, all swallow classes 0 |
+
+**Zero data corrections.** That is a result, not an absence of one — after four rounds that each
+found real errors, a planned sweep across the largest remaining unchecked surfaces coming back
+clean says something about where the dataset now is.
+
+Three things did change, none of them a number:
+
+1. `Breakpoints.tsx` opened with *"every number is computed from the game's own formulas, not
+   hand-entered"* above a table of four hand-entered curve inputs. They were **right** — 15, 13,
+   20, 5 all matched `items.json`. The values were not touched; the duplication was, so the
+   sentence is now true and drift is impossible rather than merely absent.
+2. `data:audit` now prints **how many** items its unlock check compared. Which is the lesson
+   from §3j.126 generalised: the cooldown check's first version printed "MISMATCHES: 0" over a
+   comparison set of size **zero**, because `itemdefs.json` holds item defs and every equipment
+   lookup silently returned nothing.
+3. A guard requires the 23rd `none` row to name its evidence, as the 22 existing ones do.
+
+> **A check that reports success must report its denominator.** "0 mismatches" and "0 of 41
+> compared" are the same output otherwise. This is the same failure as every weak breakage
+> mutation in this log — four of them this session — wearing different clothes: the measurement
+> ran, reported success, and touched nothing.
+
+The one surface deliberately NOT checked, rather than checked badly: **item icons**. 217 files
+exist (`data:audit` enforces that), but whether each PNG depicts the right item is a visual
+question. Comparing them to the game's own icon assets is possible and was not done; asserting
+they are correct on the basis that the filenames match the ids would be exactly the kind of
+denominator-free "verification" this entry is about.
