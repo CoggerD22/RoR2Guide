@@ -6700,3 +6700,47 @@ one key.
 
 **Score for this pass: 0 corrections, 434 values verified for the first time** (217 tiers,
 217 DLC), plus 41 cooldowns confirmed twice.
+
+### 3j.131 a mechanic the game tags and the site does not publish
+
+Following §3j.130's accident — a dictionary with three keys where every script read one — to
+its natural next question: **what else is in the extracted data that nothing reads?**
+
+`ItemDef.tags`. The game assigns **35 distinct tags** across the roster. Ours are editorial
+(`damage`, `on-hit`, `aoe`) and drive search; the game's encode mechanics.
+
+First, the check that matters for correctness: do our editorial tags **contradict** the game's?
+Across 175 comparable items, **no contradictions**. Nothing is mislabelled.
+
+But several game tags are consumed by real behaviour, and one is strategically significant:
+
+```csharp
+// ItemStealController.BrotherItemStealFilter
+if (itemDef.canRemove && itemDef.DoesNotContainTag(ItemTag.AIBlacklist))
+    return itemDef.DoesNotContainTag(ItemTag.BrotherBlacklist);
+return false;
+```
+
+**Mithrix cannot steal an item carrying `AIBlacklist` or `BrotherBlacklist`.** In our dataset
+that is **55 items** — including Fuel Cell, Hopoo Feather, H3AD-5T v2, Brainstalks, Old
+Guillotine and both Cerebellums. Which items survive the phase-4 steal is a genuine strategic
+fact, it is decided entirely by the game's own defs, and the site says nothing about it.
+
+Others in the same family, all verified as consumed by code rather than decorative:
+`CannotSteal` (12, the void Extractor and shrine steals), `RebirthBlacklist` (7, cannot be
+banked at a Shrine of Rebirth — the site HAS an Artifact of Rebirth record), `CannotDuplicate`
+(9), `CommandArtifactBlacklist` (2), `DevotionBlacklist` (4), `SacrificeBlacklist` (1),
+`Cleansable` (2).
+
+#### Why this is recorded and not acted on
+
+**This is an omission, not an error.** Nothing on the site is wrong; a fact the game holds is
+simply absent. Publishing it is not a fix — it is a schema field, 217 records, a UI surface,
+a `PLAN.md` entry and a guard, i.e. a feature with a scope decision attached.
+
+The distinction matters more than the tags do. Every correction in this log changed something
+that was WRONG. Quietly widening the dataset because a new field looked interesting would be
+the same failure as "fixing" the forty icons that turned out to be correct (§3j.129), just in
+the opposite direction: **action taken without a defect to justify it.**
+
+So it is written down, characterised, and left for a decision.
