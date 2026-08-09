@@ -106,7 +106,27 @@ left, bold white name, gray body with highlighted numeric values.
         provenance, surfaced in the Stat Lab. The other **19 have no damage path at all**
         (dashes, stance swaps, turret placements) and are labelled "no direct damage" rather
         than unverified — **0 skills are genuinely unknown** (§3j.47, §3j.64).
+      - ITEM attacks now carry the same: **43/43** rows describing an item-fired attack state
+        the rate that attack procs at, and they are not uniform — 0 (Brilliant Behemoth,
+        Gasoline, Kjaro's tornado), 0.1, 0.2, 0.5, 0.7, 1.0. Runald's Band procs at 1.0 and
+        Kjaro's at 0, which no description hints at (§3j.117, §3j.122). Projectile rates are
+        a PRODUCT of two serialized prefab fields, neither in the C# (§3j.118).
+      - Two published damage figures were wrong by whole multiples, both from a coefficient
+        applied on a prefab AFTER the one in code: **Resonance Disc detonates for 4000%, not
+        1000%** (the record had published the intermediate projectile damage), and Electric
+        Boomerang's slice is 124%, not 120% (§3j.119, §3j.120). `scripts/resolve-state-refs.py`
+        follows EntityStateConfiguration prefab pointers, which is what settled the first.
+      - Survivors: `acceleration` added, the one base stat that varies across the roster and
+        appeared on no page — MUL-T 30, Artificer 40, False Son 50, the rest 80 (§3j.124).
+        Six stats modelled as flat (armor, attack speed, crit, move speed, jump power, shield)
+        are scalable in `RecalculateStats` and correct only because every `level*` field is
+        currently zero; `data:verify` now fails if any becomes non-zero (§3j.121).
 
+- [x] Application audit — the code, not the data. `search.ts` returned **zero items for any
+      one-character query**, so the first keystroke of every search rendered an empty codex;
+      short queries now take a deterministic name-prefix path. `planUrl`, the planner store,
+      `highlightNumbers` and `statMath` were read and found sound, with one latent formatter
+      case hardened. `search.test.ts` and `survivorDetail.test.ts` are new (§3j.123).
 - [x] §9 surface audit — every page and component read with "what does a reader conclude?"
       asked explicitly (`PLAN.md` §9). Findings and method in `MATH-VERIFICATION.md`
       §3j.58–§3j.98. Notable: the Stat Lab was a second unaudited implementation of the
