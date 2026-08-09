@@ -6744,3 +6744,44 @@ the same failure as "fixing" the forty icons that turned out to be correct (§3j
 the opposite direction: **action taken without a defect to justify it.**
 
 So it is written down, characterised, and left for a decision.
+
+### 3j.132 roster completeness, and the one disagreement that is correct
+
+Three completeness questions nothing had asked, all answered by comparing to the game rather
+than by counting.
+
+**Void corruption pairs.** The game defines **31**; we hold 31 `corruptedBy` links across 14
+void items whose `corrupts[]` arrays sum to 31. Resolved to display names and compared as
+SETS, not counts: **exact match, both directions, nothing missing.**
+
+**Survivor roster.** 19 `survivordefs` against our 19, compared by `cachedName` rather than by
+length: **exact match.** One detail worth having seen — `Heretic` is `hidden: 1`, and the site
+already handles it: `SurvivorDetail` explains she "appears only while holding all four Heresy
+lunar items", and the Artifact of Metamorphosis record notes the respawn pool skips hidden
+survivors so it can "never" roll her.
+
+**Loadout skills.** 122 in the game's tables against our 125, and the difference is entirely
+Heretic.
+
+#### The disagreement that must not be "fixed"
+
+A completeness check reports Heretic wrong in both directions: the game's default loadout has
+one skill we lack, and we list four it does not.
+
+`HereticBody` ships `HereticDefaultSkill` — displayName **"Nevermore"**, state
+`EntityStates.Heretic.Weapon.Squawk` — in **all four slots**. It is a placeholder. Becoming
+Heretic requires holding all four Heresy lunar items, each of which replaces a slot, so no
+player ever sees Nevermore. The four skills we publish are what those items grant.
+
+**Our data is more correct than the source it would be "corrected" against.** The game's
+loadout table answers *what does the body ship with*; the page answers *what will I have*. For
+all eighteen other survivors those are the same question, which is exactly why the divergence
+looks like an error.
+
+Pinned by a test that fails if the placeholder is ever added, and by a second asserting the
+page still explains why — proven by adding Nevermore back.
+
+This is the §3j.129 lesson in a new costume. There, a broken instrument said forty correct
+icons were wrong. Here, a correct instrument pointed at the wrong question says four correct
+skills are wrong. **Both would have been "fixed" by anyone acting on the report instead of
+reading it.**

@@ -1966,3 +1966,48 @@ test("every item's icon path resolves to a real file", () => {
   expect(missing, missing.join(" | ")).toEqual([]);
   expect(items.length).toBeGreaterThanOrEqual(217);
 });
+
+/**
+ * §3j.132 — the one place our skill list deliberately DISAGREES with the game's loadout.
+ *
+ * A roster completeness check against `loadouts_final.json` reports Heretic as wrong in both
+ * directions: the game's default loadout has one skill we lack ("Nevermore") and we list four
+ * it does not. Both halves are correct, and a future automated "fix" would make the page worse.
+ *
+ * `HereticBody` ships `HereticDefaultSkill` — displayName "Nevermore", state
+ * `EntityStates.Heretic.Weapon.Squawk` — in ALL FOUR slots. It is a placeholder. Becoming
+ * Heretic requires holding all four Heresy lunar items, and each one replaces a slot, so a
+ * player never sees Nevermore. The four skills we list are what the items grant, which is what
+ * anyone reading the page is actually asking about.
+ *
+ * This is the "verified against WHICH question" problem (§3j.113) pointed at ourselves: the
+ * game's loadout table answers "what does the body ship with", and the page answers "what will
+ * I have". For every other survivor those are the same question.
+ */
+test("Heretic lists the Heresy item skills, not the Nevermore placeholder", () => {
+  const heretic = (skills as Array<{ survivor: string; skills: Array<{ name: string }> }>).find(
+    (w) => w.survivor === "heretic",
+  );
+  expect(heretic, "heretic missing from skills.json").toBeTruthy();
+
+  const named = heretic!.skills.map((s) => s.name).sort();
+  expect(named).toEqual(["Hungering Gaze", "Ruin", "Shadowfade", "Slicing Maelstrom"]);
+
+  // The placeholder must NOT be added by a well-meaning completeness pass.
+  expect(named).not.toContain("Nevermore");
+  for (const s of heretic!.skills) {
+    expect(s.name).not.toMatch(/HereticDefaultSkill|Squawk/i);
+  }
+});
+
+/**
+ * And the reason has to be on the page, not only in this test — otherwise a reader comparing
+ * the site to the game's character sheet finds a difference with no explanation.
+ */
+test("the Heretic page explains why her kit comes from items", async () => {
+  const { readFileSync: rf } = await import("node:fs");
+  const src = rf("src/components/survivors/SurvivorDetail.tsx", "utf8");
+  expect(src).toMatch(/no fixed kit/i);
+  expect(src).toMatch(/all four Heresy/i);
+  expect(src).toMatch(/replaces one skill slot/i);
+});
