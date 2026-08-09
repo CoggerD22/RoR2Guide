@@ -6785,3 +6785,58 @@ This is the §3j.129 lesson in a new costume. There, a broken instrument said fo
 icons were wrong. Here, a correct instrument pointed at the wrong question says four correct
 skills are wrong. **Both would have been "fixed" by anyone acting on the report instead of
 reading it.**
+
+### 3j.133 the Ambry codes — right data, four broken things behind it
+
+The last claim in the repo that anything was wiki-sourced: *"Still hand-entered / wiki-sourced:
+the Ambry codes."* CLAUDE.md said the opposite — "Nothing is wiki-only any more" — so one of
+them was false. Chasing which found the data correct and the machinery around it broken in
+four separate ways.
+
+**The data is right.** All 19 published codes are reproduced by brute-forcing 5^9 = 1,953,125
+candidate sequences against the SHA-256 the game itself validates
+(`PortalDialerController.PerformActionServer`), and all 16 code→artifact attributions that
+resolve match ours. Nothing on the site changed.
+
+#### 1. Array order is not display order
+
+`ambry-codes.json` and `ambry-codes-final.json` disagreed on every code, as PERMUTATIONS of
+each other. The cracker recovers each sequence in `buttons[]` order because that is what the
+game hashes — but the dialer's nine buttons are not stored in reading order. Their GameObjects
+are named `PortalDialerButton 1..9` and appear in the array as **3, 6, 9, 2, 8, 5, 1, 4, 7**.
+
+Derived the permutation `[6,3,0,7,5,1,8,4,2]` from the prefab's names and transform positions
+(rows at z = -4/0/4, columns at x = 5/1/-3) and it reproduces the published grids for **16/16**
+shared codes. The correction had existed only as a JSON file with no generator; it is now in
+the script, read from the prefab rather than hardcoded.
+
+#### 2. The scan was three hardcoded bundles
+
+`skymeadow`, `dlc1-voidoutro`, `dlc2-helminthro`. It recovered **16 codes and reported
+16/16** — a denominator derived from the same incomplete scan that produced the numerator.
+There are **19** hash assets: `PortalDialerCode1A5784` and `D738C9` are in `ror2-cu8`,
+`CF4BB3` in `ror2-dlc3`. The three newest artifacts — Delusion, Devotion, Prestige — were
+never targeted. Now every bundle is swept and hash assets are collected directly rather than
+only through the dialer actions that happen to reference them: **19/19 recovered.**
+
+#### 3. Attribution silently failed for all 16
+
+Each dialer action calls `OpenArtifactPortalServer` with an `ArtifactDef` PPtr. Every one fell
+back to the hash-asset name, so the code→artifact mapping was never established from the game
+at all. The pointers resolve fine — 109 externals, `m_FileID 38..52` well within range — via
+the externals walk. All 16 attribute correctly, and all 16 match what we publish.
+
+#### 4. Two crashes the narrow scan was hiding
+
+The script died on Windows AFTER writing its output, printing glyphs to a cp1252 console; the
+existing `.encode("utf-8","replace").decode("utf-8")` is a no-op because `print` re-encodes.
+And `dialer` was initialised once outside the bundle loop instead of per bundle — harmless
+while the first of three curated bundles always had one, an `UnboundLocalError` on the first
+dialer-less bundle the moment the sweep became complete.
+
+`data:verify` now checks all 19 codes against the cracked set in both directions, proven by
+altering a single glyph.
+
+**Every one of these four was invisible while the answer was right.** A hardcoded scan list, a
+missing permutation, a failed pointer walk and a crash after the useful work — and the output
+still matched the wiki, so nothing ever looked wrong.

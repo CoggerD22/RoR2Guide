@@ -23,6 +23,7 @@ import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { STAT_ITEMS, type StatTarget } from "../src/data/statItems.ts";
 import survivors from "../src/data/survivors.json" with { type: "json" };
+import { ARTIFACTS } from "../src/data/reference.ts";
 
 const here = dirname(fileURLToPath(import.meta.url));
 const root = resolve(here, "..");
@@ -532,6 +533,40 @@ function crossCheckTiers(): { drift: string[]; compared: number; total: number }
   return { drift, compared, total: ours.length };
 }
 
+/**
+ * Ambry codes vs the sequences the game's own dialer accepts.
+ *
+ * These are the most ACTIONABLE data on the site — a player physically dials them into the
+ * Bulwark's Ambry — and they were the last thing this repo described as wiki-sourced. They
+ * are not: `crack-ambry-codes.py` brute-forces all 5^9 candidates against the SHA-256 in
+ * `PortalDialerController.PerformActionServer`, so each code is confirmed the same way the
+ * dialer confirms it (MATH-VERIFICATION §3j.133).
+ */
+function crossCheckAmbry(): { drift: string[]; compared: number } {
+  const drift: string[] = [];
+  const path = join(root, ".gamedata", "ambry-codes.json");
+  if (!existsSync(path)) return { drift, compared: 0 };
+  const cracked = JSON.parse(readFileSync(path, "utf8")) as Record<string, { code: string }>;
+  const valid = new Set(Object.values(cracked).map((c) => c.code));
+  if (valid.size === 0) return { drift, compared: 0 };
+
+  let compared = 0;
+  for (const a of ARTIFACTS) {
+    if (!a.code) continue;
+    compared++;
+    if (!valid.has(a.code)) {
+      drift.push(`${a.name}: published code "${a.code}" is not one the dialer accepts`);
+    }
+  }
+  // The other direction, which is what caught the incomplete scan: a code the game has and
+  // we publish nowhere. Three lived in ror2-cu8/ror2-dlc3 and the cracker never looked there.
+  const ourCodes = new Set(ARTIFACTS.map((a) => a.code).filter(Boolean));
+  for (const [k, v] of Object.entries(cracked)) {
+    if (!ourCodes.has(v.code)) drift.push(`${k}: cracked code is published nowhere`);
+  }
+  return { drift, compared };
+}
+
 function main() {
   let mismatches = 0;
   const codeMiss: string[] = [];
@@ -580,6 +615,17 @@ function main() {
   const survivorBad = checkSurvivors();
   const nSurv = Object.keys(SURVIVOR_TRUTH).length;
   console.log(`\n${nSurv} survivors x 10 base-stat fields checked against prefab truth.`);
+  // --- Ambry codes vs the dialer's own hashes ---
+  const ambry = crossCheckAmbry();
+  if (ambry.compared === 0) {
+    console.log("Ambry codes: skipped (run python scripts/crack-ambry-codes.py locally).");
+  } else if (ambry.drift.length === 0) {
+    console.log(`Ambry codes: ${ambry.compared} checked against the dialer's SHA-256. \u2713`);
+  } else {
+    console.log("\n\u26a0 Ambry codes differ from the game:");
+    for (const d of ambry.drift) console.log(`  - ${d}`);
+  }
+
   // --- item tier + dlc vs the game's defs ---
   const tiers = crossCheckTiers();
   if (tiers.compared === 0) {

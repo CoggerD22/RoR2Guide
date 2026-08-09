@@ -27,8 +27,13 @@ import type { Dlc } from "./schema";
  * BAZAAR_DREAMS is exempt — the Seer literally speaks those lines, so quoting IS the
  * fact, and the stage mapping is structural (token name + SceneDef.stageOrder).
  *
- * Still hand-entered / wiki-sourced: the Ambry codes (they live in asset prefabs,
- * not text). SHRINES.cost is NO LONGER in that category — every one of the twelve is read
+ * NOTHING here is wiki-sourced any more. The Ambry codes were the last holdout and are
+ * not hand-entered either: `scripts/crack-ambry-codes.py` brute-forces all 5^9 = 1,953,125
+ * candidate sequences against the SHA-256 the game itself validates against
+ * (`PortalDialerController.PerformActionServer`), so each code is confirmed the same way the
+ * dialer confirms it. The grid order is read from the prefab too — the nine buttons appear in
+ * the array as 3,6,9,2,8,5,1,4,7, so array order is NOT what a player types
+ * (MATH-VERIFICATION §3j.133). SHRINES.cost is likewise no longer editorial — every one of the twelve is read
  * from its prefab's PurchaseInteraction and re-checkable with
  * `python scripts/extract-component-fields.py costType costMultiplierPerPurchase`.
  *
