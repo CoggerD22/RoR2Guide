@@ -6840,3 +6840,34 @@ altering a single glyph.
 **Every one of these four was invisible while the answer was right.** A hardcoded scan list, a
 missing permutation, a failed pointer walk and a crash after the useful work — and the output
 still matched the wiki, so nothing ever looked wrong.
+
+### 3j.134 the reference layer, checked the way items were
+
+Two questions already asked of `items.json`, never asked of `reference.ts`.
+
+**Is the quoted text verbatim?** `reference.ts` claims it is — *"Text is verbatim, including
+the game's own typos"*. The same question found exactly one rewritten description in
+`items.json` (Preon, §3j.125).
+
+- **20/20 artifact `effect` strings** match `ARTIFACT_*_DESCRIPTION` exactly.
+- **12/12 shrine `description` strings** match their game tokens exactly.
+
+Zero rewrites. The claim is true.
+
+The first attempt parsed only **9 of 12** shrines, because the regex expected `cost` and
+`description` to be adjacent and the `mechanic` blocks added in §3j.114 sit between them. It
+would have reported "0 not-verbatim" over a quarter of the data. Fixed by slicing the SHRINES
+array and pairing `name` to `description` regardless of what lies between — and caught, again,
+only because the script printed *compared 8* next to *bad 0*.
+
+**Do the icons depict the right thing?** §3j.129 rank-tested the 217 item icons. The 20
+artifact icons were covered only by the magic-byte guard — valid PNGs, unverified identity.
+`ArtifactDef.smallIconSelectedSprite` gives the same test: **20/20 correct**.
+
+`verify-icons.py` now covers both in one sweep rather than two 20-minute passes over the same
+1472 bundles, and Hearty Stew's known-benign result carries its explanation inline instead of
+being suppressed — silencing it would also silence a real future change to that icon.
+
+**Zero defects this pass.** Worth recording precisely because the reference layer had been
+verified for *mechanics* (§3j.113–114) while its *quotations* and *pictures* had not, and
+"we checked the artifacts" could easily have been taken to mean all three.

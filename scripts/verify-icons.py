@@ -135,7 +135,10 @@ def main():
             except Exception:
                 continue
             tok = t.get("nameToken")
-            ptr = t.get("pickupIconSprite")
+            # ArtifactDef has no pickupIconSprite; its art is smallIconSelectedSprite. Both
+            # kinds are collected in one sweep so the artifacts are not a separate 20-minute
+            # pass over the same 1472 bundles.
+            ptr = t.get("pickupIconSprite") or t.get("smallIconSelectedSprite")
             if not tok or not isinstance(ptr, dict) or not ptr.get("m_PathID"):
                 continue
             try:
@@ -213,16 +216,78 @@ def main():
             if runner[0] <= d_self:
                 near.append(f"{name}: ties with {runner[1]!r} (both d={d_self})")
 
+    # Settled by eye and left in the output rather than suppressed: the game sprite and our
+    # PNG are plainly the same bowl of stew, down to the blue-and-white stripes, butter and
+    # broccoli. The distance is systematic — our icons carry a tier-coloured outline the game
+    # sprites lack — and it is worst on the 128x128 files. Silencing it would also silence a
+    # real future change to this icon (MATH-VERIFICATION §3j.129).
+    BENIGN = {"Hearty Stew": "verified by eye against the game sprite; outline + 128px artifact"}
     print(f"MISMATCHED icons: {len(mismatches)}")
     for m in mismatches:
-        print("   !", m)
+        who = m.split(":")[0]
+        note = BENIGN.get(who)
+        print("   !", m, f"[known benign: {note}]" if note else "")
     print(f"\nambiguous (a different item is as close): {len(near)}")
     for n in near[:10]:
         print("   ?", n)
     if missing_file:
         print(f"\nno icon file: {len(missing_file)} — {', '.join(missing_file[:5])}")
 
-    return 1 if mismatches else 0
+    # --- artifacts ------------------------------------------------------------------------
+    # Same rank test over /public/icons/artifacts. These were covered only by the magic-byte
+    # guard (they are valid PNGs) and never by identity (MATH-VERIFICATION §3j.134).
+    art_names = {}
+    for tok, fid, pid, src, externals in wanted:
+        disp = names.get(tok)
+        if not disp or not disp.startswith("Artifact of"):
+            continue
+        target = src
+        if fid:
+            idx = fid - 1
+            cab = os.path.basename(externals[idx]).lower() if 0 <= idx < len(externals) else None
+            target = cab_to_bundle.get(cab) if cab else None
+        if not target:
+            continue
+        try:
+            for o in UnityPy.load(target).objects:
+                if o.path_id == pid:
+                    im = getattr(o.read(), "image", None)
+                    if im is not None:
+                        art_names[disp] = dhash(im)
+                    break
+        except Exception:
+            pass
+
+    def slug(n):
+        return re.sub(r"[^a-z0-9]+", "-", n.lower()).strip("-")
+
+    art_dir = os.path.join(ICON_DIR, "artifacts")
+    art_ours = {}
+    for n in art_names:
+        fp = os.path.join(art_dir, f"{slug(n)}.png")
+        if os.path.isfile(fp):
+            try:
+                art_ours[n] = dhash(Image.open(fp))
+            except Exception:
+                pass
+
+    art_cmp = sorted(set(art_ours) & set(art_names))
+    print(f"\nARTIFACTS COMPARED: {len(art_cmp)} of {len(art_names)}")
+    art_bad = []
+    for n in art_cmp:
+        own = hamming(art_ours[n], art_names[n])
+        best, bd = n, own
+        for o, h in art_names.items():
+            x = hamming(art_ours[n], h)
+            if x < bd:
+                best, bd = o, x
+        if best != n:
+            art_bad.append(f"{n}: our icon matches {best!r} better (d={bd} vs own d={own})")
+    print(f"MISMATCHED artifact icons: {len(art_bad)}")
+    for b in art_bad:
+        print("   !", b)
+
+    return 1 if (mismatches or art_bad) else 0
 
 
 if __name__ == "__main__":
