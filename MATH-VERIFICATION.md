@@ -6280,3 +6280,50 @@ Boomerang and Resonance Disc — were on `linear` rows. It now runs on everythin
 mismatch, a false positive from Ultimate Meal's phrasing "m is 1 at one stack", which described
 a multiplier rather than a value; the record now names `num121` and explains that its 1 case is
 unreachable arithmetic.
+
+### 3j.121 auditing the stat engine — nothing wrong, one thing right by luck
+
+`statMath.ts` computes numbers the Stat Lab shows directly, so it is the highest-consequence
+code in the repo. Read line by line against `CharacterBody.RecalculateStats`.
+
+**It holds up.** Specifically re-derived from the decompile rather than taken on trust:
+
+- **Armor**, both branches, character for character:
+  `(armor >= 0f) ? (1f - armor / (armor + 100f)) : (2f - 100f / (100f - armor))`.
+- **Crit multiplier** — `critMultiplier = 2f + 1f * num44` where `num44` is the Laser Scope
+  count, matching `2 + critDamagePct / 100`.
+- **Every stat target is consumed.** All 8 in the `StatTarget` union are read by the engine;
+  none is defined and dropped.
+- **No modelled item under-reports.** Of the 14 items in `STAT_ITEMS`, the only two whose
+  `items.json` rows outnumber their modelled effects are Shaped Glass and Transcendence, both
+  of which are special-cased in `statMath` by design.
+
+Two things checked because they *looked* wrong and were not:
+
+- `RecalculateStats` contains a branch that **converts crit chance into crit multiplier**
+  (`critMultiplier += num111 * 0.01f; crit = 0f`) when `ConvertCritChanceToCritDamage` is held.
+  That item is `tier: "NoTier"` with the name `"?"` — cut content that cannot drop — so its
+  absence from the dataset is correct.
+- Void Fiend's `gameName` renders as `「V??oid Fiend』`, which reads like mojibake. Compared
+  codepoint by codepoint against `VOIDSURVIVOR_BODY_NAME`: **identical**. The `??` is the
+  game's own stylisation.
+
+#### The one real finding: correct by luck
+
+`RecalculateStats` computes armor as `baseArmor + levelArmor * num72` — the same
+`base + perLevel` shape as health, regen and damage. But `survivors.json` stores `armor` as a
+**scalar**, and `statMath` uses `survivor.armor` directly instead of putting it through
+`scale()`. Health, regen and damage all go through `scale()`; armor alone does not.
+
+That is right today, and provably so: of **241** extracted bodies, exactly **two** carry a
+non-zero `levelArmor` — `MegaDroneBody` and its remote-op variant, both at 5. No playable
+survivor has one.
+
+But it is right because of what the data happens to contain, not because of anything the code
+does. A patch giving any survivor level-scaling armor would silently make every Stat Lab armor
+figure — and every effective-HP figure derived from it — wrong at any level above 1, with no
+test failing. `data:verify` now fails loudly on a non-zero `levelArmor` for any modelled
+survivor, naming the schema change required. Proven by injecting one onto Commando.
+
+This is the same shape as §3j.115's stale caution, inverted: an assumption that is *true* is
+indistinguishable from one that is *checked*, right up until the data moves.

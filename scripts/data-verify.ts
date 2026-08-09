@@ -181,6 +181,23 @@ function crossCheckBodies(): string[] {
       if (game === undefined) continue;
       if (r4(table) !== r4(game)) drift.push(`${id}.${f}: table ${table} vs game ${r4(game)}`);
     }
+
+    // ARMOR IS MODELLED AS FLAT, and nothing checked that assumption until now.
+    // `RecalculateStats` computes `armor = baseArmor + levelArmor * num72` — exactly the same
+    // shape as health and damage. But `SURVIVOR_TRUTH` stores armor as a scalar and
+    // `statMath.ts` uses `survivor.armor` directly rather than putting it through `scale()`.
+    // That is correct today: of 241 extracted bodies only MegaDroneBody carries a non-zero
+    // levelArmor (5), and no playable survivor does. It is correct by the luck of the data
+    // rather than by construction, so a patch giving any survivor level-scaling armor would
+    // silently make every Stat Lab armor figure wrong above level 1 (MATH-VERIFICATION
+    // §3j.121).
+    if (b.levelArmor !== undefined && r4(b.levelArmor) !== 0) {
+      drift.push(
+        `${id}.levelArmor: game says ${r4(b.levelArmor)}, but survivors.json stores armor as a ` +
+          `flat number and statMath does not scale it with level — armor needs a ` +
+          `[base, perLevel] pair before this survivor can be shown correctly`,
+      );
+    }
   }
   return drift;
 }
