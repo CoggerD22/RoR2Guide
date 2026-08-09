@@ -6871,3 +6871,43 @@ being suppressed — silencing it would also silence a real future change to tha
 **Zero defects this pass.** Worth recording precisely because the reference layer had been
 verified for *mechanics* (§3j.113–114) while its *quotations* and *pictures* had not, and
 "we checked the artifacts" could easily have been taken to mean all three.
+
+### 3j.135 the last two reference datasets, and a pattern in my own failures
+
+**Bazaar dreams — 31/31.** Every dream line is verbatim in `BAZAAR_SEER_*`, and every stage
+attribution resolves correctly through the scene's `nameToken` and `stageOrder`.
+
+Two things that looked like errors and were not:
+
+- Four rows show `stageNumber: "—"` against scenedef orders of 93, 96, 96 and 99. The distinct
+  orders in the game are `1..6` for the stage loop and `93..100` for hidden realms (bazaar is
+  98, Gilded Coast 96, Void Locus 99). The dash is right; my check was naive about sentinels.
+- `BAZAAR_SEER_HELMINTH` has no scene called `helminth`. The scene is `helminthroost`, order 5,
+  and our row already says Helminth Hatchery / stage 5. A token-vs-scene naming difference,
+  not a data error.
+- The four `BAZAAR_SEER_*` tokens we do not publish are `_NAME`, `_LORE`, `_DESCRIPTION` and
+  `_CONTEXT` — the Seer's own label, not dreams.
+
+**Skill unlocks — 51/51.** Every `LOADOUT_UNLOCKS` challenge name resolves to a real
+achievement and every requirement string matches `ACHIEVEMENT_*_DESCRIPTION` verbatim. The
+52nd is flagged `noUnlockRequired` and correctly carries no challenge. `data:audit` had been
+cross-checking the 49 ITEM unlocks all along; the skill unlocks on the survivor pages — equally
+actionable — had never been checked.
+
+#### The pattern worth naming, because it is mine
+
+Three scripts this pass, three under-reaching parsers:
+
+| attempt | parsed | actual | why |
+|---|---|---|---|
+| shrine verbatim | 9 | 12 | regex assumed `cost` and `description` adjacent; the `mechanic` blocks I added in §3j.114 sit between |
+| dream stages | 0 | 31 | treated `scenedefs.json` as a list of dicts; it is a dict keyed by scene name |
+| skill unlocks | 2 | 52 | assumed a field order the data does not use |
+
+Every one would have printed **"0 mismatches."** Every one was caught by the same line of
+output — the count of what was actually compared, next to the count of what failed.
+
+That is now six times in this session that a check was about to certify a dataset it had barely
+read. The lesson has stopped being *"remember to print the denominator"* and become something
+sharper: **a parser I wrote from memory of a file's shape is wrong more often than the data it
+is checking.** In this pass, three for three — and the data was clean all three times.
