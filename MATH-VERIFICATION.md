@@ -6911,3 +6911,49 @@ That is now six times in this session that a check was about to certify a datase
 read. The lesson has stopped being *"remember to print the denominator"* and become something
 sharper: **a parser I wrote from memory of a file's shape is wrong more often than the data it
 is checking.** In this pass, three for three — and the data was clean all three times.
+
+### 3j.136 auditing the machinery, because that is where the defects now are
+
+Three consecutive passes found zero data errors while finding real bugs in the verification
+code every time. That is evidence about where to look, so this pass audited the tooling
+directly rather than the dataset.
+
+#### The bug class, hunted deliberately
+
+§3j.133's Ambry failure had a shape worth naming: **a hardcoded content list that did not grow
+with the game.** Three bundle globs, three missing codes, and a clean "16/16" derived from the
+same incomplete scan. So: which other scripts carry one?
+
+Of 25 scripts that glob, all but two scan complete sets (`*.json` language files, recursive
+`**/*.cs`, `*.bundle`). The two narrowed ones — `extract-loadouts.py` and
+`extract-skill-unlocks.py` — resolve their bundle from `bodies.json` rather than a literal, so
+they are data-driven and safe.
+
+But `extract-loadouts.py` iterates a **hardcoded `SURVIVOR_BODY` map of 19 entries.** It is
+correct today. A twentieth survivor would be skipped silently, `skills.json` would be short a
+roster entry, and every script involved would still report success.
+
+#### Two completeness checks that did not exist
+
+`crossCheckCompleteness` has asserted since §6A that every droppable game item is present.
+There was no equivalent for the roster or for skills — the two datasets fed by that hardcoded
+map.
+
+- **Roster completeness**: 19 SurvivorDefs, compared by `cachedName` rather than count (§3j.130).
+  Proven by injecting a twentieth survivor.
+- **Skill completeness**: all 19 loadouts compared against `loadouts_final.json`, both
+  directions. Proven by deleting Commando's Frag Grenade.
+
+The skill check encodes the Heretic exception explicitly (§3j.132): her four Heresy-item skills
+are expected, and `Nevermore` is expected to be *absent*. A naive version of this check would
+report her wrong in both directions and invite someone to "fix" correct data — so the knowledge
+lives in the check rather than in a comment nobody reads.
+
+`data:verify` now reports **eleven** cross-checks, each with its denominator.
+
+#### The shape of the remaining risk
+
+Every check added in the last several passes has the same purpose: making a hardcoded or
+hand-maintained list fail loudly when the game moves past it. That is the entire residual risk
+profile of this project now — not wrong numbers, but **right numbers about a game that has
+changed**, and lists that quietly describe the version they were written for.

@@ -567,6 +567,104 @@ function crossCheckAmbry(): { drift: string[]; compared: number } {
   return { drift, compared };
 }
 
+/**
+ * Roster completeness: every SurvivorDef the game ships is on the site.
+ *
+ * `crossCheckCompleteness` has asserted this for ITEMS since §6A — every droppable game item
+ * is present. There was no equivalent for survivors, and the extraction pipeline makes that
+ * matter: `scripts/extract-loadouts.py` iterates a HARDCODED `SURVIVOR_BODY` map of 19
+ * entries. A twentieth survivor would be skipped silently, `skills.json` would be short a
+ * roster entry, and every script involved would report success — the same shape as the
+ * Ambry cracker's three hardcoded bundles hiding three codes (MATH-VERIFICATION §3j.133).
+ *
+ * Compared by `cachedName`, because counts agreeing proves nothing (§3j.130).
+ */
+function crossCheckRoster(): { drift: string[]; compared: number } {
+  const drift: string[] = [];
+  const path = join(root, ".gamedata", "survivordefs.json");
+  if (!existsSync(path)) return { drift, compared: 0 };
+  const defs = JSON.parse(readFileSync(path, "utf8")) as Array<{
+    cachedName?: string;
+    hidden?: number;
+  }>;
+  if (!Array.isArray(defs) || defs.length === 0) return { drift, compared: 0 };
+
+  // survivors.json stores ids; SURVIVOR_TRUTH maps id -> body ("CommandoBody"), and a
+  // SurvivorDef's cachedName is that body without the suffix.
+  const ourBodies = new Set(
+    Object.values(SURVIVOR_TRUTH).map((t) => t.body.replace(/Body$/, "")),
+  );
+  const gameNames = new Set(defs.map((d) => d.cachedName).filter(Boolean) as string[]);
+
+  for (const g of gameNames) {
+    if (!ourBodies.has(g)) drift.push(`${g}: in the game's SurvivorDefs but not on the site`);
+  }
+  for (const o of ourBodies) {
+    if (!gameNames.has(o)) drift.push(`${o}: on the site but not a SurvivorDef any more`);
+  }
+  return { drift, compared: gameNames.size };
+}
+
+/**
+ * Skill completeness: every loadout skill the game ships is on the survivor pages.
+ *
+ * The last dataset with no automated completeness check. `extract-loadouts.py` writes
+ * `loadouts_final.json` from the game; `skills.json` is what the site renders, and nothing
+ * compared them.
+ *
+ * ONE DELIBERATE DIVERGENCE, and it must stay (§3j.132). `HereticBody` ships
+ * `HereticDefaultSkill` — displayName "Nevermore", state `EntityStates.Heretic.Weapon.Squawk`
+ * — in all four slots. It is a placeholder: becoming Heretic requires all four Heresy lunar
+ * items, each of which replaces a slot, so no player ever sees it. The site lists the four
+ * skills those items grant instead, which is more correct than the loadout table. A naive
+ * completeness check reports Heretic wrong in both directions; this one knows why.
+ */
+function crossCheckSkills(): { drift: string[]; compared: number } {
+  const drift: string[] = [];
+  const path = join(root, ".gamedata", "loadouts_final.json");
+  const oursPath = join(root, "src", "data", "skills.json");
+  if (!existsSync(path) || !existsSync(oursPath)) return { drift, compared: 0 };
+
+  const game = JSON.parse(readFileSync(path, "utf8")) as Record<
+    string,
+    { slots?: Record<string, Array<{ displayName?: string }>> }
+  >;
+  const ours = JSON.parse(readFileSync(oursPath, "utf8")) as Array<{
+    survivor: string;
+    skills: Array<{ name: string }>;
+  }>;
+  const oursBy = new Map(ours.map((w) => [w.survivor, new Set(w.skills.map((s) => s.name))]));
+
+  let compared = 0;
+  for (const [sid, entry] of Object.entries(game)) {
+    const mine = oursBy.get(sid);
+    if (!mine) {
+      drift.push(`${sid}: in loadouts_final.json but absent from skills.json`);
+      continue;
+    }
+    const theirs = new Set<string>();
+    for (const list of Object.values(entry.slots ?? {})) {
+      for (const s of list) if (s.displayName) theirs.add(s.displayName);
+    }
+    // Heretic's placeholder is expected to be absent, and her four item-granted skills are
+    // expected to be absent from the game's table. Anything else is a real gap.
+    if (sid === "heretic") {
+      if (mine.size !== 4) drift.push(`heretic: expected the 4 Heresy skills, found ${mine.size}`);
+      if (mine.has("Nevermore")) drift.push("heretic: Nevermore placeholder must not be listed");
+      compared++;
+      continue;
+    }
+    compared++;
+    for (const t of theirs) {
+      if (!mine.has(t)) drift.push(`${sid}: game has "${t}", site does not`);
+    }
+    for (const m of mine) {
+      if (!theirs.has(m)) drift.push(`${sid}: site has "${m}", game's loadout does not`);
+    }
+  }
+  return { drift, compared };
+}
+
 function main() {
   let mismatches = 0;
   const codeMiss: string[] = [];
@@ -615,6 +713,28 @@ function main() {
   const survivorBad = checkSurvivors();
   const nSurv = Object.keys(SURVIVOR_TRUTH).length;
   console.log(`\n${nSurv} survivors x 10 base-stat fields checked against prefab truth.`);
+  // --- loadout skill completeness ---
+  const sk = crossCheckSkills();
+  if (sk.compared === 0) {
+    console.log("Skill completeness: skipped (.gamedata/loadouts_final.json absent).");
+  } else if (sk.drift.length === 0) {
+    console.log(`Skill completeness: ${sk.compared} survivors' loadouts match the game. \u2713`);
+  } else {
+    console.log("\n\u26a0 Skills differ from the game's loadouts:");
+    for (const d of sk.drift) console.log(`  - ${d}`);
+  }
+
+  // --- survivor roster completeness ---
+  const roster = crossCheckRoster();
+  if (roster.compared === 0) {
+    console.log("Roster completeness: skipped (.gamedata/survivordefs.json absent).");
+  } else if (roster.drift.length === 0) {
+    console.log(`Roster completeness: ${roster.compared} SurvivorDefs, all present. \u2713`);
+  } else {
+    console.log("\n\u26a0 Roster differs from the game:");
+    for (const d of roster.drift) console.log(`  - ${d}`);
+  }
+
   // --- Ambry codes vs the dialer's own hashes ---
   const ambry = crossCheckAmbry();
   if (ambry.compared === 0) {
