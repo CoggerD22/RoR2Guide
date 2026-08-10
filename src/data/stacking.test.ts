@@ -2046,3 +2046,38 @@ test("every tier is renderable — TIER_ORDER covers the schema and the data", (
   expect(TIER_ORDER.length).toBeGreaterThanOrEqual(12);
   expect(used.length).toBeGreaterThanOrEqual(12);
 });
+
+/**
+ * §3j.138 — CI printed a claim it had not checked.
+ *
+ * `data:verify` checks the datasets in two stages: against a transcribed truth table inside
+ * the script (always), and against a fresh extraction from the game (only where `.gamedata/`
+ * and `.decompiled/` exist). Those are git-ignored — Gearbox's data — so in CI the second
+ * stage never runs. Nine of twelve checks report "skipped".
+ *
+ * It then printed "✓ survivors.json matches the game's body prefabs" regardless. In CI that
+ * sentence described a comparison that had not happened: what matched was a hand-written
+ * table, which is a transcription of the game, not the game.
+ *
+ * This pins the distinction so the qualified wording cannot quietly go back to the confident
+ * wording — the exact failure mode of a stale hedge (§3j.114), pointed the other way.
+ */
+test("data:verify distinguishes the transcribed table from the game itself", async () => {
+  const src = readFileSync("scripts/data-verify.ts", "utf8");
+
+  // Both wordings must exist: the confident one for a full local run, the qualified one for
+  // a run with no game data.
+  expect(src).toMatch(/matches the game's body prefabs/);
+  expect(src).toMatch(/matches the transcribed survivor table/);
+  expect(src).toMatch(/Not the same as matching the GAME/);
+
+  // And the choice between them must be made by counting what ran, not assumed.
+  expect(src).toMatch(/game cross-checks ran/);
+  expect(src).toMatch(/skipped\.length === 0/);
+
+  // CLAUDE.md must not undersell the local-only tier either: it claimed three rules when
+  // data:verify alone contributes seven.
+  const claude = readFileSync("CLAUDE.md", "utf8");
+  expect(claude).toMatch(/all seven game cross-checks/i);
+  expect(claude).toMatch(/a green CI badge does not cover the game comparison/i);
+});

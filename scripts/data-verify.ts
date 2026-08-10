@@ -728,8 +728,18 @@ function main() {
   const survivorBad = checkSurvivors();
   const nSurv = Object.keys(SURVIVOR_TRUTH).length;
   console.log(`\n${nSurv} survivors x 10 base-stat fields checked against prefab truth.`);
+  // Which GAME cross-checks actually ran. Everything below needs `.gamedata/` or
+  // `.decompiled/`, and both are Gearbox's data that must never be committed (CLAUDE.md), so
+  // in CI they are all absent. That is a permanent, documented limit — but the SUMMARY at the
+  // bottom used to print "survivors.json matches the game's body prefabs" regardless, which
+  // in CI was a claim about a comparison that had been skipped (MATH-VERIFICATION §3j.138).
+  const ran: string[] = [];
+  const skipped: string[] = [];
+  const note = (name: string, didRun: boolean) => (didRun ? ran : skipped).push(name);
+
   // --- loadout skill completeness ---
   const sk = crossCheckSkills();
+  note("skill completeness", sk.compared > 0);
   if (sk.compared === 0) {
     console.log("Skill completeness: skipped (.gamedata/loadouts_final.json absent).");
   } else if (sk.drift.length === 0) {
@@ -741,6 +751,7 @@ function main() {
 
   // --- survivor roster completeness ---
   const roster = crossCheckRoster();
+  note("roster completeness", roster.compared > 0);
   if (roster.compared === 0) {
     console.log("Roster completeness: skipped (.gamedata/survivordefs.json absent).");
   } else if (roster.drift.length === 0) {
@@ -752,6 +763,7 @@ function main() {
 
   // --- Ambry codes vs the dialer's own hashes ---
   const ambry = crossCheckAmbry();
+  note("Ambry codes", ambry.compared > 0);
   if (ambry.compared === 0) {
     console.log("Ambry codes: skipped (run python scripts/crack-ambry-codes.py locally).");
   } else if (ambry.drift.length === 0) {
@@ -763,6 +775,7 @@ function main() {
 
   // --- item tier + dlc vs the game's defs ---
   const tiers = crossCheckTiers();
+  note("tier + dlc", tiers.compared > 0);
   if (tiers.compared === 0) {
     console.log("Tier/DLC: skipped (needs .gamedata/itemdefs.json — run extract-itemdefs.py).");
   } else if (tiers.drift.length === 0 && tiers.compared === tiers.total) {
@@ -779,6 +792,7 @@ function main() {
 
   // --- equipment cooldowns vs EquipmentDef.cooldown ---
   const cd = crossCheckCooldowns();
+  note("equipment cooldowns", cd.compared > 0);
   if (cd.compared === 0) {
     console.log(
       "Equipment cooldowns: skipped (needs .gamedata/component-fields.json — run " +
@@ -831,8 +845,31 @@ function main() {
     console.error(`\n✗ ${total} mismatch(es) vs game truth (${mismatches} item coefficient, ${survivorBad} survivor stat).`);
     process.exit(1);
   }
-  console.log("\n✓ statItems.ts matches the code-derived coefficients.");
-  console.log("✓ survivors.json matches the game's body prefabs.");
+
+  // SAY WHAT ACTUALLY RAN. Both claims below are about the GAME, and both are checked in two
+  // stages: against a transcribed truth table (always), and against a fresh extraction (only
+  // where the game data is present). With `.gamedata/` absent — every CI run — only the first
+  // stage happens, and printing the unqualified sentence turns a transcription into a claim
+  // about the game itself.
+  note("live prefab cross-check", existsSync(BODIES));
+  note("live decompiled grep", !!source);
+  const liveGame = ran.length > 0;
+  console.log(
+    `\n${ran.length} of ${ran.length + skipped.length} game cross-checks ran` +
+      (skipped.length ? `; skipped: ${skipped.join(", ")}` : ""),
+  );
+  if (liveGame && skipped.length === 0) {
+    console.log("✓ statItems.ts matches the code-derived coefficients.");
+    console.log("✓ survivors.json matches the game's body prefabs.");
+  } else {
+    console.log("✓ statItems.ts matches the transcribed coefficient table.");
+    console.log("✓ survivors.json matches the transcribed survivor table.");
+    console.log(
+      "  (Not the same as matching the GAME. The extractions are git-ignored — Gearbox's " +
+        "data — so the live comparisons only run on a machine with the game installed. " +
+        "Run `pnpm data:verify` locally before trusting a data change.)",
+    );
+  }
 }
 
 main();

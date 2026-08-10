@@ -99,7 +99,10 @@ left, bold white name, gray body with highlighted numeric values.
         whether the record mentions everything the code does, and re-reading all 13 artifact
         managers found three that did not (§3j.113). Shrine costs are prefab-derived, not
         editorial; 6 of 12 shrines carry a verified mechanic (§3j.114).
-      - `pnpm data:verify` locks coefficients and survivor stats, and runs in CI.
+      - `pnpm data:verify` runs in CI, but what it can prove THERE is narrower than the
+        name suggests: its seven game cross-checks all need the git-ignored extractions, so in
+        CI they skip and only the transcribed truth tables are compared. It now says so
+        (§3j.138). Locally, with the game installed, all seven run.
       - Every record carries a `confidence` tag (code > asset > langfile > wiki),
         badged in the codex. Nothing is wiki-only any more.
       - Proc coefficients: `src/data/skills.json`, **106/125** loadout skills verified with
@@ -139,11 +142,20 @@ left, bold white name, gray body with highlighted numeric values.
         published base; blast radius without a falloff model; hit-count claims vs all three
         `OverlapAttack` escapes; the invented term `levelScale`; stale verification
         vocabulary ("logbook"); Status counts vs the data; schema fields vs `PLAN.md`.
-      - **Local only** — needs the game install, so CI reports them skipped rather than
-        passed: internal-name collisions, coined terms absent from the decompile, and unlock
-        gating. `.decompiled/` and `.gamedata/` are Gearbox's data and must never be
-        committed (rule above), so this is a permanent limit, not a TODO. Run
-        `pnpm data:audit` locally before pushing data work.
+      - **Local only** — needs the game install, so CI reports them SKIPPED, not passed.
+        `data:audit`: internal-name collisions, coined terms absent from the decompile,
+        unlock gating. `data:verify`: **all seven game cross-checks** — skill completeness,
+        roster completeness, Ambry codes, tier + dlc, equipment cooldowns, the live prefab
+        cross-check and the live decompiled grep. `.decompiled/` and `.gamedata/` are
+        Gearbox's data and must never be committed (rule above), so this is a permanent
+        limit, not a TODO.
+
+        **What CI can therefore prove is narrower than it looks.** With no game data,
+        `data:verify` compares our JSON to the *transcribed truth tables in the script*, not
+        to the game — and it used to print "survivors.json matches the game's body prefabs"
+        anyway (§3j.138). It now prints how many cross-checks ran and qualifies the claim as
+        the table rather than the game. Run `pnpm data:audit` AND `pnpm data:verify` locally
+        before pushing data work; a green CI badge does not cover the game comparison.
 
 ### Next up
 

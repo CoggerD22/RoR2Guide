@@ -6999,3 +6999,58 @@ it cannot pass by emptying both sides. Proven by removing `food`.
 Three passes ago the finding was that guards can be narrow. Two passes ago, that they can be
 unmatchable. Now: that they can be **honest about their own coverage and still not act on it.**
 Each is the same defect one level up — the check exists, runs, reports, and does not bind.
+
+### 3j.138 CI printed a claim it had not checked
+
+The ladder continued. Narrow selectors, then unmatchable ones, then guards that report their
+coverage without acting on it. This rung: **a guard that binds, runs, and still ends by
+asserting something it did not verify.**
+
+`data:verify` checks each dataset in two stages — against a transcribed truth table inside the
+script, and against a fresh extraction from the game. The extractions are git-ignored, because
+they are Gearbox's data and must never be committed. So in CI the second stage never happens.
+
+Simulated a CI run by hiding `.gamedata/` and `.decompiled/`:
+
+```
+9 of 12 checks: skipped
+✓ statItems.ts matches the code-derived coefficients.
+✓ survivors.json matches the game's body prefabs.
+EXIT 0
+```
+
+**That second sentence was false in CI.** The live prefab cross-check had just printed
+"skipped" four lines above it. What actually matched was `SURVIVOR_TRUTH`, a hand-written table
+in the script — a *transcription* of the game, which is exactly the thing the extraction exists
+to check.
+
+Every CI run since those checks were written has ended by claiming a comparison against the
+game that did not occur.
+
+Now it counts what ran and words the conclusion accordingly:
+
+```
+0 of 7 game cross-checks ran; skipped: skill completeness, roster completeness, Ambry codes,
+tier + dlc, equipment cooldowns, live prefab cross-check, live decompiled grep
+✓ statItems.ts matches the transcribed coefficient table.
+✓ survivors.json matches the transcribed survivor table.
+  (Not the same as matching the GAME…)
+```
+
+Locally, with the game present, it still prints `7 of 7` and the confident wording.
+
+`CLAUDE.md` understated this too: the local-only tier was documented as three `data:audit`
+rules, when `data:verify` alone contributes **seven** more, and the Status line said
+`data:verify` "locks coefficients and survivor stats, and runs in CI" — true in every word and
+misleading as a whole. Both corrected, and pinned by a test asserting both wordings exist and
+that the choice between them is made by counting.
+
+#### What this rung actually is
+
+The previous four findings were about a check not looking hard enough. This one is about a
+check **summarising itself generously** — the gap between what a run did and what its last line
+says. A reader takes the last line.
+
+That makes it the same defect as a stale hedge (§3j.114), inverted: there, caution outlived its
+reason; here, confidence outran its evidence. **Both are a sentence that was true when written
+and describes a different situation now.**
