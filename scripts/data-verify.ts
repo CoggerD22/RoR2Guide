@@ -409,7 +409,16 @@ function crossCheckCooldowns(): { drift: string[]; compared: number; total: numb
   let compared = 0;
   for (const it of withCooldown) {
     const raw = tokenOf.get(it.name);
-    if (!raw) continue;
+    if (!raw) {
+      // A REPORTED denominator is not an ENFORCED one. This used to `continue`, so an
+      // equipment whose display name stopped resolving simply left the comparison and the
+      // line still printed a tick — "41/42 checked ✓" reads as success (§3j.137).
+      drift.push(
+        `${it.name}: no EQUIPMENT_*_NAME token matches this name, so its cooldown was ` +
+          `never checked — add an alias to EQUIPMENT_TOKEN_ALIAS or fix the name`,
+      );
+      continue;
+    }
     const key = EQUIPMENT_TOKEN_ALIAS[raw] ?? raw;
     const gameCd = game.get(key);
     if (gameCd === undefined) {
@@ -510,7 +519,10 @@ function crossCheckTiers(): { drift: string[]; compared: number; total: number }
     const isEquip = it.tier === "equipment" || it.tier === "lunar-equipment";
     if (isEquip) {
       const g = eqByName.get(it.name);
-      if (!g) continue;
+      if (!g) {
+        drift.push(`${it.name}: no EquipmentDef resolved, so tier/dlc were never checked`);
+        continue;
+      }
       compared++;
       const expect = g.isLunar ? "lunar-equipment" : "equipment";
       if (it.tier !== expect) {
@@ -520,7 +532,10 @@ function crossCheckTiers(): { drift: string[]; compared: number; total: number }
       continue;
     }
     const g = itemByName.get(it.name);
-    if (!g) continue;
+    if (!g) {
+      drift.push(`${it.name}: no ItemDef resolved, so tier/dlc were never checked`);
+      continue;
+    }
     compared++;
     const expect = g.tier ? TIER_FROM_GAME[g.tier] : undefined;
     if (!expect) {
@@ -750,8 +765,13 @@ function main() {
   const tiers = crossCheckTiers();
   if (tiers.compared === 0) {
     console.log("Tier/DLC: skipped (needs .gamedata/itemdefs.json — run extract-itemdefs.py).");
-  } else if (tiers.drift.length === 0) {
+  } else if (tiers.drift.length === 0 && tiers.compared === tiers.total) {
     console.log(`Tier + DLC: ${tiers.compared}/${tiers.total} checked against ItemDef/EquipmentDef. \u2713`);
+  } else if (tiers.drift.length === 0) {
+    console.log(
+      `\n\u26a0 Tier + DLC: only ${tiers.compared} of ${tiers.total} were compared — ` +
+        `the rest were skipped, which is not the same as passing.`,
+    );
   } else {
     console.log("\n\u26a0 Tier/DLC differ from the game:");
     for (const d of tiers.drift) console.log(`  - ${d}`);
@@ -764,8 +784,13 @@ function main() {
       "Equipment cooldowns: skipped (needs .gamedata/component-fields.json — run " +
         "`python scripts/extract-component-fields.py cooldown` locally).",
     );
-  } else if (cd.drift.length === 0) {
+  } else if (cd.drift.length === 0 && cd.compared === cd.total) {
     console.log(`Equipment cooldowns: ${cd.compared}/${cd.total} checked against EquipmentDef. \u2713`);
+  } else if (cd.drift.length === 0) {
+    console.log(
+      `\n\u26a0 Equipment cooldowns: only ${cd.compared} of ${cd.total} were compared — ` +
+        `the rest were skipped, which is not the same as passing.`,
+    );
   } else {
     console.log("\n\u26a0 Equipment cooldowns differ from the game:");
     for (const d of cd.drift) console.log(`  - ${d}`);

@@ -6957,3 +6957,45 @@ Every check added in the last several passes has the same purpose: making a hard
 hand-maintained list fail loudly when the game moves past it. That is the entire residual risk
 profile of this project now — not wrong numbers, but **right numbers about a game that has
 changed**, and lists that quietly describe the version they were written for.
+
+### 3j.137 a reported denominator is not an enforced one
+
+The previous pass ended on a claim: the residual risk is hand-maintained lists that quietly
+describe the version they were written for. This pass tested that claim against the checks
+themselves, and found the checks had the same weakness they were built to catch.
+
+#### Printing the number is not the same as requiring it
+
+Six times this session a check was caught about to certify a dataset it had barely read, and
+the fix each time was to print how much was compared. But `data:verify` only *printed* it:
+
+```
+if (!raw) continue;      // cooldowns: name did not resolve
+if (!g) continue;        // tier/dlc: no ItemDef / EquipmentDef found
+```
+
+Three silent-skip sites. An item the game renamed, or a new equipment whose token does not
+match its display name, simply left the comparison — and the line still printed
+`41/41 ✓`, because the denominator was **recomputed from what was reachable** rather than from
+what exists. A partial run and a complete run are the same output.
+
+All three now push a named failure instead, and the reporting requires `compared === total`
+before printing a tick. Proven by renaming Crowbar and Jade Elephant so they resolve to
+nothing: previously silent, now three explicit failures naming the item and the fix.
+
+#### A tier the codex would not show
+
+`TIER_META` is `Record<Tier, TierMeta>`, so the compiler forces an entry for every tier in the
+schema. `TIER_ORDER` is a plain `Tier[]` — omit a tier and it compiles, the codex never renders
+that group, and **every item in it is invisible on the page while perfectly correct in the
+data.** Every check this project has would pass, because they all ask whether the data is right
+rather than whether the page shows it.
+
+Guarded from both directions — schema tiers and tiers actually used by items — with a floor so
+it cannot pass by emptying both sides. Proven by removing `food`.
+
+#### The shape
+
+Three passes ago the finding was that guards can be narrow. Two passes ago, that they can be
+unmatchable. Now: that they can be **honest about their own coverage and still not act on it.**
+Each is the same defect one level up — the check exists, runs, reports, and does not bind.

@@ -1,7 +1,7 @@
 import { describe, expect, it, test } from "vitest";
 // The Zod-validated export, not the raw JSON — so these assertions run against the
 // same typed data the app consumes.
-import { items } from "./items";
+import { items, TIER_ORDER, TIER_META } from "./items";
 import { perStackMeaning, hyperbolicCurve } from "@/lib/stacking";
 import { ARTIFACTS, SHRINES } from "./reference";
 import { STAT_ITEMS } from "./statItems";
@@ -2010,4 +2010,39 @@ test("the Heretic page explains why her kit comes from items", async () => {
   expect(src).toMatch(/no fixed kit/i);
   expect(src).toMatch(/all four Heresy/i);
   expect(src).toMatch(/replaces one skill slot/i);
+});
+
+/**
+ * §3j.137 — a tier the codex would not show.
+ *
+ * `TIER_META` is `Record<Tier, TierMeta>`, so TypeScript forces every tier in the schema
+ * enum to have one. `TIER_ORDER` is a plain `Tier[]`: a tier omitted from it compiles fine,
+ * and the codex simply never renders that group. Every item in it would be invisible on the
+ * page while present in the data, passing every check this project has — because every check
+ * asks whether the DATA is right, not whether the page shows it.
+ *
+ * Same family as the binding-denominator work in `data:verify`: a list that is
+ * hand-maintained fails quietly when the game grows past it.
+ */
+test("every tier is renderable — TIER_ORDER covers the schema and the data", () => {
+  const declared = Object.keys(TIER_META) as Array<keyof typeof TIER_META>;
+  const ordered = new Set(TIER_ORDER);
+
+  const unrenderable = declared.filter((t) => !ordered.has(t));
+  expect(
+    unrenderable,
+    `these tiers exist but the codex never groups them: ${unrenderable.join(", ")}`,
+  ).toEqual([]);
+
+  // And nothing in the data may fall outside the ordering either.
+  const used = [...new Set(items.map((i) => i.tier))];
+  const homeless = used.filter((t) => !ordered.has(t));
+  expect(
+    homeless,
+    `items carry tiers the codex cannot show: ${homeless.join(", ")}`,
+  ).toEqual([]);
+
+  // Coverage floor (§3j.110), so a shrunken TIER_ORDER cannot pass by emptying both sides.
+  expect(TIER_ORDER.length).toBeGreaterThanOrEqual(12);
+  expect(used.length).toBeGreaterThanOrEqual(12);
 });
