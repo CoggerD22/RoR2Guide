@@ -7054,3 +7054,56 @@ says. A reader takes the last line.
 That makes it the same defect as a stale hedge (§3j.114), inverted: there, caution outlived its
 reason; here, confidence outran its evidence. **Both are a sentence that was true when written
 and describes a different situation now.**
+
+### 3j.139 the browser tests did not gate publication
+
+Next rung, and the last one that was still load-bearing: **a guard that names the right
+property and asserts a weaker one.**
+
+`deploy.yml` triggers on `push: branches: [main]` with no `needs:` and no `workflow_run`
+dependency, so a push starts CI and deploy **in parallel**. A previous pass already found this
+and duplicated typecheck, `data:audit`, `data:verify` and `test:unit` into the deploy job, with
+a comment explaining exactly why: *"a failing audit in CI would not have stopped this job from
+publishing."*
+
+The reasoning was right and the fix stopped one step short. **Playwright was left in `ci.yml`
+only.** So a change that broke the rendered page would fail CI and deploy anyway.
+
+That is not hypothetical for these particular tests. Two of the 46 were verified by deliberate
+breakage earlier in this session:
+
+- the **non-affiliation disclaimer** (rule #6) actually rendering — §3j.116
+- the **amber callout** that carries every correction in this log appearing on the page at all
+  — §3j.123; removing it fails one browser test and zero unit tests
+
+Both are invisible to `test:unit`, because a unit test can confirm `descriptionNote` holds the
+right sentence and cannot confirm anyone will ever see it.
+
+#### The guard was complicit
+
+The test policing this is called *"the deploy workflow still gates publication on every runnable
+check"*. Its Playwright assertion read:
+
+```ts
+expect(ci, "Playwright must run somewhere").toContain("pnpm test");
+```
+
+**Somewhere is not the deploy path.** The guard had the right name, checked the wrong file, and
+passed — the same shape as §3j.109's falloff rule, one level up: correct intent, weaker
+assertion, green.
+
+Both fixed. `pnpm test` now runs in `deploy.yml` before the build (it starts its own dev server
+via `playwright.config.ts`, so it needs no build step), and the guard requires it there rather
+than anywhere. Proven by deleting the step.
+
+#### The ladder, complete
+
+| rung | the check… |
+|---|---|
+| §3j.109 | looked at too few rows |
+| §3j.120 | could not match anything at all |
+| §3j.137 | measured its coverage and did not act on it |
+| §3j.138 | ran, bound, and then overstated itself in the summary |
+| §3j.139 | was correct, ran, bound — and did not gate the thing it was for |
+
+Every rung passed green. The dataset was never the problem at any of them.

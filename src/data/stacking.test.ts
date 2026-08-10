@@ -1248,7 +1248,14 @@ test("the deploy workflow still gates publication on every runnable check", asyn
   // gate fast. But 46 end-to-end tests silently ceasing to run is the same failure, so
   // the other workflow needs a reader too.
   const ci = readFileSync(".github/workflows/ci.yml", "utf8");
-  expect(ci, "Playwright must run somewhere").toContain("pnpm test");
+  // "Somewhere" was the hole. This test is named for gating PUBLICATION, and it accepted
+  // Playwright running in ci.yml alone — while deploy.yml triggers on push to main
+  // independently, so a red CI run could not stop a publish (§3j.139).
+  expect(ci, "Playwright must run in CI").toContain("pnpm test");
+  expect(wf, "Playwright must ALSO gate the deploy, not just CI").toMatch(
+    /run:\s*pnpm test\s*$/m,
+  );
+  expect(wf, "deploy needs the browser installed to run them").toContain("playwright install");
   expect(ci, "unit tests must run in ci.yml too").toContain("pnpm test:unit");
   // And they must precede the build, or a failing check would still publish.
   const buildAt = wf.indexOf("pnpm build");

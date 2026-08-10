@@ -52,6 +52,26 @@ jobs:
       - name: Unit tests
         run: pnpm test:unit
 
+      # The browser tests gate PUBLICATION, not just CI.
+      #
+      # The steps above were added because deploy.yml triggers on push to main independently
+      # of ci.yml, so a failing check there could not stop this job. That reasoning was right
+      # and the fix was incomplete: Playwright was left in ci.yml only, and the guard that
+      # was supposed to enforce this settled for "Playwright must run somewhere".
+      #
+      # Somewhere is not the deploy path. These 46 tests catch things no unit test can — the
+      # non-affiliation disclaimer (rule #6) actually rendering, and the amber callout that
+      # carries every correction in MATH-VERIFICATION appearing on the page at all. Both were
+      # verified by deliberate breakage (§3j.116, §3j.123). A change that removes either would
+      # have deployed clean (§3j.139).
+      #
+      # `pnpm test` starts its own dev server via playwright.config.ts, so it needs no build.
+      - name: Install Playwright browser
+        run: pnpm exec playwright install --with-deps chromium
+
+      - name: Browser tests
+        run: pnpm test
+
       - name: Build
         run: pnpm build
 
