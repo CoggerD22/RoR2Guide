@@ -7247,3 +7247,49 @@ the code each covers.
 
 The other seven routes were already correct — one `h1` each, no skips, including the codex
 drawer opened over the grid, where a second `h1` would have been easy to introduce.
+
+### 3j.143 a queue, so that "Continue" converges instead of drifting
+
+Not a defect pass. This makes the method durable, because the method had a gap that only shows
+up under repetition: **each pass re-derived its target from memory.** Over one session that is
+mild inefficiency; over a hundred it is drift, repeats, and eventually inventing work to do.
+
+`AUDIT-BACKLOG.md` holds three lists — OPEN fronts, CLOSED fronts, DEFERRED decisions — and
+"Continue" now means *take the top OPEN front*. Two properties make it worth having rather than
+being another document to keep in sync:
+
+- **Every CLOSED front records its denominator.** 33 fronts, each with what was checked and how
+  much of it. "Checked the artifacts" is exactly the phrase that hid the fact that their
+  *quotations* and *pictures* had never been looked at (§3j.134).
+- **Every OPEN front states a specific question and a defect shape** before it can be worked
+  on. A front that says only "accessibility" produces a pass that wanders.
+
+Ten standing rules moved into `CLAUDE.md`, which is loaded every session and survives
+compaction. Each has an incident behind it rather than being general advice: print the
+denominator (§3j.126), verify the instrument before believing a block of defects (§3j.129),
+never change a value that is correct (§3j.129 again, from the other side), assume a passing
+breakage test means a weak mutation (§3j.116).
+
+Three of the ten are new, and address failure modes that only appear over many passes:
+
+- **A pass that finds nothing is a complete pass.** Commit the negative result, close the
+  front, stop. The pressure that produced the forty-icon near-miss is the felt need to return
+  a finding; making *nothing* a valid committable outcome removes it.
+- **Guard the class, not the instance, and only when the class can recur.** There are ~25
+  guards now. One protecting against a defect that cannot happen twice is pure upkeep and a
+  future false failure.
+- **When OPEN is empty, say so and stop.** Do not generate fronts. The honest continuations at
+  that point are a game patch, a DEFERRED decision, or in-game observation.
+
+#### The backlog is guarded, because every other document here has rotted
+
+`reference.ts` called the Ambry codes wiki-sourced after they were brute-forced. `PLAN.md`
+named the wiki as ground truth after the project stopped using it. `CLAUDE.md` documented three
+local-only rules when there were ten. All three were true when written.
+
+A backlog rots the same way, so the properties are asserted: all three sections present, every
+OPEN front carrying a **Question** and a **Defect**, every CLOSED row carrying a number, and
+`CLAUDE.md` pointing at it. Proven by adding a front with no defect shape.
+
+That guard immediately found six CLOSED rows with no numeric denominator — written minutes
+earlier, by me, under a rule requiring one. They now carry real counts.

@@ -72,6 +72,51 @@ milestone (M0 → M6) and do not pull in future-phase features early.
 - Commit data work tier-by-tier (one tier per PR/commit) so it can be spot-checked
   against the in-game logbook.
 
+## Audit method
+
+`AUDIT-BACKLOG.md` is the queue. **"Continue" means: take the top OPEN front, do one pass,
+update the backlog in the same commit.** These rules exist because each one has a specific
+incident behind it in `MATH-VERIFICATION.md` — they are not general advice.
+
+1. **State the target before touching anything**: the surface, the *specific question* being
+   asked of it (never "is it right" — that one is exhausted), and what a defect would look
+   like. Asking a different question of already-checked data is what found the SweetSpot
+   cliffs, the proc gap and the tier/DLC values (§3j.109, §3j.117, §3j.130).
+
+2. **Every check prints its denominator.** "0 mismatches" and "0 of 41 compared" must never be
+   the same output. Eight times in one session a check was about to certify a dataset it had
+   barely read; the count caught every one (§3j.126, §3j.142).
+
+3. **Verify the instrument before believing a block of defects.** A dataset this heavily
+   checked does not fail forty at a time. Confirm one finding by hand first — the icon
+   comparison reported 40 mismatches and all 40 files were correct (§3j.129).
+
+4. **Never change a value that is correct.** If the data is right and the tooling, prose or
+   documentation around it is wrong, fix that and say so. Most recent findings have been in
+   the apparatus, not the dataset.
+
+5. **Prove every new guard by deliberate breakage.** If the mutation passes, assume the
+   mutation was too weak rather than that the guard works — that assumption has been right
+   four times out of four (§3j.116, §3j.122).
+
+6. **A pass that finds nothing is a complete pass.** Commit the negative result, close the
+   front, stop. Do not open a second front to salvage it. "Checked X, found nothing" belongs
+   in the log and the commit message. Two consecutive empty passes on related fronts means
+   that area is exhausted — say so.
+
+7. **Guard the class, not the instance**, and only when the class can recur. A guard against a
+   defect that cannot happen again is upkeep and future false failures for no cover.
+
+8. **Full gate before every commit**: `typecheck`, `test:unit`, `data:audit`, `data:diff`,
+   `data:verify`, `playwright`, `build`. One pass per commit, pushed separately, with the
+   reasoning in the message.
+
+9. **Stop and ask only for scope changes** — a new schema field, a new UI surface — not for
+   corrections. See DEFERRED in the backlog for what that looks like.
+
+10. **When OPEN is empty, say so and stop.** Do not generate fronts to keep going. The honest
+    continuations then are a game patch, a decision from DEFERRED, or in-game observation.
+
 ## Design tokens
 
 Dark space-blue theme. Base surfaces `#0b1220`–`#101826`, luminous cyan-blue accent

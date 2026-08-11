@@ -1,0 +1,130 @@
+# Audit backlog
+
+The queue behind `Continue`. **Take the top OPEN front, do one pass, update this file in the
+same commit.** Findings and reasoning go in `MATH-VERIFICATION.md`; this file only tracks
+*what has been looked at, with what question, and how much of it*.
+
+Why it exists: after ~140 log entries there was no index of **fronts examined and exhausted**,
+only of defects found. That meant each pass re-derived its target from memory, which drifts,
+repeats, and eventually invents work. A denominator is recorded for every closed front so
+"checked" can never mean "glanced at" (§3j.126, §3j.142).
+
+---
+
+## OPEN
+
+Each entry names the **specific question** — not "is it right" — and what a defect would look
+like. A front without those two things is not ready to work on.
+
+### 1. Colour contrast
+**Question:** does every text/background pair in the dark theme meet WCAG AA (4.5:1 body,
+3:1 large text and UI borders)?
+**Defect:** `text-muted-foreground` on `bg-surface-2`, tier colours as text, or the amber
+correction callout falling below ratio — readable to me, unreadable to a low-vision user.
+**Note:** the tier palette is fixed by CLAUDE.md's design tokens; if a tier colour fails as
+*text*, the fix is where it's used, not the token.
+
+### 2. Keyboard operability — planner and Stat Lab
+**Question:** can every control be reached and operated by keyboard alone, in a sensible
+order? §3j.141 fixed the codex drawer only.
+**Defect:** a control reachable by mouse but not Tab; a focus order that jumps around the
+page; the planner's priority cycling or the Stat Lab's item steppers being mouse-only.
+
+### 3. Error paths
+**Question:** what does a user see when something fails — not when it works?
+**Defect:** a blank page or thrown error on: corrupted localStorage at the **top level**
+(`sanitizeEntry` handles bad *entries*, not a non-JSON blob), an unknown route, a missing
+icon at runtime, or a share link with a malformed query string.
+
+### 4. Dependency and bundle health
+**Question:** is anything shipped that shouldn't be, and is anything vulnerable or abandoned?
+**Defect:** a known CVE in a runtime dependency; the game-data extractors' Python deps leaking
+into the web bundle; a bundle large enough to matter on a phone.
+
+### 5. Remaining extractor failure modes
+**Question:** `check-extractor-health.py` measures four swallow classes for the *two main*
+extractors. What do the other ~38 scripts silently swallow?
+**Defect:** a bare `except: continue` that turns a parse failure into a shorter output, which
+looks identical to a game that contains less (the §3j.133 shape).
+
+### 6. Responsive layout
+**Question:** at 360px wide, is anything unreachable or overlapping?
+**Defect:** the codex filter row, the planner rail, or the Stat Lab's two-column layout
+clipping content with no scroll.
+
+### 7. `prerender-og` output
+**Question:** the build writes 217 item + 19 survivor + 1 home OG pages. Are they correct, or
+just present?
+**Defect:** wrong title/description per page, a stale template, or absolute URLs pointing at
+the wrong origin.
+
+---
+
+## CLOSED
+
+Closed means: examined with a stated question, denominator recorded, and either fixed or
+found sound. **Do not reopen without a genuinely different question** — that is what found
+SweetSpot cliffs and the proc gap in already-"checked" data.
+
+| Front | Denominator | Outcome | Ref |
+|---|---|---|---|
+| Item numbers & formulas | 217 items, 208 code/asset-traced | ratcheted by `coverage-floor.json` | §6A |
+| Item proc coefficients | 43/43 attack rows | closed from 8/41 | §3j.117–122 |
+| Damage chains vs prefab multipliers | 6 named projectiles | **2 real errors** (Resonance Disc 4×, Boomerang 124%) | §3j.119–120 |
+| Stacking `type` classification | 291 rows | all correct | §3j.127 |
+| Item tier + DLC | 217/217 | all correct, now enforced | §3j.130 |
+| Equipment cooldowns | 41/41, two independent extractors | all correct, now enforced | §3j.126, §3j.130 |
+| Icon file integrity | 237 files, magic bytes | **2 were HTML error pages** | §3j.129 |
+| Icon identity (items) | 217/217 rank test | all correct; 40 false alarms rejected | §3j.129 |
+| Icon identity (artifacts) | 20/20 | all correct | §3j.134 |
+| Void corruption pairs | 31/31, both directions | complete | §3j.132 |
+| Survivor roster | 19/19 by `cachedName` | complete, now enforced | §3j.136 |
+| Survivor base stats | 19 × 10 fields vs prefabs | correct; `acceleration` added | §3j.121, §3j.124 |
+| Flat-stat assumptions | 6 stats (armor, atk spd, crit, move, jump, shield) | correct *by luck*, now enforced | §3j.121, §3j.124 |
+| Skill completeness | 19 loadouts / 125 skills | complete, Heretic divergence pinned | §3j.132, §3j.136 |
+| Skill proc provenance | 125 skills | 0 genuinely unknown | §3j.115 |
+| Item unlock gating | 49/49 | correct | §3j.128 |
+| Skill unlock text | 51/51 verbatim | correct | §3j.135 |
+| Artifact mechanics | 20/20 | **3 records incomplete** | §3j.113 |
+| Artifact effect text | 20/20 verbatim | correct | §3j.134 |
+| Shrine costs | 12/12 prefab-derived | **2 errors** (Blood 93%, Chance per-attempt) | §3j.114 |
+| Shrine descriptions | 12/12 verbatim | correct | §3j.134 |
+| Ambry codes | 19/19 brute-forced, 16/16 attributed | correct; **4 tooling bugs** | §3j.133 |
+| Bazaar dreams | 31/31 verbatim + stage attribution | correct | §3j.135 |
+| Stat engine vs `RecalculateStats` | 8 stat targets, 14 modelled items, both armor branches | sound | §3j.121 |
+| Application logic | 13 lib modules + planner store; 21 new tests | **1 real bug** (1-char search) | §3j.123 |
+| Verbatim item descriptions | 217 vs language files | **1 rewritten** (Preon) | §3j.125 |
+| Component prose vs data | 4 duplicated claims | correct; duplication removed | §3j.125 |
+| Guard coverage & denominators | 4 population guards + 3 audit rules | **5-rung ladder of defects** | §3j.109–139 |
+| CI + deploy gating | 2 workflows, 17 steps | **browser tests didn't gate deploy** | §3j.139 |
+| Documentation accuracy | 3 documents, 6 stale claims | **wiki named as ground truth** | §3j.138, §3j.140 |
+| Modal focus management | 1 dialog, 3 required behaviours | **no focus handling at all** | §3j.141 |
+| Heading outline | 151 headings / 12 panel-views | **h1→h3 on 4 panels** | §3j.142 |
+| Extractor health | 1472 bundles, 224,435 MonoBehaviours | all swallow classes 0 | §3j.127 |
+
+---
+
+## DEFERRED — awaiting a decision, not a pass
+
+These are **scope changes, not corrections**. Nothing on the site is wrong because of them.
+
+1. **Publish steal-immunity and the other blacklist mechanics.** `ItemStealController` gates on
+   `AIBlacklist`/`BrotherBlacklist`: **55 of our items cannot be taken by Mithrix**. Same
+   family: `RebirthBlacklist` (7), `CannotSteal` (12), `CannotDuplicate` (9),
+   `CommandArtifactBlacklist` (2), `DevotionBlacklist` (4), `SacrificeBlacklist` (1),
+   `Cleansable` (2). Publishing means a schema field, 217 records, a UI surface, a `PLAN.md`
+   entry and a guard. §3j.131.
+2. **Opinion layer.** Built and parked (`src/components/guides/`, `src/content/guides.ts`,
+   `content/guides/_template.md`; `src/router.tsx` documents re-enabling). The missing piece is
+   written guides, and rule #7 means a human writes them.
+3. **In-game observation.** Behaviour under real play. Everything reachable by reading code and
+   assets has been read; nothing here substitutes for holding the item and watching the number.
+   §3j.98.
+
+---
+
+## When OPEN is empty
+
+Say so and stop. Do not generate fronts to keep going. The honest continuations at that point
+are a game patch (which the enforced cross-checks will surface), a decision from the DEFERRED
+list, or in-game observation.

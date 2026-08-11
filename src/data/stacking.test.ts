@@ -2088,3 +2088,52 @@ test("data:verify distinguishes the transcribed table from the game itself", asy
   expect(claude).toMatch(/all seven game cross-checks/i);
   expect(claude).toMatch(/a green CI badge does not cover the game comparison/i);
 });
+
+/**
+ * §3j.143 — the backlog has to stay honest, because every other document here has not.
+ *
+ * `reference.ts` claimed the Ambry codes were wiki-sourced after they were brute-forced.
+ * `PLAN.md` named the wiki as ground truth after the project stopped using it. `CLAUDE.md`
+ * documented three local-only rules when there were ten. Each was true when written.
+ *
+ * A backlog is the same kind of document and rots the same way, so the properties that make
+ * it useful are asserted rather than trusted: it exists, it has all three lists, and every
+ * OPEN front carries the two things rule 1 requires before a pass can start.
+ */
+test("the audit backlog is present and every open front is actionable", () => {
+  const backlog = readFileSync("AUDIT-BACKLOG.md", "utf8");
+
+  for (const section of ["## OPEN", "## CLOSED", "## DEFERRED"]) {
+    expect(backlog, `${section} missing from the backlog`).toContain(section);
+  }
+
+  // Rule 1: a front without a specific question and a defect shape is not ready to work on,
+  // so it must not sit at the top of the queue looking ready.
+  const open = backlog.slice(backlog.indexOf("## OPEN"), backlog.indexOf("## CLOSED"));
+  const fronts = [...open.matchAll(/^### \d+\.\s+(.+)$/gm)].map((m) => m[1].trim());
+  expect(fronts.length, "no OPEN fronts parsed — the section shape changed").toBeGreaterThan(0);
+
+  const blocks = open.split(/^### /m).slice(1);
+  const vague: string[] = [];
+  for (const b of blocks) {
+    const title = b.split("\n")[0].trim();
+    if (!/\*\*Question:\*\*/.test(b)) vague.push(`${title}: no **Question:**`);
+    if (!/\*\*Defect:\*\*/.test(b)) vague.push(`${title}: no **Defect:**`);
+  }
+  expect(vague, vague.join(" | ")).toEqual([]);
+
+  // Closed fronts must record how much was checked; "checked" without a denominator is the
+  // failure this whole method exists to prevent (§3j.126).
+  const closed = backlog.slice(backlog.indexOf("## CLOSED"), backlog.indexOf("## DEFERRED"));
+  const rows = [...closed.matchAll(/^\| (?!Front|---)([^|]+)\|([^|]+)\|/gm)];
+  expect(rows.length, "no CLOSED rows parsed").toBeGreaterThanOrEqual(25);
+  const noDenominator = rows
+    .filter(([, , denom]) => !/\d/.test(denom))
+    .map(([, front]) => front.trim());
+  expect(noDenominator, `closed without a denominator: ${noDenominator.join(", ")}`).toEqual([]);
+
+  // And CLAUDE.md must point at it, or "Continue" has no queue to read.
+  const claude = readFileSync("CLAUDE.md", "utf8");
+  expect(claude).toContain("AUDIT-BACKLOG.md");
+  expect(claude).toMatch(/## Audit method/);
+});
