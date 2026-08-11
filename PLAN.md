@@ -21,25 +21,37 @@ RoR2 currently has the base game plus **three** expansions:
 | Seekers of the Storm (Aug 2024) | Seeker, False Son, Chef; ~16 items; new stages/paths |
 | Alloyed Collective (Nov 2025) | Operator, Drifter; ~18 items (drone-focused meta); 7 drones; Artifact of Prestige; new final boss path |
 
-Current totals (per the actively-maintained wiki): roughly **183 items and 44
-equipment**, and **19 playable survivors** (11 base + Heretic + Railgunner, Void Fiend,
-Seeker, False Son, Chef, Operator, Drifter).
+Current totals, **counted from the game's own defs** rather than the wiki's approximations:
+**175 items and 42 equipment** (217 pickups in the codex), and **19 playable survivors**
+(11 base + Heretic + Railgunner, Void Fiend, Seeker, False Son, Chef, Operator, Drifter).
+The wiki's "roughly 183 and 44" stood here until the tier/DLC cross-check counted them
+per-item against `ItemDef`/`EquipmentDef` (§3j.130); `data:verify` now enforces both the
+totals and each item's tier every run.
 
 **Canonical data sources, in order of preference:**
-1. `riskofrain2.wiki.gg` — the actively maintained community wiki (updated through
-   Alloyed Collective). Use this as ground truth for effects, stacking formulas, and
-   item icons (256×256 PNGs on each item page / icon category).
-2. The user's own game install — `steamapps/common/Risk of Rain 2/Risk of Rain 2_Data/StreamingAssets/Language/en/`
-   contains the game's text as JSON (`Items.txt` etc. are JSON token files like
-   `"ITEM_BEAR_NAME": "Tougher Times"`). This gives *exact* in-game names, pickup
-   text, and full descriptions, straight from the source, always in sync with the
-   installed patch. Prefer this for names/descriptions; use the wiki for numbers,
-   stacking math, and icons.
-3. `riskofrain2.fandom.com` — mirror; acceptable fallback only.
+> ⚠️ **This list was the project's original plan and is now SUPERSEDED by §6A.2.** It is
+> kept because deleting it would hide a real reversal, but do not follow it. It named the
+> community wiki as source #1 and told a reader to "use this as ground truth for effects,
+> stacking formulas" — which is the exact opposite of the hierarchy the project settled on
+> after finding the wiki wrong repeatedly (MATH-VERIFICATION §3j.140). Anyone told to "read
+> PLAN.md in full before doing anything" reads this section first and §6A.2 a thousand lines
+> later, so the contradiction mattered.
+
+**The authoritative ranking is §6A.2**, summarised:
+
+1. **Decompiled C#** (`RoR2.dll`) — behaviour, formulas, order of operations.
+2. **Serialized asset fields** (prefabs, `*Def`s) — the numeric constants that ship. Code
+   gives the formula; assets supply its inputs, and one is useless without the other.
+3. **Language files** (`Language/en`) — quoted TEXT only. Never a source for behaviour or a
+   constant: a description proves what the game *says*, not what it *does* (§5.0.1).
+4. **Runtime observation** — last resort, must record method and build.
+5. **Community wiki** — authoritative for **nothing on its own**. A legitimate lead and
+   cross-check; an illegitimate source of record. Icons are the one exception, because the
+   file is the artefact and no factual claim is involved.
 
 **Data rule for the whole project:** never invent or guess a stat. Every number in
-`items.json` must be traceable to source 1 or 2. Anything unverified gets
-`"verified": false` and is visually flagged in dev builds.
+`items.json` must be traceable to the game's own code or assets, and carries a `confidence`
+tag saying which. Anything unverified is flagged in the UI rather than presented as fact.
 
 ---
 

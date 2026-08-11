@@ -7107,3 +7107,51 @@ than anywhere. Proven by deleting the step.
 | §3j.139 | was correct, ran, bound — and did not gate the thing it was for |
 
 Every rung passed green. The dataset was never the problem at any of them.
+
+### 3j.140 the source-of-truth document named the wrong source of truth
+
+Five passes of finding stale claims in `reference.ts`, `provenance.ts` and `CLAUDE.md` is a
+pattern, not three coincidences. The one document never audited for it was `PLAN.md` — the file
+`CLAUDE.md` opens by telling a reader to *"read in full before doing anything"*.
+
+**§1 and §6A.2 contradict each other outright.**
+
+§1, "Canonical data sources, in order of preference":
+
+> 1. `riskofrain2.wiki.gg` … **Use this as ground truth for effects, stacking formulas**…
+> 2. the language files … *"use the wiki for numbers, stacking math, and icons"*
+
+§6A.2, a thousand lines later:
+
+> | **T4** | Community wiki / internet | **Nothing, on its own.** |
+
+Both were true when written; only one is true now. And the ordering matters more than a
+footnote would, because a reader following the instruction meets §1 first — the section telling
+them to take numbers from the wiki is the section they read before anything else.
+
+The same reversal survived in three more places:
+
+- **`CLAUDE.md` rule #1**, a stated *non-negotiable*: data "must come from riskofrain2.wiki.gg
+  or the game's own language files". Both halves are now wrong — the wiki is a lead, not a
+  source, and a language file is quoted text, never a constant (§5.0.1). It also still told a
+  contributor to set `verified: false`, a field that has been **zero across all 217 items** for
+  many passes; a new one would be a signal, and the rule framed it as a placeholder.
+- **Rule #2**: "verify against the wiki when touching data."
+- **Working style**: "When fetching wiki pages for data entry, transcribe numbers exactly."
+
+All corrected to the hierarchy the project actually follows, with §1 left in place under an
+explicit SUPERSEDED banner rather than deleted — removing it would hide that the project
+reversed its position, which is the more interesting fact.
+
+**The counts were wiki approximations too.** §1 gave "roughly 183 items and 44 equipment". The
+game's own defs give **175 items and 42 equipment**, counted per-item in §3j.130 and enforced
+every run since. A round number sourced from a page, sitting in the section that told everyone
+to trust pages.
+
+#### Why this is the same finding as the last five
+
+The ladder in §3j.109–139 was about checks that pass while proving less than they claim. This
+is the documentation equivalent: **instructions that were accurate when written and now point
+the reader at the thing the project spent a hundred entries disproving.** A guard can be
+narrow; a rule can be stale; both fail silently, and both are believed precisely because they
+are the authoritative-looking thing in the room.

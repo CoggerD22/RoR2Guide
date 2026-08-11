@@ -6,14 +6,28 @@ milestone (M0 → M6) and do not pull in future-phase features early.
 
 ## Non-negotiable rules
 
-1. **Never invent game data.** Every stat, formula, and description in `/src/data`
-   must come from riskofrain2.wiki.gg or the game's own language files
-   (`Risk of Rain 2_Data/StreamingAssets/Language/en/*.txt` — these are JSON). If a
-   value can't be verified, set `"verified": false` and surface it in the audit
-   script; never fill in a plausible-sounding number.
+1. **Never invent game data.** The rule is unchanged; its SOURCES are not what this
+   line used to say. It named riskofrain2.wiki.gg first and the language files as "the
+   game", which PLAN §6A.2 has since inverted — the wiki is authoritative for **nothing
+   on its own**, and a language file proves what the game *says*, never what it *does*
+   (§5.0.1). Both remnants were still here after the whole dataset had moved off them
+   (MATH-VERIFICATION §3j.140).
+
+   Every stat and formula in `/src/data` must trace to the game's own **code**
+   (`.decompiled/`) or **serialized assets** (`.gamedata/`), and carries a `confidence`
+   tag recording which. Language files are for quoted TEXT — names, pickups,
+   descriptions — reproduced verbatim, typos included. The wiki is a lead to chase and a
+   cross-check to argue with, never a source of record; icons are the one exception,
+   because the file is the artefact and asserts nothing.
+
+   `items.json` currently has **zero** `verified: false` entries, so a new one is a
+   signal, not a placeholder: prefer leaving a value out over shipping a
+   plausible-sounding number, and never let a gap look like a fact.
 2. **The game has 3 DLCs as of 2026**: Survivors of the Void, Seekers of the Storm,
    Alloyed Collective (Nov 2025). Training-data knowledge of item counts, survivors,
-   and balance is stale — verify against the wiki when touching data.
+   and balance is stale — verify against the game's own defs, not against memory and not
+   against the wiki. `pnpm data:verify` counts items, equipment, survivors and skills
+   from ItemDef/EquipmentDef/SurvivorDef every run and fails if any drifts.
 3. **Stacking is an array, not an enum.** Items can have multiple stats with
    different stacking types (see Fuel Cell). Don't flatten the schema.
 4. **Void corruption pairs must be bidirectional** and validated (audit script fails
@@ -70,8 +84,10 @@ left, bold white name, gray body with highlighted numeric values.
 
 ## Working style
 
-- When fetching wiki pages for data entry, transcribe numbers exactly; paraphrase any
-  wiki prose that isn't verbatim in-game text.
+- Data entry is from the game, not from pages: numbers come from the decompile and the
+  serialized assets, quoted text from the language files verbatim (typos included). If the
+  wiki is consulted at all it is to find something worth verifying, and the verification is
+  what ships.
 - After each milestone, update the "Status" section below.
 
 ## Status
