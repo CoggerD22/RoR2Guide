@@ -33,6 +33,16 @@ function AmbryCode({ code }: { code: string | null }) {
 function Artifacts() {
   return (
     <div className="flex flex-col gap-3">
+      {/*
+        The panel's own heading. Every entry below is an h3, and without this the outline
+        went h1 -> h3: a screen-reader user navigating by heading got the page title and
+        then twenty artifact names with nothing saying where the artifacts began
+        (MATH-VERIFICATION §3j.142).
+
+        `sr-only` because the active tab already states this visually — the outline was the
+        thing missing, not the label. This changes nothing on screen.
+      */}
+      <h2 className="sr-only">Artifacts</h2>
       <SourceNote dataset="artifacts" />
       <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
       {ARTIFACTS.map((a) => (
@@ -84,6 +94,16 @@ function Artifacts() {
 function Dreams() {
   return (
     <div className="flex flex-col gap-3">
+      {/*
+        The panel's own heading. Every entry below is an h3, and without this the outline
+        went h1 -> h3: a screen-reader user navigating by heading got the page title and
+        then twenty artifact names with nothing saying where the artifacts began
+        (MATH-VERIFICATION §3j.142).
+
+        `sr-only` because the active tab already states this visually — the outline was the
+        thing missing, not the label. This changes nothing on screen.
+      */}
+      <h2 className="sr-only">Bazaar Dreams</h2>
       <SourceNote dataset="dreams" />
       <div className="overflow-hidden rounded-xl border border-border">
       <table className="w-full text-sm">
@@ -119,6 +139,16 @@ function Shrines() {
         cost compounds per use or that uses are capped. The verified mechanic layer
         below each quote is where those facts live.
       */}
+      {/*
+        The panel's own heading. Every entry below is an h3, and without this the outline
+        went h1 -> h3: a screen-reader user navigating by heading got the page title and
+        then twenty artifact names with nothing saying where the artifacts began
+        (MATH-VERIFICATION §3j.142).
+
+        `sr-only` because the active tab already states this visually — the outline was the
+        thing missing, not the label. This changes nothing on screen.
+      */}
+      <h2 className="sr-only">Shrines</h2>
       <SourceNote dataset="shrines" />
       {SHRINES.map((s) => (
         <div key={s.name} className="rounded-xl border border-border bg-surface p-4">
@@ -171,6 +201,16 @@ function LoadoutUnlocks() {
         exact text. Skins aren&rsquo;t listed. A survivor shown as having no alternates has
         been <em>verified</em> to have none, rather than simply not recorded.
       </p>
+      {/*
+        The panel's own heading. Every entry below is an h3, and without this the outline
+        went h1 -> h3: a screen-reader user navigating by heading got the page title and
+        then twenty artifact names with nothing saying where the artifacts began
+        (MATH-VERIFICATION §3j.142).
+
+        `sr-only` because the active tab already states this visually — the outline was the
+        thing missing, not the label. This changes nothing on screen.
+      */}
+      <h2 className="sr-only">Loadout Unlocks</h2>
       <SourceNote dataset="loadoutUnlocks" />
       {LOADOUT_UNLOCKS.map((s) => (
         <section key={s.survivor}>
@@ -239,6 +279,10 @@ export function ReferencePage() {
           <button
             key={t}
             type="button"
+            // Visual styling was the ONLY signal of which panel is showing. `aria-pressed`
+            // matches what the codex filter Chips already do, and unlike role="tab" it does
+            // not promise arrow-key navigation this control does not implement.
+            aria-pressed={tab === t}
             onClick={() => setTab(t)}
             className={cn(
               "rounded-md px-3 py-1.5 text-sm transition-colors",

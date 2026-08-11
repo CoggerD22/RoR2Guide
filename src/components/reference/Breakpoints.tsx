@@ -99,6 +99,9 @@ export function Breakpoints() {
 
   return (
     <div className="flex flex-col gap-8">
+      {/* Panel heading, sr-only — see the note in ReferencePage: every section below is an
+          h3, so without this the outline jumped h1 -> h3 (§3j.142). */}
+      <h2 className="sr-only">Breakpoints</h2>
       {/*
         Every curve on this page takes a stack count as its input, and nothing on the site
         had ever said what the game counts as a stack. `Inventory.UpdateEffectiveItemStacks`

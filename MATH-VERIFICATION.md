@@ -7204,3 +7204,46 @@ on a timeout, which looks exactly like "the fix does not work" — and the fix w
 That is the seventh time this session my own tooling was wrong where the thing under test was
 right. The habit that keeps saving it is the same one every time: **when a check fails, find out
 whether it ran before deciding what it proved.**
+
+### 3j.142 the heading outline — and an audit that inspected a fifth of its subject
+
+**Target:** the heading hierarchy of every route. **Question:** not "are there headings" but
+*can a screen-reader user navigate by heading and get a correct outline?* **Defect:** a page
+with no `h1`, more than one, or a skipped level — invisible on screen, incoherent to a screen
+reader.
+
+#### The finding
+
+`/reference` jumped **h1 → h3** on four of its five tab panels. Every entry (each artifact,
+each shrine, each survivor's unlocks, each breakpoint table) is an `h3` sitting directly under
+the page title, with no `h2` naming what the panel contains. Navigating by heading gave
+"Reference" followed by twenty artifact names and nothing saying where the artifacts began.
+
+Fixed with an `sr-only` `h2` per panel. The active tab already states which panel is showing
+**visually** — what was missing was the outline, so the fix changes nothing on screen.
+
+Second, smaller finding in the same control: the five tab buttons announced **no state at
+all**. Styling was the only signal of which panel was active. They now carry `aria-pressed`,
+matching what the codex filter Chips already do. Deliberately *not* `role="tab"` — that pattern
+promises arrow-key navigation this control does not implement, and claiming a role you do not
+honour is what §3j.141 was about.
+
+#### The audit was wrong before the code was
+
+The first run reported **106 headings, 1 problem**. `/reference` renders one of five panels at
+a time, so visiting the route once inspected **a fifth of it**. Walking every panel: **146
+headings, 4 problems.** Same page, same code, four times the defects — and the single problem
+the first run found would have been "fixed" in isolation while three identical ones survived.
+
+That is the eighth time this session the denominator caught a check about to certify what it
+had barely read, and the first time it caught one *I wrote under a standing rule telling me to
+print it.* Printing it is not the same as reading it: 106 looked like a plausible number for
+eight pages, which is exactly why it passed unexamined.
+
+Final state: **151 headings across 12 panel-views, 0 problems**, both guards proven by removing
+the code each covers.
+
+#### Checked and clean
+
+The other seven routes were already correct — one `h1` each, no skips, including the codex
+drawer opened over the grid, where a second `h1` would have been easy to introduce.
