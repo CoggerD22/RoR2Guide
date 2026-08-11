@@ -1,4 +1,4 @@
-import { useEffect, type CSSProperties } from "react";
+import { useEffect, useRef, type CSSProperties } from "react";
 import { Biohazard, ExternalLink, Lock, X } from "lucide-react";
 import type { Item } from "@/data/schema";
 import { TIER_META, DLC_META, itemById } from "@/data/items";
@@ -49,13 +49,69 @@ function CorruptionRow({
 
 /** Slide-in detail drawer for a selected item. */
 export function ItemDetail({ item, onClose, onSelectItem }: ItemDetailProps) {
+  const panelRef = useRef<HTMLElement | null>(null);
+
+  /**
+   * FOCUS MANAGEMENT. `role="dialog" aria-modal="true"` is a promise, and this component
+   * made it without keeping it (MATH-VERIFICATION §3j.141).
+   *
+   * `aria-modal` tells assistive technology that everything outside this element is inert.
+   * Tab does not know that. With no focus handling, a keyboard user opening an item kept
+   * focus on the grid behind the overlay and could tab through content their screen reader
+   * had just been told to ignore — the two failures compounding rather than cancelling.
+   *
+   * Three things are required and all three were missing: move focus in on open, keep it
+   * inside while open, and put it back where it came from on close. The drawer is how every
+   * item on the site is read, so this is the main surface, not an edge case.
+   */
   useEffect(() => {
     if (!item) return;
+
+    const previouslyFocused = document.activeElement as HTMLElement | null;
+    // Focus the panel itself rather than the close button: a screen reader then announces
+    // the dialog and its label, instead of just the word "Close".
+    panelRef.current?.focus();
+
+    const focusablesIn = (root: HTMLElement) =>
+      Array.from(
+        root.querySelectorAll<HTMLElement>(
+          'a[href], button:not([disabled]), input:not([disabled]), select, textarea, [tabindex]:not([tabindex="-1"])',
+        ),
+      ).filter((el) => el.offsetParent !== null || el === root);
+
     const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") onClose();
+      if (e.key === "Escape") {
+        onClose();
+        return;
+      }
+      if (e.key !== "Tab") return;
+      const panel = panelRef.current;
+      if (!panel) return;
+      const items = focusablesIn(panel);
+      if (items.length === 0) {
+        // Nothing focusable inside: keep focus on the panel rather than letting it escape.
+        e.preventDefault();
+        panel.focus();
+        return;
+      }
+      const first = items[0];
+      const last = items[items.length - 1];
+      const active = document.activeElement;
+      if (e.shiftKey && (active === first || active === panel)) {
+        e.preventDefault();
+        last.focus();
+      } else if (!e.shiftKey && active === last) {
+        e.preventDefault();
+        first.focus();
+      }
     };
+
     window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
+    return () => {
+      window.removeEventListener("keydown", onKey);
+      // Restore focus so a keyboard user returns to the card they opened, not to <body>.
+      previouslyFocused?.focus?.();
+    };
   }, [item, onClose]);
 
   if (!item) return null;
@@ -70,7 +126,10 @@ export function ItemDetail({ item, onClose, onSelectItem }: ItemDetailProps) {
         aria-hidden
       />
       <aside
-        className="absolute right-0 top-0 flex h-full w-full max-w-md flex-col overflow-y-auto border-l border-border bg-surface shadow-2xl"
+        ref={panelRef}
+        // -1 so it is programmatically focusable without joining the tab order.
+        tabIndex={-1}
+        className="absolute right-0 top-0 flex h-full w-full max-w-md flex-col overflow-y-auto border-l border-border bg-surface shadow-2xl focus:outline-none"
         style={{ "--tier": tier.color } as CSSProperties}
       >
         <div className="sticky top-0 z-10 flex items-start gap-3 border-b border-border bg-surface/95 p-4 backdrop-blur">

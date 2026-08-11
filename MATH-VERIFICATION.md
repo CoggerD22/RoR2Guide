@@ -7155,3 +7155,52 @@ is the documentation equivalent: **instructions that were accurate when written 
 the reader at the thing the project spent a hundred entries disproving.** A guard can be
 narrow; a rule can be stale; both fail silently, and both are believed precisely because they
 are the authoritative-looking thing in the room.
+
+### 3j.141 the item drawer promised modality and did not deliver it
+
+A front never opened before: **accessibility.** The codex drawer is how all 217 items are
+read, and it declared:
+
+```tsx
+<div role="dialog" aria-modal="true" aria-label={item.name}>
+```
+
+with **no focus management of any kind** — no move on open, no trap, no restore on close.
+`useRef`, `focus`, `tabIndex`, `autoFocus` and `inert` appear nowhere in the file.
+
+`aria-modal="true"` is not a style hint. It tells assistive technology that everything outside
+the element is inert. **Tab does not know that.** So a keyboard user opening an item kept focus
+on the grid behind the overlay and could tab through content their screen reader had just been
+instructed to ignore — the two failures compounding rather than cancelling. On close, focus fell
+to `<body>` and the user lost their place in a 217-card grid.
+
+Fixed properly: focus moves to the panel on open (the panel, not the close button, so a screen
+reader announces the dialog and its item name rather than the word "Close"), Tab and Shift+Tab
+cycle within it, and the previously focused element is restored on unmount.
+
+Three browser tests now assert the three behaviours, because **none of them is observable from
+the source** — the component "looks" accessible either way. Each was validated by disabling
+exactly the code it covers: removing the focus move fails two, removing only the restore fails
+the third.
+
+#### What else was checked and was fine
+
+Reported because an audit that only lists faults implies the rest was never looked at:
+
+- Every `<img>` carries `alt`. The empty ones are decorative and correct — each sits beside the
+  name in text, including the corruption-pair row where the icon could easily have been the
+  only indicator.
+- All seven `<input>`s have an accessible name, by `aria-label` or by being wrapped in a
+  `<label>`.
+- The filter chips are real `<button>`s carrying `aria-pressed`, not clickable `<div>`s.
+- The one non-interactive element with a click handler is the modal backdrop, which is
+  correctly `aria-hidden` and correctly not focusable — Escape is the keyboard path.
+
+#### And the seventh time
+
+My first version of these tests navigated to `/codex`. The route is `/items`. All three failed
+on a timeout, which looks exactly like "the fix does not work" — and the fix was fine.
+
+That is the seventh time this session my own tooling was wrong where the thing under test was
+right. The habit that keeps saving it is the same one every time: **when a check fails, find out
+whether it ran before deciding what it proved.**

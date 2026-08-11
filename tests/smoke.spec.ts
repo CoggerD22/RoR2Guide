@@ -970,3 +970,61 @@ test("§9: proc coefficient is defined, not just glossed", async ({ page }) => {
   await expect(page.getByText(/8f x procCoefficient/)).toBeVisible();
   await expect(page.getByText(/hard stop, not a small number/)).toBeVisible();
 });
+
+/**
+ * §3j.141 — the item drawer declared `aria-modal="true"` and did no focus management.
+ *
+ * `aria-modal` tells assistive technology that everything outside the dialog is inert. Tab
+ * does not know that. With no handling, a keyboard user opening an item kept focus on the
+ * grid behind the overlay and could tab through content their screen reader had just been
+ * told to ignore — the two failures compounding instead of cancelling.
+ *
+ * The drawer is how every one of the 217 items is read, so this is the site's main surface.
+ * These assert the three required behaviours, in a real browser, because none of them is
+ * observable from the component source.
+ */
+test("opening an item moves focus into the dialog", async ({ page }) => {
+  await page.goto("/items");
+  const card = page.getByRole("button", { name: /Crowbar/ }).first();
+  await card.click();
+  const dialog = page.getByRole("dialog");
+  await expect(dialog).toBeVisible();
+
+  // Focus must be inside the dialog, not left on the grid behind it.
+  const focusInside = await page.evaluate(() => {
+    const d = document.querySelector('[role="dialog"]');
+    return !!d && !!document.activeElement && d.contains(document.activeElement);
+  });
+  expect(focusInside, "focus stayed outside the dialog").toBe(true);
+});
+
+test("Tab is trapped inside the open drawer", async ({ page }) => {
+  await page.goto("/items");
+  await page.getByRole("button", { name: /Crowbar/ }).first().click();
+  await expect(page.getByRole("dialog")).toBeVisible();
+
+  // Tab well past the number of controls in the panel; focus must never leave it.
+  for (let i = 0; i < 30; i++) {
+    await page.keyboard.press("Tab");
+    const inside = await page.evaluate(() => {
+      const d = document.querySelector('[role="dialog"]');
+      return !!d && !!document.activeElement && d.contains(document.activeElement);
+    });
+    expect(inside, `focus escaped the dialog after ${i + 1} tabs`).toBe(true);
+  }
+});
+
+test("closing the drawer returns focus to the card that opened it", async ({ page }) => {
+  await page.goto("/items");
+  const card = page.getByRole("button", { name: /Crowbar/ }).first();
+  await card.focus();
+  await card.click();
+  await expect(page.getByRole("dialog")).toBeVisible();
+
+  await page.keyboard.press("Escape");
+  await expect(page.getByRole("dialog")).toHaveCount(0);
+
+  // Focus must come back to the grid, not fall to <body> and lose the user's place.
+  const onBody = await page.evaluate(() => document.activeElement === document.body);
+  expect(onBody, "focus fell to <body> after closing").toBe(false);
+});
