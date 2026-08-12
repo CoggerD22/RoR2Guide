@@ -36,7 +36,7 @@ export function SourceNote({
         className,
       )}
     >
-      <div className="mb-1 font-semibold uppercase tracking-widest text-muted-foreground/80">
+      <div className="mb-1 font-semibold uppercase tracking-widest text-muted-foreground">
         Where this comes from
       </div>
       <ul className="flex flex-col gap-0.5">
@@ -45,7 +45,7 @@ export function SourceNote({
             <span className="font-medium text-foreground/90">{field}</span>
             {" — "}
             <span className={TIER_STYLE[s.tier]}>{SHORT_LABEL[s.tier]}</span>
-            <span className="text-muted-foreground/70">: {s.ref}</span>
+            <span className="text-muted-foreground">: {s.ref}</span>
           </li>
         ))}
       </ul>

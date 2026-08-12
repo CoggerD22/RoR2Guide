@@ -33,10 +33,10 @@ export function Footer() {
           sourced from the community wiki and the game&rsquo;s own language files.
         </p>
         {/* Verification stamp (PLAN §4.6): the recorded date makes the data visibly age. */}
-        <p className="text-muted-foreground/80">{provenance}</p>
+        <p className="text-muted-foreground">{provenance}</p>
         {/* Publish the coverage gap rather than letting the stamp above imply the
             whole dataset is code-verified (PLAN §6B.2). */}
-        <p className="text-muted-foreground/80">{coverage.sentence}</p>
+        <p className="text-muted-foreground">{coverage.sentence}</p>
       </div>
     </footer>
   );

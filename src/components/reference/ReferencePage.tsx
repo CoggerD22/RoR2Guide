@@ -64,7 +64,7 @@ function Artifacts() {
             )}
           </div>
           <p className="text-xs leading-relaxed text-muted-foreground">{a.effect}</p>
-          <p className="text-[10px] uppercase tracking-widest text-muted-foreground/70">
+          <p className="text-[10px] uppercase tracking-widest text-muted-foreground">
             In-game description
           </p>
           {/*
@@ -170,7 +170,7 @@ function Shrines() {
           <p className="mt-1.5 border-l-2 border-border pl-3 text-sm leading-relaxed text-muted-foreground">
             {s.description}
           </p>
-          <p className="mt-1 text-[10px] uppercase tracking-widest text-muted-foreground/70">
+          <p className="mt-1 text-[10px] uppercase tracking-widest text-muted-foreground">
             In-game description
           </p>
           {/*

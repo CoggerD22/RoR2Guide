@@ -99,7 +99,12 @@ function GoalField({ item, goal }: { item: Item; goal?: number }) {
       aria-label={goal ? `Goal: ${goal}. Edit.` : `Set a goal count for ${item.name}`}
       className={cn(
         "rounded px-1 text-[11px] tabular-nums transition-colors hover:bg-surface-2",
-        goal ? "text-muted-foreground" : "text-muted-foreground/0 group-hover:text-muted-foreground/60",
+        // The unset state is deliberately invisible until the row is hovered, but it must
+        // resolve to the FULL token: /60 measures ~3.0:1, below AA for 11px text. It also has
+        // to reveal on keyboard focus, or tabbing here lands on a button with no visible label.
+        goal
+          ? "text-muted-foreground"
+          : "text-muted-foreground/0 group-hover:text-muted-foreground focus-visible:text-muted-foreground",
       )}
     >
       {goal ? `×${goal}` : "+goal"}

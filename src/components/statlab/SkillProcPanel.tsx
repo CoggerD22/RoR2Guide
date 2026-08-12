@@ -67,7 +67,7 @@ export function SkillProcPanel({ survivorId }: { survivorId: string }) {
                           Rendering them as "unverified" claimed ignorance we do not have.
                         */
                         <span
-                          className="text-[11px] italic text-muted-foreground/70"
+                          className="text-[11px] italic text-muted-foreground"
                           title="This skill's own state has no damage-dealing path, so it has no proc coefficient of its own. A turret or beacon it places carries its own."
                         >
                           no direct damage

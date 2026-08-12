@@ -7293,3 +7293,97 @@ OPEN front carrying a **Question** and a **Defect**, every CLOSED row carrying a
 
 That guard immediately found six CLOSED rows with no numeric denominator — written minutes
 earlier, by me, under a rule requiring one. They now carry real counts.
+
+---
+
+### §3j.144 — Colour contrast: the first pass that measured a colour
+
+Backlog front #1. **Question:** does every text/background pair in the dark theme meet WCAG AA
+— 4.5:1 for body text, 3:1 for large text? **Defect:** a pair below ratio: readable to me on a
+good monitor, unreadable to a low-vision user, and invisible to every check this project has,
+because nothing here had ever measured a colour.
+
+Method: walk every route and tab panel in a real browser and read **computed** styles, not
+source classes. The theme is CSS variables through Tailwind, so what a class *says* and what
+the browser *paints* are different questions, and only the second one matters to a reader.
+
+**Denominator: 3362 text/background pairs across 13 panel-states. 80 failing nodes, 4 distinct
+colour pairs, one root cause.**
+
+#### The instrument was wrong twice, and its first result was a clean pass
+
+The first run reported `FAILING: 0` over 2132 pairs and would have closed the front. It also
+reported **1190 elements skipped as "no colour"** — 36% of all text on the site. A computed
+`color` is never absent, so that number was the finding.
+
+Tailwind v4 emits OKLCH, and Chromium reports colours resolved through `color-mix` as
+`oklab(...)`. The regex `/rgba?\(...\)/` matched neither. On `/items` alone that is 590 text
+colours and 263 backgrounds. The text ones were skipped and at least *counted*; the background
+ones were silently treated as absent, so the walk continued past a real opaque layer and
+compared against a fallback colour hardcoded in the script. **The clean pass was measured
+against a page that does not exist.**
+
+Replacing the regex with canvas normalisation, then self-checking it against known values,
+found two more:
+
+- `rgba(255,0,0,0.5)` came back as **`[508, 0, 0]`**. `getImageData` already returns
+  un-premultiplied channels; dividing by alpha applied the correction twice.
+- `"not-a-color"` came back as **opaque black** — an invalid value leaves `fillStyle` untouched,
+  so every unparseable colour produced a confident wrong ratio instead of a skip. Now rejected
+  by painting against two sentinels and requiring agreement.
+
+Only after all three fixes did the sweep compare all 3322 pairs it had claimed to compare.
+
+#### The finding: one token, dimmed
+
+All 80 failures are `text-muted-foreground` with an **opacity modifier**. The base token
+measures ~6:1 on our darkest surface — comfortably AA, with nothing to give away:
+
+| Use | Measured | Needs |
+|---|---|---|
+| `text-muted-foreground/70`, 11px | **3.61–3.64:1** | 4.5 |
+| `text-muted-foreground/80`, 11–12px | **4.31–4.36:1** | 4.5 |
+| `group-hover:text-muted-foreground/60` | **~3.0:1** | 4.5 |
+
+Confirmed by hand before acting (rule 3): `rgb(138,151,173)` at 70% over `rgb(14,22,38)`
+composites to `(100.8, 112.3, 132.5)`, luminance `0.1609` against `0.00807`, ratio
+`(0.1609+0.05)/(0.00807+0.05)` = **3.63**. The tool said 3.64.
+
+Ten occurrences fixed by **dropping the modifier**, not by touching the palette — the design
+tokens are fixed by `CLAUDE.md`, and the token was never the problem. Other tokens are far
+brighter and their `/80`–`/90` uses all pass, which is why the guard names one token rather
+than banning opacity modifiers wholesale.
+
+The planner's `+goal` affordance was worse than anything the sweep could see: `/60` on hover,
+**and** fully transparent until hover, so a keyboard user tabbing to it landed on a button with
+no visible label. It now resolves to the full token and reveals on `focus-visible`.
+
+#### Two mutations failed to fail, for two different reasons
+
+Rule 5 says a passing breakage test means a weak mutation. Once again it did — but the second
+time the diagnosis was different, and that is the useful part.
+
+A deliberately-too-dark colour placed in `TierGrid`'s empty state **passed the entire suite**.
+The mutation was not weak: the *sweep* was narrow. Every panel was visited at rest, and a
+default visit to `/items` always has results, so "No items match…" had never been rendered
+under measurement. Empty states, error states and anything behind an interaction were an
+unmeasured class of UI. The sweep now drives the search box to an empty result, and the same
+mutation is caught at 1.81:1.
+
+The panel-count assertion then failed on its own when 12 panels became 13 — the denominator
+guard proving itself without a mutation being needed.
+
+#### What is guarded, and what is honestly not
+
+`tests/contrast.spec.ts` asserts 0 failures **and** asserts its own denominators: 13 panels,
+>2500 pairs compared, and **0 elements skipped for an unreadable colour** — that last one is
+the tripwire for the instrument regressing to the state that produced the false clean pass.
+Proven by reverting `parse` to rgb-only: 1110 skips, test fails.
+
+It cannot see `hover:` or `focus-visible:` variants, which is exactly where the worst offender
+lived. A static guard in `stacking.test.ts` covers that class by forbidding any opacity modifier
+on `text-muted-foreground` in any state (`/0` stays legal — that is deliberate invisibility, not
+low contrast). Proven twice: once on a plain `/70`, once on a hover-only `/60`.
+
+Neither covers non-text contrast (icon glyphs, focus rings, chart strokes) — WCAG 1.4.11 rather
+than 1.4.3. The test says so rather than letting its name imply otherwise (§3j.138).

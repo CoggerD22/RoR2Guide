@@ -2137,3 +2137,50 @@ test("the audit backlog is present and every open front is actionable", () => {
   expect(claude).toContain("AUDIT-BACKLOG.md");
   expect(claude).toMatch(/## Audit method/);
 });
+
+/**
+ * §3j.144 — the dimmest text token may not be dimmed further, in ANY state.
+ *
+ * `tests/contrast.spec.ts` measures what the browser paints, but only at rest: it cannot see a
+ * `hover:` or `focus-visible:` variant. That gap is not hypothetical — the planner's "+goal"
+ * affordance used `group-hover:text-muted-foreground/60`, which measures ~3.0:1 against the
+ * rail background and never appeared in the runtime sweep at all. It was found by reading the
+ * source, so the source is what this guards.
+ *
+ * `muted-foreground` sits at ~6:1 on our darkest surface: comfortably AA, with no room to give
+ * away. Every /70 and /80 use of it measured 3.6–4.4:1 and failed. Other tokens are far
+ * brighter and their /80–/90 uses all pass, so this deliberately guards ONE token rather than
+ * banning opacity modifiers wholesale (rule 7 — guard the class that can recur, not every
+ * class imaginable).
+ *
+ * /0 stays legal: that is deliberate invisibility for a hover-reveal, not low contrast.
+ */
+test("muted-foreground is never dimmed by an opacity modifier", async () => {
+  const { readdirSync, readFileSync } = await import("node:fs");
+  const files: string[] = [];
+  const walk = (dir: string) => {
+    for (const e of readdirSync(dir, { withFileTypes: true })) {
+      const p = `${dir}/${e.name}`;
+      if (e.isDirectory()) walk(p);
+      else if (/\.tsx?$/.test(e.name) && !/\.test\.tsx?$/.test(e.name)) files.push(p);
+    }
+  };
+  walk("src");
+  expect(files.length, "source sweep found no files").toBeGreaterThan(30);
+
+  const offenders: string[] = [];
+  let occurrences = 0;
+  for (const f of files) {
+    const src = readFileSync(f, "utf8");
+    for (const m of src.matchAll(/text-muted-foreground\/(\d{1,3})\b/g)) {
+      occurrences++;
+      const pct = Number(m[1]);
+      if (pct === 0) continue; // fully transparent: a reveal affordance, not a contrast choice
+      const line = src.slice(0, m.index).split("\n").length;
+      offenders.push(`${f}:${line} ${m[0]} (~${(6.0 * (pct / 100)).toFixed(1)}:1, AA needs 4.5)`);
+    }
+  }
+  // Denominator: prove the pattern is being looked for, not that the regex matches nothing.
+  expect(occurrences, "no text-muted-foreground/N found at all — has the token been renamed?").toBeGreaterThan(0);
+  expect(offenders, `dimmed below AA:\n${offenders.join("\n")}`).toEqual([]);
+});

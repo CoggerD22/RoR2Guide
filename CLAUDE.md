@@ -196,13 +196,26 @@ left, bold white name, gray body with highlighted numeric values.
       §3j.58–§3j.98. Notable: the Stat Lab was a second unaudited implementation of the
       game's arithmetic; "N base, +M per stack" was false on 28 non-linear rows; four shared
       terms every formula depended on had never been defined.
+- [x] Accessibility — three passes, each a separate class. The item drawer claimed
+      `aria-modal` and managed no focus (§3j.141); the heading outline skipped a level on 4 of
+      5 reference panels (§3j.142); and **colour contrast had never been measured at all**
+      (§3j.144). 3362 text/background pairs across 13 panel-states now meet WCAG AA; 80 nodes
+      did not, every one of them `text-muted-foreground` dimmed by an opacity modifier to
+      3.6–4.4:1. The token is fine at ~6:1 — the fix was dropping the modifiers, not touching
+      the palette. Two lessons carry forward: the instrument was wrong twice before its first
+      believable result (Tailwind v4 emits **oklch**, and a regex for `rgb()` silently dropped
+      36% of the page while reporting a clean pass), and every route had only ever been
+      examined **at rest**, so empty and error states were an entirely unmeasured class.
 - [x] Guards, not resolutions — each turns a repeated mistake into a failing build. Two
       tiers, and the difference matters:
       - **Enforced in CI** (`pnpm test:unit`, no game install needed): coverage ratchet;
         unscoped negative claims in data AND component prose; `damageCoefficient` vs the
         published base; blast radius without a falloff model; hit-count claims vs all three
         `OverlapAttack` escapes; the invented term `levelScale`; stale verification
-        vocabulary ("logbook"); Status counts vs the data; schema fields vs `PLAN.md`.
+        vocabulary ("logbook"); Status counts vs the data; schema fields vs `PLAN.md`;
+        `text-muted-foreground` dimmed by any opacity modifier, in any state variant — the
+        static half of the contrast guard, covering the `hover:`/`focus-visible:` cases a
+        rendered sweep structurally cannot see.
       - **Local only** — needs the game install, so CI reports them SKIPPED, not passed.
         `data:audit`: internal-name collisions, coined terms absent from the decompile,
         unlock gating. `data:verify`: **all seven game cross-checks** — skill completeness,

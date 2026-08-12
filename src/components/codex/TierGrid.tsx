@@ -28,7 +28,7 @@ export function TierGrid({ items, renderCard, query }: TierGridProps) {
             ? `No items match “${query.trim()}”.`
             : "No items match those filters."}
         </p>
-        <p className="text-xs text-muted-foreground/70">
+        <p className="text-xs text-muted-foreground">
           {query?.trim()
             ? "Search covers names, effects and tags — try a shorter term, or clear it."
             : "Try re-enabling a tier or DLC above."}

@@ -161,7 +161,7 @@ export function SurvivorDetail({ id }: { id: string }) {
                             on two pages — and the wrong way here, claiming ignorance about a
                             skill we had in fact classified.
                           */
-                          <span className="italic text-muted-foreground/70">no direct damage</span>
+                          <span className="italic text-muted-foreground">no direct damage</span>
                         ) : (
                           <span className="italic text-muted-foreground">proc unverified</span>
                         )}
