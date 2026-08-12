@@ -7471,3 +7471,84 @@ decompiled game code", "Stacks past N have no effect at all — a goal of G wast
 touch. Fixing it properly means a real tooltip component (focusable, `aria-describedby`,
 dismissible per WCAG 1.4.13) across 13 files, which is a new UI surface and therefore a scope
 decision rather than a correction (rule 9). Logged as an OPEN front with its denominator.
+
+---
+
+### §3j.146 — Error paths: what a user sees when something is wrong
+
+Backlog front #1. **Question:** what does a user *see* when something fails — not when it
+works? Every check before this one exercised the success path. **Defect:** a blank page, an
+uncaught throw, or silent nonsense where a readable message belonged.
+
+Four surfaces, all four probed in a real browser: corrupted `localStorage`, unknown routes,
+mangled share links, and icons that do not arrive.
+
+#### The sanitiser was correct, was unit-tested, and never ran
+
+`sanitizeEntry` is reachable only through `migrate`, and zustand calls `migrate` **only when the
+stored version differs from the current one** — `middleware.js` returns
+`deserializedStorageValue.state` straight to `merge` on a version match. `version` has been 2
+for a long time, so the validation this file documents at length ran on legacy data and on
+shared links, and never on the ordinary load.
+
+The existing suite hid it rather than catching it. It proved the v2 path with
+`migrate(v2data, 2)` — a call the library never makes. **A pure-function test of a function
+nothing calls passes forever.**
+
+Probing v2 storage directly, in a browser:
+
+| stored under version 2 | what rendered |
+|---|---|
+| `goal: 1e20` | **`×100000000000000000000`** — the exact value MIN_GOAL/MAX_GOAL exist to stop |
+| `priority: "ULTRA"` | targeted item with **no priority label at all** |
+| `crowbar: 42`, `null`, `{state:"nonsense"}` | silently dropped (correct, by luck — the rail filters on a valid `state`) |
+| `plan` as array / string, non-JSON blob | empty plan, no throw |
+
+Fixed by sanitising in **`merge`**, which runs on every hydrate regardless of version.
+`railMode` was never validated anywhere either and is now clamped to the two values the rail
+can render.
+
+#### There was no 404
+
+`/nonsense` rendered the two unstyled words **"Not Found"** — TanStack Router's built-in
+default, i.e. what you get when nobody writes one. No heading, no styling, no way back, and no
+`h1`, which the heading guard never noticed because it only ever visits URLs that exist.
+
+The pattern already existed one route over: `/survivors/nobody` said *"No survivor called
+'nobody'"* with a link home. It had simply never been applied to the case that catches every
+mistyped, stale or truncated URL.
+
+**`/items/not-a-real-item` was worse, because it looked fine.** `ItemDetail` returns `null` when
+it has no item, so the page rendered byte-for-byte like `/items`: someone following a dead link
+was told their item does not exist by being shown 217 items that are not it. It now says so, in
+the drawer's own position, with the codex still behind it.
+
+#### Sound already, with denominators
+
+- **Share links.** `?p=%%%broken%%%`, 3000 characters of `A`, `{"a":1}`, empty `?t=`, and
+  `?t=crowbar*99999999999999999999` — all render, none throw, and the 1e20 goal is rejected.
+  `importPlan` sanitises, and always did.
+- **Icons.** 10 `<img>` across 8 components: two use `alt={item.name}` (the grid cards, where
+  the icon *is* the identification), eight use `alt=""` with the name adjacent in text. With
+  every `.png` forced to 404, the codex still renders and still names every card.
+
+#### Two lessons about the guards themselves
+
+**A mutation that does not apply looks exactly like a guard that works.** Removing the `merge:`
+line by a pattern ending in `
+` silently matched nothing — the file is CRLF, so the text is
+`}),
+`. The suite passed and briefly looked like proof. Rule 5 says to assume the mutation
+was too weak before believing the guard, and this is the most literal case of that yet: the
+mutation was not weak, it was absent. Re-run with `?
+`, removing `merge` fails 2 tests.
+
+**A guard fired on this pass's own work, correctly, and was still wrong.** The unscoped
+negative-claim rule flagged `NotFound.tsx` for the words "not found". That rule is about
+sentences telling a reader something is absent *from the game*, published with the authority of
+a stacking row; a 404 heading says a URL is absent from this site. Rewording the 404 to dodge
+the regex would have left the rule still wrong for whoever writes the next one, so the exception
+is named, explained, and capped at two entries.
+
+Three mutations, each reverting one fix, all caught: no `merge` (2 fail), no
+`notFoundComponent` (3 fail), no item-not-found branch (1 fail).

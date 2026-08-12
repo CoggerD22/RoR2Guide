@@ -863,8 +863,24 @@ test("component prose obeys the same negative-claim rule as the data", async () 
   const QUALIFIED =
     /(we have not found|have not traced|could not establish|NOT established|NOT verified|NOT resolved|NOT reconciled|at IL level|in that file|in the whole assembly|sites? in|spawn path|that coefficient|its text|that array|in RoR2\.dll)/i;
 
+  /*
+    Navigation chrome, not a claim about the game (§3j.146).
+
+    This rule is about sentences that tell a reader something is absent FROM THE GAME, published
+    with the same authority as a stacking row. A 404 heading says a URL is absent from this
+    site, which is a different kind of sentence and the one place "not found" is the plainest
+    English available. Rewording the 404 to dodge the regex would leave the rule still wrong for
+    whoever writes the next one, so the exception is named and kept short instead.
+  */
+  const NAVIGATION_CHROME = ["src/components/layout/NotFound.tsx"];
+  expect(NAVIGATION_CHROME.length, "exceptions are growing — is the rule still saying what it means?").toBeLessThanOrEqual(2);
+  for (const f of NAVIGATION_CHROME) {
+    expect(files.map((p) => relative(".", p).split("\\").join("/")), `${f} is listed but no longer exists`).toContain(f);
+  }
+
   const unscoped: string[] = [];
   for (const f of files) {
+    if (NAVIGATION_CHROME.includes(relative(".", f).split("\\").join("/"))) continue;
     // Comments are for us; only what ships to a reader is in scope.
     const visible = readFileSync(f, "utf8")
       .replace(/\/\*[\s\S]*?\*\//g, " ")

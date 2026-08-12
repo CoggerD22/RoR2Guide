@@ -196,6 +196,18 @@ left, bold white name, gray body with highlighted numeric values.
       §3j.58–§3j.98. Notable: the Stat Lab was a second unaudited implementation of the
       game's arithmetic; "N base, +M per stack" was false on 28 non-linear rows; four shared
       terms every formula depended on had never been defined.
+- [x] Error paths — what a user sees when something is **wrong**, a question nothing had asked.
+      Three defects. The planner's `sanitizeEntry` was correct, unit-tested, and **never ran**:
+      zustand calls `migrate` only on a version *mismatch*, and version has been 2 for a long
+      time, so a stored `goal` of 1e20 rendered `×100000000000000000000` — the exact value
+      `MIN_GOAL`/`MAX_GOAL` exist to prevent. Sanitising now happens in `merge`, which runs on
+      every hydrate. There was **no 404** (TanStack's bare "Not Found", no heading, no way back)
+      even though `/survivors/nobody` had done it properly all along; and `/items/<unknown>`
+      rendered the whole codex silently, telling a reader their item did not exist by showing
+      217 that were not it. Share links and missing icons were already sound, with denominators
+      (§3j.146). **The lesson worth keeping: a pure-function test of a function nothing calls
+      passes forever** — the suite "proved" the v2 path by calling `migrate(data, 2)` directly,
+      which the library never does.
 - [x] Keyboard operability — planner and Stat Lab tabbed for real, not read. Reachability was
       **sound and is now pinned**: 447 and 60 visible controls, 445 and 46 tab stops, counts
       derived two independent ways and agreeing exactly; 0 focus-order inversions against DOM

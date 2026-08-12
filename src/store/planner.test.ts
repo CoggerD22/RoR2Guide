@@ -1,5 +1,12 @@
 import { describe, expect, it } from "vitest";
-import { usePlanner, DEFAULT_PRIORITY, MIN_GOAL, MAX_GOAL, migratePlannerState } from "./planner";
+import {
+  usePlanner,
+  DEFAULT_PRIORITY,
+  MIN_GOAL,
+  MAX_GOAL,
+  migratePlannerState,
+  sanitizePersisted,
+} from "./planner";
 
 /**
  * The v1→v2 migration is the risky part of PLAN §5.8b: plans live in localStorage, so
@@ -168,5 +175,72 @@ describe("goal bounds are enforced at every entry point", () => {
     expect(Object.keys(plan).sort()).toEqual(["badGoal", "good"]);
     expect(plan.badGoal.goal).toBeUndefined();
     expect(plan.good.goal).toBe(3);
+  });
+});
+
+
+/**
+ * §3j.146 — the sanitiser existed, was tested, and never ran.
+ *
+ * `sanitizeEntry` was reachable only through `migrate`, and zustand calls `migrate` ONLY when
+ * the stored version differs from the current one. Version has been 2 for a while, so every
+ * ordinary load skipped it. The suite above hid this rather than catching it: it proves the v2
+ * path by calling `migrate(data, 2)` directly — a call the library never makes.
+ *
+ * These test `sanitizePersisted`, which is wired into `merge` and therefore runs on every
+ * hydrate. `tests/errors.spec.ts` covers the wiring itself, in a real browser with real
+ * localStorage, because a pure-function test is exactly what failed to notice last time.
+ */
+describe("persisted state is sanitised on every hydrate, not only on migration", () => {
+  it("rejects a goal outside the input's own 1..99 range", () => {
+    // The value that reached the screen: localStorage holding 1e20 rendered
+    // "×100000000000000000000" in the rail.
+    const out = sanitizePersisted({ plan: { crowbar: { state: "targeted", priority: "high", goal: 1e20 } } });
+    expect(out.plan.crowbar).toEqual({ state: "targeted", priority: "high" });
+    expect(out.plan.crowbar.goal).toBeUndefined();
+  });
+
+  it("keeps a goal inside the range", () => {
+    const out = sanitizePersisted({ plan: { crowbar: { state: "targeted", priority: "high", goal: 3 } } });
+    expect(out.plan.crowbar.goal).toBe(3);
+    for (const bad of [0, -1, MIN_GOAL - 1, MAX_GOAL + 1, 1.5, NaN, Infinity]) {
+      const o = sanitizePersisted({ plan: { c: { state: "targeted", priority: "high", goal: bad } } });
+      expect(o.plan.c.goal, `goal ${bad} survived`).toBeUndefined();
+    }
+  });
+
+  it("falls back to a real priority instead of rendering no label", () => {
+    // "ULTRA" is not in PRIORITY_LABEL, so the rail showed a targeted item with no priority
+    // at all — a gap that reads as a bug in the app rather than bad stored data.
+    const out = sanitizePersisted({ plan: { crowbar: { state: "targeted", priority: "ULTRA" } } });
+    expect(out.plan.crowbar.priority).toBe(DEFAULT_PRIORITY);
+  });
+
+  it("drops entries that are not entries", () => {
+    const out = sanitizePersisted({
+      plan: { a: 42, b: null, c: "targeted", d: { state: "nonsense" }, e: [], ok: { state: "avoided", priority: "low" } },
+    });
+    expect(Object.keys(out.plan)).toEqual(["ok"]);
+  });
+
+  it("survives a plan that is not an object at all", () => {
+    for (const plan of [null, undefined, "hello", 42, [1, 2, 3], true]) {
+      expect(sanitizePersisted({ plan }).plan, `plan=${JSON.stringify(plan)}`).toEqual({});
+    }
+    expect(sanitizePersisted(undefined).plan).toEqual({});
+    expect(sanitizePersisted("not an object").plan).toEqual({});
+  });
+
+  it("clamps railMode to the two values the rail can render", () => {
+    expect(sanitizePersisted({ railMode: "run" }).railMode).toBe("run");
+    expect(sanitizePersisted({ railMode: "plan" }).railMode).toBe("plan");
+    for (const bad of ["wat", "", null, 7, {}]) {
+      expect(sanitizePersisted({ railMode: bad }).railMode, `railMode=${JSON.stringify(bad)}`).toBe("plan");
+    }
+  });
+
+  it("is idempotent, since migrate may have run first", () => {
+    const once = sanitizePersisted({ plan: { crowbar: { state: "targeted", priority: "high", goal: 3 } } });
+    expect(sanitizePersisted(once)).toEqual(once);
   });
 });

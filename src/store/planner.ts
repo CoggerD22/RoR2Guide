@@ -105,6 +105,35 @@ function sanitizeEntry(value: unknown): PlanEntry | null {
   return entry;
 }
 
+/**
+ * §3j.146 — sanitise the WHOLE persisted blob, on every hydrate.
+ *
+ * `sanitizeEntry` was wired in through `migrate`, and zustand only calls `migrate` when the
+ * stored version differs from the current one (`middleware.js`: a version match returns
+ * `deserializedStorageValue.state` straight to `merge`). Version has been 2 for a while, so the
+ * validation this file documents at length ran on legacy data and on shared links — and never
+ * on the ordinary path. Probing v2 storage directly put `×100000000000000000000` on screen from
+ * a `goal` of 1e20, the exact value MIN_GOAL/MAX_GOAL were introduced to prevent, and rendered
+ * a targeted item with no priority label at all from `priority: "ULTRA"`.
+ *
+ * `merge` runs on every hydrate regardless of version, so that is where this belongs. Running
+ * after `migrate` is harmless: sanitising twice is idempotent.
+ */
+export function sanitizePersisted(persisted: unknown): { plan: Record<string, PlanEntry>; railMode: RailMode } {
+  const s = persisted as { plan?: unknown; railMode?: unknown } | undefined;
+  const plan: Record<string, PlanEntry> = {};
+  const raw = s?.plan;
+  if (raw && typeof raw === "object" && !Array.isArray(raw)) {
+    for (const [id, value] of Object.entries(raw as Record<string, unknown>)) {
+      const entry = sanitizeEntry(value);
+      if (entry) plan[id] = entry;
+    }
+  }
+  // railMode was never validated anywhere. It is a closed set of two, so anything else is the
+  // default rather than a value the rail has to render around.
+  return { plan, railMode: s?.railMode === "run" ? "run" : "plan" };
+}
+
 export function migratePlannerState(persisted: unknown, version: number): { plan: Record<string, PlanEntry> } {
   const state = persisted as { plan?: Record<string, unknown> } | undefined;
   if (!state?.plan || typeof state.plan !== "object") return { plan: {} };
@@ -180,6 +209,9 @@ export const usePlanner = create<PlannerState>()(
       name: "ror2-run-plan",
       version: 2,
       migrate: migratePlannerState,
+      // Not decoration: this is the only hook that runs when the stored version already
+      // matches, which is the overwhelmingly common case. See sanitizePersisted.
+      merge: (persisted, current) => ({ ...current, ...sanitizePersisted(persisted) }),
     },
   ),
 );

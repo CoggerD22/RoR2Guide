@@ -16,35 +16,29 @@ repeats, and eventually invents work. A denominator is recorded for every closed
 Each entry names the **specific question** — not "is it right" — and what a defect would look
 like. A front without those two things is not ready to work on.
 
-### 1. Error paths
-**Question:** what does a user see when something fails — not when it works?
-**Defect:** a blank page or thrown error on: corrupted localStorage at the **top level**
-(`sanitizeEntry` handles bad *entries*, not a non-JSON blob), an unknown route, a missing
-icon at runtime, or a share link with a malformed query string.
-
-### 2. Dependency and bundle health
+### 1. Dependency and bundle health
 **Question:** is anything shipped that shouldn't be, and is anything vulnerable or abandoned?
 **Defect:** a known CVE in a runtime dependency; the game-data extractors' Python deps leaking
 into the web bundle; a bundle large enough to matter on a phone.
 
-### 3. Remaining extractor failure modes
+### 2. Remaining extractor failure modes
 **Question:** `check-extractor-health.py` measures four swallow classes for the *two main*
 extractors. What do the other ~38 scripts silently swallow?
 **Defect:** a bare `except: continue` that turns a parse failure into a shorter output, which
 looks identical to a game that contains less (the §3j.133 shape).
 
-### 4. Responsive layout
+### 3. Responsive layout
 **Question:** at 360px wide, is anything unreachable or overlapping?
 **Defect:** the codex filter row, the planner rail, or the Stat Lab's two-column layout
 clipping content with no scroll.
 
-### 5. `prerender-og` output
+### 4. `prerender-og` output
 **Question:** the build writes 217 item + 19 survivor + 1 home OG pages. Are they correct, or
 just present?
 **Defect:** wrong title/description per page, a stale template, or absolute URLs pointing at
 the wrong origin.
 
-### 6. Interaction and error states, beyond contrast
+### 5. Interaction and error states, beyond contrast
 **Question:** §3j.144 measured 13 panel-states and found that every route had only ever been
 examined *at rest*. Which other states does no check ever render?
 **Defect:** the shape already proven once — a defect placed in `TierGrid`'s empty state passed
@@ -53,7 +47,7 @@ rows, a survivor with no unlock.
 **Note:** this is a *coverage* front, not an a11y one. Fold new states into
 `tests/contrast.spec.ts` and `tests/headings.spec.ts`, which both take a state list.
 
-### 7. `title` as the only home for an explanation
+### 6. `title` as the only home for an explanation
 **Question:** 25 `title=` attributes across 13 components carry real explanatory content
 ("Formula confirmed against the decompiled game code", "Stacks past N have no effect at all").
 `title` is invisible to keyboard users, unreliable for screen readers, and absent on touch. How
@@ -108,6 +102,7 @@ SweetSpot cliffs and the proc gap in already-"checked" data.
 | Heading outline | 151 headings / 12 panel-views | **h1→h3 on 4 panels** | §3j.142 |
 | Colour contrast (WCAG AA) | 3362 pairs / 13 panel-states | **80 nodes below AA**; instrument wrong twice first | §3j.144 |
 | Keyboard operability | 447+60 controls, 491 tab stops, 4 mutations | **2 focus-loss bugs**; reachability sound | §3j.145 |
+| Error paths | 4 surfaces, 21 browser tests, 3 mutations | **sanitiser never ran; no 404; unknown item silent** | §3j.146 |
 | Extractor health | 1472 bundles, 224,435 MonoBehaviours | all swallow classes 0 | §3j.127 |
 
 ---
