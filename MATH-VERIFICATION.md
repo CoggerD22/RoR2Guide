@@ -7387,3 +7387,87 @@ low contrast). Proven twice: once on a plain `/70`, once on a hover-only `/60`.
 
 Neither covers non-text contrast (icon glyphs, focus rings, chart strokes) — WCAG 1.4.11 rather
 than 1.4.3. The test says so rather than letting its name imply otherwise (§3j.138).
+
+---
+
+### §3j.145 — Keyboard operability: reachability was sound, operating things was not
+
+Backlog front #1. **Question:** can every control in the planner and the Stat Lab be reached
+*and operated* by keyboard alone, in a sensible order? §3j.141 gave the item drawer a focus
+contract and did not generalise it. **Defect:** a control reachable by mouse but not Tab, a
+focus order that jumps, or an indicator nobody can see.
+
+The structural read said this would be clean — every handler sits on a real `<button>` or
+`<input>`, no `onClick` on a `<div>` anywhere. That is a prediction, not a result, so the page
+was actually tabbed.
+
+**Reachability is genuinely sound**, and the denominators are exact:
+
+| | visible controls | disabled | Tab stops reached | order inversions | invisible focus |
+|---|---|---|---|---|---|
+| `/planner` | 447 | 2 | **445** | 0 / 443 | 0 / 445 |
+| `/stats` | 60 | 14 | **46** | 0 / 45 | 0 / 46 |
+
+Two counts derived independently — one by querying the DOM, one by pressing Tab — agreeing
+exactly. A global `:focus-visible` outline covers everything; `.tier-card` replaces it with a
+border and glow measuring **3.35:1** between focused and unfocused, which clears WCAG 2.2's 3:1
+for focus indicators. Correct as written, left alone (rule 4).
+
+#### Both defects were in what happens AFTER a control is used
+
+Neither is visible to anyone holding a mouse.
+
+1. **The planner's goal editor dropped focus on the floor.** Enter and Escape both unmount the
+   input, the browser has nowhere to put focus, and it goes to `<body>`. On a page with 445 tab
+   stops, setting one goal ejects a keyboard user to the top of the document. The *values* were
+   always right — Escape really does discard — so this was purely the focus contract.
+
+2. **Stepping a Stat Lab item down to zero ejected the user.** At `q === 0` the minus button
+   became `disabled`, and disabling a **focused** element hands focus to `<body>`. Decrementing
+   to zero is an ordinary thing to do. Now `aria-disabled`, which announces the same state
+   without removing the button from the tab order — the WAI-ARIA pattern for exactly this. The
+   cost is 14 extra tab stops on `/stats`, which is the right trade against ejecting the user.
+
+#### The obvious fix for (1) was wrong in a way that looked right
+
+Restoring focus inside the keydown handler means the *rest of that keystroke* lands on the
+button just focused — and Enter on a focused button activates it. The editor committed, closed,
+and instantly reopened:
+
+```
+render editing=false goal=3        <- commit worked
+effect restoring focus             <- focus moves to the button
+button onClick -> setEditing(true) <- the SAME Enter press activates it
+```
+
+It presents as "Enter does nothing", and a test that only asserted *where focus landed* would
+have passed it. `preventDefault()` on the keydown is load-bearing, and the guard asserts the
+editor is **closed** as well as where focus went.
+
+Four mutations, each reverting one fix: `disabled` back on the stepper (focus → BODY),
+`preventDefault` removed (editor reopens), focus restore removed (both goal tests fail),
+`tabIndex={-1}` on a stepper (60 enabled controls, 46 reached). All four caught.
+
+#### Instrument corrections, again before any finding was believed
+
+- **~100 "backward jumps" in focus order on the planner were a grid artifact.** Within a card
+  the cycle button sits above its Details link, so advancing to the next card in the same row
+  always reads as a jump upward — correct reading order. Comparing against **DOM order**
+  instead gives 0 inversions over 443 stops.
+- **A hardcoded cap of 250 Tab presses** made every stop past it on the 445-control planner
+  look like an unreachable control. The cap is now derived from the page.
+- **`outline: none` is not the same as no focus indicator.** Tailwind rings are `box-shadow`
+  and `.tier-card` uses a border and glow. The check is now a before/after diff of every
+  property a focus indicator could plausibly use.
+- **The planner rail renders no per-item controls until something is in the plan**, so the goal
+  editor did not exist in any default page visit. Same shape as the empty-state gap in §3j.144:
+  the interesting controls live behind state.
+
+#### Found, not fixed: `title` as the only home for an explanation
+
+25 `title=` attributes across 13 components carry real content — "Formula confirmed against the
+decompiled game code", "Stacks past N have no effect at all — a goal of G wastes W". The
+`title` attribute is invisible to keyboard users, unreliable for screen readers, and absent on
+touch. Fixing it properly means a real tooltip component (focusable, `aria-describedby`,
+dismissible per WCAG 1.4.13) across 13 files, which is a new UI surface and therefore a scope
+decision rather than a correction (rule 9). Logged as an OPEN front with its denominator.

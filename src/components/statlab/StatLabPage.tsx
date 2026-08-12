@@ -252,12 +252,23 @@ export function StatLabPage() {
                       </span>
                     )}
                     <div className="flex items-center gap-1.5">
+                      {/*
+                        aria-disabled, NOT disabled (§3j.145).
+
+                        `disabled` on a focused element hands focus to <body>, so stepping an
+                        item down to 0 — an ordinary thing to do — ejected a keyboard user to
+                        the top of the page. aria-disabled keeps the button focusable and still
+                        announces it as unavailable, so focus stays exactly where the user put
+                        it and the next press simply does nothing.
+                      */}
                       <button
                         type="button"
-                        onClick={() => setQty(id, q - 1)}
-                        disabled={q <= 0}
+                        onClick={() => {
+                          if (q > 0) setQty(id, q - 1);
+                        }}
+                        aria-disabled={q <= 0}
                         aria-label={`Remove one ${item.name}`}
-                        className="rounded border border-border p-0.5 text-muted-foreground hover:text-foreground disabled:opacity-30"
+                        className="rounded border border-border p-0.5 text-muted-foreground hover:text-foreground aria-disabled:opacity-30 aria-disabled:hover:text-muted-foreground"
                       >
                         <Minus className="size-3.5" />
                       </button>

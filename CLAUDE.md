@@ -196,6 +196,17 @@ left, bold white name, gray body with highlighted numeric values.
       §3j.58–§3j.98. Notable: the Stat Lab was a second unaudited implementation of the
       game's arithmetic; "N base, +M per stack" was false on 28 non-linear rows; four shared
       terms every formula depended on had never been defined.
+- [x] Keyboard operability — planner and Stat Lab tabbed for real, not read. Reachability was
+      **sound and is now pinned**: 447 and 60 visible controls, 445 and 46 tab stops, counts
+      derived two independent ways and agreeing exactly; 0 focus-order inversions against DOM
+      order; 0 controls without a visible focus indicator. Both defects were in what happens
+      *after* a control is used, and neither is visible with a mouse: committing a planner goal
+      dropped focus to `<body>` (on a page with 445 tab stops), and stepping a Stat Lab item to
+      zero did the same, because disabling a **focused** element ejects focus. The stepper now
+      uses `aria-disabled`. Note the trap in the obvious fix — restoring focus inside a keydown
+      hands the rest of that keystroke to the newly-focused button, so the editor committed,
+      closed and instantly reopened; `preventDefault()` is load-bearing and the guard asserts
+      the editor is *closed*, not merely where focus went (§3j.145).
 - [x] Accessibility — three passes, each a separate class. The item drawer claimed
       `aria-modal` and managed no focus (§3j.141); the heading outline skipped a level on 4 of
       5 reference panels (§3j.142); and **colour contrast had never been measured at all**

@@ -16,41 +16,35 @@ repeats, and eventually invents work. A denominator is recorded for every closed
 Each entry names the **specific question** — not "is it right" — and what a defect would look
 like. A front without those two things is not ready to work on.
 
-### 1. Keyboard operability — planner and Stat Lab
-**Question:** can every control be reached and operated by keyboard alone, in a sensible
-order? §3j.141 fixed the codex drawer only.
-**Defect:** a control reachable by mouse but not Tab; a focus order that jumps around the
-page; the planner's priority cycling or the Stat Lab's item steppers being mouse-only.
-
-### 2. Error paths
+### 1. Error paths
 **Question:** what does a user see when something fails — not when it works?
 **Defect:** a blank page or thrown error on: corrupted localStorage at the **top level**
 (`sanitizeEntry` handles bad *entries*, not a non-JSON blob), an unknown route, a missing
 icon at runtime, or a share link with a malformed query string.
 
-### 3. Dependency and bundle health
+### 2. Dependency and bundle health
 **Question:** is anything shipped that shouldn't be, and is anything vulnerable or abandoned?
 **Defect:** a known CVE in a runtime dependency; the game-data extractors' Python deps leaking
 into the web bundle; a bundle large enough to matter on a phone.
 
-### 4. Remaining extractor failure modes
+### 3. Remaining extractor failure modes
 **Question:** `check-extractor-health.py` measures four swallow classes for the *two main*
 extractors. What do the other ~38 scripts silently swallow?
 **Defect:** a bare `except: continue` that turns a parse failure into a shorter output, which
 looks identical to a game that contains less (the §3j.133 shape).
 
-### 5. Responsive layout
+### 4. Responsive layout
 **Question:** at 360px wide, is anything unreachable or overlapping?
 **Defect:** the codex filter row, the planner rail, or the Stat Lab's two-column layout
 clipping content with no scroll.
 
-### 6. `prerender-og` output
+### 5. `prerender-og` output
 **Question:** the build writes 217 item + 19 survivor + 1 home OG pages. Are they correct, or
 just present?
 **Defect:** wrong title/description per page, a stale template, or absolute URLs pointing at
 the wrong origin.
 
-### 7. Interaction and error states, beyond contrast
+### 6. Interaction and error states, beyond contrast
 **Question:** §3j.144 measured 13 panel-states and found that every route had only ever been
 examined *at rest*. Which other states does no check ever render?
 **Defect:** the shape already proven once — a defect placed in `TierGrid`'s empty state passed
@@ -58,6 +52,17 @@ the whole suite. Candidates: loading, empty planner, empty Stat Lab, an item wit
 rows, a survivor with no unlock.
 **Note:** this is a *coverage* front, not an a11y one. Fold new states into
 `tests/contrast.spec.ts` and `tests/headings.spec.ts`, which both take a state list.
+
+### 7. `title` as the only home for an explanation
+**Question:** 25 `title=` attributes across 13 components carry real explanatory content
+("Formula confirmed against the decompiled game code", "Stacks past N have no effect at all").
+`title` is invisible to keyboard users, unreliable for screen readers, and absent on touch. How
+much of that content exists nowhere else?
+**Defect:** an explanation only a mouse user can reach. Some already have an `aria-label`
+sibling; some do not, and some sit on non-focusable `<span>`s.
+**Note:** partly a SCOPE decision (rule 9) — a real tooltip component (focusable,
+`aria-describedby`, dismissible per WCAG 1.4.13) is a new UI surface. A subset can be fixed
+without one. §3j.145.
 
 ---
 
@@ -102,6 +107,7 @@ SweetSpot cliffs and the proc gap in already-"checked" data.
 | Modal focus management | 1 dialog, 3 required behaviours | **no focus handling at all** | §3j.141 |
 | Heading outline | 151 headings / 12 panel-views | **h1→h3 on 4 panels** | §3j.142 |
 | Colour contrast (WCAG AA) | 3362 pairs / 13 panel-states | **80 nodes below AA**; instrument wrong twice first | §3j.144 |
+| Keyboard operability | 447+60 controls, 491 tab stops, 4 mutations | **2 focus-loss bugs**; reachability sound | §3j.145 |
 | Extractor health | 1472 bundles, 224,435 MonoBehaviours | all swallow classes 0 | §3j.127 |
 
 ---

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Check, Link2, RotateCcw, X } from "lucide-react";
 import type { Item } from "@/data/schema";
 import { items as allItems, PRESENT_TIERS, TIER_META } from "@/data/items";
@@ -70,8 +70,34 @@ const NEXT_PRIORITY: Record<Priority, Priority> = {
 function GoalField({ item, goal }: { item: Item; goal?: number }) {
   const setGoal = usePlanner((s) => s.setGoal);
   const [editing, setEditing] = useState(false);
+  const buttonRef = useRef<HTMLButtonElement>(null);
+
+  /**
+   * §3j.145 — closing this editor used to drop focus on the floor.
+   *
+   * Enter and Escape both set `editing` false, which unmounts the input; the browser then has
+   * nowhere to put focus and hands it to <body>. On a page with 445 tab stops that means
+   * setting one goal ejects a keyboard user to the top of the document. The values were always
+   * right — Escape really does discard — so this is purely the focus contract, the same one
+   * §3j.141 fixed for the item drawer and did not generalise beyond it.
+   *
+   * Only a KEYBOARD close restores focus. If the editor closed because the user clicked
+   * somewhere else, they have already chosen where to be, and yanking focus back would be its
+   * own bug.
+   */
+  const restoreFocus = useRef(false);
+  useEffect(() => {
+    if (!editing && restoreFocus.current) {
+      restoreFocus.current = false;
+      buttonRef.current?.focus();
+    }
+  }, [editing]);
 
   if (editing) {
+    const commit = (raw: string) => {
+      setGoal(item.id, raw === "" ? null : Number(raw));
+      setEditing(false);
+    };
     return (
       <input
         autoFocus
@@ -80,13 +106,19 @@ function GoalField({ item, goal }: { item: Item; goal?: number }) {
         max={99}
         defaultValue={goal ?? ""}
         aria-label={`Goal stack count for ${item.name}`}
-        onBlur={(e) => {
-          setGoal(item.id, e.target.value === "" ? null : Number(e.target.value));
-          setEditing(false);
-        }}
+        onBlur={(e) => commit(e.target.value)}
         onKeyDown={(e) => {
-          if (e.key === "Enter") (e.target as HTMLInputElement).blur();
-          if (e.key === "Escape") setEditing(false);
+          if (e.key !== "Enter" && e.key !== "Escape") return;
+          // preventDefault is load-bearing, not tidiness.
+          //
+          // Restoring focus happens synchronously inside this keydown, so the rest of the
+          // keystroke lands on the button we just focused — and Enter on a focused button
+          // activates it. Without this the editor commits, closes, and instantly REOPENS,
+          // which reads as "Enter does nothing" and hid the focus fix entirely.
+          e.preventDefault();
+          restoreFocus.current = true;
+          if (e.key === "Enter") commit(e.currentTarget.value);
+          else setEditing(false);
         }}
         className="w-10 rounded border border-primary/60 bg-surface-2 px-1 text-center text-[11px] text-foreground focus:outline-none"
       />
@@ -94,6 +126,7 @@ function GoalField({ item, goal }: { item: Item; goal?: number }) {
   }
   return (
     <button
+      ref={buttonRef}
       type="button"
       onClick={() => setEditing(true)}
       aria-label={goal ? `Goal: ${goal}. Edit.` : `Set a goal count for ${item.name}`}
