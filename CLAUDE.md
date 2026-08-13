@@ -196,6 +196,16 @@ left, bold white name, gray body with highlighted numeric values.
       §3j.58–§3j.98. Notable: the Stat Lab was a second unaudited implementation of the
       game's arithmetic; "N base, +M per stack" was false on 28 non-linear rows; four shared
       terms every formula depended on had never been defined.
+- [x] Extractor failure modes — 28 Python scripts parsed by AST: 83 exception handlers, **78
+      silent** across 24 scripts. The count is not the finding; only 6 scripts are invoked
+      programmatically and 5 feed `data:verify`, the rest being one-off investigations whose
+      results are frozen and independently cross-checked. Asking whether a SHORT extraction
+      would be caught found something worse: **all seven game cross-checks printed `⚠` and
+      exited 0.** A half-complete extraction gave 28 drift lines, exit code 0, and a summary
+      still reading "✓ survivors.json matches the game's body prefabs". They gate now, partial
+      comparisons included. A **stale** extraction passed identically — `data:verify` never runs
+      an extractor, it reads whatever `.gamedata/` holds — so it now fails if the game install
+      is newer than the file it is trusting (§3j.148).
 - [x] Dependency and bundle health — and the pass that found the site **broken in production**.
       The deploy publishes to GitHub Pages, a plain static file server with no rewrite rules;
       the SPA fallback in `public/_redirects` is a Netlify/Cloudflare convention Pages ignores,
@@ -258,9 +268,15 @@ left, bold white name, gray body with highlighted numeric values.
         `data:audit`: internal-name collisions, coined terms absent from the decompile,
         unlock gating. `data:verify`: **all seven game cross-checks** — skill completeness,
         roster completeness, Ambry codes, tier + dlc, equipment cooldowns, the live prefab
-        cross-check and the live decompiled grep. `.decompiled/` and `.gamedata/` are
-        Gearbox's data and must never be committed (rule above), so this is a permanent
-        limit, not a TODO.
+        cross-check and the live decompiled grep — plus a **staleness gate**: if the game
+        install is newer than a `.gamedata/` extraction, the run fails naming the file, because
+        "re-run the extractors after a patch" was documented and unenforced (§3j.148).
+        `.decompiled/` and `.gamedata/` are Gearbox's data and must never be committed (rule
+        above), so this is a permanent limit, not a TODO.
+
+        Note this bullet was **false until §3j.148**: every one of those cross-checks printed a
+        ⚠ block and then exited 0, so none of them failed a build. A half-complete extraction
+        produced 28 drift lines and a green run. They gate now.
 
         **What CI can therefore prove is narrower than it looks.** With no game data,
         `data:verify` compares our JSON to the *transcribed truth tables in the script*, not

@@ -2251,3 +2251,74 @@ test("every static route in the router is prerendered to a file", async () => {
     );
   }
 });
+
+
+/**
+ * §3j.148 — a cross-check that cannot fail the build is decoration.
+ *
+ * All seven of `data:verify`'s game cross-checks printed a ⚠ block listing real differences
+ * and then fell through to exit 0, because only the item-coefficient and transcribed-survivor
+ * comparisons were ever added to the exit condition. Feeding the script a half-complete
+ * extraction produced 28 drift lines across three cross-checks, exit code 0, and a summary
+ * that still said "✓ survivors.json matches the game's body prefabs" underneath the warnings.
+ * The full pre-commit gate passed it. CI would have too.
+ *
+ * That is §3j.139's defect — correct, and gating nothing — in a second place. `CLAUDE.md`
+ * listed these under "guards ... each turns a repeated mistake into a failing build", which
+ * was simply not true of any of them.
+ *
+ * The recurring class is "someone adds an eighth cross-check and wires it to a console.log",
+ * so the guard is that EVERY crossCheck* result reaches `gate()`, checked against the script
+ * itself rather than a list kept by hand.
+ */
+test("every game cross-check in data:verify is wired to the failure gate", async () => {
+  const { readFileSync } = await import("node:fs");
+  const src = readFileSync("scripts/data-verify.ts", "utf8");
+
+  const declared = [...src.matchAll(/^function (crossCheck\w+)\(/gm)].map((m) => m[1]);
+  expect(declared.length, "no crossCheck* functions found — the script was restructured").toBeGreaterThanOrEqual(8);
+
+  // Each is called as `const <name> = crossCheckX();` — that binding must reach gate().
+  const bindings = [...src.matchAll(/const (\w+) = (crossCheck\w+)\(\)/g)].map((m) => ({
+    variable: m[1],
+    fn: m[2],
+  }));
+  expect(
+    bindings.map((b) => b.fn).sort(),
+    "a crossCheck* function is declared but never called",
+  ).toEqual([...declared].sort());
+
+  // Collect the argument text of every gate(...) call, then ask whether each binding appears
+  // in one. Built by string scanning rather than a regex on purpose: escaping a pattern like
+  // this through the layers that generate these tests has silently eaten backslashes twice
+  // (§3j.116 wrote a literal BACKSPACE into a guard; the first cut of this one compiled to
+  // /gate(s*"[^"]+",s*sk/ and threw).
+  const gateArgs = src
+    .split("gate(")
+    .slice(1)
+    .map((chunk) => chunk.slice(0, chunk.indexOf(")")));
+  expect(gateArgs.length, "no gate() calls found at all").toBeGreaterThanOrEqual(8);
+
+  const ungated = bindings.filter(
+    ({ variable }) =>
+      !gateArgs.some((args) =>
+        args
+          .split(",")
+          .slice(1)
+          .some((a) => a.trim() === variable || a.trim() === `${variable}.drift`),
+      ),
+  );
+  expect(
+    ungated.map((b) => `${b.fn} -> ${b.variable}`),
+    `cross-checks that print but cannot fail the build: ${ungated.map((b) => b.fn).join(", ")}`,
+  ).toEqual([]);
+
+  // And the gate must actually be able to exit non-zero.
+  expect(src, "gate() collects failures but nothing acts on them").toMatch(
+    /if \(failures\.length\)[\s\S]{0,220}process\.exit\(1\)/,
+  );
+  // A stale extraction is the same defect wearing different clothes.
+  expect(src, "no staleness check against the game install").toMatch(
+    /if \(stale\.length\)[\s\S]{0,220}process\.exit\(1\)/,
+  );
+});

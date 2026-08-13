@@ -18,7 +18,7 @@
  *
  * Exit code: non-zero if any self-consistency mismatch, else 0.
  */
-import { existsSync, readFileSync, readdirSync } from "node:fs";
+import { existsSync, readFileSync, readdirSync, statSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { STAT_ITEMS, type StatTarget } from "../src/data/statItems.ts";
@@ -737,9 +737,68 @@ function main() {
   const skipped: string[] = [];
   const note = (name: string, didRun: boolean) => (didRun ? ran : skipped).push(name);
 
+  /**
+   * §3j.148 — the game cross-checks have to be able to FAIL.
+   *
+   * Every one of them printed `⚠` and a list of differences and then fell through to
+   * `process.exit(0)`, because only `mismatches` (item coefficients) and `survivorBad` (the
+   * transcribed survivor table) were ever added into the exit condition. Feeding this script a
+   * half-complete extraction produced **28 drift lines across three cross-checks and exit code
+   * 0**, with the summary still printing "7 of 7 game cross-checks ran" and "✓ survivors.json
+   * matches the game's body prefabs" underneath the warnings.
+   *
+   * That is the §3j.139 defect again in a different place: a check that was correct, and that
+   * did not gate anything. The full pre-commit gate would have passed it, and so would CI.
+   *
+   * A PARTIAL comparison counts as a failure too. "Only 12 of 41 were compared" is the whole
+   * reason denominators are printed (§3j.126) — it is not a pass with a caveat.
+   */
+  const failures: string[] = [];
+
+  /**
+   * §3j.148 — a STALE extraction passes every check, for the same reason a short one did.
+   *
+   * This script never runs an extractor; it reads `.gamedata/*.json` left behind by whenever
+   * someone last ran them. `CLAUDE.md` says to re-run the extractors after a game patch and
+   * then run this — but nothing enforced the order, so patching the game and running
+   * `pnpm data:verify` alone compared the site against PRE-patch data and printed ✓. The
+   * failure mode the extractions exist to catch is precisely a game patch.
+   *
+   * Two representative files decide it: the Addressables catalog (any content patch) and
+   * RoR2.dll (any code patch). If either is newer than the extraction being trusted, the
+   * extraction predates the game and its agreement means nothing.
+   */
+  const stale: string[] = [];
+  {
+    const gameStamps = [
+      join(GAME_DIR, "StreamingAssets", "aa", "catalog.json"),
+      join(GAME_DIR, "Managed", "RoR2.dll"),
+    ].filter(existsSync);
+    if (gameStamps.length) {
+      const newestGame = Math.max(...gameStamps.map((f) => statSync(f).mtimeMs));
+      for (const f of ["bodies.json", "survivordefs.json", "component-fields.json", "itemdefs.json", "ambry-codes.json"]) {
+        const p = join(root, ".gamedata", f);
+        if (!existsSync(p)) continue;
+        if (statSync(p).mtimeMs < newestGame) {
+          stale.push(
+            `.gamedata/${f} is older than the game install — re-run its extractor before trusting this`,
+          );
+        }
+      }
+    }
+  }
+
+  const gate = (name: string, drift: string[], compared?: number, total?: number) => {
+    if (drift.length) failures.push(`${name}: ${drift.length} difference(s)`);
+    else if (compared !== undefined && total !== undefined && compared > 0 && compared !== total) {
+      failures.push(`${name}: only ${compared} of ${total} compared`);
+    }
+  };
+
   // --- loadout skill completeness ---
   const sk = crossCheckSkills();
   note("skill completeness", sk.compared > 0);
+  gate("skill completeness", sk.drift);
   if (sk.compared === 0) {
     console.log("Skill completeness: skipped (.gamedata/loadouts_final.json absent).");
   } else if (sk.drift.length === 0) {
@@ -752,6 +811,7 @@ function main() {
   // --- survivor roster completeness ---
   const roster = crossCheckRoster();
   note("roster completeness", roster.compared > 0);
+  gate("roster completeness", roster.drift);
   if (roster.compared === 0) {
     console.log("Roster completeness: skipped (.gamedata/survivordefs.json absent).");
   } else if (roster.drift.length === 0) {
@@ -764,6 +824,7 @@ function main() {
   // --- Ambry codes vs the dialer's own hashes ---
   const ambry = crossCheckAmbry();
   note("Ambry codes", ambry.compared > 0);
+  gate("Ambry codes", ambry.drift);
   if (ambry.compared === 0) {
     console.log("Ambry codes: skipped (run python scripts/crack-ambry-codes.py locally).");
   } else if (ambry.drift.length === 0) {
@@ -776,6 +837,7 @@ function main() {
   // --- item tier + dlc vs the game's defs ---
   const tiers = crossCheckTiers();
   note("tier + dlc", tiers.compared > 0);
+  gate("tier + dlc", tiers.drift, tiers.compared, tiers.total);
   if (tiers.compared === 0) {
     console.log("Tier/DLC: skipped (needs .gamedata/itemdefs.json — run extract-itemdefs.py).");
   } else if (tiers.drift.length === 0 && tiers.compared === tiers.total) {
@@ -793,6 +855,7 @@ function main() {
   // --- equipment cooldowns vs EquipmentDef.cooldown ---
   const cd = crossCheckCooldowns();
   note("equipment cooldowns", cd.compared > 0);
+  gate("equipment cooldowns", cd.drift, cd.compared, cd.total);
   if (cd.compared === 0) {
     console.log(
       "Equipment cooldowns: skipped (needs .gamedata/component-fields.json — run " +
@@ -811,6 +874,7 @@ function main() {
   }
 
   const drift = crossCheckBodies();
+  gate("live prefab cross-check", drift);
   if (!existsSync(BODIES)) {
     console.log("Live prefab cross-check: skipped (.gamedata/ absent — run scripts/extract-bodies.py locally).");
   } else if (drift.length === 0) {
@@ -821,6 +885,7 @@ function main() {
   }
 
   const corruptDrift = crossCheckCorruption();
+  gate("void corruption", corruptDrift);
   if (!existsSync(resolve(root, ".gamedata/itemdefs.json"))) {
     console.log("Void corruption cross-check: skipped (.gamedata/ absent).");
   } else if (corruptDrift.length === 0) {
@@ -831,6 +896,7 @@ function main() {
   }
 
   const gaps = crossCheckCompleteness();
+  gate("codex completeness", gaps);
   if (!existsSync(resolve(root, ".gamedata/itemdefs.json"))) {
     console.log("Codex completeness: skipped (.gamedata/ absent).");
   } else if (gaps.length === 0) {
@@ -843,6 +909,18 @@ function main() {
   const total = mismatches + survivorBad;
   if (total > 0) {
     console.error(`\n✗ ${total} mismatch(es) vs game truth (${mismatches} item coefficient, ${survivorBad} survivor stat).`);
+    process.exit(1);
+  }
+  // The cross-checks gate too, or they are decoration (§3j.148). Printed before exiting so the
+  // reason is on screen next to the ⚠ blocks that produced it.
+  if (stale.length) {
+    console.error(`\n✗ ${stale.length} extraction(s) predate the game install:`);
+    for (const s of stale) console.error(`  - ${s}`);
+    process.exit(1);
+  }
+  if (failures.length) {
+    console.error(`\n✗ ${failures.length} game cross-check(s) failed:`);
+    for (const f of failures) console.error(`  - ${f}`);
     process.exit(1);
   }
 

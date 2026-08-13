@@ -7625,3 +7625,81 @@ vulnerabilities**.
 `404.html` catch-all and the two data-driven loops. Proven twice: renaming the prerendered
 `stats` entry fails it, and adding a new `/loadouts` route with no prerender fails it with the
 route named.
+
+---
+
+### §3j.148 — The extractors' swallows, and the checks that could not fail
+
+Backlog front #1. **Question:** `check-extractor-health.py` measures four swallow classes for
+the two main extractors — what do the other ~38 scripts silently swallow? **Defect:** the
+§3j.133 shape, where a bare `except: continue` turns a parse failure into a shorter output, and
+a shorter output is indistinguishable from a game that contains less.
+
+**Denominator: 28 Python scripts parsed by AST, 83 exception handlers, 78 of them silent across
+24 scripts.** (grep cannot tell a handler that reports from one that vanishes, and that
+distinction is the entire question.)
+
+78 sounds like a catastrophe and is not, which is why the next question mattered more than the
+count: **whose output is still trusted?** Six scripts are invoked programmatically; five feed
+`pnpm data:verify`. The other 22 are one-off investigations whose findings were independently
+cross-checked and are now frozen in JSON. The `apply-*.mjs` tools write nothing into
+`src/data` and are never invoked automatically.
+
+So the real question became: if one of those five produces a SHORT extraction, does the gate
+notice? The answer was no, and for a much worse reason than expected.
+
+#### All seven game cross-checks printed ⚠ and exited 0
+
+Feeding `data:verify` a half-complete extraction produced **28 drift lines across three
+cross-checks — and exit code 0**, with the summary still printing:
+
+```
+7 of 7 game cross-checks ran
+✓ statItems.ts matches the code-derived coefficients.
+✓ survivors.json matches the game's body prefabs.
+```
+
+directly underneath the warnings. Only `mismatches` (item coefficients) and `survivorBad` (the
+transcribed survivor table) were ever added into the exit condition; `process.exit(1)` could
+not be reached by any cross-check. **The full pre-commit gate would have passed this, and so
+would CI.**
+
+This is §3j.139's defect — a check that is correct and gates nothing — found a second time in a
+different place. `CLAUDE.md` listed these under *"Guards, not resolutions — each turns a
+repeated mistake into a failing build"*, which was not true of a single one of them.
+
+Fixed with a `gate()` collector wired to all eight cross-check results, exiting non-zero on any
+difference. A **partial** comparison fails too: "only 12 of 41 compared" is the reason
+denominators are printed at all (§3j.126), not a pass with a caveat. Because the exit now
+precedes the summary, the contradictory ✓ lines can no longer print under a ⚠ block.
+
+#### A stale extraction passed everything, for the same reason
+
+`data:verify` never runs an extractor. It reads `.gamedata/*.json` left behind whenever someone
+last ran them — here, files dated 2026-07-19 to 2026-08-10 against a game install from
+2026-05-31. `CLAUDE.md` says to re-run the extractors after a patch and then run this, but
+nothing enforced the order. **Patching the game and running `pnpm data:verify` alone compared
+the site against pre-patch data and printed ✓** — and a game patch is precisely the failure the
+extractions exist to catch.
+
+Now gated on mtime against two representative files: the Addressables catalog (content patches)
+and `RoR2.dll` (code patches). If either is newer than an extraction being trusted, that
+extraction predates the game and the run fails naming the file.
+
+#### Proven by breakage, five ways
+
+Half-complete extraction → exit 1 naming three checks. Partial `itemdefs` → exit 1. An
+extraction backdated to predate the game → exit 1 naming the file. Removing one `gate()` call →
+unit guard fails. Making the failure list unreachable (`if (false)`) → unit guard fails.
+
+#### Two notes on method
+
+**The instrument was wrong first, again.** The AST scan initially reported
+`check-extractor-health.py` — the script whose entire job is counting swallows — as swallowing
+two. Its handlers record `tt_bad += 1` and `name_bad += 1`, and the classifier only recognised
+`Call` nodes as signals, not counter increments. 80 → 78 after the fix.
+
+**Escaping ate a regex for the third time.** A pattern generated through a heredoc compiled to
+`/gate(s*"[^"]+",s*sk/` and threw at runtime — the same class as the literal BACKSPACE written
+into a guard in §3j.116. The guard now does plain string scanning instead. When a check must
+survive being written *through* another layer, a regex is the fragile choice.
