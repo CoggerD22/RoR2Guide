@@ -116,7 +116,60 @@ function main() {
     s++;
   }
 
-  console.log(`prerender-og: ${n} item pages + ${s} survivor pages + home OG written to dist/`);
+  /*
+    4) The SECTION routes, and a catch-all. §3j.147.
+
+    These are the reason the site was broken in production, not a nicety. GitHub Pages serves
+    static files: it resolves `/planner` by looking for `dist/planner/index.html` and, finding
+    nothing, serves its own 404. The SPA fallback this repo carries is `public/_redirects`,
+    which is a Netlify/Cloudflare convention that Pages ignores entirely — and the deploy
+    workflow publishes to Pages.
+
+    So `/` worked (its redirect to /items is client-side, no server request), and every
+    `/items/<id>` and `/survivors/<id>` worked because the loop above happens to write them —
+    while `/items`, `/planner`, `/stats`, `/reference` and `/survivors` 404'd on refresh or on
+    any shared link. The planner's own "Copy link" button produced URLs that did not load.
+
+    Descriptions mirror each page's on-screen intro rather than inventing new copy.
+  */
+  const SECTIONS = [
+    ["items", "Item Codex", `${items.length} items across every tier and DLC, each traced to the game's own code or serialized assets.`],
+    ["planner", "Run Planner", "Mark what you want to target or avoid at printers and scrappers this run. The plan is grouped by tier and saved locally."],
+    ["stats", "Stat Lab", "Pick a survivor and level, stack stat items, and watch the derived numbers update. Every formula and base stat is checked against the game's own files."],
+    ["reference", "Reference", "The answers the game itself makes hard to find — artifact codes, what each Bazaar dream seeds, and shrine mechanics."],
+    ["survivors", "Survivors", "Base stats read from the game's own body prefabs, every loadout skill with its proc coefficient, and the challenge that unlocks each alternate skill."],
+  ];
+  let sec = 0;
+  for (const [id, title, description] of SECTIONS) {
+    const dir = path.join(dist, id);
+    fs.mkdirSync(dir, { recursive: true });
+    fs.writeFileSync(
+      path.join(dir, "index.html"),
+      render(template, {
+        title: `${title} · Risk of Rain 2`,
+        description,
+        image: `${SITE}/icons/crowbar.png`,
+        url: `${SITE}/${id}`,
+      }),
+    );
+    sec++;
+  }
+
+  // The catch-all. Pages serves /404.html for any path with no file, so this is what makes an
+  // unknown or mistyped deep link boot the app at all — and the app's own 404 (§3j.146) is
+  // what the reader then sees, instead of GitHub's.
+  fs.writeFileSync(
+    path.join(dist, "404.html"),
+    render(template, {
+      title: "Page not found · RoR2 Companion",
+      description: "That page doesn’t exist. Browse the verified Risk of Rain 2 item codex instead.",
+      url: `${SITE}/`,
+    }),
+  );
+
+  console.log(
+    `prerender-og: ${n} item pages + ${s} survivor pages + ${sec} section pages + 404.html + home OG written to dist/`,
+  );
 }
 
 main();

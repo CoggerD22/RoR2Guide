@@ -2200,3 +2200,54 @@ test("muted-foreground is never dimmed by an opacity modifier", async () => {
   expect(occurrences, "no text-muted-foreground/N found at all — has the token been renamed?").toBeGreaterThan(0);
   expect(offenders, `dimmed below AA:\n${offenders.join("\n")}`).toEqual([]);
 });
+
+
+/**
+ * §3j.147 — every router route must have a static file, or it 404s in production.
+ *
+ * GitHub Pages is a static file server: it resolves `/planner` by looking for
+ * `dist/planner/index.html`. There is no rewrite rule. `public/_redirects` is a
+ * Netlify/Cloudflare convention that Pages ignores, and the deploy workflow publishes to
+ * Pages — so five of the site's own routes returned GitHub's 404 on refresh or on any shared
+ * link, including every URL the planner's "Copy link" button produces.
+ *
+ * It was invisible locally because `vite dev` and `vite preview` both serve an SPA fallback,
+ * and invisible in tests because Playwright drives that same dev server. Only the built
+ * `dist/` tree tells the truth about what Pages will serve.
+ *
+ * This is the class that recurs: add a route, forget the prerender. Asserted against the
+ * router itself rather than a hand-kept list.
+ */
+test("every static route in the router is prerendered to a file", async () => {
+  const { readFileSync } = await import("node:fs");
+  const router = readFileSync("src/router.tsx", "utf8");
+  const prerender = readFileSync("scripts/prerender-og.mjs", "utf8");
+
+  const paths = [...router.matchAll(/^\s*path: "([^"]+)"/gm)].map((m) => m[1]);
+  expect(paths.length, "no routes parsed from router.tsx — the shape changed").toBeGreaterThan(5);
+
+  // Top-level static routes: not "/" (that is dist/index.html) and not a $param segment
+  // (those are covered by the item and survivor loops, which iterate the data).
+  const staticRoutes = paths
+    .filter((p) => p.startsWith("/") && p !== "/" && !p.includes("$"))
+    .map((p) => p.slice(1));
+  expect(staticRoutes.length, "no static routes found to check").toBeGreaterThanOrEqual(5);
+
+  const missing = staticRoutes.filter((r) => !new RegExp(`"${r}"`).test(prerender));
+  expect(
+    missing,
+    `routes with no prerendered file — these return GitHub's 404 in production: ${missing.join(", ")}`,
+  ).toEqual([]);
+
+  // The catch-all is what makes an unknown deep link boot the app at all, so the app's own
+  // 404 (§3j.146) is what a reader sees instead of GitHub's.
+  expect(prerender, "no 404.html catch-all is written").toContain('"404.html"');
+
+  // Dynamic routes are covered by data-driven loops; assert those still exist rather than
+  // trusting that they do.
+  for (const dir of ["items", "survivors"]) {
+    expect(prerender, `${dir}/<id> pages are no longer generated`).toContain(
+      `path.join(dist, "${dir}", `,
+    );
+  }
+});

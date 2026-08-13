@@ -1,4 +1,16 @@
-# SPA fallback so client-side routes (/planner, /stats, /reference…) resolve on
-# refresh/deep-link. Honored by Netlify and Cloudflare Pages. Vercel uses a
-# framework preset; add a rewrite in vercel.json if deploying there.
+# SPA fallback for hosts that support rewrite rules — Netlify and Cloudflare Pages.
+#
+# THIS FILE DOES NOTHING ON THE CURRENT DEPLOY. `.github/workflows/deploy.yml` publishes to
+# GitHub Pages, which is a plain static file server: it has no rewrite rules and ignores this
+# file entirely. Pages resolves /planner by looking for dist/planner/index.html, and serves
+# /404.html when there is no file.
+#
+# That is why `scripts/prerender-og.mjs` writes a real index.html for every static route plus a
+# 404.html catch-all, and why `stacking.test.ts` asserts the router and the prerender agree.
+# Before this was noticed, /items, /planner, /stats, /reference and /survivors all returned
+# GitHub's own 404 on refresh or on any shared link — including every URL the planner's
+# "Copy link" button produces (§3j.147). It was invisible locally because `vite dev` and
+# `vite preview` both provide the SPA fallback this file describes.
+#
+# Kept so the project stays portable to a host where it is the right mechanism.
 /*    /index.html   200

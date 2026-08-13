@@ -7552,3 +7552,76 @@ is named, explained, and capped at two entries.
 
 Three mutations, each reverting one fix, all caught: no `merge` (2 fail), no
 `notFoundComponent` (3 fail), no item-not-found branch (1 fail).
+
+---
+
+### §3j.147 — Dependency and bundle health: the site was broken in production
+
+Backlog front #1. **Question:** is anything shipped that shouldn't be, and is anything
+vulnerable or unmaintained? **Defect:** a known CVE reachable at runtime, script-only code
+leaking into the client bundle, or a payload large enough to matter on a phone.
+
+The front's own three defect shapes came back: one real, one clean, one clean. The serious
+finding was none of them, and it was sitting in the build output all along.
+
+#### The deploy served GitHub's 404 for five of its own routes
+
+`.github/workflows/deploy.yml` publishes to **GitHub Pages**, which is a plain static file
+server: it resolves `/planner` by looking for `dist/planner/index.html`, and there are no
+rewrite rules. The SPA fallback this repo carries is `public/_redirects` — a **Netlify and
+Cloudflare** convention that Pages ignores completely. There was no `404.html` either.
+
+Mapping the built tree against the router:
+
+| route | file in `dist/` |
+|---|---|
+| `/` | present |
+| `/items/<id>` | present — 217, from the OG prerender |
+| `/survivors/<id>` | present — 19 |
+| `/items`, `/planner`, `/stats`, `/reference`, `/survivors` | **nothing** |
+
+`/` worked because its redirect to `/items` is client-side and never touches the server. Item
+and survivor pages worked by accident, because the OG prerender happens to write a file at
+exactly the path the router uses. Everything else returned GitHub's own 404 on refresh or on
+any link someone shared — **including every URL the planner's "Copy link" button produces**,
+which is the one feature whose entire purpose is being pasted somewhere else.
+
+It was invisible locally because `vite dev` and `vite preview` both provide an SPA fallback,
+and invisible to the whole browser suite because Playwright drives that same dev server. Only
+the built `dist/` tree says what Pages will actually serve. Fixed by prerendering the five
+section routes and a `404.html` catch-all — which now lands on the app's own 404 from §3j.146
+rather than GitHub's.
+
+#### Four advisories, none of them runtime
+
+`pnpm audit`: **3 high, 1 moderate** — two `postcss` path-traversal issues and two `nanoid`
+infinite-loop issues. Every path ran through `vite`, a devDependency, so none was reachable by
+a browser; all four were the lockfile pinning old transitives inside ranges that already
+allowed the fixes. `postcss@8.5.16 → 8.5.26`, `nanoid@3.3.15 → 3.3.18`, **0 known
+vulnerabilities**.
+
+#### What was already sound, with denominators
+
+- **Nothing script-only ships.** `zod` is entirely absent from the bundle (0 hits for `zod`,
+  `ZodError`, `invalid_type`) — `schema.ts` uses it, but only the audit scripts import that
+  module's runtime half. `marked` is absent too despite being a dependency of the parked guides
+  layer: its 3 apparent hits are the game's own prose, "Enemies with 4 or more debuffs are
+  **marked** for death". Tree-shaking handles both.
+- **No dev leakage.** 0 sourcemaps, 0 `console.log`, 0 `debugger`, 0 `process.env`, 0 `__vite`
+  across the built bundle. The single `localhost` hit is TanStack Router's own origin fallback.
+- **Size is fine, and the interesting number was not the one the warning points at.** 722.5 kB
+  raw / **214.9 kB gzip**, of which the data is ~72.5 kB gzip (items.json 68.1). The icons are
+  4.1 MB across 217 files — 20× the JS — but every grid `<img>` already carries
+  `loading="lazy"`, so first paint fetches only what is on screen. Checked rather than assumed.
+- **One genuinely unused dependency.** `class-variance-authority`: zero references in `src/`,
+  `scripts/`, `tests/` or config, and absent from the bundle. A leftover from the shadcn/ui
+  scaffold. Removed. `react-dom` was flagged by the same sweep and is a **false positive** — it
+  is imported as `react-dom/client`, and the pattern demanded an exact specifier.
+
+#### The guard is against the class, not the instance
+
+"Add a route, forget the prerender" recurs every time the router grows. The guard reads
+`router.tsx`, extracts every static path, and asserts `prerender-og.mjs` covers each — plus the
+`404.html` catch-all and the two data-driven loops. Proven twice: renaming the prerendered
+`stats` entry fails it, and adding a new `/loadouts` route with no prerender fails it with the
+route named.

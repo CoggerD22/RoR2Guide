@@ -196,6 +196,21 @@ left, bold white name, gray body with highlighted numeric values.
       §3j.58–§3j.98. Notable: the Stat Lab was a second unaudited implementation of the
       game's arithmetic; "N base, +M per stack" was false on 28 non-linear rows; four shared
       terms every formula depended on had never been defined.
+- [x] Dependency and bundle health — and the pass that found the site **broken in production**.
+      The deploy publishes to GitHub Pages, a plain static file server with no rewrite rules;
+      the SPA fallback in `public/_redirects` is a Netlify/Cloudflare convention Pages ignores,
+      and there was no `404.html`. `/items`, `/planner`, `/stats`, `/reference` and `/survivors`
+      all returned GitHub's own 404 on refresh or on any shared link — **including every URL the
+      planner's "Copy link" button produces**. Only `/` and the prerendered `/items/<id>` and
+      `/survivors/<id>` pages resolved. Invisible locally because `vite dev` and `vite preview`
+      both supply the fallback, and invisible to the browser suite because Playwright drives
+      that same dev server: **only the built `dist/` tree says what Pages will serve.** The
+      prerender now writes the section routes and a `404.html` catch-all, and a guard asserts
+      the router and the prerender agree. Also: 4 advisories (3 high) in `postcss`/`nanoid`,
+      all build-time only, fixed by bumping within existing ranges; `class-variance-authority`
+      removed as genuinely unused. Nothing script-only ships — `zod` and `marked` are both
+      absent from the bundle, verified by probe, and 215 kB gzip with lazy-loaded icons is
+      sound (§3j.147).
 - [x] Error paths — what a user sees when something is **wrong**, a question nothing had asked.
       Three defects. The planner's `sanitizeEntry` was correct, unit-tested, and **never ran**:
       zustand calls `migrate` only on a version *mismatch*, and version has been 2 for a long
