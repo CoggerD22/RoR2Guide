@@ -1,4 +1,5 @@
 import { test, expect } from "@playwright/test";
+import { representativeItems } from "./item-states";
 
 /**
  * §3j.142 — the heading outline, on every route and every tab panel.
@@ -26,6 +27,12 @@ const ROUTES: Array<[string, string, string[]]> = [
   ],
   ["/survivors", "survivors", []],
   ["/survivors/commando", "survivor detail", []],
+  // §3j.151 — one item per distinct ItemDetail branch. Every sweep here used to visit
+  // crowbar and nothing else, so the equipment cooldown block, the no-stacking case, the
+  // void corruption pair and the description note were never drawn under measurement.
+  ...representativeItems().map(
+    (id) => [`/items/${id}`, `item drawer: ${id}`, []] as [string, string, string[]],
+  ),
 ];
 
 test("every page has exactly one h1 and never skips a heading level", async ({ page }) => {

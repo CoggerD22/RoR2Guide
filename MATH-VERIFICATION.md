@@ -7824,3 +7824,66 @@ It also closes a drift class nothing had covered: the deploy path is written in 
 `SITE` here and `base` in `vite.config.ts`. Change one without the other and every `og:url`
 points at an origin that does not serve this site, while the pages still load and every other
 check passes. Changing the base to `/ror2-companion/` now fails the build naming both values.
+
+---
+
+### §3j.151 — The states nothing had ever rendered
+
+Backlog front #1. **Question:** §3j.144 found every route had only ever been examined *at rest*.
+Which other states does no check ever render? **Defect:** the shape already proven once — a
+deliberate defect placed in `TierGrid`'s empty state passed the entire suite (§3j.149), because
+a default visit always has results.
+
+**Every browser sweep visited `/items/crowbar` and nothing else.** Crowbar is a common item with
+one stacking row, an unlock, `confidence: "code"`, no cooldown, no corruption and no description
+note — so the site's most important component was being measured through one narrow slice of
+itself.
+
+**Denominator: 17 declared branches in `ItemDetail`, 13 of them reachable with current data.**
+
+| branch | items | had ever been rendered? |
+|---|---|---|
+| equipment cooldown row | 41 | no |
+| ├ triggered variant | **1** (`executive-card`) | no |
+| ├ passive (`activated: false`) | 9 | no |
+| └ consumed on use | 2 | no |
+| no stacking table at all | 33 | no |
+| void corruption pair | 45 | no |
+| description note | 54 | no |
+| confidence below code/asset | 9 | no |
+| a stacking entry with a cap | 4 | no |
+| flat entry (`perStack: 0`) | 38 | no |
+| DLC badge | 84 | no |
+| unlock shown / not shown | 49 / 168 | half |
+
+One item in 217 renders the `triggered` equipment branch. It had never been drawn.
+
+#### A hand-kept list of states drifts from the component
+
+The first version of `BRANCHES` was written by reading `ItemDetail` and listing what it
+conditions on. Extracting the fields mechanically found **six it had missed**: `unlock`,
+`flavor`, `wiki`, `pickupText`, `tags`, `dlc`. That is the argument for deriving the guard from
+the source rather than from a list, and the guard now does exactly that — it parses
+`ItemDetail.tsx` and requires every conditional field to be declared.
+
+#### Four branches cannot render at all
+
+`flavor` is on **0 of 217** items and `ItemDetail` reads it twice. `wiki` and `pickupText` are on
+**217 of 217**, so their absent-branches are equally dead. `verified: false` appears on none, by
+rule #1. All four are now listed with `unreachableOk` rather than omitted: **an unreachable
+branch that is simply absent from the list looks covered**, which is the failure this whole file
+exists to prevent. A branch with no item behind it and no such marking fails the guard.
+
+#### Five items cover thirteen branches
+
+The representatives are computed by greedy set cover **from `items.json`**, not hardcoded, so
+they cannot rot: if the chosen item stops exercising its branch another is picked, and if nothing
+exercises it the branch is reported unreachable. Today that is
+`executive-card, ifrits-distinction, lens-makers-glasses, milky-chrysalis, seed-of-life` — five
+panels, because one item often covers several (Lens-Maker's Glasses is both a corruption pair and
+a stacking cap). They are now folded into the contrast, headings and responsive sweeps, whose
+panel counts are asserted as `13 + representativeItems().length` rather than a constant.
+
+Three mutations, all caught: a new `item.brandNewField` conditional (undeclared field), removing
+the void-corruption state while the component still branches on it, and dropping `unreachableOk`
+from a branch no item reaches.

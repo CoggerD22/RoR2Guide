@@ -1,4 +1,5 @@
 import { test, expect } from "@playwright/test";
+import { representativeItems } from "./item-states";
 
 /**
  * §3j.144 — WCAG AA contrast for every text/background pair the site actually paints.
@@ -54,6 +55,8 @@ const ROUTES: Panel[] = [
   },
   { path: "/survivors" },
   { path: "/survivors/commando" },
+  // §3j.151 — measuring contrast on one item measured one branch of the drawer.
+  ...representativeItems().map((id) => ({ path: `/items/${id}` })),
 ];
 
 test("every text/background pair meets WCAG AA", async ({ page }) => {
@@ -254,7 +257,7 @@ test("every text/background pair meets WCAG AA", async ({ page }) => {
   // The denominator is ASSERTED, not just printed. A selector change, a route rename or a tab
   // label edit could quietly reduce this sweep to nothing, and "0 failures over 0 pairs" is the
   // exact output this method exists to make impossible (§3j.126).
-  expect(panels, "panel count changed — a route, tab label or state moved").toBe(13);
+  expect(panels, "panel count changed — a route, tab label or state moved").toBe(13 + representativeItems().length);
   expect(
     totals.compared,
     `only ${totals.compared} pairs compared; the sweep has stopped seeing the page`,

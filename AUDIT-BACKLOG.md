@@ -16,16 +16,7 @@ repeats, and eventually invents work. A denominator is recorded for every closed
 Each entry names the **specific question** — not "is it right" — and what a defect would look
 like. A front without those two things is not ready to work on.
 
-### 1. Interaction and error states, beyond contrast
-**Question:** §3j.144 measured 13 panel-states and found that every route had only ever been
-examined *at rest*. Which other states does no check ever render?
-**Defect:** the shape already proven once — a defect placed in `TierGrid`'s empty state passed
-the whole suite. Candidates: loading, empty planner, empty Stat Lab, an item with no stacking
-rows, a survivor with no unlock.
-**Note:** this is a *coverage* front, not an a11y one. Fold new states into
-`tests/contrast.spec.ts` and `tests/headings.spec.ts`, which both take a state list.
-
-### 2. `title` as the only home for an explanation
+### 1. `title` as the only home for an explanation
 **Question:** 25 `title=` attributes across 13 components carry real explanatory content
 ("Formula confirmed against the decompiled game code", "Stacks past N have no effect at all").
 `title` is invisible to keyboard users, unreliable for screen readers, and absent on touch. How
@@ -36,7 +27,7 @@ sibling; some do not, and some sit on non-focusable `<span>`s.
 `aria-describedby`, dismissible per WCAG 1.4.13) is a new UI surface. A subset can be fixed
 without one. §3j.145.
 
-### 3. Tap-target size on touch
+### 2. Tap-target size on touch
 **Question:** WCAG 2.5.8 (AA in WCAG 2.2) asks for 24x24 CSS px. At 360px, **31 of 1,753**
 targets measure smaller. How many are genuinely too small once the spacing and inline-link
 exceptions are applied?
@@ -96,6 +87,7 @@ SweetSpot cliffs and the proc gap in already-"checked" data.
 | Extractor swallows & verify gating | 28 scripts, 83 handlers, 78 silent; 5 live | **all 7 cross-checks exited 0 on failure**; stale inputs passed | §3j.148 |
 | Responsive layout at 360px | 13 panel-states, 11,725 nodes | **7 of 13 scrolled sideways**, 3 unrelated causes | §3j.149 |
 | prerender-og metadata + built tree | 243 pages, 10 browser tests on `dist/` | metadata sound; **nothing had ever loaded the build** | §3j.150 |
+| Unrendered UI states | 17 ItemDetail branches, 13 reachable | **every sweep used one item**; 4 branches dead | §3j.151 |
 | Extractor health | 1472 bundles, 224,435 MonoBehaviours | all swallow classes 0 | §3j.127 |
 
 ---

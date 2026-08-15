@@ -2322,3 +2322,59 @@ test("every game cross-check in data:verify is wired to the failure gate", async
     /if \(stale\.length\)[\s\S]{0,220}process\.exit\(1\)/,
   );
 });
+
+
+/**
+ * §3j.151 — every state ItemDetail can render has a representative in the sweeps.
+ *
+ * Every browser sweep visited `/items/crowbar` and nothing else, so the site's most important
+ * component was measured through one narrow slice of itself: a common item, one stacking row,
+ * an unlock, confidence "code", no cooldown, no corruption, no description note. The equipment
+ * cooldown block and all three of its variants, the no-stacking case, the void corruption pair
+ * and the description note had never been drawn under measurement.
+ *
+ * The recurring class is "a branch is added and no sweep ever renders it", so this reads the
+ * COMPONENT and requires each conditional field to be declared. A hand-kept list drifts: the
+ * first version of BRANCHES missed six fields that ItemDetail conditions on.
+ */
+test("every conditional branch in ItemDetail is a declared, represented state", async () => {
+  const { readFileSync } = await import("node:fs");
+  const { BRANCHES, ALWAYS_PRESENT, branchCoverage, representativeItems } = await import(
+    "../../tests/item-states.ts"
+  );
+
+  const src = readFileSync("src/components/codex/ItemDetail.tsx", "utf8");
+  const used = new Set(
+    [...src.matchAll(/\bitem\.([a-zA-Z]+)/g)].map((m) => m[1]),
+  );
+  expect(used.size, "no item fields parsed from ItemDetail — the component was restructured").toBeGreaterThan(10);
+
+  // Every optional field the component branches on must be named by some declared branch.
+  const declared = BRANCHES.map((b) => b.name + " " + b.match.toString()).join(" ");
+  const undeclared = [...used].filter(
+    (f) => !ALWAYS_PRESENT.includes(f) && !declared.includes(`.${f}`),
+  );
+  expect(
+    undeclared,
+    `ItemDetail branches on fields no state declares: ${undeclared.join(", ")}. ` +
+      "Add a branch to tests/item-states.ts (with unreachableOk if no item can reach it).",
+  ).toEqual([]);
+
+  // A branch with no item behind it must say so explicitly, or it silently reads as covered.
+  const uncovered = branchCoverage().filter((b) => b.count === 0 && !b.branch.unreachableOk);
+  expect(
+    uncovered.map((b) => b.branch.name),
+    "branches no item can reach, not marked unreachableOk",
+  ).toEqual([]);
+
+  // And every reachable branch must be rendered by the representative set the sweeps use.
+  const reps = representativeItems();
+  expect(reps.length, "no representative items chosen").toBeGreaterThan(0);
+  const itemsJson = JSON.parse(readFileSync("src/data/items.json", "utf8"));
+  const chosen = itemsJson.filter((i: { id: string }) => reps.includes(i.id));
+  const missed = branchCoverage()
+    .filter((b) => b.count > 0)
+    .filter((b) => !chosen.some((i: never) => b.branch.match(i)))
+    .map((b) => b.branch.name);
+  expect(missed, `reachable branches no representative renders: ${missed.join(", ")}`).toEqual([]);
+});

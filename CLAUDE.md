@@ -196,6 +196,19 @@ left, bold white name, gray body with highlighted numeric values.
       §3j.58–§3j.98. Notable: the Stat Lab was a second unaudited implementation of the
       game's arithmetic; "N base, +M per stack" was false on 28 non-linear rows; four shared
       terms every formula depended on had never been defined.
+- [x] Unrendered UI states — every browser sweep visited `/items/crowbar` **and nothing else**,
+      so the item drawer was measured through one narrow slice of itself. Of 17 declared
+      branches, 13 are reachable and almost none had ever been drawn: the equipment cooldown
+      block (41 items) and all three of its variants — one of which, `triggered`, is reachable
+      by exactly **one item in 217** — plus the no-stacking case (33), the void corruption pair
+      (45), the description note (54) and the DLC badge (84). Five representative items, chosen
+      by greedy set cover **from `items.json`** so they cannot rot, now cover all 13 and are
+      folded into the contrast, headings and responsive sweeps. Two lessons: a hand-written
+      state list drifts (the first version missed six fields the component conditions on, so
+      the guard now parses `ItemDetail.tsx` instead), and four branches are **unreachable** —
+      `flavor` is on 0 of 217 items — so they are declared `unreachableOk` rather than omitted,
+      because an unreachable branch that is simply absent from the list reads as covered
+      (§3j.151).
 - [x] `prerender-og` metadata, and the first tests to load the **built** tree. All 243 generated
       pages (217 item + 19 survivor + 5 section + 404 + home) were already correct: titles,
       `og:url`, `og:image` present on disk, asset hashes from this build, and every item

@@ -1,4 +1,5 @@
 import { test, expect } from "@playwright/test";
+import { representativeItems } from "./item-states";
 
 /**
  * §3j.149 — nothing overflows a 360px viewport.
@@ -43,6 +44,8 @@ const PANELS: Panel[] = [
   },
   { path: "/survivors" },
   { path: "/survivors/commando" },
+  // §3j.151 — the item drawer states nothing had ever rendered.
+  ...representativeItems().map((id) => ({ path: `/items/${id}` })),
 ];
 
 test.use({ viewport: { width: 360, height: 780 } });
@@ -104,7 +107,7 @@ test("nothing overflows a 360px viewport", async ({ page }) => {
 
   // Denominators asserted, not just printed: a routing or selector change could reduce this
   // sweep to nothing, and "0 overflow over 0 nodes" is the output this method forbids.
-  expect(panels, "panel count changed — a route or tab label moved").toBe(13);
+  expect(panels, "panel count changed — a route or tab label moved").toBe(13 + representativeItems().length);
   expect(nodes, `only ${nodes} nodes walked; the sweep stopped seeing the page`).toBeGreaterThan(8000);
 
   expect(overflow, `pages that scroll sideways at 360px:\n${overflow.join("\n")}`).toEqual([]);
