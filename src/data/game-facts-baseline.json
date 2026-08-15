@@ -1,0 +1,1104 @@
+{
+  "_why": "§3j.154 — the game facts CI cannot re-derive, pinned so a change to one is deliberate and reviewable. Found by scripts/mutation-sweep.mjs --ci, which corrupts a real artefact and reports what still ships green. Two facts survived the CI gate: a reworded item description, and a wrong `dlc`. Both are things the site asserts about the game.",
+  "_layers": "LOCAL proves these against the game itself (data:diff compares descriptions verbatim, data:verify checks dlc against ItemDef). CI has no game data — .decompiled/ and .gamedata/ are Gearbox's and never committed — so CI proves only that nothing changed since that proof. Neither layer alone is enough; together they are.",
+  "_notScopedHere": "tier is deliberately absent: a wrong tier already fails the browser suite in CI, and guarding what is covered is upkeep for no cover (audit rule 7).",
+  "_descStatus": {
+    "verbatim": "matches the game's own _DESC token, which is what schema.ts documents",
+    "documented-divergence": "differs deliberately, via descriptionNote + code/asset confidence",
+    "undocumented-divergence": "differs with NO stated reason — see AUDIT-BACKLOG DEFERRED",
+    "no-game-text": "quest/scrap items the language files carry no _DESC for"
+  },
+  "counts": {
+    "verbatim": 118,
+    "no-game-text": 9,
+    "documented-divergence": 29,
+    "undocumented-divergence": 61
+  },
+  "items": {
+    "crowbar": {
+      "descSha": "9674cd20a51768a9",
+      "descStatus": "verbatim",
+      "dlc": "base"
+    },
+    "soldiers-syringe": {
+      "descSha": "2b19af2db9abc82c",
+      "descStatus": "verbatim",
+      "dlc": "base"
+    },
+    "lens-makers-glasses": {
+      "descSha": "f5e64552a9ae7c7f",
+      "descStatus": "verbatim",
+      "dlc": "base"
+    },
+    "tougher-times": {
+      "descSha": "b964cd75025b349b",
+      "descStatus": "verbatim",
+      "dlc": "base"
+    },
+    "tri-tip-dagger": {
+      "descSha": "f6140208c501ae3b",
+      "descStatus": "verbatim",
+      "dlc": "base"
+    },
+    "pauls-goat-hoof": {
+      "descSha": "187eee2f1b29520e",
+      "descStatus": "verbatim",
+      "dlc": "base"
+    },
+    "armor-piercing-rounds": {
+      "descSha": "379fa0245752902c",
+      "descStatus": "verbatim",
+      "dlc": "base"
+    },
+    "backup-magazine": {
+      "descSha": "9b12b7990c0326ae",
+      "descStatus": "verbatim",
+      "dlc": "base"
+    },
+    "bison-steak": {
+      "descSha": "5367048dffeac7ca",
+      "descStatus": "verbatim",
+      "dlc": "base"
+    },
+    "bustling-fungus": {
+      "descSha": "76a3fd28d33cf68c",
+      "descStatus": "verbatim",
+      "dlc": "base"
+    },
+    "cautious-slug": {
+      "descSha": "afde1458d733cab0",
+      "descStatus": "verbatim",
+      "dlc": "base"
+    },
+    "monster-tooth": {
+      "descSha": "d16874b9d3e21297",
+      "descStatus": "verbatim",
+      "dlc": "base"
+    },
+    "bundle-of-fireworks": {
+      "descSha": "922c76f8891be112",
+      "descStatus": "verbatim",
+      "dlc": "base"
+    },
+    "delicate-watch": {
+      "descSha": "c598ee1fd0c8dea7",
+      "descStatus": "verbatim",
+      "dlc": "sotv"
+    },
+    "energy-drink": {
+      "descSha": "8a23bce130c609fe",
+      "descStatus": "verbatim",
+      "dlc": "base"
+    },
+    "focus-crystal": {
+      "descSha": "d515ab8a25444881",
+      "descStatus": "verbatim",
+      "dlc": "base"
+    },
+    "gasoline": {
+      "descSha": "6ace143ca80f2a40",
+      "descStatus": "verbatim",
+      "dlc": "base"
+    },
+    "medkit": {
+      "descSha": "f675f20d29e2f70e",
+      "descStatus": "verbatim",
+      "dlc": "base"
+    },
+    "personal-shield-generator": {
+      "descSha": "272de703793e4b52",
+      "descStatus": "verbatim",
+      "dlc": "base"
+    },
+    "power-elixir": {
+      "descSha": "7cddcf403730a786",
+      "descStatus": "verbatim",
+      "dlc": "sotv"
+    },
+    "repulsion-armor-plate": {
+      "descSha": "cdb41df32678dd06",
+      "descStatus": "verbatim",
+      "dlc": "base"
+    },
+    "roll-of-pennies": {
+      "descSha": "5986f2bc8245f5f5",
+      "descStatus": "verbatim",
+      "dlc": "sotv"
+    },
+    "sticky-bomb": {
+      "descSha": "7d9e81d750fd780c",
+      "descStatus": "verbatim",
+      "dlc": "base"
+    },
+    "topaz-brooch": {
+      "descSha": "707ec09483b8f0a6",
+      "descStatus": "verbatim",
+      "dlc": "base"
+    },
+    "stun-grenade": {
+      "descSha": "8b0d1c9bde5a4cd4",
+      "descStatus": "verbatim",
+      "dlc": "base"
+    },
+    "warbanner": {
+      "descSha": "e6501e45d066aafe",
+      "descStatus": "verbatim",
+      "dlc": "base"
+    },
+    "mocha": {
+      "descSha": "7a32fdca591cea32",
+      "descStatus": "verbatim",
+      "dlc": "sotv"
+    },
+    "oddly-shaped-opal": {
+      "descSha": "15142a9e5b18707c",
+      "descStatus": "verbatim",
+      "dlc": "sotv"
+    },
+    "elusive-antlers": {
+      "descSha": "6c008d8b8dbc6010",
+      "descStatus": "verbatim",
+      "dlc": "sots"
+    },
+    "chronic-expansion": {
+      "descSha": "1b0d48a7e1a16691",
+      "descStatus": "verbatim",
+      "dlc": "sots"
+    },
+    "warped-echo": {
+      "descSha": "61d5051d7ecd0ae3",
+      "descStatus": "verbatim",
+      "dlc": "sots"
+    },
+    "item-scrap-white": {
+      "descSha": "4358a369bce2ad46",
+      "descStatus": "no-game-text",
+      "dlc": "base"
+    },
+    "rusted-key": {
+      "descSha": "1003e4ffc5a5e8ea",
+      "descStatus": "documented-divergence",
+      "dlc": "base"
+    },
+    "hikers-boots": {
+      "descSha": "2d63ece151bff891",
+      "descStatus": "verbatim",
+      "dlc": "ac"
+    },
+    "bolstering-lantern": {
+      "descSha": "d791735ed66e941b",
+      "descStatus": "undocumented-divergence",
+      "dlc": "sots"
+    },
+    "eclipse-lite": {
+      "descSha": "0f311eb1f9bcb0d1",
+      "descStatus": "verbatim",
+      "dlc": "ac"
+    },
+    "atg-missile-mk-1": {
+      "descSha": "2d482b273e2393e5",
+      "descStatus": "verbatim",
+      "dlc": "base"
+    },
+    "will-o-the-wisp": {
+      "descSha": "b0a7f424dd19d93c",
+      "descStatus": "verbatim",
+      "dlc": "base"
+    },
+    "hopoo-feather": {
+      "descSha": "4ca951aa09d822e5",
+      "descStatus": "verbatim",
+      "dlc": "base"
+    },
+    "ukulele": {
+      "descSha": "566de77ef9d62fa9",
+      "descStatus": "verbatim",
+      "dlc": "base"
+    },
+    "leeching-seed": {
+      "descSha": "119d7370df1620c5",
+      "descStatus": "verbatim",
+      "dlc": "base"
+    },
+    "predatory-instincts": {
+      "descSha": "e762adbd6b49679f",
+      "descStatus": "undocumented-divergence",
+      "dlc": "base"
+    },
+    "red-whip": {
+      "descSha": "cc9df7e08adaf492",
+      "descStatus": "verbatim",
+      "dlc": "base"
+    },
+    "old-war-stealthkit": {
+      "descSha": "c56321465775711d",
+      "descStatus": "verbatim",
+      "dlc": "base"
+    },
+    "harvesters-scythe": {
+      "descSha": "6c6e0addad90ec17",
+      "descStatus": "verbatim",
+      "dlc": "base"
+    },
+    "fuel-cell": {
+      "descSha": "1088e6cf682744d7",
+      "descStatus": "verbatim",
+      "dlc": "base"
+    },
+    "infusion": {
+      "descSha": "9054f37a2a460d2d",
+      "descStatus": "verbatim",
+      "dlc": "base"
+    },
+    "bandolier": {
+      "descSha": "a81384cc0a9068e5",
+      "descStatus": "verbatim",
+      "dlc": "base"
+    },
+    "berzerkers-pauldron": {
+      "descSha": "8ba09996df796a02",
+      "descStatus": "verbatim",
+      "dlc": "base"
+    },
+    "rose-buckler": {
+      "descSha": "353bddaa6641647a",
+      "descStatus": "verbatim",
+      "dlc": "base"
+    },
+    "runalds-band": {
+      "descSha": "8d96f8d292e9df12",
+      "descStatus": "undocumented-divergence",
+      "dlc": "base"
+    },
+    "kjaros-band": {
+      "descSha": "df1cf89d9c3232ed",
+      "descStatus": "verbatim",
+      "dlc": "base"
+    },
+    "chronobauble": {
+      "descSha": "49c5558cc6b33b72",
+      "descStatus": "verbatim",
+      "dlc": "base"
+    },
+    "wax-quail": {
+      "descSha": "30f047da4fb551e0",
+      "descStatus": "verbatim",
+      "dlc": "base"
+    },
+    "old-guillotine": {
+      "descSha": "13098659f97ed35f",
+      "descStatus": "verbatim",
+      "dlc": "base"
+    },
+    "war-horn": {
+      "descSha": "8301e2bf7ab310a4",
+      "descStatus": "verbatim",
+      "dlc": "base"
+    },
+    "lepton-daisy": {
+      "descSha": "583f1fbd57b245f1",
+      "descStatus": "verbatim",
+      "dlc": "base"
+    },
+    "razorwire": {
+      "descSha": "a8de06cd55cac8f4",
+      "descStatus": "verbatim",
+      "dlc": "base"
+    },
+    "ghors-tome": {
+      "descSha": "13095425add55556",
+      "descStatus": "documented-divergence",
+      "dlc": "base"
+    },
+    "squid-polyp": {
+      "descSha": "c4f994cfb76facaf",
+      "descStatus": "verbatim",
+      "dlc": "base"
+    },
+    "death-mark": {
+      "descSha": "6d080f645976daec",
+      "descStatus": "verbatim",
+      "dlc": "base"
+    },
+    "shuriken": {
+      "descSha": "5050dc386433c47d",
+      "descStatus": "verbatim",
+      "dlc": "sotv"
+    },
+    "shipping-request-form": {
+      "descSha": "ce419b0517934c0f",
+      "descStatus": "undocumented-divergence",
+      "dlc": "sotv"
+    },
+    "unstable-transmitter": {
+      "descSha": "bdd05af09081882d",
+      "descStatus": "undocumented-divergence",
+      "dlc": "sots"
+    },
+    "item-scrap-green": {
+      "descSha": "2b52e8003a23b842",
+      "descStatus": "no-game-text",
+      "dlc": "base"
+    },
+    "sale-star": {
+      "descSha": "1de3e531949a0d5e",
+      "descStatus": "verbatim",
+      "dlc": "sots"
+    },
+    "hunters-harpoon": {
+      "descSha": "af707966b1cd34be",
+      "descStatus": "verbatim",
+      "dlc": "sotv"
+    },
+    "ignition-tank": {
+      "descSha": "63aa312f9707eaf2",
+      "descStatus": "verbatim",
+      "dlc": "sotv"
+    },
+    "regenerating-scrap": {
+      "descSha": "d2bbedff529b4695",
+      "descStatus": "no-game-text",
+      "dlc": "sotv"
+    },
+    "breaching-fin": {
+      "descSha": "63018f2c1c17a51f",
+      "descStatus": "undocumented-divergence",
+      "dlc": "sots"
+    },
+    "chance-doll": {
+      "descSha": "100c4415b12f8b5f",
+      "descStatus": "undocumented-divergence",
+      "dlc": "sots"
+    },
+    "luminous-shot": {
+      "descSha": "79c7db666fc44fbd",
+      "descStatus": "undocumented-divergence",
+      "dlc": "sots"
+    },
+    "noxious-thorn": {
+      "descSha": "aaa862c52f637bd7",
+      "descStatus": "verbatim",
+      "dlc": "sots"
+    },
+    "prayer-beads": {
+      "descSha": "b251327b2289d1ed",
+      "descStatus": "verbatim",
+      "dlc": "sots"
+    },
+    "box-of-dynamite": {
+      "descSha": "5c0b8d125bd7ab94",
+      "descStatus": "documented-divergence",
+      "dlc": "ac"
+    },
+    "collectors-compulsion": {
+      "descSha": "d17cd844f5de7e60",
+      "descStatus": "verbatim",
+      "dlc": "ac"
+    },
+    "faraday-spur": {
+      "descSha": "86e5da23690e7d5e",
+      "descStatus": "undocumented-divergence",
+      "dlc": "ac"
+    },
+    "kinetic-dampener": {
+      "descSha": "5216e044891728fd",
+      "descStatus": "undocumented-divergence",
+      "dlc": "ac"
+    },
+    "brilliant-behemoth": {
+      "descSha": "9faa9d4ce2533515",
+      "descStatus": "verbatim",
+      "dlc": "base"
+    },
+    "ceremonial-dagger": {
+      "descSha": "bbe99f83003727d3",
+      "descStatus": "verbatim",
+      "dlc": "base"
+    },
+    "alien-head": {
+      "descSha": "d4f8572ac7556b78",
+      "descStatus": "verbatim",
+      "dlc": "base"
+    },
+    "57-leaf-clover": {
+      "descSha": "6431a3ae34cfbac1",
+      "descStatus": "verbatim",
+      "dlc": "base"
+    },
+    "dios-best-friend": {
+      "descSha": "c1d571de4275823d",
+      "descStatus": "verbatim",
+      "dlc": "base"
+    },
+    "sentient-meat-hook": {
+      "descSha": "dfde2dc508f0fb30",
+      "descStatus": "verbatim",
+      "dlc": "base"
+    },
+    "happiest-mask": {
+      "descSha": "617a2de80d12c586",
+      "descStatus": "verbatim",
+      "dlc": "base"
+    },
+    "frost-relic": {
+      "descSha": "412a7297efbb6f39",
+      "descStatus": "documented-divergence",
+      "dlc": "base"
+    },
+    "h3ad-5t-v2": {
+      "descSha": "203d6abbbaa215bc",
+      "descStatus": "undocumented-divergence",
+      "dlc": "base"
+    },
+    "nkuhanas-opinion": {
+      "descSha": "7e0e4dcd37d6f876",
+      "descStatus": "undocumented-divergence",
+      "dlc": "base"
+    },
+    "unstable-tesla-coil": {
+      "descSha": "f517245b2bf2584b",
+      "descStatus": "verbatim",
+      "dlc": "base"
+    },
+    "soulbound-catalyst": {
+      "descSha": "ff6675cc3aa93d70",
+      "descStatus": "verbatim",
+      "dlc": "base"
+    },
+    "hardlight-afterburner": {
+      "descSha": "79e98085a71db057",
+      "descStatus": "verbatim",
+      "dlc": "base"
+    },
+    "wake-of-vultures": {
+      "descSha": "d560e09ebf2ed414",
+      "descStatus": "verbatim",
+      "dlc": "base"
+    },
+    "brainstalks": {
+      "descSha": "61c43b4f61ab3a1d",
+      "descStatus": "verbatim",
+      "dlc": "base"
+    },
+    "rejuvenation-rack": {
+      "descSha": "416c445e14b63cc9",
+      "descStatus": "verbatim",
+      "dlc": "base"
+    },
+    "aegis": {
+      "descSha": "47f81e245ad9986e",
+      "descStatus": "verbatim",
+      "dlc": "base"
+    },
+    "shattering-justice": {
+      "descSha": "7e9ba42c29ff9e71",
+      "descStatus": "verbatim",
+      "dlc": "base"
+    },
+    "resonance-disc": {
+      "descSha": "0f6f750ebbcba24c",
+      "descStatus": "documented-divergence",
+      "dlc": "base"
+    },
+    "defensive-microbots": {
+      "descSha": "e8d4d4e328455372",
+      "descStatus": "verbatim",
+      "dlc": "base"
+    },
+    "laser-scope": {
+      "descSha": "7a7786928f352a63",
+      "descStatus": "verbatim",
+      "dlc": "sotv"
+    },
+    "pocket-icbm": {
+      "descSha": "82f8b32a4ed4eac0",
+      "descStatus": "verbatim",
+      "dlc": "sotv"
+    },
+    "spare-drone-parts": {
+      "descSha": "bb5009802bb7f675",
+      "descStatus": "undocumented-divergence",
+      "dlc": "sotv"
+    },
+    "interstellar-desk-plant": {
+      "descSha": "ede91d4389bdd979",
+      "descStatus": "documented-divergence",
+      "dlc": "base"
+    },
+    "symbiotic-scorpion": {
+      "descSha": "fd7ba8a574763a57",
+      "descStatus": "verbatim",
+      "dlc": "sotv"
+    },
+    "bens-raincoat": {
+      "descSha": "d9faa0e3fb86640a",
+      "descStatus": "documented-divergence",
+      "dlc": "sotv"
+    },
+    "bottled-chaos": {
+      "descSha": "79dac6283aaeade8",
+      "descStatus": "verbatim",
+      "dlc": "sotv"
+    },
+    "electric-boomerang": {
+      "descSha": "8070b5d8ec943429",
+      "descStatus": "verbatim",
+      "dlc": "sots"
+    },
+    "growth-nectar": {
+      "descSha": "73c6d780f058f73a",
+      "descStatus": "undocumented-divergence",
+      "dlc": "sots"
+    },
+    "runic-lens": {
+      "descSha": "d7b1a68eb9a6d362",
+      "descStatus": "undocumented-divergence",
+      "dlc": "sots"
+    },
+    "sonorous-whispers": {
+      "descSha": "63a6cca125836e7d",
+      "descStatus": "documented-divergence",
+      "dlc": "sots"
+    },
+    "war-bonds": {
+      "descSha": "8a535afb01f3c839",
+      "descStatus": "documented-divergence",
+      "dlc": "sots"
+    },
+    "networked-suffering": {
+      "descSha": "1401bc3643e1e93e",
+      "descStatus": "undocumented-divergence",
+      "dlc": "ac"
+    },
+    "orphaned-core": {
+      "descSha": "ae85143243b71f34",
+      "descStatus": "documented-divergence",
+      "dlc": "ac"
+    },
+    "substandard-duplicator": {
+      "descSha": "15f94beb541e9ce5",
+      "descStatus": "verbatim",
+      "dlc": "ac"
+    },
+    "item-scrap-red": {
+      "descSha": "eaff0295a5e427f1",
+      "descStatus": "no-game-text",
+      "dlc": "base"
+    },
+    "titanic-knurl": {
+      "descSha": "8eca900ce302cbb9",
+      "descStatus": "verbatim",
+      "dlc": "base"
+    },
+    "queens-gland": {
+      "descSha": "544f3bfa5b01a94d",
+      "descStatus": "verbatim",
+      "dlc": "base"
+    },
+    "shatterspleen": {
+      "descSha": "75f7896eb821a8d5",
+      "descStatus": "documented-divergence",
+      "dlc": "base"
+    },
+    "halcyon-seed": {
+      "descSha": "8cd9a611395153ee",
+      "descStatus": "verbatim",
+      "dlc": "base"
+    },
+    "little-disciple": {
+      "descSha": "c08aede69c6594eb",
+      "descStatus": "undocumented-divergence",
+      "dlc": "base"
+    },
+    "genesis-loop": {
+      "descSha": "12a1fd1f5299cceb",
+      "descStatus": "documented-divergence",
+      "dlc": "base"
+    },
+    "pearl": {
+      "descSha": "0f28cd52556902f4",
+      "descStatus": "verbatim",
+      "dlc": "base"
+    },
+    "irradiant-pearl": {
+      "descSha": "89ae1fd8150f3b72",
+      "descStatus": "verbatim",
+      "dlc": "base"
+    },
+    "artifact-key": {
+      "descSha": "8a825a43f0e2298e",
+      "descStatus": "no-game-text",
+      "dlc": "base"
+    },
+    "molten-perforator": {
+      "descSha": "a83002369cff536e",
+      "descStatus": "undocumented-divergence",
+      "dlc": "base"
+    },
+    "charged-perforator": {
+      "descSha": "eba6ee89d085bdab",
+      "descStatus": "verbatim",
+      "dlc": "base"
+    },
+    "mired-urn": {
+      "descSha": "f75328f363de5aee",
+      "descStatus": "documented-divergence",
+      "dlc": "base"
+    },
+    "empathy-cores": {
+      "descSha": "b631ccbb2e7526d0",
+      "descStatus": "verbatim",
+      "dlc": "base"
+    },
+    "planula": {
+      "descSha": "5c2ae4131dd9c463",
+      "descStatus": "verbatim",
+      "dlc": "base"
+    },
+    "defense-nucleus": {
+      "descSha": "d1e89b71aa36a455",
+      "descStatus": "verbatim",
+      "dlc": "sotv"
+    },
+    "functional-coupler": {
+      "descSha": "1eb1c14f597038ee",
+      "descStatus": "verbatim",
+      "dlc": "ac"
+    },
+    "faulty-conductor": {
+      "descSha": "b91f8eb6fbffae79",
+      "descStatus": "undocumented-divergence",
+      "dlc": "ac"
+    },
+    "sentry-key": {
+      "descSha": "3903ce46af85536d",
+      "descStatus": "verbatim",
+      "dlc": "ac"
+    },
+    "prison-matrix": {
+      "descSha": "ab07b8f482e671ea",
+      "descStatus": "verbatim",
+      "dlc": "ac"
+    },
+    "encrypted-cerebellum": {
+      "descSha": "438038550f235f9c",
+      "descStatus": "no-game-text",
+      "dlc": "ac"
+    },
+    "exposed-cerebellum": {
+      "descSha": "2b9b90923aecf234",
+      "descStatus": "no-game-text",
+      "dlc": "ac"
+    },
+    "item-scrap-yellow": {
+      "descSha": "7280f7f97332ed90",
+      "descStatus": "no-game-text",
+      "dlc": "base"
+    },
+    "shaped-glass": {
+      "descSha": "3d2ca3356995c9e8",
+      "descStatus": "verbatim",
+      "dlc": "base"
+    },
+    "brittle-crown": {
+      "descSha": "afe4e70cf9068ede",
+      "descStatus": "undocumented-divergence",
+      "dlc": "base"
+    },
+    "transcendence": {
+      "descSha": "3db80a7dac947246",
+      "descStatus": "verbatim",
+      "dlc": "base"
+    },
+    "corpsebloom": {
+      "descSha": "b21885409d73aca4",
+      "descStatus": "undocumented-divergence",
+      "dlc": "base"
+    },
+    "gesture-of-the-drowned": {
+      "descSha": "e58a11c58aedbe90",
+      "descStatus": "verbatim",
+      "dlc": "base"
+    },
+    "purity": {
+      "descSha": "062070fb4f8c02f7",
+      "descStatus": "verbatim",
+      "dlc": "base"
+    },
+    "visions-of-heresy": {
+      "descSha": "c407101c4647787c",
+      "descStatus": "undocumented-divergence",
+      "dlc": "base"
+    },
+    "strides-of-heresy": {
+      "descSha": "695fd875ac774deb",
+      "descStatus": "undocumented-divergence",
+      "dlc": "base"
+    },
+    "hooks-of-heresy": {
+      "descSha": "b929b11ffd793bcc",
+      "descStatus": "undocumented-divergence",
+      "dlc": "base"
+    },
+    "essence-of-heresy": {
+      "descSha": "8607dcc513a4a699",
+      "descStatus": "undocumented-divergence",
+      "dlc": "base"
+    },
+    "beads-of-fealty": {
+      "descSha": "b2344592a4a4d862",
+      "descStatus": "undocumented-divergence",
+      "dlc": "base"
+    },
+    "focused-convergence": {
+      "descSha": "d722cd214786a59b",
+      "descStatus": "verbatim",
+      "dlc": "base"
+    },
+    "defiant-gouge": {
+      "descSha": "b98792b9ed525217",
+      "descStatus": "undocumented-divergence",
+      "dlc": "base"
+    },
+    "mercurial-rachis": {
+      "descSha": "5455a66ee7bfb5e6",
+      "descStatus": "undocumented-divergence",
+      "dlc": "base"
+    },
+    "stone-flux-pauldron": {
+      "descSha": "dd5a126871361d9e",
+      "descStatus": "verbatim",
+      "dlc": "sotv"
+    },
+    "light-flux-pauldron": {
+      "descSha": "9316609a4341e664",
+      "descStatus": "verbatim",
+      "dlc": "sotv"
+    },
+    "longstanding-solitude": {
+      "descSha": "ac7fcb360fbc6be8",
+      "descStatus": "undocumented-divergence",
+      "dlc": "sots"
+    },
+    "egocentrism": {
+      "descSha": "d6b9d0a2bfa94747",
+      "descStatus": "undocumented-divergence",
+      "dlc": "sotv"
+    },
+    "neutronium-weight": {
+      "descSha": "25727810d3347f05",
+      "descStatus": "undocumented-divergence",
+      "dlc": "ac"
+    },
+    "eulogy-zero": {
+      "descSha": "6c7ad5931ecfb460",
+      "descStatus": "verbatim",
+      "dlc": "sotv"
+    },
+    "needletick": {
+      "descSha": "dfbd629825e08640",
+      "descStatus": "verbatim",
+      "dlc": "sotv"
+    },
+    "lost-seers-lenses": {
+      "descSha": "fcf2ef74c179e7d3",
+      "descStatus": "verbatim",
+      "dlc": "sotv"
+    },
+    "safer-spaces": {
+      "descSha": "2076b0ef8b339568",
+      "descStatus": "verbatim",
+      "dlc": "sotv"
+    },
+    "weeping-fungus": {
+      "descSha": "9c8dee7d236a69cd",
+      "descStatus": "verbatim",
+      "dlc": "sotv"
+    },
+    "encrusted-key": {
+      "descSha": "f5bd640ec9ddc1b9",
+      "descStatus": "verbatim",
+      "dlc": "sotv"
+    },
+    "plasma-shrimp": {
+      "descSha": "122297e15ca9dc80",
+      "descStatus": "verbatim",
+      "dlc": "sotv"
+    },
+    "lysate-cell": {
+      "descSha": "949b03abf8520c46",
+      "descStatus": "undocumented-divergence",
+      "dlc": "sotv"
+    },
+    "polylute": {
+      "descSha": "a98605654801f930",
+      "descStatus": "verbatim",
+      "dlc": "sotv"
+    },
+    "tentabauble": {
+      "descSha": "90de79928bf7e2e9",
+      "descStatus": "verbatim",
+      "dlc": "sotv"
+    },
+    "singularity-band": {
+      "descSha": "7cfc37f391e57a8b",
+      "descStatus": "undocumented-divergence",
+      "dlc": "sotv"
+    },
+    "voidsent-flame": {
+      "descSha": "89f7d2dc351e5002",
+      "descStatus": "verbatim",
+      "dlc": "sotv"
+    },
+    "benthic-bloom": {
+      "descSha": "339d7b5ab8aadd5b",
+      "descStatus": "verbatim",
+      "dlc": "sotv"
+    },
+    "pluripotent-larva": {
+      "descSha": "7933a5202d93495a",
+      "descStatus": "documented-divergence",
+      "dlc": "sotv"
+    },
+    "newly-hatched-zoea": {
+      "descSha": "1e9821eccc24873a",
+      "descStatus": "undocumented-divergence",
+      "dlc": "sotv"
+    },
+    "disposable-missile-launcher": {
+      "descSha": "2d2b9f978ac02642",
+      "descStatus": "undocumented-divergence",
+      "dlc": "base"
+    },
+    "foreign-fruit": {
+      "descSha": "c4006013745b7d67",
+      "descStatus": "undocumented-divergence",
+      "dlc": "base"
+    },
+    "preon-accumulator": {
+      "descSha": "3f8581c9a9477f38",
+      "descStatus": "documented-divergence",
+      "dlc": "base"
+    },
+    "the-back-up": {
+      "descSha": "7bfa59d68c34a8b1",
+      "descStatus": "undocumented-divergence",
+      "dlc": "base"
+    },
+    "ocular-hud": {
+      "descSha": "02ff8b740c3d34f0",
+      "descStatus": "undocumented-divergence",
+      "dlc": "base"
+    },
+    "royal-capacitor": {
+      "descSha": "1e0f55bbfa79e96f",
+      "descStatus": "undocumented-divergence",
+      "dlc": "base"
+    },
+    "the-crowdfunder": {
+      "descSha": "d5fe5ecfa2befff7",
+      "descStatus": "documented-divergence",
+      "dlc": "base"
+    },
+    "milky-chrysalis": {
+      "descSha": "5ce37fe371d4e782",
+      "descStatus": "undocumented-divergence",
+      "dlc": "base"
+    },
+    "gnarled-woodsprite": {
+      "descSha": "5313ac641b3b7bff",
+      "descStatus": "documented-divergence",
+      "dlc": "base"
+    },
+    "primordial-cube": {
+      "descSha": "8db83a9638b32822",
+      "descStatus": "undocumented-divergence",
+      "dlc": "base"
+    },
+    "radar-scanner": {
+      "descSha": "d56610ffe1637e1f",
+      "descStatus": "documented-divergence",
+      "dlc": "base"
+    },
+    "eccentric-vase": {
+      "descSha": "c2274898f3039af5",
+      "descStatus": "undocumented-divergence",
+      "dlc": "base"
+    },
+    "blast-shower": {
+      "descSha": "8773ae5617536ae6",
+      "descStatus": "documented-divergence",
+      "dlc": "base"
+    },
+    "volcanic-egg": {
+      "descSha": "c008fbe0f6f5c036",
+      "descStatus": "documented-divergence",
+      "dlc": "base"
+    },
+    "jade-elephant": {
+      "descSha": "fb52dcacb215eef3",
+      "descStatus": "undocumented-divergence",
+      "dlc": "base"
+    },
+    "sawmerang": {
+      "descSha": "438246118a64695e",
+      "descStatus": "undocumented-divergence",
+      "dlc": "base"
+    },
+    "recycler": {
+      "descSha": "235b6cedb48c996b",
+      "descStatus": "documented-divergence",
+      "dlc": "base"
+    },
+    "super-massive-leech": {
+      "descSha": "f47caec6580a61cc",
+      "descStatus": "undocumented-divergence",
+      "dlc": "base"
+    },
+    "gorags-opus": {
+      "descSha": "f65b28dc6ada7c39",
+      "descStatus": "undocumented-divergence",
+      "dlc": "base"
+    },
+    "forgive-me-please": {
+      "descSha": "a7f9ae93eb021944",
+      "descStatus": "documented-divergence",
+      "dlc": "base"
+    },
+    "fuel-array": {
+      "descSha": "d937b762e0ce4d79",
+      "descStatus": "no-game-text",
+      "dlc": "base"
+    },
+    "molotov-6-pack": {
+      "descSha": "9fdd038cacb41f54",
+      "descStatus": "documented-divergence",
+      "dlc": "sotv"
+    },
+    "executive-card": {
+      "descSha": "a2b2f1a5ec8bd688",
+      "descStatus": "documented-divergence",
+      "dlc": "sotv"
+    },
+    "goobo-jr": {
+      "descSha": "ce35619735823eb1",
+      "descStatus": "undocumented-divergence",
+      "dlc": "sotv"
+    },
+    "remote-caffeinator": {
+      "descSha": "4a23a2a864239170",
+      "descStatus": "documented-divergence",
+      "dlc": "sotv"
+    },
+    "seed-of-life": {
+      "descSha": "316170e3a2ca28d4",
+      "descStatus": "undocumented-divergence",
+      "dlc": "sots"
+    },
+    "deus-ex-machina": {
+      "descSha": "328ee38880382a43",
+      "descStatus": "undocumented-divergence",
+      "dlc": "ac"
+    },
+    "trophy-hunters-tricorn": {
+      "descSha": "f3b35e25ffe11f71",
+      "descStatus": "undocumented-divergence",
+      "dlc": "sotv"
+    },
+    "effigy-of-grief": {
+      "descSha": "2d6eb52ac04eb3f2",
+      "descStatus": "undocumented-divergence",
+      "dlc": "base"
+    },
+    "glowing-meteorite": {
+      "descSha": "f6ef4d785d0827db",
+      "descStatus": "documented-divergence",
+      "dlc": "base"
+    },
+    "helfire-tincture": {
+      "descSha": "4431ddb7742a32e0",
+      "descStatus": "undocumented-divergence",
+      "dlc": "base"
+    },
+    "spinel-tonic": {
+      "descSha": "6f0124a584cd7c26",
+      "descStatus": "undocumented-divergence",
+      "dlc": "base"
+    },
+    "ifrits-distinction": {
+      "descSha": "a34245200212d913",
+      "descStatus": "undocumented-divergence",
+      "dlc": "base"
+    },
+    "silence-between-two-strikes": {
+      "descSha": "74e13f56e6603ec0",
+      "descStatus": "undocumented-divergence",
+      "dlc": "base"
+    },
+    "her-biting-embrace": {
+      "descSha": "77b0ad87ed51c778",
+      "descStatus": "undocumented-divergence",
+      "dlc": "base"
+    },
+    "spectral-circlet": {
+      "descSha": "27f87b9a2160e116",
+      "descStatus": "undocumented-divergence",
+      "dlc": "base"
+    },
+    "his-spiteful-boon": {
+      "descSha": "35cc3e6e4c86e2cb",
+      "descStatus": "undocumented-divergence",
+      "dlc": "sots"
+    },
+    "nkuhanas-retort": {
+      "descSha": "c4ef9fabbfdb16cb",
+      "descStatus": "documented-divergence",
+      "dlc": "base"
+    },
+    "his-reassurance": {
+      "descSha": "6d11c1ae69774ee8",
+      "descStatus": "documented-divergence",
+      "dlc": "sotv"
+    },
+    "shared-design": {
+      "descSha": "6e6fdca587e53684",
+      "descStatus": "undocumented-divergence",
+      "dlc": "base"
+    },
+    "of-one-mind": {
+      "descSha": "2030b219bcb8414e",
+      "descStatus": "documented-divergence",
+      "dlc": "ac"
+    },
+    "aurelionites-blessing": {
+      "descSha": "1129310b8c1e0da2",
+      "descStatus": "undocumented-divergence",
+      "dlc": "sots"
+    },
+    "hearty-stew": {
+      "descSha": "cc4e4916f9883de0",
+      "descStatus": "undocumented-divergence",
+      "dlc": "ac"
+    },
+    "quick-fix": {
+      "descSha": "c36f877a3bb50993",
+      "descStatus": "verbatim",
+      "dlc": "ac"
+    },
+    "sauteed-worms": {
+      "descSha": "a08f94278dd649d7",
+      "descStatus": "verbatim",
+      "dlc": "ac"
+    },
+    "seared-steak": {
+      "descSha": "fdf0a805de24c298",
+      "descStatus": "verbatim",
+      "dlc": "ac"
+    },
+    "ultimate-meal": {
+      "descSha": "1518e962cb8bde6d",
+      "descStatus": "verbatim",
+      "dlc": "ac"
+    }
+  }
+}

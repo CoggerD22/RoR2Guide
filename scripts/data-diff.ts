@@ -119,6 +119,19 @@ function main(): number {
   const notFound: string[] = [];
   const pickupDiffs: string[] = [];
   const numberDiffs: string[] = [];
+  /**
+   * §3j.154 — the description PROSE, not just the numbers in it.
+   *
+   * `pickupText` has always been compared verbatim; `description` was loaded and then mined
+   * only for numerals. So changing "Deal +75%…" to "Deals +75%…" — a plausible slip, and
+   * exactly the kind of quiet rewording rule #1 forbids — passed `typecheck`, `test:unit`,
+   * `data:audit`, `data:diff`, `data:verify`, `build` and all 91 browser tests. Found by the
+   * mutation sweep, not by a pass.
+   *
+   * §3j.125 checked all 217 by hand and found one real rewrite (Preon). That was an audit, not
+   * a guard: it proved the state on one day and enforced nothing afterwards.
+   */
+  const descDiffs: string[] = [];
 
   for (const it of items) {
     if (it.subtype === "untiered") continue; // scrap / quest items: skip
@@ -133,6 +146,16 @@ function main(): number {
       );
     }
     if (g.desc) {
+      // Verbatim, with the same normalisation the pickup compare uses. A record that has
+      // deliberately diverged says so in `descriptionNote` and proves it with `confidence` —
+      // the same allowance the number check below already makes, for the same reason.
+      const divergenceDocumented =
+        !!it.descriptionNote && (it.confidence === "code" || it.confidence === "asset");
+      if (!divergenceDocumented && norm(it.description) !== norm(stripTags(g.desc))) {
+        descDiffs.push(
+          `${it.name}\n     ours: ${it.description}\n     game: ${stripTags(g.desc)}`,
+        );
+      }
       const ours = new Set(numbersOf(it.description));
       const game = numbersOf(g.desc);
       // Only flag numbers the game shows that OURS is missing (real omissions).
@@ -213,13 +236,14 @@ function main(): number {
 
   section("Names not found in game files (check spelling/exact name)", notFound);
   section("Pickup-text mismatches", pickupDiffs);
+  section("Description mismatches (verbatim)", descDiffs);
   section("Numeric mismatches (description numbers differ)", numberDiffs);
   section("Artifact mismatches", artifactDiffs);
   section("Unlock challenge names not found in game", challengeMisses);
 
   console.log(
     `\nSummary: ${items.length} items · ${notFound.length} name misses · ` +
-      `${pickupDiffs.length} pickup diffs · ${numberDiffs.length} number diffs · ` +
+      `${pickupDiffs.length} pickup diffs · ${descDiffs.length} desc diffs · ${numberDiffs.length} number diffs · ` +
       `${artifactDiffs.length} artifact diffs · ${challengeMisses.length} challenge misses.`,
   );
   console.log("(Numeric diffs include harmless cases — e.g. style/phrasing — so eyeball each.)");

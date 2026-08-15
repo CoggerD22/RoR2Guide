@@ -22,7 +22,11 @@ continuations from here are:
 1. a **game patch** — the enforced cross-checks and the `.gamedata/` staleness gate will surface
    it (§3j.148), and `pnpm data:verify` fails rather than passing quietly;
 2. a decision from **DEFERRED** below, each of which is a scope change a human should make;
-3. **in-game observation** — behaviour under real play, which nothing here substitutes for.
+3. **in-game observation** — behaviour under real play, which nothing here substitutes for;
+4. **`pnpm data:mutate`** — the standing way to ask "what can change without anything
+   noticing?" rather than re-deriving a surface to audit. Add a mutation when a new kind of
+   claim ships; a survivor is a real hole, and both holes it found on its first run were in
+   surfaces already marked CLOSED.
 
 A new front belongs here when something real prompts it: a patch, a bug report, a decision taken
 from DEFERRED. Not to keep the queue populated.
@@ -79,6 +83,7 @@ SweetSpot cliffs and the proc gap in already-"checked" data.
 | Unrendered UI states | 17 ItemDetail branches, 13 reachable | **every sweep used one item**; 4 branches dead | §3j.151 |
 | Hover-only `title` content | 23 attributes / 13 components, 77 rendered | mostly duplicated; **proc provenance is hover-only** → DEFERRED | §3j.152 |
 | Tap-target size (WCAG 2.5.8) | 2249 targets / 16 panel-states | **31 raw -> 4 real**; one invisible on touch | §3j.153 |
+| Mutation sweep (what survives?) | 28 mutations x 6 gate stages, local + CI | **2 holes**; 61 non-verbatim descriptions found | §3j.154 |
 | Extractor health | 1472 bundles, 224,435 MonoBehaviours | all swallow classes 0 | §3j.127 |
 
 ---
@@ -104,7 +109,17 @@ These are **scope changes, not corrections**. Nothing on the site is wrong becau
    dismissible per WCAG 1.4.13) **or** a new visible column in the proc table — both new UI
    surfaces, hence a decision rather than a correction. `aria-label` on the existing `<span>`s
    is not a shortcut: on `role=generic` it is widely ignored by real AT. §3j.152.
-4. **In-game observation.** Behaviour under real play. Everything reachable by reading code and
+4. **Restore the 61 non-verbatim item descriptions, or stop calling them verbatim.**
+   `schema.ts` documents `description` as "the game's wording, kept verbatim", rule #1 says
+   quoted text is "reproduced verbatim, typos included", and `ItemDetail` tells the reader "The
+   game's text above is inaccurate" — a sentence that only means anything if the text above is
+   the game's. **61 of 217 differ with no `descriptionNote`** (3 punctuation-level, 58
+   substantive), verified by hand against the raw language tokens. A mass restore is NOT safe:
+   Predatory Instincts' 5% crit chance is in no stacking row, so replacing its description with
+   the game's would delete a verified fact from the page. Each needs a researched
+   `descriptionNote` against the decompile, which is per-item verification, not an edit. Pinned
+   at 61 by `game-facts-baseline.json` so it cannot grow. §3j.154.
+5. **In-game observation.** Behaviour under real play. Everything reachable by reading code and
    assets has been read; nothing here substitutes for holding the item and watching the number.
    §3j.98.
 

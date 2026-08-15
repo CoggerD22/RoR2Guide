@@ -2465,3 +2465,84 @@ test("hover-only `title` explanations stay pinned to a known set", async () => {
   const total = Object.values(actual).reduce((a, b) => a + b, 0);
   expect(total, `only ${total} title attributes found; the sweep is not seeing the components`).toBeGreaterThanOrEqual(20);
 });
+
+
+/**
+ * §3j.154 — the game facts CI cannot re-derive, pinned by hash and value.
+ *
+ * Found by `scripts/mutation-sweep.mjs`, which corrupts a real artefact and reports what still
+ * ships green. Two things survived the whole gate:
+ *
+ *   - Rewording a description ("Deal +75%…" -> "Deals +75%…") passed typecheck, test:unit,
+ *     data:audit, data:diff, data:verify, build AND all 91 browser tests. `data:diff` loaded the
+ *     game's `_DESC` token and mined it only for NUMERALS; the prose was never compared.
+ *   - With the game data hidden to simulate CI, a wrong `dlc` also survived — it is checked
+ *     against ItemDef by `data:verify`, which skips where there is no game install.
+ *
+ * §3j.125 closed a front reading "Verbatim item descriptions | 217 vs language files | 1
+ * rewritten (Preon)". That was an audit: it proved the state on one day and enforced nothing.
+ * With the comparison actually wired up, **61 descriptions differ from the game with no
+ * `descriptionNote` explaining why** — a rule #1 problem the backlog carries as a decision,
+ * because restoring them verbatim would delete verified facts from the page (Predatory
+ * Instincts' 5% crit is in no stacking row), so each needs a researched note, not a mass edit.
+ *
+ * This guard does not settle that. It stops it getting worse, and it runs in CI because it
+ * needs no game files. `tier` is deliberately not pinned here: a wrong tier already fails the
+ * browser suite, and guarding what is covered is upkeep for no cover (rule 7).
+ */
+test("game facts match their pinned baseline", async () => {
+  const { readFileSync } = await import("node:fs");
+  const { createHash } = await import("node:crypto");
+  const baseline = JSON.parse(readFileSync("src/data/game-facts-baseline.json", "utf8")) as {
+    counts: Record<string, number>;
+    items: Record<string, { descSha: string; descStatus: string; dlc: string }>;
+  };
+  const items = JSON.parse(readFileSync("src/data/items.json", "utf8")) as Array<{
+    id: string;
+    description: string;
+    dlc?: string;
+  }>;
+
+  expect(Object.keys(baseline.items).length, "baseline is empty or stale").toBe(items.length);
+
+  const descDrift: string[] = [];
+  const dlcDrift: string[] = [];
+  const missing: string[] = [];
+  for (const it of items) {
+    const pinned = baseline.items[it.id];
+    if (!pinned) {
+      missing.push(it.id);
+      continue;
+    }
+    const sha = createHash("sha256").update(it.description, "utf8").digest("hex").slice(0, 16);
+    if (sha !== pinned.descSha) descDrift.push(it.id);
+    if ((it.dlc ?? "base") !== pinned.dlc) dlcDrift.push(`${it.id}: ${pinned.dlc} -> ${it.dlc}`);
+  }
+
+  expect(missing, `items absent from the baseline: ${missing.join(", ")}`).toEqual([]);
+  expect(
+    descDrift,
+    `descriptions changed without updating game-facts-baseline.json: ${descDrift.join(", ")}. ` +
+      "Descriptions are the game's own wording (schema.ts) and rule #1 keeps them verbatim, " +
+      "typos included — regenerate the baseline in the same commit so the edit is reviewable.",
+  ).toEqual([]);
+  expect(
+    dlcDrift,
+    `dlc changed without updating the baseline: ${dlcDrift.join(", ")}. ` +
+      "Which expansion an item needs is a claim about the game; data:verify proves it against " +
+      "ItemDef locally, and this keeps CI from shipping a change to it unnoticed.",
+  ).toEqual([]);
+
+  // The known debt must not grow: 61 undocumented divergences are a recorded decision, not a
+  // licence to add a 62nd.
+  const undocumented = Object.values(baseline.items).filter(
+    (v) => v.descStatus === "undocumented-divergence",
+  ).length;
+  expect(undocumented, "the baseline's counts disagree with its own rows").toBe(
+    baseline.counts["undocumented-divergence"],
+  );
+  expect(
+    undocumented,
+    "undocumented description divergences increased — see AUDIT-BACKLOG DEFERRED",
+  ).toBeLessThanOrEqual(61);
+});

@@ -196,6 +196,20 @@ left, bold white name, gray body with highlighted numeric values.
       §3j.58–§3j.98. Notable: the Stat Lab was a second unaudited implementation of the
       game's arithmetic; "N base, +M per stack" was false on 28 non-linear rows; four shared
       terms every formula depended on had never been defined.
+- [x] **Mutation sweep** (`pnpm data:mutate`) — the queue emptied, so this asks the inverse of
+      every front before it: *what can change without a single check failing?* 28 plausible bad
+      edits across items, skills, survivors, reference, the stat engine, components, docs and
+      the build, run through all six gate stages. **Two holes, both in surfaces already marked
+      CLOSED.** (1) `data:diff` mined descriptions for *numerals only* — the prose was never
+      compared, so a reworded description passed everything including 91 browser tests. Wiring
+      it up found **61 of 217 descriptions differ from the game with no `descriptionNote`**
+      (58 substantively), which is a rule #1 problem now carried as a DEFERRED decision: a mass
+      restore would delete verified facts (Predatory Instincts' 5% crit is in no stacking row),
+      so each needs a researched note. (2) `acceleration` was added to `survivors.json` *and*
+      the truth table by §3j.124 and never to the comparison — 19 transcribed values checking
+      nothing. `--ci` hides the game data to measure the gate that actually protects production;
+      a wrong `dlc` survived there and is now pinned in `game-facts-baseline.json`. **Final:
+      28/28 caught locally, 28/28 in CI mode** (§3j.154).
 - [x] Tap-target size (WCAG 2.5.8) — **the last OPEN front; the queue is now empty.** The raw
       count was never the answer: 31 undersized targets became **4 real controls** once the
       standard's own exceptions were applied (spacing, inline, user-agent, equivalent) and the

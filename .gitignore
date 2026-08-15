@@ -42,3 +42,7 @@ proc-dump.csv
 # Personal Claude Code overrides (machine-specific permission posture).
 # Never commit: this repo is public and settings.local.json can relax permissions.
 .claude/settings.local.json
+
+# scripts/mutation-sweep.mjs --ci renames these aside and restores them; if a run is killed
+# mid-sweep they can be left behind, and they are Gearbox's data either way.
+*.hidden-by-sweep/

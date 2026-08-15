@@ -8008,3 +8008,82 @@ opacity, because a touch check that quietly runs on a desktop context proves not
 
 Three mutations, all caught: the button back to `p-1` (22x22), the touch reveal removed
 (invisible on touch), and the filter labels back to 16px tall.
+
+---
+
+### §3j.154 — What can change without anything noticing
+
+The audit queue emptied at §3j.153, so this asks the inverse of every front before it. Those
+asked *"is surface X sound?"*. This asks: **what could I change in this project without a single
+check failing?** That is the only honest form of "nothing can go wrong" — not a claim that
+nothing is wrong, but a measurement of the space in which something could be wrong undetected.
+
+`scripts/mutation-sweep.mjs` (`pnpm data:mutate`) corrupts a real artefact, runs the full gate,
+records which stage caught it, and restores. A mutation that survives is a hole. Every mutation
+is a plausible bad edit — a reworded sentence, a wrong tier, a deleted row — not an absurd one.
+
+**28 mutations across items, skills, survivors, reference, the stat engine, components, docs and
+the build. First run: 26 caught, 2 survived.**
+
+#### Hole 1: descriptions were never compared as prose
+
+Rewording Crowbar from "Deal +75%…" to "Deals +75%…" passed **typecheck, test:unit, data:audit,
+data:diff, data:verify, build and all 91 browser tests.**
+
+`data:diff` loads the game's `_DESC` token and mines it for **numerals only**. `pickupText` has
+always been compared verbatim; `description` never was. §3j.125 closed a front reading
+"Verbatim item descriptions | 217 vs language files | 1 rewritten (Preon)" — an audit that
+proved the state on one day and enforced nothing after it.
+
+Wiring the comparison up produced a much larger finding than the mutation did: **61 of 217
+descriptions differ from the game's own text with no `descriptionNote` explaining why.** Not
+noise — verified by hand against the raw token. The game's Bolstering Lantern text says
+`(+3.5 per stack)`, missing a `%`; ours "corrects" it, which rule #1 explicitly forbids ("typos
+included"). Predatory Instincts gains a sentence the game's description does not contain.
+Classified: 3 punctuation-level, **58 substantive rewrites**.
+
+This matters more than a style question because of what the UI asserts. `ItemDetail`'s own
+comment reads *"The description above is the GAME'S wording"*, and where a note exists the page
+tells the reader **"The game's text above is inaccurate"** — a sentence that only means anything
+if the text above is the game's.
+
+**Not mass-fixed, deliberately.** Restoring verbatim would delete verified facts from the page:
+Predatory Instincts' 5% crit chance appears in no stacking row, so the restore would remove it
+entirely. Doing it properly means a researched `descriptionNote` per item, against the
+decompile — real per-item verification, and rule #1 forbids inventing the notes. Raised as a
+DEFERRED decision with the count attached.
+
+#### Hole 2: `acceleration` was transcribed and never compared
+
+§3j.124 added `acceleration` to `survivors.json` **and** to `SURVIVOR_TRUTH`, because it is the
+one base stat that varies across the roster. It was never added to the `pairs` array that
+actually compares them. For every run since, 19 transcribed values sat in the truth table
+checking nothing, and changing a survivor's acceleration passed the entire gate. The script
+even printed "19 survivors x 10 base-stat fields" while `survivors.json` carries 11.
+
+Same shape as §3j.146's `sanitizeEntry`: a correct value, wired to nothing.
+
+#### The CI gate is weaker than the local one, and now that is a number
+
+`--ci` renames `.gamedata/` and `.decompiled/` aside (restoring them on every exit path) to
+simulate the deploy environment, where the game cross-checks skip because Gearbox's data is
+never committed. That is the gate that actually protects production.
+
+With both holes fixed, the local sweep caught 28 of 28 — and the CI sweep caught **27**. The
+survivor was a wrong `dlc`, checked against ItemDef by `data:verify` and therefore by nothing in
+CI. Which expansion an item needs is a claim about the game, so it is now pinned in
+`src/data/game-facts-baseline.json` alongside a hash of every description: **local proves these
+against the game, CI proves nothing changed since that proof.** Neither layer alone is enough.
+
+`tier` is deliberately not pinned — a wrong tier already fails the browser suite in CI, and
+guarding what is covered is upkeep for no cover (rule 7). That was checked, not assumed.
+
+**Final: 28 of 28 caught locally, 28 of 28 in CI mode.**
+
+#### On the instrument, again
+
+The first run reported 7 survivors. Four were mutations that could not be applied — my mutation
+code was wrong about the shape of `skills.json` and of the Ambry codes — and a mutation that
+does not apply looks exactly like a guard that works (§3j.148). Three more "survived" only
+because the sweep ran 4 of the 6 gate stages; adding `build` and `playwright` caught all three.
+Believing 7 would have meant fixing things that were never broken.

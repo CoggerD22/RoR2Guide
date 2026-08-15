@@ -150,6 +150,16 @@ function checkSurvivors(): number {
       ["damage.base", s.damage.base, t.damage[0]],
       ["damage.perLevel", s.damage.perLevel, t.damage[1]],
       ["moveSpeed", s.moveSpeed, t.moveSpeed],
+      /*
+        §3j.154 — acceleration was transcribed and never compared.
+
+        §3j.124 added it to survivors.json AND to SURVIVOR_TRUTH above, because it is the one
+        base stat that varies across the roster (MUL-T 30, Artificer 40, False Son 50, the rest
+        80) and appeared on no page. It was never added to THIS list, so for every run since,
+        19 transcribed values sat in the truth table checking nothing — and changing a
+        survivor's acceleration passed the entire gate. Found by scripts/mutation-sweep.mjs.
+      */
+      ["acceleration", s.acceleration, t.acceleration],
       ["armor", s.armor, t.armor],
       ["jumpCount", s.jumpCount, t.jumpCount],
       ["baseAttackSpeed", s.baseAttackSpeed, t.baseAttackSpeed],
@@ -727,7 +737,7 @@ function main() {
   // --- survivor base stats (prefab-derived truth) ---
   const survivorBad = checkSurvivors();
   const nSurv = Object.keys(SURVIVOR_TRUTH).length;
-  console.log(`\n${nSurv} survivors x 10 base-stat fields checked against prefab truth.`);
+  console.log(`\n${nSurv} survivors x 11 base-stat fields checked against prefab truth.`);
   // Which GAME cross-checks actually ran. Everything below needs `.gamedata/` or
   // `.decompiled/`, and both are Gearbox's data that must never be committed (CLAUDE.md), so
   // in CI they are all absent. That is a permanent, documented limit — but the SUMMARY at the

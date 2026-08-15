@@ -3,7 +3,7 @@
   "private": true,
   "version": "0.0.0",
   "type": "module",
-  "description": "Fan-made Risk of Rain 2 companion site — item codex, run planner, stat lab.",
+  "description": "Fan-made Risk of Rain 2 companion site \u2014 item codex, run planner, stat lab.",
   "packageManager": "pnpm@11.10.0",
   "scripts": {
     "dev": "vite",
@@ -15,7 +15,8 @@
     "data:verify": "tsx scripts/data-verify.ts",
     "test": "playwright test",
     "test:unit": "vitest run",
-    "data:roster": "tsx scripts/data-roster.ts"
+    "data:roster": "tsx scripts/data-roster.ts",
+    "data:mutate": "node scripts/mutation-sweep.mjs"
   },
   "dependencies": {
     "@tanstack/react-router": "^1.87.0",
