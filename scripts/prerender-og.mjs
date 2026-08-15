@@ -52,6 +52,149 @@ function render(template, { title, description, image, url }) {
     .replace("</head>", `    ${head({ title, description, image, url })}\n  </head>`);
 }
 
+/**
+ * §3j.150 — re-read every page this script just wrote and check it, rather than assuming the
+ * write was what was intended.
+ *
+ * §3j.147 proved these files EXIST. "Present" and "correct" is the distinction that pass turned
+ * on, and nothing had asked the second question of the metadata. The check lives here, in the
+ * writer, so `pnpm build` fails on a bad page — no separate command to remember and no ordering
+ * problem with a test suite that runs before the build.
+ *
+ * The description round-trip is the load-bearing one: it compares the rendered page against
+ * `items.json` verbatim, which is also the only thing exercising `esc()`. Today **0 of 217**
+ * descriptions contain `<`, `>`, `&` or `"`, so the escaping path is untested by the data as it
+ * stands — one DLC item with an ampersand would be the first, and this comparison is what would
+ * catch it going wrong.
+ */
+function verify({ items, survivors, sections }) {
+  const unesc = (s) =>
+    s.replace(/&amp;/g, "&").replace(/&lt;/g, "<").replace(/&gt;/g, ">").replace(/&quot;/g, '"');
+  const metaOf = (html, prop) => {
+    const m =
+      html.match(new RegExp(`<meta property="${prop}" content="([^"]*)">`)) ??
+      html.match(new RegExp(`<meta name="${prop}" content="([^"]*)"\\s*/?>`));
+    return m ? unesc(m[1]) : null;
+  };
+  const titleOf = (html) => {
+    const m = html.match(/<title>([\s\S]*?)<\/title>/);
+    return m ? unesc(m[1]) : null;
+  };
+
+  const assets = fs.readdirSync(path.join(dist, "assets"));
+  const problems = [];
+  let checked = 0;
+
+  /*
+    The deploy path is written in TWO places — `SITE` here and `base` in vite.config.ts — and
+    nothing kept them in sync. Change the base without changing SITE and every og:url and
+    og:image silently points at an origin that does not serve this site, while the pages
+    themselves still load and every other check passes. Exactly the drift shape that put the
+    wiki in PLAN.md's ground-truth list for months (§3j.140).
+  */
+  const viteConfig = fs.readFileSync(path.join(root, "vite.config.ts"), "utf8");
+  const baseMatch = viteConfig.match(/base:\s*mode === "production" \? "([^"]+)"/);
+  if (!baseMatch) {
+    problems.push("vite.config.ts: could not read the production `base` — this check is blind");
+  } else {
+    const base = baseMatch[1].replace(/\/$/, "");
+    if (!SITE.endsWith(base)) {
+      problems.push(`SITE (${SITE}) does not end with vite's production base (${base})`);
+    }
+  }
+
+  const common = (rel, html) => {
+    checked++;
+    const nTitle = (html.match(/<title>/g) || []).length;
+    const nDesc = (html.match(/<meta name="description"/g) || []).length;
+    if (nTitle !== 1) problems.push(`${rel}: ${nTitle} <title> tags`);
+    if (nDesc !== 1) problems.push(`${rel}: ${nDesc} description metas`);
+
+    // A stale template would cite an asset hash this build never produced.
+    for (const m of html.matchAll(/\/RoR2Guide\/assets\/([^"]+)"/g)) {
+      if (!assets.includes(m[1])) problems.push(`${rel}: references missing asset ${m[1]}`);
+    }
+    // Relative paths resolve against the page's own folder and 404 two levels down.
+    for (const m of html.matchAll(/(src|href)="(?!https?:|\/|#)([^"]+)"/g)) {
+      problems.push(`${rel}: relative asset path ${m[2]} breaks in a subdirectory`);
+    }
+
+    const d = metaOf(html, "og:description");
+    const t = metaOf(html, "og:title");
+    if (!d || !d.trim()) problems.push(`${rel}: empty og:description`);
+    if (!t || !t.trim()) problems.push(`${rel}: empty og:title`);
+    if (d && /[\r\n]/.test(d)) problems.push(`${rel}: og:description contains a newline`);
+    if (t !== titleOf(html)) problems.push(`${rel}: og:title != <title>`);
+    if (metaOf(html, "twitter:title") !== t) problems.push(`${rel}: twitter:title != og:title`);
+    if (metaOf(html, "twitter:description") !== d) problems.push(`${rel}: twitter:description != og:description`);
+    if (metaOf(html, "description") !== d) problems.push(`${rel}: meta description != og:description`);
+
+    const img = metaOf(html, "og:image");
+    if (img) {
+      if (!img.startsWith(SITE)) problems.push(`${rel}: og:image is not on the deploy origin`);
+      else if (!fs.existsSync(path.join(dist, img.slice(SITE.length)))) {
+        problems.push(`${rel}: og:image 404s (${img})`);
+      }
+    }
+    return { d, t };
+  };
+
+  const read = (...p) => {
+    const f = path.join(dist, ...p);
+    return fs.existsSync(f) ? fs.readFileSync(f, "utf8") : null;
+  };
+
+  for (const item of items) {
+    const rel = `items/${item.id}`;
+    const html = read("items", item.id, "index.html");
+    if (!html) { problems.push(`${rel}: MISSING`); continue; }
+    const { d, t } = common(rel, html);
+    if (t !== `${item.name} · Risk of Rain 2`) problems.push(`${rel}: title is "${t}"`);
+    if (d !== item.description) problems.push(`${rel}: description does not match items.json`);
+    if (metaOf(html, "og:url") !== `${SITE}/items/${item.id}`) problems.push(`${rel}: wrong og:url`);
+    if (metaOf(html, "og:image") !== `${SITE}${item.icon}`) problems.push(`${rel}: wrong og:image`);
+  }
+
+  for (const s of survivors) {
+    const rel = `survivors/${s.id}`;
+    const html = read("survivors", s.id, "index.html");
+    if (!html) { problems.push(`${rel}: MISSING`); continue; }
+    const { d, t } = common(rel, html);
+    if (t !== `${s.name} · Risk of Rain 2`) problems.push(`${rel}: title is "${t}"`);
+    if (metaOf(html, "og:url") !== `${SITE}/survivors/${s.id}`) problems.push(`${rel}: wrong og:url`);
+    // The description is built from verified base stats — check they are THIS survivor's.
+    for (const want of [s.health.base, s.damage.base, s.moveSpeed]) {
+      if (!String(d).includes(String(want))) problems.push(`${rel}: description omits ${want}`);
+    }
+  }
+
+  for (const id of sections) {
+    const html = read(id, "index.html");
+    if (!html) { problems.push(`${id}: MISSING`); continue; }
+    common(id, html);
+    if (metaOf(html, "og:url") !== `${SITE}/${id}`) problems.push(`${id}: wrong og:url`);
+  }
+  for (const rel of ["404.html", "index.html"]) {
+    const html = read(rel);
+    if (!html) { problems.push(`${rel}: MISSING`); continue; }
+    common(rel, html);
+  }
+
+  const expected = items.length + survivors.length + sections.length + 2;
+  if (checked !== expected) {
+    problems.push(`checked ${checked} pages, expected ${expected} — the sweep missed some`);
+  }
+  console.log(`prerender-og: verified ${checked} pages (${problems.length} problem(s))`);
+  if (problems.length) {
+    for (const p of problems.slice(0, 25)) console.error(`  - ${p}`);
+    if (problems.length > 25) console.error(`  … ${problems.length - 25} more`);
+    // "problem(s)", not "bad page(s)": the base/SITE drift check is not about a page, and a
+    // summary that misdescribes what it found is the failure this project keeps correcting.
+    console.error(`\n✗ prerender-og: ${problems.length} problem(s) in the generated output.`);
+    process.exit(1);
+  }
+}
+
 function main() {
   const indexPath = path.join(dist, "index.html");
   if (!fs.existsSync(indexPath)) {
@@ -170,6 +313,8 @@ function main() {
   console.log(
     `prerender-og: ${n} item pages + ${s} survivor pages + ${sec} section pages + 404.html + home OG written to dist/`,
   );
+
+  verify({ items, survivors, sections: SECTIONS.map(([id]) => id) });
 }
 
 main();

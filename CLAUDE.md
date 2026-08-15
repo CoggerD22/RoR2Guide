@@ -196,6 +196,18 @@ left, bold white name, gray body with highlighted numeric values.
       §3j.58–§3j.98. Notable: the Stat Lab was a second unaudited implementation of the
       game's arithmetic; "N base, +M per stack" was false on 28 non-linear rows; four shared
       terms every formula depended on had never been defined.
+- [x] `prerender-og` metadata, and the first tests to load the **built** tree. All 243 generated
+      pages (217 item + 19 survivor + 5 section + 404 + home) were already correct: titles,
+      `og:url`, `og:image` present on disk, asset hashes from this build, and every item
+      description matching `items.json` verbatim. Two things came out of it anyway. The clean
+      escaping result was **vacuous** — 0 of 217 descriptions contain `& < > "`, so `esc()` is
+      untested by the data and is covered only implicitly by the verbatim round-trip. And
+      nothing had ever loaded `dist/` in a browser, which is exactly why §3j.147's production
+      breakage survived 78 green tests: `tests/built-site.spec.ts` now serves the build the way
+      Pages does (static files, `404.html` fallback, `/RoR2Guide/` base — deliberately no SPA
+      rewrite) and asserts zero page errors and zero failed requests. `prerender-og.mjs` also
+      re-reads everything it writes and fails the build on any problem, including `SITE`
+      drifting from vite's `base`, which is stored in two places (§3j.150).
 - [x] Responsive layout at 360px — the width this site is actually read at, never once measured.
       **7 of 13 panel-states scrolled sideways**, from three unrelated causes: an `opacity-0`
       hover tooltip that still takes part in layout (a 256px panel centred on edge cards pushed

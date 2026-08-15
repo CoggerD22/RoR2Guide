@@ -7765,3 +7765,62 @@ not in the permanent test. Tap-target size — 31 of 1,753 under 24×24 — is a
 different one; opened as its own front rather than half-fixed here.
 
 Three mutations, each reverting one fix, all caught with the panel named.
+
+---
+
+### §3j.150 — prerender-og: correct, and now proved in a browser
+
+Backlog front #1. **Question:** §3j.147 established the 243 generated pages are PRESENT and
+that the router agrees. Is the metadata **inside** them correct? **Defect:** a description that
+does not match its item, a stale template, an `og:url` on the wrong origin, or asset references
+that break in a subdirectory.
+
+**Denominator: 243 pages — 217 item, 19 survivor, 5 section, 404.html, home.**
+
+**The metadata was already right.** Titles, `og:url`, `og:image` existence on disk, asset hashes
+matching this build, agreement between `<title>` / `og:` / `twitter:` / `meta description`, and
+every item description matching `items.json` verbatim — all clean across 243 pages. The only
+finding was soft: three descriptions exceed a typical unfurl's truncation (Spinel Tonic 459
+chars, Shared Design 351, His Spiteful Boon 308). Those are the game's own text, the platform
+truncates on its own terms, and shortening them here would either mangle verbatim prose or add
+an ellipsis for no correctness gain. Measured, not "fixed" (rule 4).
+
+#### The clean escaping result was vacuous
+
+`esc()` handles `& < > "`, and every page passed the round-trip comparison. Then: **0 of 217
+descriptions contain any of those characters.** The escaping path is not exercised by the data
+as it stands, so "escaping is correct" was a statement about nothing. It is covered *implicitly*
+— the round-trip compares the rendered page against `items.json` verbatim, so a future DLC item
+with an ampersand would fail here if `esc()` were wrong. That is the argument for making the
+comparison permanent rather than for adding an escaping test.
+
+#### The real gap was that nothing had ever loaded the built tree
+
+Every browser test drives `vite dev`, which supplies an SPA fallback, rewrites paths and serves
+source. That is precisely why §3j.147's production breakage survived 78 green tests. So
+`tests/built-site.spec.ts` now serves `dist/` **the way GitHub Pages actually does** — static
+files only, `<dir>/index.html` for a directory, `/404.html` with status 404 for a miss, and the
+`/RoR2Guide/` base — and drives a real browser against it. The server is deliberately *not*
+more forgiving than Pages; making it so would reproduce the blind spot it exists to close.
+
+Ten tests: every section route returns 200 and renders its `h1`; a deep-linked item two
+directories down opens its drawer with all assets resolved (a relative path would 404 there); a
+survivor deep link renders; an unknown path serves `404.html` with status 404 and the app's own
+404 from §3j.146; and a shared planner link survives a real page load. Every one also asserts
+**zero page errors and zero failed requests**, so a missing asset cannot pass quietly.
+
+Proven by deleting `dist/404.html` (the pre-§3j.147 state — the fallback test fails) and by
+deleting `dist/planner/` (that route stops returning 200).
+
+#### The verifier lives in the writer
+
+`prerender-og.mjs` now re-reads all 243 pages it just wrote and fails the build on any problem,
+rather than trusting that the write was what was intended. No separate command to remember, and
+no ordering problem with a suite that runs before the build. Proven twice: giving every item the
+first item's description → 216 failures, exit 1; pointing `og:image` at a non-existent file →
+exit 1 naming the URL.
+
+It also closes a drift class nothing had covered: the deploy path is written in **two** places,
+`SITE` here and `base` in `vite.config.ts`. Change one without the other and every `og:url`
+points at an origin that does not serve this site, while the pages still load and every other
+check passes. Changing the base to `/ror2-companion/` now fails the build naming both values.
