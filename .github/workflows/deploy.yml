@@ -59,26 +59,26 @@ jobs:
       # and the fix was incomplete: Playwright was left in ci.yml only, and the guard that
       # was supposed to enforce this settled for "Playwright must run somewhere".
       #
-      # Somewhere is not the deploy path. These 46 tests catch things no unit test can — the
+      # Somewhere is not the deploy path. These tests catch things no unit test can — the
       # non-affiliation disclaimer (rule #6) actually rendering, and the amber callout that
       # carries every correction in MATH-VERIFICATION appearing on the page at all. Both were
       # verified by deliberate breakage (§3j.116, §3j.123). A change that removes either would
       # have deployed clean (§3j.139).
       #
-      # `pnpm test` starts its own dev server via playwright.config.ts, so it needs no build.
+      # BUILD FIRST. Most of the suite drives its own dev server and needs no build, which is
+      # what this comment used to say and stop at — but §3j.150 added tests/built-site.spec.ts,
+      # which serves `dist/` the way GitHub Pages does, because only the built tree says what
+      # Pages will actually serve. With the old order that suite met a fresh checkout with no
+      # dist/, asserted so (rather than skipping, per §3j.148), and failed — so **this deploy
+      # job has been failing since that commit**. The test was right and the order was wrong.
+      - name: Build
+        run: pnpm build
+
       - name: Install Playwright browser
         run: pnpm exec playwright install --with-deps chromium
 
       - name: Browser tests
         run: pnpm test
-
-      - name: Build
-        run: pnpm build
-
-      # SPA fallback: GitHub Pages serves 404.html for unknown paths, so a copy
-      # of index.html lets client-side routes (/planner, /stats, …) deep-link.
-      - name: Add SPA fallback
-        run: cp dist/index.html dist/404.html
 
       - uses: actions/upload-pages-artifact@v3
         with:

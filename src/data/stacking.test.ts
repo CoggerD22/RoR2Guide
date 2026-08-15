@@ -2546,3 +2546,70 @@ test("game facts match their pinned baseline", async () => {
     "undocumented description divergences increased — see AUDIT-BACKLOG DEFERRED",
   ).toBeLessThanOrEqual(61);
 });
+
+
+/**
+ * §3j.156 — the deploy workflow must build before it tests, and must not undo the build.
+ *
+ * §3j.139 made publication conditional on the checks. It asserted that the stages are PRESENT
+ * and never that they are in a workable order or that nothing later overwrites their output.
+ * Both gaps were real:
+ *
+ *   - `Browser tests` ran before `Build`. That was fine when every test drove its own dev
+ *     server, and stopped being fine when §3j.150 added `built-site.spec.ts`, which serves
+ *     `dist/` because only the built tree says what Pages will serve. On a fresh checkout it
+ *     asserted that dist/ was missing rather than skipping (§3j.148) — so **the deploy job had
+ *     been failing since that commit**, proven locally by removing dist/ and running the suite.
+ *   - A leftover `cp dist/index.html dist/404.html` step overwrote the 404 page the build
+ *     writes. Since §3j.147 `prerender-og.mjs` produces a real one, titled "Page not found"
+ *     with its own description; the copy replaced it with the home page, so a dead link would
+ *     unfurl on Discord as a valid page.
+ *
+ * A workflow is code that nothing type-checks and no test runs, so the properties it has to
+ * hold are asserted here instead of assumed.
+ */
+test("the deploy workflow builds before testing and does not overwrite the build", async () => {
+  const { readFileSync } = await import("node:fs");
+  const deploy = readFileSync(".github/workflows/deploy.yml", "utf8");
+
+  // Matched with an end-of-line anchor rather than a literal "\n": these files are CRLF, and a
+  // pattern ending in \n silently matches nothing — the same escaping trap that made a
+  // mutation look like a working guard in §3j.148.
+  const stepIndex = (pattern: RegExp) => {
+    const m = deploy.match(pattern);
+    return m?.index ?? Infinity;
+  };
+
+  const build = stepIndex(/run: pnpm build\s*$/m);
+  const browser = stepIndex(/run: pnpm test\s*$/m);
+  expect(build, "deploy.yml no longer builds").toBeLessThan(Infinity);
+  expect(browser, "deploy.yml no longer runs the browser suite").toBeLessThan(Infinity);
+  expect(
+    build,
+    "deploy.yml runs the browser tests before `pnpm build`; tests/built-site.spec.ts needs dist/",
+  ).toBeLessThan(browser);
+
+  // Nothing may rewrite what the build produced. The build verifies all 243 pages it writes
+  // (§3j.150) — a later `cp`/`mv`/`echo >` into dist/ discards that proof.
+  const clobber = [...deploy.matchAll(/run:\s*(.*dist\/.*)/g)]
+    .map((m) => m[1].trim())
+    .filter((cmd) => /^(cp|mv|rm|echo|sed|cat)\b/.test(cmd));
+  expect(
+    clobber,
+    `deploy steps that modify dist/ after the build: ${clobber.join(" | ")}. ` +
+      "The build writes and verifies every page it emits; a later copy discards that.",
+  ).toEqual([]);
+
+  // Both workflows must still run the gates §3j.139 made publication conditional on.
+  const ci = readFileSync(".github/workflows/ci.yml", "utf8");
+  for (const [name, wf] of [["ci.yml", ci], ["deploy.yml", deploy]] as const) {
+    for (const stage of ["pnpm typecheck", "pnpm data:audit", "pnpm data:verify", "pnpm test:unit", "pnpm build"]) {
+      expect(wf, `${name} no longer runs \`${stage}\``).toContain(stage);
+    }
+    expect(wf, `${name} no longer runs the browser suite`).toMatch(/run: pnpm test\s*$/m);
+    // A step that cannot fail is not a gate (§3j.148).
+    expect(wf, `${name} has a step marked continue-on-error, which cannot gate anything`).not.toContain(
+      "continue-on-error",
+    );
+  }
+});

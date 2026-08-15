@@ -85,6 +85,7 @@ SweetSpot cliffs and the proc gap in already-"checked" data.
 | Tap-target size (WCAG 2.5.8) | 2249 targets / 16 panel-states | **31 raw -> 4 real**; one invisible on touch | §3j.153 |
 | Mutation sweep (what survives?) | 28 mutations x 6 gate stages, local + CI | **2 holes**; 61 non-verbatim descriptions found | §3j.154 |
 | Hover-only affordances on touch | 2700 controls / 17 panel-states | **3 more found by the new guard**; instrument wrong 3 ways | §3j.155 |
+| CI/deploy parity & ordering | 2 workflows, 6 gate stages | **deploy failing since §3j.150**; 404 overwritten | §3j.156 |
 | Extractor health | 1472 bundles, 224,435 MonoBehaviours | all swallow classes 0 | §3j.127 |
 
 ---

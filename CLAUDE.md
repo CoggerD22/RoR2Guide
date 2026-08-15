@@ -196,6 +196,16 @@ left, bold white name, gray body with highlighted numeric values.
       §3j.58–§3j.98. Notable: the Stat Lab was a second unaudited implementation of the
       game's arithmetic; "N base, +M per stack" was false on 28 non-linear rows; four shared
       terms every formula depended on had never been defined.
+- [x] **CI/deploy parity — and the deploy job had been failing.** Both workflows do run every
+      gate and neither uses `continue-on-error`; `data:diff` is absent from both, correctly, as
+      it needs the game's language files. But `deploy.yml` ran the **browser tests before the
+      build**, which was fine until §3j.150 added `built-site.spec.ts` — that suite serves
+      `dist/`, met a fresh checkout with none, asserted so rather than skipping, and failed. **The
+      deploy has been broken since that commit**, proven locally by removing `dist/` and running
+      the suite. A second leftover step, `cp dist/index.html dist/404.html`, overwrote the real
+      404 page the build writes and verifies, so a dead link would unfurl as a valid page.
+      §3j.139's guard asserted the stages were *present* and never that they were **ordered** or
+      that nothing undid them; both are now asserted (§3j.156).
 - [x] **Hover-only affordances on touch, guarded as a class.** §3j.145, §3j.149 and §3j.153 were
       the same defect found three times by accident. `(hover: hover)` is false on a phone, so a
       control revealed by `group-hover:` does not exist there — and every check runs

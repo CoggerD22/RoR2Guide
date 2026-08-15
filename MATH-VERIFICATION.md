@@ -8140,3 +8140,49 @@ Each failure is worth more than the finding.
 
 A guard that had been wrong in three independent ways still reported "0 findings" at every
 stage. Only reverting known historical defects showed which of those zeros were real.
+
+---
+
+### §3j.156 — The deploy job had been failing, and nothing said so
+
+Pass 3 of the plan: does CI actually run and gate on everything the local gate does? This also
+tests an assumption Pass 1 rested on — the `--ci` mutation sweep ran all six stages, which is
+only meaningful if CI runs them.
+
+It does. Both workflows run typecheck, `data:audit`, `data:verify`, `test:unit`, `build` and the
+browser suite, and neither uses `continue-on-error`. `data:diff` is absent from both and that is
+correct: it needs the game's language files, which CI does not have. (Which is exactly why the
+verbatim-description check added in §3j.154 is backed by a CI-runnable hash baseline.)
+
+**Two real defects, both in `deploy.yml`, both invisible to every check that existed.**
+
+#### The deploy ran the browser tests before the build
+
+Fine when every test drove its own dev server — which is what the step's own comment said and
+stopped at. §3j.150 then added `tests/built-site.spec.ts`, which serves `dist/` because only the
+built tree says what Pages will actually serve. On a fresh checkout that suite met no `dist/`,
+**asserted so rather than skipping** (the §3j.148 lesson, working exactly as intended), and
+failed.
+
+So the deploy job has been failing since that commit. Proven locally rather than assumed: remove
+`dist/`, run the suite, watch it fail with the message the test was given. The test was right and
+the workflow order was wrong — a comment that was true when written and silently stopped being
+true, which is the shape §3j.140 catalogued in the documentation and this repeats in CI config.
+
+#### A leftover step overwrote the 404 page the build verifies
+
+`cp dist/index.html dist/404.html`, labelled "Add SPA fallback". That was the fix before §3j.147
+taught `prerender-og.mjs` to write a real one — titled "Page not found", with its own
+description, re-read and verified along with the other 242 pages. The copy replaced it with the
+home page, so a dead link would unfurl on Discord as a perfectly valid page, and the build's
+verification of it was discarded a step later.
+
+#### The gap in the old guard
+
+§3j.139's guard asserts the stages are PRESENT. It never asserted they are in a workable ORDER,
+nor that nothing afterwards undoes them. A workflow is code that nothing type-checks and no test
+runs, so those properties are now asserted: build precedes the browser suite, and no step may
+`cp`/`mv`/`rm`/`echo` into `dist/` after the build. Proven by restoring each defect.
+
+Also removed: a hardcoded "these 46 tests" in a comment, describing a suite that is now 92. A
+bare count in prose goes stale every pass; the guard counts instead.
