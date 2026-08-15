@@ -151,6 +151,48 @@ const MUTATIONS = [
       return sub(src, m[0], `perStack: ${Number(m[1]) + 3}`);
     } },
 
+  /*
+    ---- APPLICATION LOGIC ----
+
+    The first 28 mutations were weighted almost entirely to data and docs: exactly one touched
+    code. But the question this file asks applies just as much to the app — can the URL encoder,
+    the stat engine or the search ranking change without a test failing? Seven lib/store modules
+    have no dedicated test at all, which is not the same as untested; this is how to find out.
+
+    Each is a plausible bug, and several are the exact traps the code documents in its own
+    comments — the best mutations are the ones a careful reader already worried about.
+  */
+  { file: "src/lib/asset.ts", name: "asset() drops the base path", cls: "code/deploy",
+    apply: (src) => sub(src, "return import.meta.env.BASE_URL + path.replace(/^\\//, \"\");", "return path;") },
+  { file: "src/lib/statMath.ts", name: "negative armor uses the naive shortcut", cls: "code/engine",
+    apply: (src) => sub(src,
+      "return armor >= 0 ? 1 - armor / (armor + 100) : 2 - 100 / (100 - armor);",
+      "return 100 / (100 + armor);") },
+  { file: "src/lib/stacking.ts", name: "sparkline curve is off by one stack", cls: "code/engine",
+    apply: (src) => sub(src, "v: entry.base + entry.perStack * i,", "v: entry.base + entry.perStack * (i + 1),") },
+  { file: "src/lib/stacking.ts", name: "stacking types stop being de-duplicated", cls: "code/display",
+    apply: (src) => sub(src, "return [...new Set(entries.map((e) => e.type))];", "return entries.map((e) => e.type);") },
+  { file: "src/lib/filterPipeline.ts", name: "the locked-only filter is inverted", cls: "code/filter",
+    apply: (src) => sub(src, "if (filters.lockedOnly && !it.unlock) return false;", "if (filters.lockedOnly && it.unlock) return false;") },
+  { file: "src/lib/filterPipeline.ts", name: "the tier filter stops applying", cls: "code/filter",
+    apply: (src) => sub(src, "if (filters.tiers.size > 0 && !filters.tiers.has(it.tier)) return false;", "") },
+  { file: "src/lib/planUrl.ts", name: "an out-of-range goal is accepted from a share link", cls: "code/validation",
+    apply: (src) => sub(src,
+      "Number.isInteger(parsed) && parsed >= MIN_GOAL && parsed <= MAX_GOAL ? parsed : undefined;",
+      "Number.isInteger(parsed) ? parsed : undefined;") },
+  { file: "src/lib/search.ts", name: "one-character queries lose the prefix path", cls: "code/search",
+    apply: (src) => sub(src, "if (q.length < 2) {", "if (false) {") },
+  { file: "src/lib/utils.ts", name: "cn() stops de-duplicating conflicting classes", cls: "code/display",
+    apply: (src) => sub(src, "return twMerge(clsx(inputs));", "return clsx(inputs);") },
+  { file: "src/store/planner.ts", name: "the goal clamp in setGoal is removed", cls: "code/validation",
+    apply: (src) => sub(src,
+      "else nextEntry.goal = Math.min(MAX_GOAL, Math.max(MIN_GOAL, Math.floor(goal)));",
+      "else nextEntry.goal = goal;") },
+  { file: "src/store/planner.ts", name: "persisted state stops being sanitised on hydrate", cls: "code/validation",
+    apply: (src) => sub(src,
+      "merge: (persisted, current) => ({ ...current, ...sanitizePersisted(persisted) }),",
+      "merge: (persisted, current) => ({ ...current, ...(persisted as object) }),") },
+
   // ---- app code the guards claim to cover ----
   { file: "src/components/reference/ReferencePage.tsx", name: "a heading level is skipped", cls: "a11y",
     apply: (src) => sub(src, '<h2 className="sr-only">', '<h3 className="sr-only">') },

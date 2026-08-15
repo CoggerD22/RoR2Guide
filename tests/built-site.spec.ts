@@ -77,8 +77,20 @@ async function visit(page: import("@playwright/test").Page, path: string) {
   page.on("pageerror", (e) => errors.push(String(e).split("\n")[0]));
   const failed: string[] = [];
   page.on("requestfailed", (r) => failed.push(`${r.url()} ${r.failure()?.errorText}`));
+  /*
+    §3j.157 — `requestfailed` does NOT fire for an HTTP error status. It covers network-level
+    failures; a 404 is a *successful* request that returned 404, so a page whose every asset
+    404s reported zero failed requests and passed.
+    That is not hypothetical: the mutation sweep removed the base-path prefix from `asset()`,
+    which makes every icon resolve to /icons/… instead of /RoR2Guide/icons/… — 404 on Pages,
+    invisible in dev where BASE_URL is "/" — and this suite did not notice.
+  */
+  const notOk: string[] = [];
+  page.on("response", (r) => {
+    if (r.status() >= 400) notOk.push(`${r.status()} ${r.url().replace(origin, "")}`);
+  });
   const resp = await page.goto(`${origin}${BASE}${path}`);
-  return { errors, failed, status: resp?.status() ?? 0 };
+  return { errors, failed, notOk, status: resp?.status() ?? 0 };
 }
 
 test.describe("the built tree, served the way GitHub Pages serves it", () => {
@@ -91,22 +103,33 @@ test.describe("the built tree, served the way GitHub Pages serves it", () => {
     ["/survivors", /Survivors/],
   ] as const) {
     test(`${path} loads from a static file server`, async ({ page }) => {
-      const { errors, failed, status } = await visit(page, path);
+      const { errors, failed, notOk, status } = await visit(page, path);
       expect(status, `${path} did not return 200`).toBe(200);
       await expect(page.getByRole("heading", { level: 1 })).toHaveText(heading);
       expect(errors, `threw: ${errors[0]}`).toEqual([]);
       expect(failed, `failed requests: ${failed[0]}`).toEqual([]);
+      expect(notOk, `sub-resources returned an error status: ${notOk.join(", ")}`).toEqual([]);
     });
   }
 
   test("a deep-linked item opens its drawer, with assets resolved from a subdirectory", async ({ page }) => {
     // The page lives at dist/items/crowbar/index.html — two levels down. A relative asset
     // reference would resolve against /items/crowbar/ and 404.
-    const { errors, failed, status } = await visit(page, "/items/crowbar");
+    const { errors, failed, notOk, status } = await visit(page, "/items/crowbar");
     expect(status).toBe(200);
     await expect(page.getByRole("dialog", { name: "Crowbar" })).toBeVisible();
     expect(errors, `threw: ${errors[0]}`).toEqual([]);
     expect(failed, `failed requests: ${failed[0]}`).toEqual([]);
+    expect(notOk, `sub-resources returned an error status: ${notOk.join(", ")}`).toEqual([]);
+
+    // Icons must actually DECODE, not merely be requested. `asset()` prefixes the deploy base
+    // path, and dropping that prefix is invisible in dev (BASE_URL is "/") while 404-ing every
+    // icon in production. naturalWidth is the only thing that distinguishes a loaded image
+    // from a broken one.
+    const loaded = await page.evaluate(() =>
+      Array.from(document.images).filter((i) => i.complete && i.naturalWidth > 0).length,
+    );
+    expect(loaded, "no icon actually decoded — the asset base path is wrong").toBeGreaterThan(0);
   });
 
   test("a deep-linked survivor renders", async ({ page }) => {

@@ -8186,3 +8186,56 @@ runs, so those properties are now asserted: build precedes the browser suite, an
 
 Also removed: a hardcoded "these 46 tests" in a comment, describing a suite that is now 92. A
 bare count in prose goes stale every pass; the guard counts instead.
+
+---
+
+### §3j.157 — Extending the sweep to code, where it had barely looked
+
+Pass 4. §3j.154's mutation sweep was weighted almost entirely to data and documentation: of 28
+mutations, exactly **one** touched application logic. But its question applies just as much to
+the app — can the URL encoder, the stat engine or the search ranking change without a test
+failing? Seven of fourteen lib/store modules have no dedicated test, which is not the same as
+untested, and the sweep is how to tell the difference.
+
+Eleven code mutations, each a plausible bug and several of them the exact traps the code
+documents in its own comments. **3 survived.**
+
+#### `asset()` could drop the deploy base path, and nothing noticed
+
+`asset()` prefixes `import.meta.env.BASE_URL`, which is `/RoR2Guide/` in production and `/` in
+dev. Removing the prefix is therefore **invisible locally** and 404s every icon on Pages — 217
+of them. It passed typecheck, every unit test, the build, and all 92 browser tests including the
+ones that serve the built tree.
+
+The reason is a real gap in `built-site.spec.ts`: it asserted zero **failed requests**, and
+`requestfailed` does not fire for an HTTP error status. It covers network-level failures; a 404
+is a *successful* request that returned 404. A page whose every asset 404s reported zero failed
+requests and passed.
+
+Now it listens on `response` for any status ≥ 400, and the deep-link test additionally asserts
+that at least one icon **decoded** — `naturalWidth > 0` is the only thing distinguishing a
+loaded image from a broken one. Under mutation the base path is caught by playwright.
+
+#### `stacking.ts` had no test, and two bugs walked straight through
+
+- **The sparkline curve shifted by one stack**, so every plotted point stated the value for the
+  wrong stack count. Crowbar would be drawn as +150% at one stack.
+- **`itemStackingTypes` stopped de-duplicating**, so an item with two linear rows renders
+  "Linear" twice.
+
+Neither is visible to the browser suite: a sparkline is an SVG path and a duplicated badge is
+still a badge. Nothing asserted what either one *says*. `src/lib/stacking.test.ts` is new — 13
+cases covering the base-value-at-one-stack contract, negative `perStack`, the refusal to plot
+non-linear rows (drawing a straight line through a hyperbolic row would assert arithmetic the
+game does not do — §3j.60's defect in graphical form), and the empty case that 33 of 217 items
+have.
+
+#### What the eight caught mutations say
+
+Worth recording, because a caught mutation is evidence too: the negative-armor branch, both
+filter predicates, the share-link goal range, the one-character search path (§3j.123's original
+bug), `cn()`'s Tailwind de-duplication, `setGoal`'s clamp and the persist sanitiser (§3j.146)
+are all genuinely held by tests. That is eight pieces of logic proven load-bearing rather than
+assumed.
+
+**Final: 39 mutations, 39 caught, in both local and CI conditions.**

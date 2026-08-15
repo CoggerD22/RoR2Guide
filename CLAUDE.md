@@ -196,6 +196,15 @@ left, bold white name, gray body with highlighted numeric values.
       §3j.58–§3j.98. Notable: the Stat Lab was a second unaudited implementation of the
       game's arithmetic; "N base, +M per stack" was false on 28 non-linear rows; four shared
       terms every formula depended on had never been defined.
+- [x] **Mutation sweep extended to application logic.** §3j.154's sweep was weighted to data
+      and docs — 1 of 28 mutations touched code. Eleven code mutations found **3 more holes**.
+      `asset()` could drop the deploy base path, which is **invisible in dev** (BASE_URL is `/`)
+      and 404s all 217 icons on Pages; it survived because `built-site.spec.ts` asserted zero
+      *failed requests*, and `requestfailed` does not fire for an HTTP error status — a 404 is a
+      successful request that returned 404. It now checks `response` status and asserts an icon
+      actually **decoded**. And `stacking.ts` (86 lines) had **no test**, so shifting the
+      sparkline curve by one stack and dropping badge de-duplication both shipped green; 13 new
+      cases cover it. **39 mutations, 39 caught, local and CI** (§3j.157).
 - [x] **CI/deploy parity — and the deploy job had been failing.** Both workflows do run every
       gate and neither uses `continue-on-error`; `data:diff` is absent from both, correctly, as
       it needs the game's language files. But `deploy.yml` ran the **browser tests before the
