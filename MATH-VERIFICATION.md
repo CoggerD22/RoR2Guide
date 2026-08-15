@@ -7887,3 +7887,67 @@ panel counts are asserted as `13 + representativeItems().length` rather than a c
 Three mutations, all caught: a new `item.brandNewField` conditional (undeclared field), removing
 the void-corruption state while the component still branches on it, and dropping `unreachableOk`
 from a branch no item reaches.
+
+---
+
+### §3j.152 — `title` as the only home for an explanation: mostly it isn't
+
+Backlog front #1. **Question:** 25 `title=` attributes across 13 components carry real
+explanatory content. `title` is invisible to keyboard users, unreliable for screen readers and
+absent on touch — **how much of that content exists nowhere else?** **Defect:** an explanation
+only a mouse user can reach.
+
+The question is a measurement, and the measurement mostly exonerates the code.
+
+#### The denominator was wrong before the finding was
+
+**25 → 23.** Two of the flagged uses are `<PlanSection title="Targeted">` — a React prop that
+renders a heading, not an HTML attribute. A third, `OpinionBadge`, lives in the parked guides
+layer and cannot render at all. **22 reachable.**
+
+Rendered across the sweep panels that is **77 instances** (templated titles multiply — one
+`Unlocked by …` per unlocked item), of which 72 carry text absent from the page at rest, 62 sit
+on non-focusable `<span>`s and 57 have no `aria-label`. Those numbers look damning and are
+almost entirely misleading, because "absent from this page at rest" is not "unavailable".
+
+#### Almost all of it is duplicated or elaborative
+
+- **Unlock badges (49 items × 2 components).** The lock icon has no visible text, but the item
+  drawer states the challenge and requirement outright — confirmed by rendering it. The `title`
+  is a shortcut, not the only home.
+- **Skill unlock badges on the survivor page.** The challenge name is *visible* in the badge and
+  the requirement text appears elsewhere on the page — measured as `dup`.
+- **Badges that already carry a label.** `caps at 4`, `code-verified`, `standard curve`,
+  `Asset-verified`, the density buttons — every one renders its own visible text, and the
+  `title` elaborates. Losing the elaboration costs nuance, not meaning.
+- **`DlcBadge` and the Stat Lab's unmodelled-stacking marker** already carry an `aria-label`.
+
+#### One class is genuinely hover-only, and it is the one that matters most here
+
+**Proc-coefficient provenance.** On `SkillProcPanel` and `SurvivorDetail` the visible text is the
+number — `proc 1`, `0.5`, `no direct damage` — and where it came from is only in the `title`:
+
+```
+ONLY  shown="proc 1"           title="game code (attack default 1.0)"
+ONLY  shown="0.5"              title="game asset (skill config)"
+ONLY  shown="no direct damage" title="game code (no damage-dealing path)"
+```
+
+Provenance is this project's whole claim to authority — the confidence tags, the "Where this
+comes from" panels, rule #1 — and on the two surfaces that publish proc coefficients it is
+reachable by hover alone.
+
+#### Not fixed, deliberately
+
+Publishing it properly needs either a real tooltip (focusable, `aria-describedby`, dismissible
+per WCAG 1.4.13) or a new visible column in the proc table. Both are **new UI surfaces**, which
+rule 9 says is a decision to raise rather than take. Moved to DEFERRED with the finding attached.
+
+`aria-label` on the existing `<span>`s is not the cheap fix it looks like: on `role=generic`
+elements it is widely ignored by real AT, whatever a locator engine reports, so it would produce
+the appearance of a fix without the substance.
+
+What did ship is a guard against the problem growing quietly: the components allowed to use
+`title`, and how many each may carry, are now pinned. Proven twice — adding a `title` to a
+component not on the list fails naming it, and letting an existing component grow from 2 to 3
+fails with the count.

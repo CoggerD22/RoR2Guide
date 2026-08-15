@@ -2378,3 +2378,79 @@ test("every conditional branch in ItemDetail is a declared, represented state", 
     .map((b) => b.branch.name);
   expect(missed, `reachable branches no representative renders: ${missed.join(", ")}`).toEqual([]);
 });
+
+
+/**
+ * §3j.152 — `title` is a hover-only channel, so its use is pinned rather than left to drift.
+ *
+ * A `title` attribute is invisible to keyboard users, unreliable for screen readers (it is
+ * ignored outright on many elements) and absent on touch. Measuring what the site keeps there
+ * found that almost all of it is either duplicated in visible text or elaborates a badge that
+ * already carries a label — EXCEPT the proc-coefficient provenance on `SkillProcPanel` and
+ * `SurvivorDetail`, where the visible text is the number and "game code (attack default 1.0)"
+ * is reachable only by hovering.
+ *
+ * Publishing that properly needs a real tooltip (focusable, `aria-describedby`, dismissible per
+ * WCAG 1.4.13) or a new visible column, both of which are scope decisions rather than
+ * corrections — see DEFERRED in AUDIT-BACKLOG.md.
+ *
+ * What this guard does is stop the problem growing quietly: a new hover-only explanation has to
+ * be a deliberate edit to this list, not an unnoticed one.
+ */
+test("hover-only `title` explanations stay pinned to a known set", async () => {
+  const { readdirSync, readFileSync } = await import("node:fs");
+  const files: string[] = [];
+  const walk = (dir: string) => {
+    for (const e of readdirSync(dir, { withFileTypes: true })) {
+      const p = `${dir}/${e.name}`;
+      if (e.isDirectory()) walk(p);
+      else if (/\.tsx$/.test(e.name)) files.push(p);
+    }
+  };
+  walk("src/components");
+  expect(files.length, "component sweep found nothing").toBeGreaterThan(20);
+
+  // Components allowed to use a `title` attribute today, with the count each carries.
+  // `RunPlanRail` shows 5 because two of them are <PlanSection title="…">, a React prop that
+  // renders a heading — not an HTML attribute at all. That distinction cost a wrong denominator
+  // once already (25 "tooltips" were really 23).
+  const ALLOWED: Record<string, number> = {
+    "codex/ConfidenceBadge.tsx": 1,
+    "codex/DisplayControls.tsx": 3,
+    "codex/DlcBadge.tsx": 1,
+    "codex/ItemCard.tsx": 2,
+    "codex/ItemTooltip.tsx": 1,
+    "guides/OpinionBadge.tsx": 1,
+    "planner/PlannerCard.tsx": 1,
+    "planner/RunPlanRail.tsx": 5,
+    "reference/Breakpoints.tsx": 2,
+    "reference/ReferencePage.tsx": 1,
+    "statlab/SkillProcPanel.tsx": 2,
+    "statlab/StatLabPage.tsx": 2,
+    "survivors/SurvivorDetail.tsx": 3,
+  };
+
+  const actual: Record<string, number> = {};
+  for (const f of files) {
+    const n = (readFileSync(f, "utf8").match(/\btitle=/g) || []).length;
+    if (n) actual[f.replace(/^src\/components\//, "")] = n;
+  }
+
+  const added = Object.keys(actual).filter((f) => !(f in ALLOWED));
+  expect(
+    added,
+    `new hover-only \`title\` explanations in: ${added.join(", ")}. ` +
+      "A title is invisible to keyboard and touch users — put the content in visible text or " +
+      "an accessible name, or add the file here deliberately.",
+  ).toEqual([]);
+
+  const grown = Object.entries(actual).filter(([f, n]) => f in ALLOWED && n > ALLOWED[f]);
+  expect(
+    grown.map(([f, n]) => `${f}: ${n} > ${ALLOWED[f]}`),
+    "components using more `title` attributes than the pinned count",
+  ).toEqual([]);
+
+  // Denominator: the pin is worthless if the sweep stops finding anything.
+  const total = Object.values(actual).reduce((a, b) => a + b, 0);
+  expect(total, `only ${total} title attributes found; the sweep is not seeing the components`).toBeGreaterThanOrEqual(20);
+});

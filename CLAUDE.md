@@ -196,6 +196,18 @@ left, bold white name, gray body with highlighted numeric values.
       §3j.58–§3j.98. Notable: the Stat Lab was a second unaudited implementation of the
       game's arithmetic; "N base, +M per stack" was false on 28 non-linear rows; four shared
       terms every formula depended on had never been defined.
+- [x] Hover-only `title` content — a measurement that mostly exonerated the code. The count was
+      wrong first: 25 → **23** (two were `<PlanSection title=…>`, a React prop, not an
+      attribute) → 22 reachable. Of 77 rendered instances, nearly all are duplicated elsewhere
+      (unlock badges restate what the drawer says outright) or elaborate a badge that already
+      carries visible text (`caps at 4`, `code-verified`). **One class is genuinely hover-only
+      and it is the one that matters most here: proc-coefficient provenance.** On
+      `SkillProcPanel` and `SurvivorDetail` the number is visible and "game code (attack default
+      1.0)" is not — provenance being this project's entire claim to authority. Publishing it
+      needs a real tooltip or a new column, both new UI surfaces, so it moved to **DEFERRED**
+      rather than being half-fixed; `aria-label` on the existing `<span>`s only *looks* like a
+      shortcut, since on `role=generic` real AT widely ignores it. What shipped is a pin on
+      which components may use `title` and how many each may carry (§3j.152).
 - [x] Unrendered UI states — every browser sweep visited `/items/crowbar` **and nothing else**,
       so the item drawer was measured through one narrow slice of itself. Of 17 declared
       branches, 13 are reachable and almost none had ever been drawn: the equipment cooldown

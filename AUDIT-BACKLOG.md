@@ -16,18 +16,7 @@ repeats, and eventually invents work. A denominator is recorded for every closed
 Each entry names the **specific question** — not "is it right" — and what a defect would look
 like. A front without those two things is not ready to work on.
 
-### 1. `title` as the only home for an explanation
-**Question:** 25 `title=` attributes across 13 components carry real explanatory content
-("Formula confirmed against the decompiled game code", "Stacks past N have no effect at all").
-`title` is invisible to keyboard users, unreliable for screen readers, and absent on touch. How
-much of that content exists nowhere else?
-**Defect:** an explanation only a mouse user can reach. Some already have an `aria-label`
-sibling; some do not, and some sit on non-focusable `<span>`s.
-**Note:** partly a SCOPE decision (rule 9) — a real tooltip component (focusable,
-`aria-describedby`, dismissible per WCAG 1.4.13) is a new UI surface. A subset can be fixed
-without one. §3j.145.
-
-### 2. Tap-target size on touch
+### 1. Tap-target size on touch
 **Question:** WCAG 2.5.8 (AA in WCAG 2.2) asks for 24x24 CSS px. At 360px, **31 of 1,753**
 targets measure smaller. How many are genuinely too small once the spacing and inline-link
 exceptions are applied?
@@ -88,6 +77,7 @@ SweetSpot cliffs and the proc gap in already-"checked" data.
 | Responsive layout at 360px | 13 panel-states, 11,725 nodes | **7 of 13 scrolled sideways**, 3 unrelated causes | §3j.149 |
 | prerender-og metadata + built tree | 243 pages, 10 browser tests on `dist/` | metadata sound; **nothing had ever loaded the build** | §3j.150 |
 | Unrendered UI states | 17 ItemDetail branches, 13 reachable | **every sweep used one item**; 4 branches dead | §3j.151 |
+| Hover-only `title` content | 23 attributes / 13 components, 77 rendered | mostly duplicated; **proc provenance is hover-only** → DEFERRED | §3j.152 |
 | Extractor health | 1472 bundles, 224,435 MonoBehaviours | all swallow classes 0 | §3j.127 |
 
 ---
@@ -105,7 +95,15 @@ These are **scope changes, not corrections**. Nothing on the site is wrong becau
 2. **Opinion layer.** Built and parked (`src/components/guides/`, `src/content/guides.ts`,
    `content/guides/_template.md`; `src/router.tsx` documents re-enabling). The missing piece is
    written guides, and rule #7 means a human writes them.
-3. **In-game observation.** Behaviour under real play. Everything reachable by reading code and
+3. **Publish proc-coefficient provenance outside a tooltip.** `SkillProcPanel` and
+   `SurvivorDetail` show the proc number visibly and keep "game code (attack default 1.0)" /
+   "game asset (skill config)" in a `title` — hover-only, so invisible to keyboard and touch.
+   Provenance is the site's whole claim to authority, so this is the one hover-only class worth
+   publishing. Needs **either** a real tooltip component (focusable, `aria-describedby`,
+   dismissible per WCAG 1.4.13) **or** a new visible column in the proc table — both new UI
+   surfaces, hence a decision rather than a correction. `aria-label` on the existing `<span>`s
+   is not a shortcut: on `role=generic` it is widely ignored by real AT. §3j.152.
+4. **In-game observation.** Behaviour under real play. Everything reachable by reading code and
    assets has been read; nothing here substitutes for holding the item and watching the number.
    §3j.98.
 
