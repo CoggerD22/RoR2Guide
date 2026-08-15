@@ -2127,7 +2127,18 @@ test("the audit backlog is present and every open front is actionable", () => {
   // so it must not sit at the top of the queue looking ready.
   const open = backlog.slice(backlog.indexOf("## OPEN"), backlog.indexOf("## CLOSED"));
   const fronts = [...open.matchAll(/^### \d+\.\s+(.+)$/gm)].map((m) => m[1].trim());
-  expect(fronts.length, "no OPEN fronts parsed — the section shape changed").toBeGreaterThan(0);
+  /*
+    An empty queue is a legitimate state — rule 10 says to say so and stop, not to invent
+    fronts to keep it populated. But "empty" and "the section shape changed and nothing parses"
+    look identical from here, which is the §3j.126 confusion in miniature. So an empty OPEN has
+    to declare itself in words; anything else still requires at least one parsed front.
+  */
+  const declaredEmpty = /\*\*Empty\.\*\*/.test(open);
+  if (!declaredEmpty) {
+    expect(fronts.length, "no OPEN fronts parsed and the section does not say it is empty").toBeGreaterThan(0);
+  } else {
+    expect(fronts.length, "OPEN says it is empty but still lists fronts").toBe(0);
+  }
 
   const blocks = open.split(/^### /m).slice(1);
   const vague: string[] = [];

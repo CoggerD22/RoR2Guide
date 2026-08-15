@@ -152,7 +152,9 @@ export function CodexFilters(props: CodexFiltersProps) {
 
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div className="flex flex-wrap items-center gap-4">
-          <label className="flex cursor-pointer items-center gap-2 text-xs text-muted-foreground">
+          {/* py-1 is load-bearing: without it the clickable strip is 16px tall, under WCAG 2.5.8's
+              24x24 (§3j.153). The checkbox itself is 14px; the LABEL is the real target. */}
+          <label className="flex cursor-pointer items-center gap-2 py-1 text-xs text-muted-foreground">
             <input
               type="checkbox"
               checked={filters.hideVariants}
@@ -161,7 +163,9 @@ export function CodexFilters(props: CodexFiltersProps) {
             />
             Hide scrap / consumed variants
           </label>
-          <label className="flex cursor-pointer items-center gap-2 text-xs text-muted-foreground">
+          {/* py-1 is load-bearing: without it the clickable strip is 16px tall, under WCAG 2.5.8's
+              24x24 (§3j.153). The checkbox itself is 14px; the LABEL is the real target. */}
+          <label className="flex cursor-pointer items-center gap-2 py-1 text-xs text-muted-foreground">
             <input
               type="checkbox"
               checked={filters.lockedOnly}

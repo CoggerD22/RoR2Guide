@@ -196,6 +196,16 @@ left, bold white name, gray body with highlighted numeric values.
       §3j.58–§3j.98. Notable: the Stat Lab was a second unaudited implementation of the
       game's arithmetic; "N base, +M per stack" was false on 28 non-linear rows; four shared
       terms every formula depended on had never been defined.
+- [x] Tap-target size (WCAG 2.5.8) — **the last OPEN front; the queue is now empty.** The raw
+      count was never the answer: 31 undersized targets became **4 real controls** once the
+      standard's own exceptions were applied (spacing, inline, user-agent, equivalent) and the
+      right box was measured — a checkbox inside a `<label>` is hit by the label, a range
+      input's target is the thumb, not the 418×6 track. 2249 targets over 16 panel-states: 50
+      pass by spacing, 1 by user-agent sizing, 4 failed. The planner's "Details" button was the
+      worst and its size was the smaller half of the problem: `opacity-0` until `group-hover`,
+      so on an emulated Pixel 5 it measured **invisible, fully tappable, and overlapping a card
+      whose own tap does something else**. That is the third instance of one class after
+      §3j.145 and §3j.149 — **a hover-revealed control does not exist on a phone** (§3j.153).
 - [x] Hover-only `title` content — a measurement that mostly exonerated the code. The count was
       wrong first: 25 → **23** (two were `<PlanSection title=…>`, a React prop, not an
       attribute) → 22 reachable. Of 77 rendered instances, nearly all are duplicated elsewhere

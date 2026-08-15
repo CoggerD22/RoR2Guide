@@ -7951,3 +7951,60 @@ What did ship is a guard against the problem growing quietly: the components all
 `title`, and how many each may carry, are now pinned. Proven twice — adding a `title` to a
 component not on the list fails naming it, and letting an existing component grow from 2 to 3
 fails with the count.
+
+---
+
+### §3j.153 — Tap targets: 31 raw findings, 4 real controls, and an invisible one
+
+Backlog front #1, the last one. **Question:** WCAG 2.5.8 (AA in WCAG 2.2) asks for 24x24 CSS px.
+§3j.149 counted **31 of 1,753** targets below that and deliberately did not act, because the raw
+count is not the criterion. How many are genuinely too small once the standard's own exceptions
+apply? **Defect:** a control a thumb cannot reliably hit.
+
+The instrument was the first thing to fix, exactly as the front predicted.
+
+#### What the naive count was measuring
+
+2.5.8 exempts a target that has **spacing** (a 24px-diameter circle centred on it reaches no
+other target), that is **inline** in a sentence, that is **user-agent sized**, or whose function
+is reachable from a larger **equivalent** control. It also has to measure the right box: a
+checkbox inside a `<label>` is activated by the label, so the target is their union, not the
+14x14 input — and a range input's target is the thumb, which is why the earlier sweep reported
+`418x6` for the level slider and measured the track.
+
+With all of that applied across **2249 targets over 16 panel-states**: 50 pass by spacing, 1 by
+user-agent sizing, and **4 distinct controls genuinely fail**. The 31 was never the answer, and
+neither was the 215 raw instances the corrected sweep first printed — 208 of those are one
+button repeated per card, which only became clear after grouping by control instead of by label.
+
+| control | size | why it fails |
+|---|---|---|
+| planner "Details" button | 22x22 | sits ON the card, which is a different target — no spacing clearance |
+| codex filter labels (x2) | 188x16, 140x16 | the label is the target and it is 16px tall |
+| "View on wiki.gg" | 327x20 | wide but 20px tall |
+
+#### The size was the smaller half of the Details button's problem
+
+It was `opacity-0` until `group-hover`. **A phone has no hover.** Measured on an emulated Pixel 5:
+`opacity: 0`, `pointer-events: auto`, `(hover: hover)` false, `(pointer: coarse)` true.
+
+So on every touch device this was an **invisible but fully tappable** 22x22 target sitting on top
+of a card whose own tap does something else entirely — cycle target/avoid. Tapping near the
+bottom-right corner of a card silently opened the item drawer instead. Revealed now wherever
+there is no hover to reveal it.
+
+That is the third instance of one class: §3j.145's `+goal` button (transparent until hover, and
+invisible on keyboard focus), §3j.149's item tooltip (`opacity-0` but still in layout, making the
+page scroll sideways), and this. **A hover-revealed control is a control that does not exist on a
+phone**, and every time it has appeared it has been invisible to every check the project had.
+
+#### Guarded
+
+`tests/tap-targets.spec.ts` asserts 0 unexcepted failures **and** its own denominators — 16
+panels, >1800 targets, and >20 exceptions actually applied, so a sweep that silently stops
+applying the spacing rule fails rather than passing with a smaller number. A second test drives
+an emulated Pixel 5 and asserts the context really is non-hover before asserting anything about
+opacity, because a touch check that quietly runs on a desktop context proves nothing.
+
+Three mutations, all caught: the button back to `p-1` (22x22), the touch reveal removed
+(invisible on touch), and the filter labels back to 16px tall.

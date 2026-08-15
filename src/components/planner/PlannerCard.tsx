@@ -114,7 +114,21 @@ export function PlannerCard({ item, state, onCycle, onInfo }: PlannerCardProps) 
           onInfo();
         }}
         aria-label={`Details for ${item.name}`}
-        className="absolute bottom-1.5 right-1.5 rounded-full bg-black/60 p-1 text-muted-foreground opacity-0 transition hover:text-foreground focus-visible:opacity-100 group-hover:opacity-100"
+        /*
+          §3j.153 — two defects in one control, both invisible with a mouse.
+
+          It was `p-1` around a `size-3.5` icon: a 22x22 target, under WCAG 2.5.8's 24x24, and
+          it fails the spacing exception because it sits ON the card, which is itself a button
+          doing something else entirely (cycle target/avoid).
+
+          Worse, it was `opacity-0` until `group-hover`, and a phone has no hover — measured on
+          an emulated Pixel 5 as opacity 0, pointer-events auto, `(hover: hover)` false. So on
+          every touch device this was an INVISIBLE tap target overlapping a different action:
+          tapping near the corner of a card silently opened the drawer instead. Revealed where
+          there is no hover to reveal it. Third instance of this class after §3j.145 and
+          §3j.149.
+        */
+        className="absolute bottom-1.5 right-1.5 rounded-full bg-black/60 p-1.5 text-muted-foreground opacity-0 transition hover:text-foreground focus-visible:opacity-100 group-hover:opacity-100 [@media(hover:none)]:opacity-100"
       >
         <Info className="size-3.5" />
       </button>

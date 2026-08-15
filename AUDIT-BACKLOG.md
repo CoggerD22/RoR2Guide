@@ -13,19 +13,19 @@ repeats, and eventually invents work. A denominator is recorded for every closed
 
 ## OPEN
 
-Each entry names the **specific question** — not "is it right" — and what a defect would look
-like. A front without those two things is not ready to work on.
+**Empty.** Every front raised in this queue has been examined with a stated question and a
+recorded denominator; see CLOSED below.
 
-### 1. Tap-target size on touch
-**Question:** WCAG 2.5.8 (AA in WCAG 2.2) asks for 24x24 CSS px. At 360px, **31 of 1,753**
-targets measure smaller. How many are genuinely too small once the spacing and inline-link
-exceptions are applied?
-**Defect:** a control a thumb cannot reliably hit — the Stat Lab steppers (20x20), the card
-"Details" button (22x22), and the `size-3.5` checkboxes (14x14, though each sits inside a
-clickable `<label>` whose real target is larger).
-**Note:** counted during §3j.149 but NOT part of that front's question (reachability and
-overlap). The instrument over-reports: a range input measures 418x6 because the track is
-measured, not the thumb. Verify by hand before changing 31 controls.
+Per rule 10, this is where the queue stops rather than where new fronts get invented. The honest
+continuations from here are:
+
+1. a **game patch** — the enforced cross-checks and the `.gamedata/` staleness gate will surface
+   it (§3j.148), and `pnpm data:verify` fails rather than passing quietly;
+2. a decision from **DEFERRED** below, each of which is a scope change a human should make;
+3. **in-game observation** — behaviour under real play, which nothing here substitutes for.
+
+A new front belongs here when something real prompts it: a patch, a bug report, a decision taken
+from DEFERRED. Not to keep the queue populated.
 
 ---
 
@@ -78,6 +78,7 @@ SweetSpot cliffs and the proc gap in already-"checked" data.
 | prerender-og metadata + built tree | 243 pages, 10 browser tests on `dist/` | metadata sound; **nothing had ever loaded the build** | §3j.150 |
 | Unrendered UI states | 17 ItemDetail branches, 13 reachable | **every sweep used one item**; 4 branches dead | §3j.151 |
 | Hover-only `title` content | 23 attributes / 13 components, 77 rendered | mostly duplicated; **proc provenance is hover-only** → DEFERRED | §3j.152 |
+| Tap-target size (WCAG 2.5.8) | 2249 targets / 16 panel-states | **31 raw -> 4 real**; one invisible on touch | §3j.153 |
 | Extractor health | 1472 bundles, 224,435 MonoBehaviours | all swallow classes 0 | §3j.127 |
 
 ---

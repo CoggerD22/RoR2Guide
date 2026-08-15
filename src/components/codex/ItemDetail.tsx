@@ -390,7 +390,7 @@ export function ItemDetail({ item, onClose, onSelectItem }: ItemDetailProps) {
             href={item.wiki}
             target="_blank"
             rel="noreferrer noopener"
-            className="inline-flex items-center gap-1.5 text-sm text-primary hover:underline"
+            className="inline-flex items-center gap-1.5 py-0.5 text-sm text-primary hover:underline"
           >
             View on wiki.gg <ExternalLink className="size-3.5" />
           </a>
