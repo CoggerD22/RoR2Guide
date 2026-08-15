@@ -196,6 +196,18 @@ left, bold white name, gray body with highlighted numeric values.
       §3j.58–§3j.98. Notable: the Stat Lab was a second unaudited implementation of the
       game's arithmetic; "N base, +M per stack" was false on 28 non-linear rows; four shared
       terms every formula depended on had never been defined.
+- [x] **Hover-only affordances on touch, guarded as a class.** §3j.145, §3j.149 and §3j.153 were
+      the same defect found three times by accident. `(hover: hover)` is false on a phone, so a
+      control revealed by `group-hover:` does not exist there — and every check runs
+      hover-capable by default, which is why all three survived. A Pixel 5 sweep over 17
+      panel-states and 2700 controls now asserts nothing interactive is invisible-but-tappable,
+      and it **immediately found three more**, all in the planner rail: a tap could silently
+      change an item's priority or remove it, with nothing on screen. One was the `+goal` button
+      §3j.145 "fixed" — that pass gave it `focus-visible:` and never a touch reveal. The
+      instrument was wrong three separate ways first (measured element opacity but not
+      transparent *text*; could not reach the planner-with-a-plan state; and read alpha with an
+      `rgba()` regex against Tailwind's **oklab**, §3j.144's exact mistake in a new file) and
+      reported "0 findings" at every stage (§3j.155).
 - [x] **Mutation sweep** (`pnpm data:mutate`) — the queue emptied, so this asks the inverse of
       every front before it: *what can change without a single check failing?* 28 plausible bad
       edits across items, skills, survivors, reference, the stat engine, components, docs and

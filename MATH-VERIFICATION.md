@@ -8087,3 +8087,56 @@ code was wrong about the shape of `skills.json` and of the Ambry codes — and a
 does not apply looks exactly like a guard that works (§3j.148). Three more "survived" only
 because the sweep ran 4 of the 6 gate stages; adding `build` and `playwright` caught all three.
 Believing 7 would have meant fixing things that were never broken.
+
+---
+
+### §3j.155 — Guarding the hover class, which promptly found three more
+
+Pass 2 of the plan. §3j.145, §3j.149 and §3j.153 were the same defect found three separate
+times, each by accident, each while looking for something else. Rule 7 says guard the class when
+it can recur — and a class that has recurred three times is overdue.
+
+`(hover: hover)` is false on a phone, so an affordance whose visibility is spelled `group-hover:`
+or `hover:` **does not exist there**. Every check in this project runs in a hover-capable context
+by default, which is precisely why all three survived until someone looked straight at them.
+
+`tests/touch-affordances.spec.ts` drives an emulated Pixel 5 across 17 panel-states and asserts
+that no interactive element is invisible while remaining tappable. **2700 controls.**
+
+#### It found three more immediately
+
+All in the planner rail, all `opacity-0 … group-hover:opacity-100`, all `pointer-events: auto`:
+
+| control | size | mechanism |
+|---|---|---|
+| "Set a goal count for Crowbar" | 37x17 | transparent TEXT |
+| "Priority for Crowbar: Medium…" | 46x15 | `opacity: 0` |
+| "Remove Crowbar from plan" | 18x18 | `opacity: 0` |
+
+On a phone, a tap in the rail could silently change an item's priority or remove it from the
+plan, with nothing on screen indicating those controls exist. The `+goal` button is the same one
+§3j.145 fixed — that pass gave it `focus-visible:` and never a touch reveal, so it was half
+fixed for eight months of log entries. All three now resolve under `(hover: none)`.
+
+#### The instrument was wrong three times before it worked
+
+Each failure is worth more than the finding.
+
+1. **One mechanism, not two.** The first version measured element `opacity` only. Reverting
+   §3j.153 caught 208 instances; reverting §3j.145 caught **nothing**, because that button used
+   `text-muted-foreground/0` — the element is fully opaque and only its TEXT is transparent.
+   "Invisible" has to mean "renders nothing a user can see", not "opacity is zero".
+
+2. **The sweep could not reach the state.** With both mechanisms handled it *still* found
+   nothing, because `GoalField` renders only for items already in the plan and the sweep visited
+   an empty planner. §3j.151's lesson arriving for the third time: the check was sound and the
+   sweep was too narrow. Adding one "planner with a plan" state took it from 2249 controls to
+   2700 — and from 0 findings to 3.
+
+3. **A colour regex, again.** `text-muted-foreground/0` computes to `oklab(… / 0)`, and an
+   `/rgba?\(/` alpha pattern reads that as fully opaque. This is §3j.144's exact mistake
+   repeated in a new file — there, a colour regex silently discarded 36% of the page. Alpha is
+   now read through a canvas, which is what that pass concluded the first time.
+
+A guard that had been wrong in three independent ways still reported "0 findings" at every
+stage. Only reverting known historical defects showed which of those zeros were real.

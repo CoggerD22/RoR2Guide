@@ -137,7 +137,7 @@ function GoalField({ item, goal }: { item: Item; goal?: number }) {
         // to reveal on keyboard focus, or tabbing here lands on a button with no visible label.
         goal
           ? "text-muted-foreground"
-          : "text-muted-foreground/0 group-hover:text-muted-foreground focus-visible:text-muted-foreground",
+          : "text-muted-foreground/0 group-hover:text-muted-foreground focus-visible:text-muted-foreground [@media(hover:none)]:text-muted-foreground",
       )}
     >
       {goal ? `×${goal}` : "+goal"}
@@ -249,7 +249,16 @@ function PlanSection({
                           type="button"
                           onClick={() => setPriority(item.id, NEXT_PRIORITY[entry.priority])}
                           aria-label={`Priority for ${item.name}: ${PRIORITY_LABEL[entry.priority]}. Change to ${PRIORITY_LABEL[NEXT_PRIORITY[entry.priority]]}.`}
-                          className="shrink-0 rounded px-1 text-[10px] font-medium text-muted-foreground opacity-0 transition hover:bg-surface-2 hover:text-foreground focus-visible:opacity-100 group-hover:opacity-100"
+                          /*
+                            §3j.155 — revealed where there is no hover to reveal it.
+
+                            `opacity-0 … group-hover:opacity-100` means this control does not
+                            exist on a phone: invisible, but `pointer-events: auto`, so a tap in
+                            the rail silently changed a priority or removed an item. Found by
+                            `tests/touch-affordances.spec.ts`, which sweeps for the class rather
+                            than waiting for someone to notice the fourth instance of it.
+                          */
+                          className="shrink-0 rounded px-1 text-[10px] font-medium text-muted-foreground opacity-0 transition hover:bg-surface-2 hover:text-foreground focus-visible:opacity-100 group-hover:opacity-100 [@media(hover:none)]:opacity-100"
                         >
                           {PRIORITY_LABEL[entry.priority]}
                         </button>
@@ -260,7 +269,7 @@ function PlanSection({
                           type="button"
                           onClick={() => set(item.id, null)}
                           aria-label={`Remove ${item.name} from plan`}
-                          className="shrink-0 rounded p-0.5 text-muted-foreground opacity-0 hover:text-foreground focus-visible:opacity-100 group-hover:opacity-100"
+                          className="shrink-0 rounded p-0.5 text-muted-foreground opacity-0 hover:text-foreground focus-visible:opacity-100 group-hover:opacity-100 [@media(hover:none)]:opacity-100"
                         >
                           <X className="size-3.5" />
                         </button>
