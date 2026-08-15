@@ -78,7 +78,22 @@ function Artifacts() {
               <p className="mb-1 text-[10px] font-semibold uppercase tracking-widest text-emerald-300/90">
                 Verified mechanic — from game code
               </p>
-              <p className="text-xs leading-relaxed text-foreground/90">{a.mechanic}</p>
+              {/*
+                break-words because this prose cites real code identifiers, and one of them is
+                58 characters: `InteractableSpawnCard.skipSpawnWhenSacrificeArtifactEnabled`
+                (Artifact of Sacrifice). An unbreakable token sets a min-content floor for its
+                grid item, every card in the grid shares that track, and at 360px the whole
+                DOCUMENT scrolled sideways because of one identifier in one card (§3j.149).
+                The text is correct and must stay verbatim, so the fix is here, not in the data.
+
+                `overflow-wrap:anywhere`, NOT Tailwind's `break-words`. They look interchangeable
+                and are not: `break-word` allows a break to avoid visible overflow but leaves the
+                intrinsic MIN-CONTENT size unchanged, and min-content is exactly what sizes the
+                grid track. Tried `break-words` first — the document stayed 422px wide.
+              */}
+              <p className="text-xs leading-relaxed text-foreground/90 [overflow-wrap:anywhere]">
+                {a.mechanic}
+              </p>
             </div>
           )}
           <div className="mt-auto border-t border-border pt-2">

@@ -7703,3 +7703,65 @@ two. Its handlers record `tt_bad += 1` and `name_bad += 1`, and the classifier o
 `/gate(s*"[^"]+",s*sk/` and threw at runtime — the same class as the literal BACKSPACE written
 into a guard in §3j.116. The guard now does plain string scanning instead. When a check must
 survive being written *through* another layer, a regex is the fragile choice.
+
+---
+
+### §3j.149 — 360px: three overflows, three unrelated causes
+
+Backlog front #1. **Question:** at 360px, is anything unreachable or overlapping? **Defect:**
+content clipped with no way to scroll to it, a control pushed off-screen, or elements
+overlapping so a tap lands on the wrong one. Nothing had ever measured the layout at any width,
+and 360px is the actual context for a companion site — a phone, with the game running.
+
+**Denominator: 13 panel-states, 11,725 visible nodes, 1,753 tap targets.**
+**7 of 13 panels scrolled sideways. Now 0.**
+
+Three causes, sharing nothing but the symptom.
+
+#### 1. An invisible tooltip made the page scroll (5 panels)
+
+`ItemCard` and `PlannerCard` each render a `w-64` hover tooltip as
+`absolute left-1/2 -translate-x-1/2 opacity-0`. **`opacity-0` still takes part in layout**, so
+for cards near the right edge of a 360px viewport that box reached 421px and the whole DOCUMENT
+gained 61px of horizontal scroll — caused by something the reader cannot see.
+
+Hidden below `sm`. Not a taste call: there is no hover on touch, a 256px panel cannot fit a
+360px screen anyway, and tapping the card opens the drawer, which carries strictly more.
+
+#### 2. A scroller that never got to scroll (Stat Lab, 434px)
+
+The skill-proc table declares `min-w-[26rem]` inside an `overflow-x-auto` wrapper — correct in
+isolation. But a grid item defaults to `min-width: auto` and refuses to shrink below its
+content, so the *item* widened to 418px instead of letting the wrapper scroll, and **both
+columns stretched to the resulting track**. `min-w-0` on the results column fixes it.
+
+#### 3. One identifier, 58 characters (Artifacts, 422px)
+
+`InteractableSpawnCard.skipSpawnWhenSacrificeArtifactEnabled`, quoted in Artifact of Sacrifice's
+verified-mechanic prose, is unbreakable. It set the min-content floor for its grid item, all 20
+cards share that track, and the whole page scrolled because of one word in one card. The text
+is a real code identifier and must stay verbatim (rule #1), so the fix is CSS.
+
+#### Two things worth keeping
+
+**I changed something that was correct, and the measurement caught it.** The Stat Lab's
+difficulty row lacks `flex-wrap` where the survivor row above it has one — an obvious-looking
+culprit, since every control in that column measured 418px. I added `flex-wrap` and the overflow
+did not move. The column was innocent: the grid TRACK was 418, set by the table in the *other*
+column, and both columns stretch to it. With `min-w-0` in place the difficulty buttons measure
+63+85+81 = 229px inside a 328px row and never needed to wrap. Reverted (rule 4).
+
+**`break-words` and `overflow-wrap:anywhere` are not interchangeable.** `break-word` permits a
+break to avoid visible overflow but leaves the intrinsic **min-content** size unchanged — and
+min-content is exactly what sizes a grid track. `break-words` was tried first and the document
+stayed 422px. Only `anywhere` reduces the floor.
+
+#### A check that could only cry wolf was deleted
+
+The "content wider than its overflow-hidden box" check produced **20 findings, all false**:
+`truncate` (188 > 186) and `sr-only` (59 > 1) are those utilities working exactly as designed,
+and the last was a 2px border on the Plan/Run toggle whose labels were both fully visible. It is
+not in the permanent test. Tap-target size — 31 of 1,753 under 24×24 — is a real question and a
+different one; opened as its own front rather than half-fixed here.
+
+Three mutations, each reverting one fix, all caught with the panel named.

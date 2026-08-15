@@ -101,8 +101,17 @@ export function ItemCard({ item, onSelect }: ItemCardProps) {
         )}
       </button>
 
-      {/* Hover/focus tooltip, positioned above the card. */}
-      <div className="pointer-events-none absolute bottom-full left-1/2 z-50 mb-2 -translate-x-1/2 opacity-0 transition-opacity duration-150 group-hover:opacity-100 group-focus-within:opacity-100">
+      {/*
+        Hover/focus tooltip, positioned above the card.
+
+        `hidden sm:block` is a layout fix, not a taste call (§3j.149). The panel is `w-64`
+        (256px) and centred on the card with -translate-x-1/2, so on cards near the right edge
+        of a 360px viewport its box reached 421px and made the whole DOCUMENT scroll sideways —
+        while being invisible, because opacity-0 still takes part in layout. Below `sm` it is
+        also unreachable: there is no hover on touch, and a 256px panel cannot fit anyway.
+        Tapping the card opens the drawer, which carries strictly more than the tooltip does.
+      */}
+      <div className="pointer-events-none absolute bottom-full left-1/2 z-50 mb-2 hidden -translate-x-1/2 opacity-0 transition-opacity duration-150 group-hover:opacity-100 group-focus-within:opacity-100 sm:block">
         <ItemTooltip item={item} />
       </div>
     </div>

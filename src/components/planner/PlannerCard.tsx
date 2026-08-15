@@ -120,7 +120,8 @@ export function PlannerCard({ item, state, onCycle, onInfo }: PlannerCardProps) 
       </button>
 
       {/* Hover/focus tooltip. */}
-      <div className="pointer-events-none absolute bottom-full left-1/2 z-50 mb-2 -translate-x-1/2 opacity-0 transition-opacity duration-150 group-hover:opacity-100 group-focus-within:opacity-100">
+      {/* hidden below sm for the same reason as ItemCard's — see the note there (§3j.149). */}
+      <div className="pointer-events-none absolute bottom-full left-1/2 z-50 mb-2 hidden -translate-x-1/2 opacity-0 transition-opacity duration-150 group-hover:opacity-100 group-focus-within:opacity-100 sm:block">
         <ItemTooltip item={item} />
       </div>
     </div>

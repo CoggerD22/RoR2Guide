@@ -313,7 +313,17 @@ export function StatLabPage() {
         </div>
 
         {/* Readout */}
-        <div>
+        {/*
+          min-w-0 is what lets the results column SHRINK (§3j.149).
+
+          A grid item defaults to `min-width: auto`, so it refuses to go below its content's
+          min-content width. The skill-proc table declares `min-w-[26rem]` (416px) inside an
+          `overflow-x-auto` wrapper — correct on its own — but the item widened to 418px
+          instead of letting that wrapper scroll, and both columns stretched to the resulting
+          track. At 360px that made the whole document 434px wide, and it looked as though
+          every control in the left column was too wide when none of them were.
+        */}
+        <div className="min-w-0">
           <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
             {statCards(derived).map((c) => (
               <div key={c.label} className="rounded-xl border border-border bg-surface p-4">

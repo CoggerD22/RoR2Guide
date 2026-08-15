@@ -196,6 +196,17 @@ left, bold white name, gray body with highlighted numeric values.
       §3j.58–§3j.98. Notable: the Stat Lab was a second unaudited implementation of the
       game's arithmetic; "N base, +M per stack" was false on 28 non-linear rows; four shared
       terms every formula depended on had never been defined.
+- [x] Responsive layout at 360px — the width this site is actually read at, never once measured.
+      **7 of 13 panel-states scrolled sideways**, from three unrelated causes: an `opacity-0`
+      hover tooltip that still takes part in layout (a 256px panel centred on edge cards pushed
+      the document to 421px, invisibly); a grid item's default `min-width:auto` refusing to
+      shrink, so the skill-proc table's `overflow-x-auto` wrapper never scrolled and **both**
+      Stat Lab columns stretched to 434px; and one 58-character code identifier
+      (`InteractableSpawnCard.skipSpawnWhenSacrificeArtifactEnabled`) setting the min-content
+      floor for all 20 artifact cards. Now 0 across 11,725 nodes. Two keepers: `break-words`
+      does **not** reduce min-content (only `overflow-wrap:anywhere` does), and a plausible fix
+      to the Stat Lab's difficulty row was reverted because measurement proved that column
+      innocent — the track was set by the other one (§3j.149).
 - [x] Extractor failure modes — 28 Python scripts parsed by AST: 83 exception handlers, **78
       silent** across 24 scripts. The count is not the finding; only 6 scripts are invoked
       programmatically and 5 feed `data:verify`, the rest being one-off investigations whose
