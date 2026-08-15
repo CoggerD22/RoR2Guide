@@ -8239,3 +8239,60 @@ are all genuinely held by tests. That is eight pieces of logic proven load-beari
 assumed.
 
 **Final: 39 mutations, 39 caught, in both local and CI conditions.**
+
+---
+
+### §3j.158 — A validation layer with nothing testing it, and the same bug in the sibling store
+
+Pass 5. The sweep now covered data, docs, build and most of `src/lib`; what it had never touched
+was `schema.ts` — the layer every other check trusts, since `data:audit` and `data:diff` both
+parse through it — and the three modules left with no dedicated test.
+
+#### All four schema mutations survived, for one coherent reason
+
+- `special` rows no longer required a `formula`
+- `capStacks` no longer required the prose `cap` explaining it
+- an item could ship an empty `description`
+- `confidence` accepted any string instead of the four provenance tiers
+
+Every one shipped green through the entire gate, and the reason is not carelessness: **loosening
+a rule cannot make valid data invalid.** The data satisfies the stricter rule either way, so
+nothing fails. A constraint is only load-bearing if something asserts that violating data is
+REJECTED — and `schema.ts` carries **29 constraints with zero negative tests**.
+
+That is §3j.148's class (a check that cannot fail) applied to the layer underneath every other
+check: a weakened rule here does not fail loudly, it silently weakens `data:audit` and
+`data:diff` too. `src/data/schema.test.ts` is new — 16 cases, each stating the rule's *reason*,
+because a constraint whose purpose is unrecorded is the one a refactor deletes as noise. It
+includes the positive case deliberately: a schema that rejected everything would otherwise pass
+every negative test (§3j.126).
+
+#### `display.ts` had the §3j.146 defect, still unfixed
+
+Two mutations survived in the display store, and chasing them found something neither was
+looking for. `sanitize` is wired to `migrate` — and zustand calls `migrate` **only on a version
+mismatch**. The store has been version 1 throughout, so it never ran.
+
+That is precisely what §3j.146 found in `planner.ts`. **That pass fixed the instance and left
+the class**, and the sibling store kept the bug for another twelve log entries.
+
+The consequence is specific and not cosmetic: `DENSITY_GRID[density]` is `undefined` for an
+unrecognised value, so a corrupted `density` rendered the codex as a bare `grid` with no column
+classes — **217 items in a single column**, no error thrown, nothing on screen to explain it.
+Verified in a browser, fixed with `merge`, and proven by reverting it.
+
+The guard is now against the class: **both** persisted stores must have a `merge`, asserted
+together, so fixing one and forgetting the other fails.
+
+#### The other two survivors
+
+- **The density grid could lose its responsive columns.** Tailwind class lists are strings, so
+  nothing type-checks their content: `dense` could stop defining columns above 360px while its
+  siblings kept working, making "dense" show *fewer* items than "comfortable" on a desktop —
+  the opposite of the control's purpose. Now asserted structurally (all three define columns at
+  the same breakpoints, and each is denser than the last) rather than by pinning exact strings,
+  which would be upkeep.
+- **A renamed localStorage key** orphans every user's saved plan with no message. Both keys are
+  now pinned; `version` + `migrate` remains the supported way to invalidate deliberately.
+
+**Final: 47 mutations, 47 caught, local and CI.**

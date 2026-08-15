@@ -2613,3 +2613,46 @@ test("the deploy workflow builds before testing and does not overwrite the build
     );
   }
 });
+
+
+/**
+ * §3j.158 — the localStorage keys are pinned, because renaming one is silent data loss.
+ *
+ * Both stores persist under a fixed key. Changing it does not error, does not fail a type
+ * check and does not fail any test — it just means every existing user's saved state is
+ * orphaned: their whole run plan disappears with no message. The mutation sweep changed
+ * `ror2-display` to `ror2-display-v2` and nothing in the gate noticed.
+ *
+ * These stores have a `version` + `migrate` for deliberate shape changes, which is the
+ * supported way to invalidate. A key rename is the unsupported way, so it has to be a
+ * conscious edit here rather than a silent one there.
+ */
+test("the persisted store keys are not renamed by accident", async () => {
+  const { readFileSync } = await import("node:fs");
+  const stores: Array<[string, string]> = [
+    ["src/store/planner.ts", "ror2-run-plan"],
+    ["src/store/display.ts", "ror2-display"],
+  ];
+  for (const [file, key] of stores) {
+    const src = readFileSync(file, "utf8");
+    expect(src, `${file} no longer persists under "${key}" — every saved state is orphaned`).toContain(
+      `name: "${key}"`,
+    );
+  }
+
+  /*
+    And both must sanitise on every hydrate, not only on a version change.
+
+    zustand calls `migrate` only when the stored version DIFFERS. §3j.146 found `planner.ts`
+    validating exclusively through `migrate`, so it never ran; §3j.158 found `display.ts` with
+    the identical defect still in place, because that fix was applied to the instance and not
+    the class. A corrupt density rendered the codex as a bare `grid` — 217 items in one column.
+  */
+  for (const [file] of stores) {
+    const src = readFileSync(file, "utf8");
+    expect(
+      src,
+      `${file} has no \`merge\`, so its sanitiser only runs on a version mismatch — the §3j.146 defect`,
+    ).toMatch(/merge:\s*\(/);
+  }
+});

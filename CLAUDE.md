@@ -205,6 +205,16 @@ left, bold white name, gray body with highlighted numeric values.
       actually **decoded**. And `stacking.ts` (86 lines) had **no test**, so shifting the
       sparkline curve by one stack and dropping badge de-duplication both shipped green; 13 new
       cases cover it. **39 mutations, 39 caught, local and CI** (§3j.157).
+- [x] **Mutation sweep: the validation layer and the stores.** `schema.ts` is what
+      `data:audit` and `data:diff` both parse through, and it had **29 constraints and zero
+      negative tests** — so all four schema mutations shipped green, for the coherent reason
+      that loosening a rule cannot make valid data invalid. 16 negative tests now assert what
+      it must REJECT. Chasing two survivors in `display.ts` then found the **§3j.146 defect
+      still unfixed there**: `sanitize` wired to `migrate`, which zustand calls only on a
+      version mismatch, so a corrupted `density` made `DENSITY_GRID[density]` undefined and
+      rendered the codex as a bare `grid` — **217 items in one column**, silently. That pass
+      fixed the instance and left the class; both stores are now required to have a `merge`,
+      asserted together. **47 mutations, 47 caught, local and CI** (§3j.158).
 - [x] **CI/deploy parity — and the deploy job had been failing.** Both workflows do run every
       gate and neither uses `continue-on-error`; `data:diff` is absent from both, correctly, as
       it needs the game's language files. But `deploy.yml` ran the **browser tests before the

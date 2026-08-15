@@ -77,6 +77,18 @@ export const useDisplay = create<DisplayState>()(
       version: 1,
       // A view preference, never part of a plan and never in a share link (PLAN §8.2).
       migrate: (persisted) => sanitize(persisted) as DisplayState,
+      /**
+       * §3j.158 — `sanitize` has to run on EVERY hydrate, not only on a version change.
+       *
+       * Wired to `migrate` alone it never ran: zustand calls `migrate` only when the stored
+       * version differs, and this has been version 1 throughout. That is the identical defect
+       * §3j.146 found and fixed in `planner.ts` — fixed there as an instance, and left here.
+       *
+       * The consequence was not cosmetic. `DENSITY_GRID[density]` is `undefined` for an
+       * unrecognised value, so a corrupted `density` rendered the codex as a bare `grid` with
+       * no column classes at all: 217 items in a single column, no error, nothing to explain it.
+       */
+      merge: (persisted, current) => ({ ...current, ...sanitize(persisted) }),
     },
   ),
 );

@@ -193,6 +193,35 @@ const MUTATIONS = [
       "merge: (persisted, current) => ({ ...current, ...sanitizePersisted(persisted) }),",
       "merge: (persisted, current) => ({ ...current, ...(persisted as object) }),") },
 
+  /*
+    ---- THE VALIDATION LAYER, AND THE MODULES NOTHING TESTS ----
+
+    `schema.ts` is what every other check trusts: `data:audit` and `data:diff` both parse
+    through it, so a loosened rule there weakens them silently rather than loudly. And
+    `display.ts`, `nav.ts` and `clipboard.ts` are the modules left with no dedicated test after
+    §3j.157 — not the same as untested, which is the point of asking.
+  */
+  { file: "src/data/schema.ts", name: "a `special` row no longer needs a formula", cls: "schema",
+    apply: (src) => sub(src, '.refine((e) => e.type !== "special" || !!e.formula, {', ".refine(() => true, {") },
+  { file: "src/data/schema.ts", name: "a capped row no longer needs its cap stated", cls: "schema",
+    apply: (src) => sub(src, ".refine((e) => !e.capStacks || !!e.cap, {", ".refine(() => true, {") },
+  { file: "src/data/schema.ts", name: "an item may ship an empty description", cls: "schema",
+    apply: (src) => sub(src, "    description: z.string().min(1),", "    description: z.string(),") },
+  { file: "src/data/schema.ts", name: "confidence accepts any string, not the four tiers", cls: "schema",
+    apply: (src) => sub(src,
+      'export const confidenceSchema = z.enum(["code", "asset", "langfile", "wiki"]);',
+      "export const confidenceSchema = z.string();") },
+  { file: "src/store/display.ts", name: "the density grid loses its responsive columns", cls: "code/display",
+    apply: (src) => sub(src,
+      '  dense: "grid-cols-6 gap-1.5 sm:grid-cols-8 md:grid-cols-12 lg:grid-cols-16 2xl:grid-cols-24",',
+      '  dense: "grid-cols-6 gap-1.5",') },
+  { file: "src/store/display.ts", name: "the persisted display key changes, silently resetting everyone", cls: "code/state",
+    apply: (src) => sub(src, 'name: "ror2-display",', 'name: "ror2-display-v2",') },
+  { file: "src/lib/nav.ts", name: "a nav section disappears", cls: "code/nav",
+    apply: (src) => sub(src, '    path: "/planner",', '    path: "/planner-disabled",') },
+  { file: "src/lib/clipboard.ts", name: "copyText reports success when it failed", cls: "code/state",
+    apply: (src) => sub(src, "    return ok;", "    return true;") },
+
   // ---- app code the guards claim to cover ----
   { file: "src/components/reference/ReferencePage.tsx", name: "a heading level is skipped", cls: "a11y",
     apply: (src) => sub(src, '<h2 className="sr-only">', '<h3 className="sr-only">') },

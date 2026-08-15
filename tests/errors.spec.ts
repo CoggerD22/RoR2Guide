@@ -157,3 +157,43 @@ test.describe("a mangled share link degrades quietly", () => {
     });
   }
 });
+
+/**
+ * §3j.158 — the display store had the same defect the planner store did.
+ *
+ * `sanitize` was wired to `migrate`, which zustand calls only on a version MISMATCH, and this
+ * store has been version 1 throughout — so it never ran. §3j.146 found exactly this in
+ * `planner.ts`, fixed that instance, and left the sibling.
+ *
+ * The consequence is specific: `DENSITY_GRID[density]` is `undefined` for an unrecognised
+ * value, so the codex rendered as a bare `grid` with no column classes — 217 items in one
+ * column, no error thrown, nothing on screen to explain it.
+ */
+test.describe("a corrupt display preference does not collapse the codex", () => {
+  const KEY = "ror2-display";
+  for (const [label, state] of [
+    ["an unknown density", { density: "ENORMOUS", showDescriptions: false, showNames: true }],
+    ["a null density", { density: null, showDescriptions: false, showNames: true }],
+    ["non-boolean toggles", { density: "compact", showDescriptions: "yes", showNames: 42 }],
+  ] as const) {
+    test(`the grid keeps its columns with ${label}`, async ({ page }) => {
+      const thrown: string[] = [];
+      page.on("pageerror", (e) => thrown.push(String(e).slice(0, 90)));
+      await page.addInitScript(
+        ([k, v]) => localStorage.setItem(k, v),
+        [KEY, JSON.stringify({ state, version: 1 })] as const,
+      );
+      await page.goto("/items");
+      await expect(page.getByRole("heading", { level: 1 })).toHaveText(/Item Codex/);
+
+      const cols = await page.evaluate(() => {
+        const grid = Array.from(document.querySelectorAll("div")).find((d) =>
+          /(^|\s)grid(\s|$)/.test(d.className.toString()),
+        );
+        return (grid?.className ?? "").toString();
+      });
+      expect(cols, `the grid lost its column classes: "${cols}"`).toMatch(/grid-cols-\d/);
+      expect(thrown, `threw: ${thrown[0]}`).toEqual([]);
+    });
+  }
+});
