@@ -2481,7 +2481,7 @@ test("hover-only `title` explanations stay pinned to a known set", async () => {
  *
  * §3j.125 closed a front reading "Verbatim item descriptions | 217 vs language files | 1
  * rewritten (Preon)". That was an audit: it proved the state on one day and enforced nothing.
- * With the comparison actually wired up, **32 descriptions differ from the game with no
+ * With the comparison actually wired up, **13 descriptions differ from the game with no
  * `descriptionNote` explaining why** — a rule #1 problem the backlog carries as a decision,
  * because restoring them verbatim would delete verified facts from the page (Predatory
  * Instincts' 5% crit is in no stacking row), so each needs a researched note, not a mass edit.
@@ -2544,7 +2544,7 @@ test("game facts match their pinned baseline", async () => {
   expect(
     undocumented,
     "undocumented description divergences increased — see AUDIT-BACKLOG DEFERRED",
-  ).toBeLessThanOrEqual(32);
+  ).toBeLessThanOrEqual(13);
 });
 
 

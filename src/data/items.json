@@ -1138,7 +1138,7 @@
     "tier": "uncommon",
     "dlc": "base",
     "pickupText": "'Critical Strikes' increase attack speed. Stacks 3 times.",
-    "description": "Gain 5% critical chance. Critical strikes increase attack speed by 12%. Maximum cap of 36% (+24% per stack) attack speed.",
+    "description": "Critical strikes increase attack speed by 12%. Maximum cap of 36% (+24% per stack) attack speed.",
     "stacking": [
       {
         "stat": "Max attack speed from critical strikes (%)",
@@ -1160,7 +1160,8 @@
     "icon": "/icons/predatory-instincts.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Predatory_Instincts",
     "verified": true,
-    "confidence": "code"
+    "confidence": "code",
+    "descriptionNote": "The description omits the crit chance itself. Holding any Predatory Instincts grants a flat +5% critical strike chance — CharacterBody.RecalculateStats reads `num12 = GetItemCountEffective(AttackSpeedOnCrit)` and then `if (num12 > 0) num111 += 5f` on the crit accumulator. Because it is gated on the count being non-zero rather than multiplied by it, a second stack adds no further crit."
   },
   {
     "id": "red-whip",
@@ -1790,7 +1791,7 @@
     "tier": "uncommon",
     "dlc": "sots",
     "pickupText": "Gain a temporary barrier and a dimensional aura on low health.",
-    "description": "Falling below 25% health gives you 60% of your maximum health as a temporary barrier and a dimensional aura for 8s that bleeds and teleports away enemies. Enemies killed by the aura extend the duration by 1s. Regenerates at the start of each stage.",
+    "description": "Falling below 25% health gives you a temporary barrier and a dimensional aura that bleeds and teleports away enemies for 8s. Enemies killed by the aura extend the duration by 1s. At the start of each stage, it regenerates.",
     "stacking": [
       {
         "stat": "Internal cooldown (s)",
@@ -1807,7 +1808,8 @@
     "icon": "/icons/unstable-transmitter.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Unstable_Transmitter",
     "verified": true,
-    "confidence": "code"
+    "confidence": "code",
+    "descriptionNote": "The description does not say how large the barrier is: it is 60% of your MAXIMUM health, not of missing health — TeleportOnLowHealthBehavior computes `characterBody.maxHealth * 0.6f` and passes it to AddBarrier. The class also declares BarrierHealthMultBase = 0.75f and pointsOfBarrierPerStack = 100, neither of which is read on this path."
   },
   {
     "id": "item-scrap-green",
@@ -4667,7 +4669,7 @@
     "tier": "void-uncommon",
     "dlc": "sotv",
     "pickupText": "Add an extra charge of your Special skill. Corrupts all Fuel Cells.",
-    "description": "Add +1 (+1 per stack) charge of your Special skill. Reduces Special skill cooldown by 33%. Corrupts all Fuel Cells.",
+    "description": "Add +1 (+1 per stack) charge of your Special skill. Corrupts all Fuel Cells.",
     "stacking": [
       {
         "stat": "Special skill charges",
@@ -4693,7 +4695,8 @@
     "icon": "/icons/lysate-cell.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Lysate_Cell",
     "verified": true,
-    "confidence": "code"
+    "confidence": "code",
+    "descriptionNote": "An earlier revision of this page also claimed the item reduces Special skill cooldown by 33%. It does not, and the game never says it does: across all 143 Managed assemblies only RoR2.dll mentions EquipmentMagazineVoid, and it appears in exactly two functional places — CharacterBody grants the bonus stock (`specialBonusStockSkill.SetBonusStockFromBody`) and CharacterMaster raises the Engineer turret limit. Neither touches cooldown. The description also omits that second effect: holding any Lysate Cell raises Engineer's turret limit from 2 to 3 (GetDeployableSameSlotLimit, EngiTurret: `(GetItemCountEffective(EquipmentMagazineVoid) <= 0) ? 2 : 3`), and it does not scale with stacks."
   },
   {
     "id": "polylute",
@@ -4940,7 +4943,7 @@
     "tier": "equipment",
     "dlc": "base",
     "pickupText": "Fire a swarm of missiles.",
-    "description": "Fire a swarm of 12 missiles that deal 12x300% damage. Cooldown: 45s.",
+    "description": "Fire a swarm of 12 missiles that deal 12x300% damage.",
     "stacking": [],
     "tags": [
       "damage",
@@ -4959,7 +4962,7 @@
     "tier": "equipment",
     "dlc": "base",
     "pickupText": "Heal on use.",
-    "description": "Instantly heal for 50% of your maximum health. Cooldown: 45s.",
+    "description": "Instantly heal for 50% of your maximum health.",
     "stacking": [],
     "tags": [
       "healing",
@@ -4978,7 +4981,7 @@
     "tier": "equipment",
     "dlc": "base",
     "pickupText": "Fire a ball of energy that electrocutes nearby enemies before detonating.",
-    "description": "Fires preon tendrils, zapping enemies within 35m for up to 600% damage/second. On contact, detonate in an enormous 20m explosion for 4000% damage. Cooldown: 140s.",
+    "description": "Fires preon tendrils, zapping enemies within 35m for up to 600% damage/second. On contact, detonate in an enormous 20m explosion for 4000% damage.",
     "stacking": [
       {
         "stat": "Detonation damage (%)",
@@ -5018,7 +5021,7 @@
     "tier": "equipment",
     "dlc": "base",
     "pickupText": "Call drones for back up. Lasts 25 seconds.",
-    "description": "Call 4 Strike Drones to fight for you. Lasts 25 seconds. Cooldown: 100s.",
+    "description": "Call 4 Strike Drones to fight for you. Lasts 25 seconds.",
     "stacking": [],
     "tags": [
       "damage",
@@ -5042,7 +5045,7 @@
     "tier": "equipment",
     "dlc": "base",
     "pickupText": "Gain 100% Critical Strike Chance for 8 seconds.",
-    "description": "Gain +100% critical strike chance for 8 seconds. Cooldown: 60s.",
+    "description": "Gain +100% critical strike chance for 8 seconds.",
     "stacking": [],
     "tags": [
       "damage",
@@ -5062,7 +5065,7 @@
     "tier": "equipment",
     "dlc": "base",
     "pickupText": "Call down a lightning strike on a targeted monster.",
-    "description": "Call down a lightning strike on a targeted monster, dealing 3000% damage and stunning nearby monsters. Cooldown: 20s.",
+    "description": "Call down a lightning strike on a targeted monster, dealing 3000% damage and stunning nearby monsters.",
     "stacking": [],
     "tags": [
       "damage",
@@ -5085,7 +5088,7 @@
     "tier": "equipment",
     "dlc": "base",
     "pickupText": "Toggle to fire. Costs gold per bullet.",
-    "description": "Fire a continuous barrage that deals 100% damage per bullet. Costs $1 per bullet, increasing over time. Toggle-activated (no cooldown). Cooldown: 5s.",
+    "description": "Fire a continuous barrage that deals 100% damage per bullet. Costs $1 per bullet, increasing over time. Toggle-activated (no cooldown).",
     "stacking": [
       {
         "stat": "Damage per bullet (%)",
@@ -5132,7 +5135,7 @@
     "tier": "equipment",
     "dlc": "base",
     "pickupText": "Gain temporary flight.",
-    "description": "Sprout wings and fly for 15 seconds. Gain +20% movement speed for the duration. Cooldown: 60s.",
+    "description": "Sprout wings and fly for 15 seconds. Gain +20% movement speed for the duration.",
     "stacking": [
       {
         "stat": "Flight duration (s)",
@@ -5176,7 +5179,7 @@
     "tier": "equipment",
     "dlc": "base",
     "pickupText": "Heal over time. Activate to send to an ally.",
-    "description": "Gain a Woodsprite follower that heals for 1.5% of your maximum health per second. Can be sent to an ally to heal them for 10% of their maximum health. Cooldown: 15s.",
+    "description": "Gain a Woodsprite follower that heals for 1.5% of your maximum health per second. Can be sent to an ally to heal them for 10% of their maximum health.",
     "stacking": [
       {
         "stat": "Passive healing (% of max health per second)",
@@ -5222,7 +5225,7 @@
     "tier": "equipment",
     "dlc": "base",
     "pickupText": "Fire a black hole that draws enemies in.",
-    "description": "Fire a black hole that draws enemies within 30m into its center. Lasts 10 seconds. Cooldown: 60s.",
+    "description": "Fire a black hole that draws enemies within 30m into its center. Lasts 10 seconds.",
     "stacking": [],
     "tags": [
       "utility",
@@ -5243,7 +5246,7 @@
     "tier": "equipment",
     "dlc": "base",
     "pickupText": "Reveal all nearby interactables.",
-    "description": "Reveal all interactables within 500m for 10 seconds. Cooldown: 45s.",
+    "description": "Reveal all interactables within 500m for 10 seconds.",
     "stacking": [
       {
         "stat": "Reveal radius (m)",
@@ -5282,7 +5285,7 @@
     "tier": "equipment",
     "dlc": "base",
     "pickupText": "Create a quantum tunnel between two locations.",
-    "description": "Create a quantum tunnel of up to 1000m in length. Lasts 30 seconds. Cooldown: 45s.",
+    "description": "Create a quantum tunnel of up to 1000m in length. Lasts 30 seconds.",
     "stacking": [],
     "tags": [
       "utility",
@@ -5306,7 +5309,7 @@
     "tier": "equipment",
     "dlc": "base",
     "pickupText": "Cleanse all negative effects.",
-    "description": "Cleanse all negative effects — debuffs, damage over time, and nearby projectiles. Cooldown: 20s.",
+    "description": "Cleanse all negative effects — debuffs, damage over time, and nearby projectiles.",
     "stacking": [
       {
         "stat": "Effects removed",
@@ -5339,7 +5342,7 @@
     "tier": "equipment",
     "dlc": "base",
     "pickupText": "Transform into a speeding draconic fireball, dealing damage as you pass through enemies.",
-    "description": "Turn into a draconic fireball for 5 seconds. Deal 500% damage on impact and detonate at the end for 800% damage. Cooldown: 30s.",
+    "description": "Turn into a draconic fireball for 5 seconds. Deal 500% damage on impact and detonate at the end for 800% damage.",
     "stacking": [
       {
         "stat": "Ram damage, once per enemy (%)",
@@ -5382,7 +5385,7 @@
     "tier": "equipment",
     "dlc": "base",
     "pickupText": "Gain massive armor for 5 seconds.",
-    "description": "Gain 500 armor for 5 seconds. Cooldown: 45s.",
+    "description": "Gain 500 armor for 5 seconds.",
     "stacking": [],
     "tags": [
       "survivability",
@@ -5402,7 +5405,7 @@
     "tier": "equipment",
     "dlc": "base",
     "pickupText": "Throw a fan of buzzing saws that come back to you.",
-    "description": "Throw three large saw blades that slice through enemies for 3x400% damage, plus 3x100% per second while bleeding. Can strike enemies again on the way back. Cooldown: 45s.",
+    "description": "Throw three large saw blades that slice through enemies for 3x400% damage, plus 3x100% per second while bleeding. Can strike enemies again on the way back.",
     "stacking": [
       {
         "stat": "Saws thrown",
@@ -5452,7 +5455,7 @@
     "tier": "equipment",
     "dlc": "base",
     "pickupText": "Transform an Item or Equipment into a different one. Can only recycle once.",
-    "description": "Transform an item or equipment into a different one of the same rarity tier. Each drop can only be recycled once. Cooldown: 45s.",
+    "description": "Transform an item or equipment into a different one of the same rarity tier. Each drop can only be recycled once.",
     "stacking": [
       {
         "stat": "Rerolls per pickup",
@@ -5484,7 +5487,7 @@
     "tier": "equipment",
     "dlc": "base",
     "pickupText": "Heal for a percentage of the damage you deal for 8 seconds.",
-    "description": "Gain Life Steal, healing for 20% of all direct damage dealt, for 8 seconds. Cooldown: 60s.",
+    "description": "Gain Life Steal, healing for 20% of all direct damage dealt, for 8 seconds.",
     "stacking": [],
     "tags": [
       "healing",
@@ -5503,7 +5506,7 @@
     "tier": "equipment",
     "dlc": "base",
     "pickupText": "You and all your allies enter a frenzy.",
-    "description": "You and all your allies enter a frenzy for 7 seconds, gaining +50% movement speed and +100% attack speed. Cooldown: 45s.",
+    "description": "You and all your allies enter a frenzy for 7 seconds, gaining +50% movement speed and +100% attack speed.",
     "stacking": [],
     "tags": [
       "damage",
@@ -5524,7 +5527,7 @@
     "tier": "equipment",
     "dlc": "base",
     "pickupText": "Throw a cursed doll that repeatedly triggers your 'On Kill' effects.",
-    "description": "Throw a cursed doll that triggers your On-Kill effects every 1 second for 8 seconds. Cooldown: 45s.",
+    "description": "Throw a cursed doll that triggers your On-Kill effects every 1 second for 8 seconds.",
     "stacking": [
       {
         "stat": "On-kill triggers per throw",
@@ -5606,7 +5609,7 @@
     "tier": "equipment",
     "dlc": "sotv",
     "pickupText": "Throw 6 flaming molotovs that ignite enemies upon shattering.",
-    "description": "Throw 6 molotov cocktails that ignite enemies for 500% base damage. Each leaves a burning area dealing 200% damage per second. Cooldown: 45s.",
+    "description": "Throw 6 molotov cocktails that ignite enemies for 500% base damage. Each leaves a burning area dealing 200% damage per second.",
     "stacking": [
       {
         "stat": "Bomblets",
@@ -5656,7 +5659,7 @@
     "tier": "equipment",
     "dlc": "sotv",
     "pickupText": "Gain 10% cash back on all purchases. Multishops remain open.",
-    "description": "Whenever you make a gold purchase, get 10% of the spent gold back. Multishop terminals stay open after a purchase. Cooldown: 0.1s.",
+    "description": "Whenever you make a gold purchase, get 10% of the spent gold back. Multishop terminals stay open after a purchase.",
     "stacking": [
       {
         "stat": "Gold refunded (%)",
@@ -5700,7 +5703,7 @@
     "tier": "equipment",
     "dlc": "sotv",
     "pickupText": "Create a clone of you for 30 seconds.",
-    "description": "Spawn a gummy clone with 300% damage and 300% health, using your skill loadout. Expires in 30 seconds. Up to 3 clones can exist at once. Cooldown: 100s.",
+    "description": "Spawn a gummy clone with 300% damage and 300% health, using your skill loadout. Expires in 30 seconds. Up to 3 clones can exist at once.",
     "stacking": [],
     "tags": [
       "damage",
@@ -5719,7 +5722,7 @@
     "tier": "equipment",
     "dlc": "sotv",
     "pickupText": "Request a healing soda machine.",
-    "description": "Request an Eclipse Zero Vending Machine from the UES Safe Travels, delivered in 5 seconds for 2000% damage. Heals up to 3 targets for 25% of their maximum health. Cooldown: 60s.",
+    "description": "Request an Eclipse Zero Vending Machine from the UES Safe Travels, delivered in 5 seconds for 2000% damage. Heals up to 3 targets for 25% of their maximum health.",
     "stacking": [
       {
         "stat": "Impact damage (%)",
@@ -5800,7 +5803,7 @@
     "tier": "equipment",
     "dlc": "ac",
     "pickupText": "Counter any damage. Successful counters bless your next attack, ensuring your on-hit effects ALWAYS activate.",
-    "description": "Enter a countering stance for 0.5s that parries any and all damage. A successful parry nullifies the damage, reduces the active equipment's cooldown by 75% of its full cooldown, and grants Blessing (the SureProc buff) — your next attack always activates its on-hit effects. Cooldown: 60s.",
+    "description": "Enter a countering stance for 0.5s that parries any and all damage. A successful parry nullifies the damage, reduces the active equipment's cooldown by 75% of its full cooldown, and grants Blessing (the SureProc buff) — your next attack always activates its on-hit effects.",
     "stacking": [],
     "tags": [
       "survivability",
@@ -5840,7 +5843,7 @@
     "tier": "lunar-equipment",
     "dlc": "base",
     "pickupText": "Drop a permanent effigy that cripples ALL characters inside. Can place up to 5.",
-    "description": "Drop a permanent effigy. ALL characters within 15m are slowed by 50% and have their armor reduced by 20. Can place up to 5. Cooldown: 15s.",
+    "description": "Drop a permanent effigy. ALL characters within 15m are slowed by 50% and have their armor reduced by 20. Can place up to 5.",
     "stacking": [],
     "tags": [
       "utility",
@@ -5860,7 +5863,7 @@
     "tier": "lunar-equipment",
     "dlc": "base",
     "pickupText": "Rain meteors from the sky, hurting both enemies and allies.",
-    "description": "Rain meteors from the sky, damaging ALL characters for 600% damage per blast. Lasts 20 seconds. Cooldown: 140s.",
+    "description": "Rain meteors from the sky, damaging ALL characters for 600% damage per blast. Lasts 20 seconds.",
     "stacking": [
       {
         "stat": "Damage per blast (%)",
@@ -5900,7 +5903,7 @@
     "tier": "lunar-equipment",
     "dlc": "base",
     "pickupText": "Ignite everything nearby... including you and allies.",
-    "description": "Ignite ALL characters within 15m for 12s, dealing 5% of your maximum health per second as burning damage. The burn is 0.5x on yourself, 0.25x on allies, and 24x on enemies. Cooldown: 45s.",
+    "description": "Ignite ALL characters within 15m for 12s, dealing 5% of your maximum health per second as burning damage. The burn is 0.5x on yourself, 0.25x on allies, and 24x on enemies.",
     "stacking": [],
     "tags": [
       "damage",
@@ -5924,7 +5927,7 @@
     "tier": "lunar-equipment",
     "dlc": "base",
     "pickupText": "Gain a massive boost to ALL stats. Chance to gain an affliction that reduces ALL stats.",
-    "description": "Gain a 20-second buff: +100% damage, +70% attack speed, +20 armor, +50% max health, +50% max shield, +300% regen, +30% movement speed. On expiration, a 20% chance to gain a Tonic Affliction. Each Affliction stack multiplies attack speed, movement speed, damage, and regeneration by 0.95 — compounding, not -5% per stack — and adds a 10% curse, which lowers your maximum health. The Affliction is suspended entirely while a Tonic buff is active. Cooldown: 60s.",
+    "description": "Gain a 20-second buff: +100% damage, +70% attack speed, +20 armor, +50% max health, +50% max shield, +300% regen, +30% movement speed. On expiration, a 20% chance to gain a Tonic Affliction. Each Affliction stack multiplies attack speed, movement speed, damage, and regeneration by 0.95 — compounding, not -5% per stack — and adds a 10% curse, which lowers your maximum health. The Affliction is suspended entirely while a Tonic buff is active.",
     "stacking": [],
     "tags": [
       "utility",
@@ -6226,7 +6229,7 @@
     "tier": "equipment",
     "dlc": "sots",
     "pickupText": "Become an aspect of radiance.",
-    "description": "Gain the power of a Gilded Elite: on hit, knock 8 gold out of enemies as collectible nuggets (scaling over time), and gain a rechargeable grounded spike attack for 15% (outer) / 150% (inner) damage. Cooldown: 25s.",
+    "description": "Gain the power of a Gilded Elite: on hit, knock 8 gold out of enemies as collectible nuggets (scaling over time), and gain a rechargeable grounded spike attack for 15% (outer) / 150% (inner) damage.",
     "stacking": [
       {
         "stat": "Spike damage, inner / outer (%)",
@@ -6268,7 +6271,8 @@
     "verified": true,
     "confidence": "code",
     "cooldown": 25,
-    "activated": true
+    "activated": true,
+    "descriptionNote": "The spike is telegraphed for 2s before it lands and has a 7.5m radius — both in the stacking table above, neither in this text. The game ships no description for this equipment at all (EQUIPMENT_AFFIXAURELIONITE_DESC is literally \"???\"), so everything stated here is read from the behaviour classes rather than quoted."
   },
   {
     "id": "hearty-stew",

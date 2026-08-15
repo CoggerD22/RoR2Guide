@@ -205,6 +205,19 @@ left, bold white name, gray body with highlighted numeric values.
       actually **decoded**. And `stacking.ts` (86 lines) had **no test**, so shifting the
       sparkline curve by one stack and dropping badge de-duplication both shipped green; 13 new
       cases cover it. **39 mutations, 39 caught, local and CI** (§3j.157).
+- [x] **A number the game does not contain, published as code-verified.** Continuing the
+      description work: of the 32 remaining, **30 were a `Cooldown: Ns.` sentence** appended to
+      satisfy a `data:audit` rule written before the cooldown became a structured field — it is
+      now cross-checked 41/41 against EquipmentDef and rendered in its own block, so the drawer
+      printed it twice and the rule forced a verbatim field to carry a sentence the game never
+      wrote. **7 are elite aspects whose in-game description is literally `"???"`** — nothing to
+      quote, so comparing against it would mean replacing verified mechanics with question
+      marks. The third group was one real defect: **Lysate Cell claimed "Reduces Special skill
+      cooldown by 33%"**, which appears in none of the 143 Managed assemblies — only `RoR2.dll`
+      mentions the item, granting bonus stock and raising Engineer's turret limit, neither
+      touching cooldown. Removed. Also fixed a `data:audit` rule that matched numbers by
+      SUBSTRING, so a 2s telegraph was "found" inside `Cooldown: 25s`. **verbatim 118 → 162,
+      divergences 61 → 13** (§3j.160).
 - [x] **Verbatim descriptions — the safe half paid.** §3j.154 deferred all 61 divergent item
       descriptions on one argument: restoring them would delete verified facts. True of some,
       and treating it as true of all 61 was the error — the question was never asked per item.

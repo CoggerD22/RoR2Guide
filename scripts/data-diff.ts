@@ -145,7 +145,23 @@ function main(): number {
         `${it.name}\n     ours: ${it.pickupText}\n     game: ${stripTags(g.pickup)}`,
       );
     }
-    if (g.desc) {
+    /*
+      §3j.160 — "???" is a placeholder, not a description.
+
+      Seven Alloyed Collective elite aspects ship `_DESC = "???"` (17 tokens do overall):
+      Ifrit's Distinction, Silence Between Two Strikes, Her Biting Embrace, Spectral Circlet,
+      His Spiteful Boon, Shared Design, Aurelionite's Blessing. The game states nothing about
+      them at all, so there is no quotation for `description` to reproduce and the verbatim
+      rule has nothing to bite on. Ours are derived from the behaviour classes instead, which
+      is what `confidence: "code"` records.
+
+      Comparing against "???" would report seven divergences that can only be "fixed" by
+      replacing verified mechanics with three question marks — the rule inverted into
+      destroying exactly the work it exists to protect.
+    */
+    const gameStatesNothing = g.desc.trim() === "???";
+
+    if (g.desc && !gameStatesNothing) {
       // Verbatim, with the same normalisation the pickup compare uses. A record that has
       // deliberately diverged says so in `descriptionNote` and proves it with `confidence` —
       // the same allowance the number check below already makes, for the same reason.

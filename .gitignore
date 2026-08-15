@@ -46,3 +46,6 @@ proc-dump.csv
 # scripts/mutation-sweep.mjs --ci renames these aside and restores them; if a run is killed
 # mid-sweep they can be left behind, and they are Gearbox's data either way.
 *.hidden-by-sweep/
+
+# scratch for a research pass; never part of the site
+.work/

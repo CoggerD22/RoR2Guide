@@ -8355,3 +8355,65 @@ agree with their own `base`/`perStack`** once percent-vs-fraction is normalised 
 mismatches are all `base: 1, perStack: 1` rows whose formula says "one per stack" symbolically),
 and the earlier count of 21 "hardcoded numbers in components" is mostly CSS — only the four
 above are game claims.
+
+---
+
+### §3j.160 — A number the game does not contain, published as code-verified
+
+Continuing §3j.159's remaining 32. The work split three ways, and only the third was what the
+backlog had described.
+
+#### 1. The cooldown was being duplicated into the quotation (30 items)
+
+Most of the "divergences" were one sentence: `Cooldown: Ns.` appended to equipment descriptions.
+It came from a `data:audit` rule requiring an equipment's cooldown to appear in its description —
+written when `description` was the only place the number could live.
+
+It is not any more. The cooldown is a structured field, cross-checked **41/41 against
+EquipmentDef** (§3j.126, §3j.130) and rendered in its own block in the drawer (§3j.151). The
+drawer was printing it twice, and the rule was quietly requiring a field documented as "the
+game's wording, kept verbatim" to carry a sentence the game never wrote.
+
+Stripped from all 30 equipment descriptions that carried it, each verified against its
+`cooldown` field before removal. The rule's other half survives and is the half that catches a
+defect: if a description DOES state a cooldown it must agree with the asset value.
+
+#### 2. "???" is a placeholder, not a description (7 items)
+
+Seven Alloyed Collective elite aspects ship `_DESC = "???"` — Ifrit's Distinction, Silence
+Between Two Strikes, Her Biting Embrace, Spectral Circlet, His Spiteful Boon, Shared Design,
+Aurelionite's Blessing. 17 tokens in the language files are `???` in total.
+
+The game states nothing about them, so there is no quotation to reproduce and the verbatim rule
+has nothing to bite on; ours are read from the behaviour classes, which is what
+`confidence: "code"` records. Comparing against `???` reported seven divergences that could only
+be "fixed" by replacing verified mechanics with three question marks — **the rule inverted into
+destroying the work it exists to protect.** They are classified `no-game-text`, like the quest
+items with no token at all.
+
+#### 3. Lysate Cell described an effect the game does not have
+
+Its description read *"Add +1 (+1 per stack) charge of your Special skill. **Reduces Special
+skill cooldown by 33%.** Corrupts all Fuel Cells."* The middle sentence is not in the game's
+text, is backed by no stacking row, and is supported by nothing in the code.
+
+Checked the way CLAUDE.md requires before claiming absence — **all 143 Managed assemblies**, not
+just the decompile. Only `RoR2.dll` mentions `EquipmentMagazineVoid`, and it appears in exactly
+two functional places: `CharacterBody` granting the bonus stock
+(`specialBonusStockSkill.SetBonusStockFromBody`), and `CharacterMaster` raising the Engineer
+turret limit (`(GetItemCountEffective(EquipmentMagazineVoid) <= 0) ? 2 : 3`). Neither touches a
+cooldown.
+
+**An unverified number, published as fact, on an item tagged `confidence: "code"`.** It is
+removed, and the note now records both what the claim was and why it is false — the turret
+limit, which the game's own text also omits, is stated there instead.
+
+#### A rule that had been passing by coincidence
+
+Removing the cooldown sentence made `data:audit` fail on Aurelionite's Blessing: a verified 2s
+telegraph appearing nowhere in the description. It had been "found" as a substring of
+`Cooldown: 25s`, and the 7.5m radius inside `8 gold`. The rule used `description.includes()`;
+comparing **numeric tokens** instead surfaces exactly 2 real orphans across 217 items, both now
+carrying notes.
+
+**verbatim 118 → 162. Undocumented divergences 61 → 13**, ratchet tightened at each step.

@@ -6,13 +6,13 @@
     "verbatim": "matches the game's own _DESC token, which is what schema.ts documents",
     "documented-divergence": "differs deliberately, via descriptionNote + code/asset confidence",
     "undocumented-divergence": "differs with NO stated reason — see AUDIT-BACKLOG DEFERRED",
-    "no-game-text": "quest/scrap items the language files carry no _DESC for"
+    "no-game-text": "quest/scrap items with no _DESC token, and the seven elite aspects whose _DESC is literally \"???\" — the game states nothing to quote (§3j.160)"
   },
   "counts": {
-    "verbatim": 147,
-    "no-game-text": 9,
-    "documented-divergence": 29,
-    "undocumented-divergence": 32
+    "verbatim": 162,
+    "no-game-text": 19,
+    "documented-divergence": 23,
+    "undocumented-divergence": 13
   },
   "items": {
     "crowbar": {
@@ -221,8 +221,8 @@
       "dlc": "base"
     },
     "predatory-instincts": {
-      "descSha": "e762adbd6b49679f",
-      "descStatus": "undocumented-divergence",
+      "descSha": "fa161e836420ad56",
+      "descStatus": "verbatim",
       "dlc": "base"
     },
     "red-whip": {
@@ -331,8 +331,8 @@
       "dlc": "sotv"
     },
     "unstable-transmitter": {
-      "descSha": "bdd05af09081882d",
-      "descStatus": "undocumented-divergence",
+      "descSha": "9cf31af24bd24cee",
+      "descStatus": "verbatim",
       "dlc": "sots"
     },
     "item-scrap-green": {
@@ -826,8 +826,8 @@
       "dlc": "sotv"
     },
     "lysate-cell": {
-      "descSha": "949b03abf8520c46",
-      "descStatus": "undocumented-divergence",
+      "descSha": "6826d16f9e7784eb",
+      "descStatus": "verbatim",
       "dlc": "sotv"
     },
     "polylute": {
@@ -866,102 +866,102 @@
       "dlc": "sotv"
     },
     "disposable-missile-launcher": {
-      "descSha": "2d2b9f978ac02642",
-      "descStatus": "undocumented-divergence",
+      "descSha": "a323afe27514f107",
+      "descStatus": "verbatim",
       "dlc": "base"
     },
     "foreign-fruit": {
-      "descSha": "c4006013745b7d67",
-      "descStatus": "undocumented-divergence",
+      "descSha": "b7b5babb95ea6ebd",
+      "descStatus": "verbatim",
       "dlc": "base"
     },
     "preon-accumulator": {
-      "descSha": "3f8581c9a9477f38",
-      "descStatus": "documented-divergence",
+      "descSha": "0fd5a2ef6c4bfce5",
+      "descStatus": "verbatim",
       "dlc": "base"
     },
     "the-back-up": {
-      "descSha": "7bfa59d68c34a8b1",
-      "descStatus": "undocumented-divergence",
+      "descSha": "c591fdcc665f084d",
+      "descStatus": "verbatim",
       "dlc": "base"
     },
     "ocular-hud": {
-      "descSha": "02ff8b740c3d34f0",
-      "descStatus": "undocumented-divergence",
+      "descSha": "4c9eefa6defc4cee",
+      "descStatus": "verbatim",
       "dlc": "base"
     },
     "royal-capacitor": {
-      "descSha": "1e0f55bbfa79e96f",
-      "descStatus": "undocumented-divergence",
+      "descSha": "4136346fd74393b7",
+      "descStatus": "verbatim",
       "dlc": "base"
     },
     "the-crowdfunder": {
-      "descSha": "d5fe5ecfa2befff7",
+      "descSha": "4b065e7484a7b2d7",
       "descStatus": "documented-divergence",
       "dlc": "base"
     },
     "milky-chrysalis": {
-      "descSha": "5ce37fe371d4e782",
-      "descStatus": "undocumented-divergence",
+      "descSha": "842d12fed4a19c33",
+      "descStatus": "verbatim",
       "dlc": "base"
     },
     "gnarled-woodsprite": {
-      "descSha": "5313ac641b3b7bff",
+      "descSha": "0c99bc8b157d09ad",
       "descStatus": "documented-divergence",
       "dlc": "base"
     },
     "primordial-cube": {
-      "descSha": "8db83a9638b32822",
-      "descStatus": "undocumented-divergence",
+      "descSha": "d0b8596b0cf21dcd",
+      "descStatus": "verbatim",
       "dlc": "base"
     },
     "radar-scanner": {
-      "descSha": "d56610ffe1637e1f",
-      "descStatus": "documented-divergence",
+      "descSha": "866bd732405d10e3",
+      "descStatus": "verbatim",
       "dlc": "base"
     },
     "eccentric-vase": {
-      "descSha": "c2274898f3039af5",
-      "descStatus": "undocumented-divergence",
+      "descSha": "18e1b684e8e462d9",
+      "descStatus": "verbatim",
       "dlc": "base"
     },
     "blast-shower": {
-      "descSha": "8773ae5617536ae6",
+      "descSha": "521ac83eb86b8691",
       "descStatus": "documented-divergence",
       "dlc": "base"
     },
     "volcanic-egg": {
-      "descSha": "c008fbe0f6f5c036",
+      "descSha": "316e2c0ba7fb7bf7",
       "descStatus": "documented-divergence",
       "dlc": "base"
     },
     "jade-elephant": {
-      "descSha": "fb52dcacb215eef3",
-      "descStatus": "undocumented-divergence",
+      "descSha": "55724eeb08e90562",
+      "descStatus": "verbatim",
       "dlc": "base"
     },
     "sawmerang": {
-      "descSha": "438246118a64695e",
+      "descSha": "4acf94ab7a287bc8",
       "descStatus": "undocumented-divergence",
       "dlc": "base"
     },
     "recycler": {
-      "descSha": "235b6cedb48c996b",
+      "descSha": "3c6d279d9439032e",
       "descStatus": "documented-divergence",
       "dlc": "base"
     },
     "super-massive-leech": {
-      "descSha": "f47caec6580a61cc",
+      "descSha": "62060e51abd7f171",
       "descStatus": "undocumented-divergence",
       "dlc": "base"
     },
     "gorags-opus": {
-      "descSha": "f65b28dc6ada7c39",
+      "descSha": "fcb78a3bc857fe6f",
       "descStatus": "undocumented-divergence",
       "dlc": "base"
     },
     "forgive-me-please": {
-      "descSha": "a7f9ae93eb021944",
+      "descSha": "8a28d58a058cbc03",
       "descStatus": "documented-divergence",
       "dlc": "base"
     },
@@ -971,22 +971,22 @@
       "dlc": "base"
     },
     "molotov-6-pack": {
-      "descSha": "9fdd038cacb41f54",
+      "descSha": "ee8626ca24530ae9",
       "descStatus": "documented-divergence",
       "dlc": "sotv"
     },
     "executive-card": {
-      "descSha": "a2b2f1a5ec8bd688",
+      "descSha": "f2f924e7c1ab9f3f",
       "descStatus": "documented-divergence",
       "dlc": "sotv"
     },
     "goobo-jr": {
-      "descSha": "ce35619735823eb1",
+      "descSha": "b1892197777b8ce9",
       "descStatus": "undocumented-divergence",
       "dlc": "sotv"
     },
     "remote-caffeinator": {
-      "descSha": "4a23a2a864239170",
+      "descSha": "d57e869defaa5ebb",
       "descStatus": "documented-divergence",
       "dlc": "sotv"
     },
@@ -996,7 +996,7 @@
       "dlc": "sots"
     },
     "deus-ex-machina": {
-      "descSha": "328ee38880382a43",
+      "descSha": "11aaee27ba868079",
       "descStatus": "undocumented-divergence",
       "dlc": "ac"
     },
@@ -1006,73 +1006,73 @@
       "dlc": "sotv"
     },
     "effigy-of-grief": {
-      "descSha": "2d6eb52ac04eb3f2",
+      "descSha": "514f8441dcd17684",
       "descStatus": "undocumented-divergence",
       "dlc": "base"
     },
     "glowing-meteorite": {
-      "descSha": "f6ef4d785d0827db",
-      "descStatus": "documented-divergence",
+      "descSha": "224340ef90471584",
+      "descStatus": "verbatim",
       "dlc": "base"
     },
     "helfire-tincture": {
-      "descSha": "4431ddb7742a32e0",
+      "descSha": "9239af7034a3d1fd",
       "descStatus": "undocumented-divergence",
       "dlc": "base"
     },
     "spinel-tonic": {
-      "descSha": "6f0124a584cd7c26",
+      "descSha": "1a8f5ea434519381",
       "descStatus": "undocumented-divergence",
       "dlc": "base"
     },
     "ifrits-distinction": {
       "descSha": "a34245200212d913",
-      "descStatus": "undocumented-divergence",
+      "descStatus": "no-game-text",
       "dlc": "base"
     },
     "silence-between-two-strikes": {
       "descSha": "74e13f56e6603ec0",
-      "descStatus": "undocumented-divergence",
+      "descStatus": "no-game-text",
       "dlc": "base"
     },
     "her-biting-embrace": {
       "descSha": "77b0ad87ed51c778",
-      "descStatus": "undocumented-divergence",
+      "descStatus": "no-game-text",
       "dlc": "base"
     },
     "spectral-circlet": {
       "descSha": "27f87b9a2160e116",
-      "descStatus": "undocumented-divergence",
+      "descStatus": "no-game-text",
       "dlc": "base"
     },
     "his-spiteful-boon": {
       "descSha": "35cc3e6e4c86e2cb",
-      "descStatus": "undocumented-divergence",
+      "descStatus": "no-game-text",
       "dlc": "sots"
     },
     "nkuhanas-retort": {
       "descSha": "c4ef9fabbfdb16cb",
-      "descStatus": "documented-divergence",
+      "descStatus": "no-game-text",
       "dlc": "base"
     },
     "his-reassurance": {
       "descSha": "6d11c1ae69774ee8",
-      "descStatus": "documented-divergence",
+      "descStatus": "no-game-text",
       "dlc": "sotv"
     },
     "shared-design": {
       "descSha": "6e6fdca587e53684",
-      "descStatus": "undocumented-divergence",
+      "descStatus": "no-game-text",
       "dlc": "base"
     },
     "of-one-mind": {
       "descSha": "2030b219bcb8414e",
-      "descStatus": "documented-divergence",
+      "descStatus": "no-game-text",
       "dlc": "ac"
     },
     "aurelionites-blessing": {
-      "descSha": "1129310b8c1e0da2",
-      "descStatus": "undocumented-divergence",
+      "descSha": "52d61a822e9c2444",
+      "descStatus": "no-game-text",
       "dlc": "sots"
     },
     "hearty-stew": {

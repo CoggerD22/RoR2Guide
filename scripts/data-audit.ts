@@ -594,7 +594,17 @@ function main(): number {
         if (v == null || v === 0) continue;
         // Accept the rounded form too: 20.4 may legitimately read as "20" in prose.
         const forms = [String(v), String(Math.round(v)), String(Math.abs(v))];
-        if (!forms.some((f) => it.description.includes(f))) {
+        /*
+          Compare NUMERIC TOKENS, not substrings (§3j.160).
+
+          `description.includes("2")` is true of "Cooldown: 25s" and of "150%", so this rule
+          passed on numbers the description never states. Aurelionite's Blessing's 2s telegraph
+          was "found" inside the cooldown sentence, and its 7.5m radius inside "8 gold" — both
+          silent until the cooldown suffix was removed and the coincidence went with it.
+          Tokenising surfaces exactly 2 real orphans across 217 items.
+        */
+        const tokens = new Set(it.description.match(/\d+(?:\.\d+)?/g) ?? []);
+        if (!forms.some((f) => tokens.has(f))) {
           orphans.push(`${s.stat}.${k}=${v}`);
         }
       }
@@ -677,10 +687,24 @@ function main(): number {
         `${it.name}: description says "Cooldown: ${stated[1]}s" but the EquipmentDef ` +
           `value is ${it.cooldown}s`,
       );
-    } else if (!stated && it.cooldown > 0) {
-      warnings.push(
-        `${it.name}: has a ${it.cooldown}s cooldown but the description never states it`,
-      );
+      /*
+        §3j.160 — the description is NOT where the cooldown has to be stated.
+
+        This rule once warned when an equipment's description omitted its cooldown, from a time
+        when `description` was the only place the number could live. It is not any more: the
+        cooldown is a structured field, cross-checked 41/41 against EquipmentDef by
+        `data:verify` (§3j.126, §3j.130) and rendered in its own block in the drawer (§3j.151).
+
+        Keeping the warning had a cost that outweighed it. Satisfying it meant appending
+        "Cooldown: Ns." to a field `schema.ts` documents as "the game's wording, kept verbatim",
+        for 41 items whose in-game text says no such thing — so a rule meant to protect the
+        reader was quietly forcing every equipment description to stop being a quotation, and
+        printing the number twice on the page.
+
+        What survives is the half that catches a real defect: if a description DOES state a
+        cooldown, it must agree with the asset value (the branch above). Some game descriptions
+        genuinely include one, and a stale number there is a lie about the game.
+      */
     } else if (stated && it.cooldown === 0) {
       errors.push(
         `${it.name}: description states a cooldown but the EquipmentDef value is 0 ` +
