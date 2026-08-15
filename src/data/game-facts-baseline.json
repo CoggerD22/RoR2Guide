@@ -9,10 +9,10 @@
     "no-game-text": "quest/scrap items the language files carry no _DESC for"
   },
   "counts": {
-    "verbatim": 118,
+    "verbatim": 147,
     "no-game-text": 9,
     "documented-divergence": 29,
-    "undocumented-divergence": 61
+    "undocumented-divergence": 32
   },
   "items": {
     "crowbar": {
@@ -186,8 +186,8 @@
       "dlc": "ac"
     },
     "bolstering-lantern": {
-      "descSha": "d791735ed66e941b",
-      "descStatus": "undocumented-divergence",
+      "descSha": "e32a57c19aeefbe9",
+      "descStatus": "verbatim",
       "dlc": "sots"
     },
     "eclipse-lite": {
@@ -266,8 +266,8 @@
       "dlc": "base"
     },
     "runalds-band": {
-      "descSha": "8d96f8d292e9df12",
-      "descStatus": "undocumented-divergence",
+      "descSha": "a9105dff1ba5abb9",
+      "descStatus": "verbatim",
       "dlc": "base"
     },
     "kjaros-band": {
@@ -326,8 +326,8 @@
       "dlc": "sotv"
     },
     "shipping-request-form": {
-      "descSha": "ce419b0517934c0f",
-      "descStatus": "undocumented-divergence",
+      "descSha": "3a174e3f1f23f8a4",
+      "descStatus": "verbatim",
       "dlc": "sotv"
     },
     "unstable-transmitter": {
@@ -361,18 +361,18 @@
       "dlc": "sotv"
     },
     "breaching-fin": {
-      "descSha": "63018f2c1c17a51f",
-      "descStatus": "undocumented-divergence",
+      "descSha": "845e0b4e463c8254",
+      "descStatus": "verbatim",
       "dlc": "sots"
     },
     "chance-doll": {
-      "descSha": "100c4415b12f8b5f",
-      "descStatus": "undocumented-divergence",
+      "descSha": "742585777b2606f9",
+      "descStatus": "verbatim",
       "dlc": "sots"
     },
     "luminous-shot": {
-      "descSha": "79c7db666fc44fbd",
-      "descStatus": "undocumented-divergence",
+      "descSha": "e2ceae33c8330fdd",
+      "descStatus": "verbatim",
       "dlc": "sots"
     },
     "noxious-thorn": {
@@ -396,13 +396,13 @@
       "dlc": "ac"
     },
     "faraday-spur": {
-      "descSha": "86e5da23690e7d5e",
-      "descStatus": "undocumented-divergence",
+      "descSha": "f7d5ecca35b6dac5",
+      "descStatus": "verbatim",
       "dlc": "ac"
     },
     "kinetic-dampener": {
-      "descSha": "5216e044891728fd",
-      "descStatus": "undocumented-divergence",
+      "descSha": "6ed1135e27ee8245",
+      "descStatus": "verbatim",
       "dlc": "ac"
     },
     "brilliant-behemoth": {
@@ -446,13 +446,13 @@
       "dlc": "base"
     },
     "h3ad-5t-v2": {
-      "descSha": "203d6abbbaa215bc",
-      "descStatus": "undocumented-divergence",
+      "descSha": "993adee872794f4e",
+      "descStatus": "verbatim",
       "dlc": "base"
     },
     "nkuhanas-opinion": {
-      "descSha": "7e0e4dcd37d6f876",
-      "descStatus": "undocumented-divergence",
+      "descSha": "abdb81ef5770a402",
+      "descStatus": "verbatim",
       "dlc": "base"
     },
     "unstable-tesla-coil": {
@@ -516,8 +516,8 @@
       "dlc": "sotv"
     },
     "spare-drone-parts": {
-      "descSha": "bb5009802bb7f675",
-      "descStatus": "undocumented-divergence",
+      "descSha": "7a1d1644cd2560bc",
+      "descStatus": "verbatim",
       "dlc": "sotv"
     },
     "interstellar-desk-plant": {
@@ -551,8 +551,8 @@
       "dlc": "sots"
     },
     "runic-lens": {
-      "descSha": "d7b1a68eb9a6d362",
-      "descStatus": "undocumented-divergence",
+      "descSha": "3900da57e8a13cca",
+      "descStatus": "verbatim",
       "dlc": "sots"
     },
     "sonorous-whispers": {
@@ -566,8 +566,8 @@
       "dlc": "sots"
     },
     "networked-suffering": {
-      "descSha": "1401bc3643e1e93e",
-      "descStatus": "undocumented-divergence",
+      "descSha": "8c27c7285b0e72da",
+      "descStatus": "verbatim",
       "dlc": "ac"
     },
     "orphaned-core": {
@@ -606,8 +606,8 @@
       "dlc": "base"
     },
     "little-disciple": {
-      "descSha": "c08aede69c6594eb",
-      "descStatus": "undocumented-divergence",
+      "descSha": "879b8351e015740f",
+      "descStatus": "verbatim",
       "dlc": "base"
     },
     "genesis-loop": {
@@ -631,8 +631,8 @@
       "dlc": "base"
     },
     "molten-perforator": {
-      "descSha": "a83002369cff536e",
-      "descStatus": "undocumented-divergence",
+      "descSha": "04ccf1670e127cde",
+      "descStatus": "verbatim",
       "dlc": "base"
     },
     "charged-perforator": {
@@ -666,8 +666,8 @@
       "dlc": "ac"
     },
     "faulty-conductor": {
-      "descSha": "b91f8eb6fbffae79",
-      "descStatus": "undocumented-divergence",
+      "descSha": "dd83613c4c0abe8b",
+      "descStatus": "verbatim",
       "dlc": "ac"
     },
     "sentry-key": {
@@ -701,8 +701,8 @@
       "dlc": "base"
     },
     "brittle-crown": {
-      "descSha": "afe4e70cf9068ede",
-      "descStatus": "undocumented-divergence",
+      "descSha": "fe4a069767092803",
+      "descStatus": "verbatim",
       "dlc": "base"
     },
     "transcendence": {
@@ -711,8 +711,8 @@
       "dlc": "base"
     },
     "corpsebloom": {
-      "descSha": "b21885409d73aca4",
-      "descStatus": "undocumented-divergence",
+      "descSha": "e40f6c51efcbcdec",
+      "descStatus": "verbatim",
       "dlc": "base"
     },
     "gesture-of-the-drowned": {
@@ -726,8 +726,8 @@
       "dlc": "base"
     },
     "visions-of-heresy": {
-      "descSha": "c407101c4647787c",
-      "descStatus": "undocumented-divergence",
+      "descSha": "b392bfdb324745d5",
+      "descStatus": "verbatim",
       "dlc": "base"
     },
     "strides-of-heresy": {
@@ -736,13 +736,13 @@
       "dlc": "base"
     },
     "hooks-of-heresy": {
-      "descSha": "b929b11ffd793bcc",
-      "descStatus": "undocumented-divergence",
+      "descSha": "c72310915f12bce4",
+      "descStatus": "verbatim",
       "dlc": "base"
     },
     "essence-of-heresy": {
-      "descSha": "8607dcc513a4a699",
-      "descStatus": "undocumented-divergence",
+      "descSha": "7e9f8f57cb9d1b50",
+      "descStatus": "verbatim",
       "dlc": "base"
     },
     "beads-of-fealty": {
@@ -761,8 +761,8 @@
       "dlc": "base"
     },
     "mercurial-rachis": {
-      "descSha": "5455a66ee7bfb5e6",
-      "descStatus": "undocumented-divergence",
+      "descSha": "92b7c699965a5c78",
+      "descStatus": "verbatim",
       "dlc": "base"
     },
     "stone-flux-pauldron": {
@@ -776,18 +776,18 @@
       "dlc": "sotv"
     },
     "longstanding-solitude": {
-      "descSha": "ac7fcb360fbc6be8",
-      "descStatus": "undocumented-divergence",
+      "descSha": "521a5063758df39b",
+      "descStatus": "verbatim",
       "dlc": "sots"
     },
     "egocentrism": {
-      "descSha": "d6b9d0a2bfa94747",
-      "descStatus": "undocumented-divergence",
+      "descSha": "c9dc2677c8814f37",
+      "descStatus": "verbatim",
       "dlc": "sotv"
     },
     "neutronium-weight": {
-      "descSha": "25727810d3347f05",
-      "descStatus": "undocumented-divergence",
+      "descSha": "c8dc2d64a9ccb077",
+      "descStatus": "verbatim",
       "dlc": "ac"
     },
     "eulogy-zero": {
@@ -841,8 +841,8 @@
       "dlc": "sotv"
     },
     "singularity-band": {
-      "descSha": "7cfc37f391e57a8b",
-      "descStatus": "undocumented-divergence",
+      "descSha": "0400c2a6a2870c5e",
+      "descStatus": "verbatim",
       "dlc": "sotv"
     },
     "voidsent-flame": {
@@ -861,8 +861,8 @@
       "dlc": "sotv"
     },
     "newly-hatched-zoea": {
-      "descSha": "1e9821eccc24873a",
-      "descStatus": "undocumented-divergence",
+      "descSha": "2fe1c30d462cabf2",
+      "descStatus": "verbatim",
       "dlc": "sotv"
     },
     "disposable-missile-launcher": {
@@ -991,8 +991,8 @@
       "dlc": "sotv"
     },
     "seed-of-life": {
-      "descSha": "316170e3a2ca28d4",
-      "descStatus": "undocumented-divergence",
+      "descSha": "0635853c3fafa72c",
+      "descStatus": "verbatim",
       "dlc": "sots"
     },
     "deus-ex-machina": {
@@ -1001,8 +1001,8 @@
       "dlc": "ac"
     },
     "trophy-hunters-tricorn": {
-      "descSha": "f3b35e25ffe11f71",
-      "descStatus": "undocumented-divergence",
+      "descSha": "1c29409ca2bbe655",
+      "descStatus": "verbatim",
       "dlc": "sotv"
     },
     "effigy-of-grief": {

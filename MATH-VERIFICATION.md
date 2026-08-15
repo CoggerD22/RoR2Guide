@@ -8296,3 +8296,62 @@ together, so fixing one and forgetting the other fails.
   now pinned; `version` + `migrate` remains the supported way to invalidate deliberately.
 
 **Final: 47 mutations, 47 caught, local and CI.**
+
+---
+
+### §3j.159 — Half the description debt was safe to pay immediately
+
+§3j.154 found 61 item descriptions differing from the game's own text with no `descriptionNote`,
+and deferred all 61 on one argument: restoring them verbatim would delete verified facts, since
+Predatory Instincts' 5% crit chance appears in no stacking row.
+
+That argument is true of *some* of them. Treating it as true of all 61 was the mistake — the
+question was never asked per item.
+
+**Sized properly, 61 splits three ways:**
+
+| | count | what it needs |
+|---|---|---|
+| pure rewording — states no number the game does not, same length | **29** | nothing; restore verbatim |
+| states a NUMBER the game's text omits | **29** | per-item research |
+| materially longer prose | 3 | read individually |
+
+The 29 pure rewordings were restored. Nothing was lost, and that is asserted rather than
+asserted-and-hoped: comparing against `git show HEAD:` — **29 descriptions changed, 0 with a
+different number set, 0 items with any non-description change, 217 items before and after.**
+
+They are the cases where our text was simply *better English* than the game's, which is exactly
+what rule #1 forbids. The game writes `(+3.5 per stack)` for Bolstering Lantern, missing a `%`;
+we had silently corrected it. Runald's Band read "blast enemies with a runic ice explosion" where
+the game says "blasts enemies with a runic ice blast". Shipping Request Form lost the game's own
+parentheses. None of it is wrong about the game — all of it is a quotation that was quietly
+improved, on a page whose UI says "The game's text above is inaccurate", a sentence that only
+means anything if the text above is the game's.
+
+**verbatim 118 → 147. Undocumented divergences 61 → 32**, and the ratchet in
+`game-facts-baseline.json` is tightened to 32 so it cannot grow back.
+
+#### What remains, and why it is genuinely different work
+
+The other 29 each state a number the game's description does not: Predatory Instincts `5`,
+Unstable Transmitter `60`, Strides of Heresy `0.2 / 1.3 / 19.5`, The Back-up `100`. Each is
+either a **verified fact the game's text omits** — in which case the fix is to restore the
+quotation and move the fact into a `descriptionNote`, which is what that field exists for — or a
+number that traces to nothing, which would be a rule #1 violation and worse than the rewording.
+
+Which of the two cannot be decided from the outside. It needs the decompile, per item. That is
+the outstanding work, and it is now 29 items rather than an undifferentiated 61.
+
+#### Also found, not yet fixed
+
+Four numeric game claims are hardcoded in component prose and tied to the data by nothing:
+Transcendence's "150%, +25% per extra stack", Tougher Times' "15% but blocks 13%" (twice), and
+Artifact of Glass's "x5 damage, 10% HP". **All four are correct today** — checked against
+`items.json` and `reference.ts`. But §3j.125 found and removed exactly this class, and these
+survived it; a patch that changes a value leaves the prose asserting the old one.
+
+Two clean negatives worth recording so they are not re-derived: **176 linear stacking formulas
+agree with their own `base`/`perStack`** once percent-vs-fraction is normalised (13 apparent
+mismatches are all `base: 1, perStack: 1` rows whose formula says "one per stack" symbolically),
+and the earlier count of 21 "hardcoded numbers in components" is mostly CSS — only the four
+above are game claims.

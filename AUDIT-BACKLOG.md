@@ -88,6 +88,7 @@ SweetSpot cliffs and the proc gap in already-"checked" data.
 | CI/deploy parity & ordering | 2 workflows, 6 gate stages | **deploy failing since §3j.150**; 404 overwritten | §3j.156 |
 | Mutation sweep: application logic | 11 code mutations, 14 lib/store modules | **3 holes**; `stacking.ts` had no test | §3j.157 |
 | Mutation sweep: schema & stores | 8 mutations, 29 schema constraints | **schema had 0 negative tests**; §3j.146 defect unfixed in display | §3j.158 |
+| Verbatim descriptions, part paid | 61 sized: 29 pure / 29 numeric / 3 prose | **29 restored, 0 facts lost**; 32 remain | §3j.159 |
 | Extractor health | 1472 bundles, 224,435 MonoBehaviours | all swallow classes 0 | §3j.127 |
 
 ---
@@ -113,7 +114,15 @@ These are **scope changes, not corrections**. Nothing on the site is wrong becau
    dismissible per WCAG 1.4.13) **or** a new visible column in the proc table — both new UI
    surfaces, hence a decision rather than a correction. `aria-label` on the existing `<span>`s
    is not a shortcut: on `role=generic` it is widely ignored by real AT. §3j.152.
-4. **Restore the 61 non-verbatim item descriptions, or stop calling them verbatim.**
+4. **Restore the remaining 32 non-verbatim item descriptions.** §3j.159 paid the safe half:
+   29 were pure rewordings stating no number the game omits, restored verbatim with 0 facts
+   lost. The **29 that remain state a number the game's own text does not** (Predatory
+   Instincts 5, Unstable Transmitter 60, Strides of Heresy 0.2/1.3/19.5, The Back-up 100),
+   plus 3 with materially longer prose. Each is either a verified fact the game omits — fix is
+   to restore the quotation and move the fact into `descriptionNote` — or a number tracing to
+   nothing, which is a rule #1 violation. Deciding which needs the decompile, per item. Ratchet
+   pinned at 32. ORIGINAL FRAMING BELOW, kept because the reasoning that deferred all 61 was
+   only true of some of them:
    `schema.ts` documents `description` as "the game's wording, kept verbatim", rule #1 says
    quoted text is "reproduced verbatim, typos included", and `ItemDetail` tells the reader "The
    game's text above is inaccurate" — a sentence that only means anything if the text above is

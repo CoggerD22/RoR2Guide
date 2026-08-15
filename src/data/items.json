@@ -936,7 +936,7 @@
     "tier": "common",
     "dlc": "sots",
     "pickupText": "Increases your attack speed for every nearby enemy and ally.",
-    "description": "Increase your attack speed by 10% (+3.5% per stack) for up to 3 (+1 per stack) enemies and allies within 20 meters.",
+    "description": "Increase your attack speed by 10% (+3.5 per stack) for up to 3 (+1 per stack) enemies and allies within 20 meters.",
     "stacking": [
       {
         "stat": "Attack speed per nearby unit (%)",
@@ -1404,7 +1404,7 @@
     "tier": "uncommon",
     "dlc": "base",
     "pickupText": "High damage hits also blasts enemies with runic ice. Recharges over time.",
-    "description": "Hits dealing more than 400% damage blast enemies with a runic ice explosion, inflicting 80% slow for 3s (+3s per stack) and dealing 250% (+250% per stack) total damage. 10-second cooldown.",
+    "description": "Hits that deal more than 400% damage also blasts enemies with a runic ice blast, slowing them by 80% for 3s (+3s per stack) and dealing 250% (+250% per stack) TOTAL damage. Recharges every 10 seconds.",
     "stacking": [
       {
         "stat": "Slow duration (s)",
@@ -1766,7 +1766,7 @@
     "tier": "uncommon",
     "dlc": "sotv",
     "pickupText": "Get a delivery each stage that contains powerful items.",
-    "description": "A delivery containing 2 items (79%/20%/1%) will appear in a random location on each stage. Increases rarity chances of the items per stack.",
+    "description": "A delivery containing 2 items (79%/20%/1%) will appear in a random location on each stage. (Increases rarity chances of the items per stack).",
     "stacking": [
       {
         "stat": "Red-item weight multiplier on the delivery",
@@ -1933,7 +1933,7 @@
     "tier": "uncommon",
     "dlc": "sots",
     "pickupText": "Grounded enemies hit with any skill are launched and take bonus damage.",
-    "description": "Grounded enemies hit with any skill are launched and stunned. Enemies hit while airborne are launched again up to 2 times (+1 per stack). Launched enemies take 10% increased damage from all sources per launch. Recharges after 15s.",
+    "description": "Grounded enemies hit with any skill are launched and stunned. Enemies hit while airborne are launched again up to 2 times (+1 per stack). Launched enemies take increased damage by 10% from all sources per launch. Recharges after 15s.",
     "stacking": [
       {
         "stat": "Max airborne re-launches",
@@ -1959,7 +1959,7 @@
     "tier": "uncommon",
     "dlc": "sots",
     "pickupText": "Gain 40% chance to increase item rarity at Shrines of Chance.",
-    "description": "40% (+10% per stack) chance to get higher rarity items from Shrines of Chance on success.",
+    "description": "On Shrine of Chance success, 40% (+10% per stack) chance to get higher rarity items.",
     "stacking": [
       {
         "stat": "Higher-rarity chance at Shrine of Chance (%)",
@@ -1983,7 +1983,7 @@
     "tier": "uncommon",
     "dlc": "sots",
     "pickupText": "Activating your Secondary skill charges your Primary skill with powerful lightning strikes. Requires 3 charges.",
-    "description": "Activating your Secondary skill stores up to 5 charges (+1 per stack). At 3 charges, your Primary skill fires lightning strikes dealing 175% (+50% per stack) TOTAL damage each. Reduces Secondary skill cooldown by 20%.",
+    "description": "Activating Secondary skill stores up to 5 charges (+1 per stack). Requires 3 charges for your Primary skill to fire lightning strikes, dealing 175% TOTAL damage (+50% per stack) each. Reduces Secondary skill cooldown by 20%.",
     "stacking": [
       {
         "stat": "Max stored charges",
@@ -2144,7 +2144,7 @@
     "tier": "uncommon",
     "dlc": "ac",
     "pickupText": "Moving around builds up movement speed and jump height. At 25% charge or higher, jump to discharge into an electric blast.",
-    "description": "Moving builds charge, granting up to +160% movement speed and +200% jump height at 100%. At 25% charge or higher, jumping triggers an explosive discharge for 400% (+280% per stack) damage in a 5m to 32.3m (+7.5m per stack) area.",
+    "description": "Moving around builds up charge, granting up to +160% movement speed and +200% jump height at 100%. At 25% charge or higher, jumping triggers an explosive discharge for 400% (+280% per stack) damage in a 5m to 32.3m (+7.5m per stack) area.",
     "stacking": [
       {
         "stat": "Discharge damage (% base)",
@@ -2178,7 +2178,7 @@
     "tier": "uncommon",
     "dlc": "ac",
     "pickupText": "Gain bonus armor while you have a shield. When shield breaks, release a stunning pulse that deals more damage the more shield you have.",
-    "description": "Increases armor by 30 (+30 per stack) while you have a shield. When shield breaks, release a stunning pulse for 100% damage plus 100% (+10% per stack) of your max shield. Grants a shield for 4% of your max health.",
+    "description": "Increases armor by 30 (+30 per stack) while you have a shield. When shield breaks, release a stunning pulse for 100% damage plus an amount equal to 100% (+10% per stack) of your max shield. Grants a shield for 4% of your max health.",
     "stacking": [
       {
         "stat": "Armor while shielded",
@@ -2448,7 +2448,7 @@
     "tier": "legendary",
     "dlc": "base",
     "pickupText": "Increase jump height. Hold 'Interact' to slam down to the ground.",
-    "description": "Increase jump height. Creates a 5m-100m radius kinetic explosion on hitting the ground, dealing 1000%-10000% base damage that scales with fall distance. Recharges in 10 (-50% per stack) seconds.",
+    "description": "Increase jump height. Creates a 5m-100m radius kinetic explosion on hitting the ground, dealing 1000%-10000% base damage that scales up with fall distance. Recharges in 10 (-50% per stack) seconds.",
     "stacking": [
       {
         "stat": "Recharge time (s)",
@@ -2474,7 +2474,7 @@
     "tier": "legendary",
     "dlc": "base",
     "pickupText": "Fire haunting skulls when healed.",
-    "description": "Store 100% (+100% per stack) of healing as Soul Energy. When your Soul Energy reaches 10% of your maximum health, fire a skull that deals 250% of your Soul Energy as damage.",
+    "description": "Store 100% (+100% per stack) of healing as Soul Energy. After your Soul Energy reaches 10% of your maximum health, fire a skull that deals 250% of your Soul Energy as damage.",
     "stacking": [
       {
         "stat": "Healing stored as Soul Energy (%)",
@@ -2848,7 +2848,7 @@
     "tier": "legendary",
     "dlc": "sotv",
     "pickupText": "Your drones fire faster, have less cooldowns, shoot missiles, and gain a bonus chaingun.",
-    "description": "Gain Col. Droneman. Drones gain +25% (+25% per stack) attack speed and cooldown reduction. Drones gain a 10% chance to fire a missile on hit for 150% TOTAL damage, and an automatic chain gun dealing 6x50% damage bouncing to 2 enemies.",
+    "description": "Gain Col. Droneman. Drones gain +25% (+25% per stack) attack speed and cooldown reduction. Drones gain 10% chance to fire a missile on hit, dealing 150% TOTAL damage. Drones gain an automatic chain gun that deals 6x50% damage, bouncing to 2 enemies.",
     "stacking": [
       {
         "stat": "Drone attack speed (%)",
@@ -3053,7 +3053,7 @@
     "tier": "legendary",
     "dlc": "sots",
     "pickupText": "Chance to call down a meteor. Damage and chance are increased with higher damage hits.",
-    "description": "3% chance on hit to call down a meteor for 2000% base damage. Every 100% attack damage dealt increases the activation chance by 3% (+3% per stack) and damage by 150% (+50% per stack).",
+    "description": "3% chance on hit to call a meteor strike, dealing 2000% base damage. Every 100% attack damage dealt increases the activation chance by 3% (+3% per stack) and damage by 150% (+50% per stack).",
     "stacking": [
       {
         "stat": "Bonus chance per 100% damage (%)",
@@ -3145,7 +3145,7 @@
     "tier": "legendary",
     "dlc": "ac",
     "pickupText": "Inflict a computer virus on hit that spreads a portion of all damage dealt between infected enemies. Affects up to 4 enemies.",
-    "description": "Infect up to 4 (+2 per stack) enemies with a computer virus that duplicates 45% of all damage they take into a global pool. Every 3 seconds, all infected enemies suffer 100% of the pooled damage.",
+    "description": "Infect up to 4 (+2 per stack) enemies with a computer virus that duplicates 45% of all damage taken and sends it to a global damage pool. Every 3 seconds, ALL infected enemies suffer 100% pooled damage.",
     "stacking": [
       {
         "stat": "Max infected enemies",
@@ -3411,7 +3411,7 @@
     "tier": "boss",
     "dlc": "base",
     "pickupText": "Fire tracking wisps while sprinting.",
-    "description": "Fire tracking wisps while sprinting at 300% (+300% per stack) damage, firing every 1.6 seconds (fire rate scales with movement speed).",
+    "description": "Fire a tracking wisp for 300% (+300% per stack) damage. Fires every 1.6 seconds while sprinting. Fire rate increases with movement speed.",
     "stacking": [
       {
         "stat": "Wisp damage (%)",
@@ -3533,7 +3533,7 @@
     "tier": "boss",
     "dlc": "base",
     "pickupText": "Chance on hit to fire magma balls.",
-    "description": "10% chance on hit to call forth 3 magma balls from an enemy, dealing 300% (+300% per stack) damage each.",
+    "description": "10% chance on hit to call forth 3 magma balls from an enemy, dealing 300% (+300% per stack) damage and igniting all enemies.",
     "stacking": [
       {
         "stat": "Magma ball damage (%)",
@@ -3726,7 +3726,7 @@
     "tier": "boss",
     "dlc": "ac",
     "pickupText": "Occasionally release a pulse of electricity that energizes allies and makes enemies more susceptible to electric damage.",
-    "description": "Every 15 (-20% per stack) seconds, release a wave of electricity that energizes nearby allies for 7 seconds. Energized allies gain +30% attack and movement speed and always land critical strikes with electric items and attacks.",
+    "description": "Every 15 (-20% per stack) seconds, release a wave of electricity that energizes nearby allies for 7 seconds. Energized allies gain +30% attack and movement speed, and ALWAYS land critical strikes with electric items and attacks.",
     "stacking": [
       {
         "stat": "Pulse interval (s)",
@@ -3888,7 +3888,7 @@
     "tier": "lunar",
     "dlc": "base",
     "pickupText": "Gain gold on hit... BUT lose gold on getting hit.",
-    "description": "30% chance on hit to gain 2 (+2 per stack) gold. Lose gold on taking damage equal to 100% (+100% per stack) of the maximum health percentage lost.",
+    "description": "30% chance on hit to gain 2 (+2 per stack) gold. Scales over time. On taking damage, lose gold equal to 100% (+100% per stack) of the maximum health percentage you lost.",
     "stacking": [
       {
         "stat": "Gold on hit",
@@ -3940,7 +3940,7 @@
     "tier": "lunar",
     "dlc": "base",
     "pickupText": "Double your healing... BUT it's applied over time.",
-    "description": "Heal +100% (+100% per stack) more. All healing is applied over time, capped at a maximum of 10% (-50% per stack) of your health per second.",
+    "description": "Heal +100% (+100% per stack) more. All healing is applied over time. Can heal for a maximum of 10% (-50% per stack) of your health per second.",
     "stacking": [
       {
         "stat": "Healing bonus (%)",
@@ -4035,7 +4035,7 @@
     "tier": "lunar",
     "dlc": "base",
     "pickupText": "Replace your Primary Skill with 'Hungering Gaze'.",
-    "description": "Fire a flurry of tracking shards that detonate after a delay for 120% base damage. Hold up to 12 charges (+12 per stack) that reload after 2 seconds (+2 per stack).",
+    "description": "Replace your Primary Skill with Hungering Gaze. Fire a flurry of tracking shards that detonate after a delay, dealing 120% base damage. Hold up to 12 charges (+12 per stack) that reload after 2 seconds (+2 per stack).",
     "stacking": [
       {
         "stat": "Max charges",
@@ -4108,7 +4108,7 @@
     "tier": "lunar",
     "dlc": "base",
     "pickupText": "Replace your Secondary Skill with 'Slicing Maelstrom'.",
-    "description": "Charge a projectile dealing 875% damage per second to nearby enemies, exploding after 3 seconds for 700% damage and rooting enemies for 3 (+3 per stack) seconds. Recharges after 5 (+5 per stack) seconds.",
+    "description": "Replace your Secondary Skill with Slicing Maelstrom. Charge up a projectile that deals 875% damage per second to nearby enemies, exploding after 3 seconds to deal 700% damage and root enemies for 3 (+3 per stack) seconds. Recharges after 5 (+5 per stack) seconds.",
     "stacking": [
       {
         "stat": "Root duration (s)",
@@ -4145,7 +4145,7 @@
     "tier": "lunar",
     "dlc": "base",
     "pickupText": "Replace your Special Skill with 'Ruin'.",
-    "description": "Dealing damage adds a stack of Ruin for 10 seconds — a flat duration that does NOT increase with item stacks, despite the in-game text. Activating the skill detonates all Ruin stacks at unlimited range for 300% damage plus 120% per stack of Ruin. Recharges after 8 (+8 per stack) seconds.",
+    "description": "Replace your Special Skill with Ruin. Dealing damage adds a stack of Ruin for 10 (+10 per stack) seconds. Activating the skill detonates all Ruin stacks at unlimited range, dealing 300% damage plus 120% damage per stack of Ruin. Recharges after 8 (+8 per stack) seconds.",
     "stacking": [
       {
         "stat": "Ruin duration (s)",
@@ -4264,7 +4264,7 @@
     "tier": "lunar",
     "dlc": "base",
     "pickupText": "Randomly create a Ward of Power. ALL characters deal bonus damage while in the Ward.",
-    "description": "Creates a Ward of Power in a random nearby location, 16m (+50% per stack) in radius, that causes both enemies and allies inside to deal +50% damage.",
+    "description": "Creates a Ward of Power in a random location nearby that buffs both enemies and allies within 16m (+50% per stack), causing them to deal +50% damage.",
     "stacking": [
       {
         "stat": "Ward radius (m)",
@@ -4354,7 +4354,7 @@
     "tier": "lunar",
     "dlc": "sots",
     "pickupText": "Free purchases on level up... BUT gold converts to experience.",
-    "description": "On level up, gain a free unlock for the next purchase (+1 per stack), but all gold is converted to experience. Anything that costs gold costs 50% (+50% per stack) more.",
+    "description": "On level up gain a free unlock for the next purchase (+1 per stack) but all gold is converted to experience. Anything that costs gold is increased by 50% (+50% per stack).",
     "stacking": [
       {
         "stat": "Free purchases per level",
@@ -4388,7 +4388,7 @@
     "tier": "lunar",
     "dlc": "sotv",
     "pickupText": "Gain multiple orbiting bombs. Every minute, assimilate another item into Egocentrism.",
-    "description": "Every 3 (-50% per stack) seconds, gain an orbiting bomb that detonates on impact for 360% damage, up to a maximum of 3 bombs (+1 per stack). Every 60 seconds, a random item is converted into this item.",
+    "description": "Every 3 (-50% per stack) seconds, gain an orbiting bomb that detonates on impact for 360% damage, up to a maximum of 3 (+1 per stack) bombs. Every 60 seconds, a random item is converted into this item.",
     "stacking": [
       {
         "stat": "Bomb spawn interval (s)",
@@ -4420,7 +4420,7 @@
     "tier": "lunar",
     "dlc": "ac",
     "pickupText": "Reduces all stats while in combat, but can be sent to an enemy on hit.",
-    "description": "Reduces damage by 30% (+10% per stack), attack speed by 30% (+10% per stack), movement speed by 30% (+10% per stack), and armor by 35 (+15 per stack).",
+    "description": "Reduces your stats while in combat, but send this item to an enemy on hit. On death, this item will be sent to its holder's killer. Reduces damage by 30% (+10% per stack), attack speed by 30% (+10% per stack), movement speed by 30% (+10% per stack), and armor by 35 (+15 per stack).",
     "stacking": [
       {
         "stat": "Damage reduction (%)",
@@ -4765,7 +4765,7 @@
     "tier": "void-uncommon",
     "dlc": "sotv",
     "pickupText": "High damage hits also create unstable black holes. Recharges over time. Corrupts all Runald's and Kjaro's Bands.",
-    "description": "Hits that deal more than 400% damage fire a black hole that draws enemies within 15m into its center, lasting 5 seconds before collapsing for 100% (+100% per stack) TOTAL damage. Recharges every 20 seconds. Corrupts all Runald's and Kjaro's Bands.",
+    "description": "Hits that deal more than 400% damage also fire a black hole that draws enemies within 15m into its center. Lasts 5 seconds before collapsing, dealing 100% (+100% per stack) TOTAL damage. Recharges every 20 seconds. Corrupts all Runald's and Kjaro's Bands.",
     "stacking": [
       {
         "stat": "Black hole damage (% TOTAL)",
@@ -4888,7 +4888,7 @@
     "tier": "void-boss",
     "dlc": "sotv",
     "pickupText": "Periodically recruit allies from the Void. Corrupts all yellow items.",
-    "description": "Every 60 (-50% per stack) seconds, gain a random Void ally, up to a maximum of 1 (+1 per stack) at a time. Corrupts all yellow (boss) items.",
+    "description": "Every 60 (-50% per stack) seconds, gain a random Void ally. Can have up to 1 (+1 per stack) allies at a time. Corrupts all yellow items.",
     "stacking": [
       {
         "stat": "Recruit interval (s)",
@@ -5776,7 +5776,7 @@
     "tier": "equipment",
     "dlc": "sots",
     "pickupText": "Revives the user when killed or dead allies on activation. Consumed on use.",
-    "description": "Revive dead friendly Survivors on activation. Dying while holding it returns only you to life. Reviving grants 3s of invulnerability and consumes the equipment.",
+    "description": "Revive dead, friendly Survivors upon activation. Dying while holding this equipment returns only you to life. Reviving gives 3s of invulnerability and consumes the equipment.",
     "stacking": [],
     "tags": [
       "survivability",
@@ -5820,7 +5820,7 @@
     "tier": "equipment",
     "dlc": "sotv",
     "pickupText": "Execute a large monster and claim its trophy. Consumed on use.",
-    "description": "Execute any enemy capable of spawning a unique reward and it will drop that item. Consumed on use.",
+    "description": "Execute any enemy capable of spawning a unique reward, and it will drop that item. Equipment is consumed on use.",
     "stacking": [],
     "tags": [
       "utility",

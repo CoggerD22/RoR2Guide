@@ -205,6 +205,16 @@ left, bold white name, gray body with highlighted numeric values.
       actually **decoded**. And `stacking.ts` (86 lines) had **no test**, so shifting the
       sparkline curve by one stack and dropping badge de-duplication both shipped green; 13 new
       cases cover it. **39 mutations, 39 caught, local and CI** (§3j.157).
+- [x] **Verbatim descriptions — the safe half paid.** §3j.154 deferred all 61 divergent item
+      descriptions on one argument: restoring them would delete verified facts. True of some,
+      and treating it as true of all 61 was the error — the question was never asked per item.
+      Sized properly: **29 pure rewordings** (state no number the game omits) were restored
+      verbatim, with **0 facts lost**, asserted against `git show HEAD:` — 29 descriptions
+      changed, 0 with a different number set, 0 non-description changes. These were cases where
+      our text was simply better English than the game's, which is what rule #1 forbids: the
+      game writes `(+3.5 per stack)` missing a `%` and we had silently corrected it. Verbatim
+      **118 → 147**, undocumented divergences **61 → 32**, ratchet tightened. The remaining 29
+      each state a number the game does not, and need the decompile per item (§3j.159).
 - [x] **Mutation sweep: the validation layer and the stores.** `schema.ts` is what
       `data:audit` and `data:diff` both parse through, and it had **29 constraints and zero
       negative tests** — so all four schema mutations shipped green, for the coherent reason
