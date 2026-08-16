@@ -8595,3 +8595,50 @@ So the guard had quietly inverted: written to stop the prose drifting, it had be
 the prose could not stop being a copy. Its replacement asserts the opposite — that the
 derivation is wired up, and that nobody has pasted the numbers back — and covers both components
 rather than one. Proven by re-hardcoding each: both fail.
+
+---
+
+### §3j.165 — The notes hold up, and the reason is instructive
+
+The description pass found two fabricated numbers. `descriptionNote` is the same kind of prose —
+assertions about mechanics, written by the same hands — and **69 items now carry one**, holding
+**229 numeric claims**. Nothing had asked whether those are true. Given the hit rate next door,
+that was the obvious next surface.
+
+**It is sound.** Three checks, none of which found a defect:
+
+- **Numeric claims.** 98 (after excluding numbers too common to carry signal) checked for a
+  literal anywhere in 18.6 MB of decompiled code and extracted assets. **One** had no match:
+  `0.9025` in the Spinel Tonic note — which is stated there explicitly as the compounding result
+  of `0.95²`, arithmetic rather than a constant. Correct.
+- **Cited identifiers.** 72 distinct classes, methods and fields named across all notes. **All 72
+  exist.** Though this proves less than it looks: `data:audit` line 202 already feeds
+  `descriptionNote` into the coined-term rule, so the identifier half has been guarded since
+  §3j.109 and the zero is that guard working, not a new result.
+- **By hand.** Stun Grenade's 4.76% is `hyperbolicChance(5, 1)` exactly. Bandolier's curve is in
+  the code verbatim — `LocalCheckRoll((1f - 1f / Mathf.Pow(n + 1, 0.33f)) * 100f)`. Frost Relic's
+  every constant holds: `baseIcicleMax = 6`, `icicleBaseRadius = 10f`,
+  `icicleRadiusPerIcicle = 2f` giving the stated 22m, and `actualRadius = characterBody.radius +
+  …` confirming even the "plus your own collider radius" clause.
+
+#### Why this surface held and the descriptions did not
+
+Both are prose about game mechanics on the same records, and they came out opposite ways. The
+difference is when they were written.
+
+Every `descriptionNote` was written **during** a verification pass, next to the code it cites —
+that is why each one names a class or a constant, and why the coined-term rule can police them at
+all. The descriptions were edited **as prose**, for readability, at times when nobody had the
+decompile open: Bolstering Lantern's missing `%` was tidied, Runald's Band was reworded, and
+Lysate Cell gained a cooldown effect the game does not have.
+
+**Prose written alongside its evidence held up; prose edited for readability did not.** That is
+worth more than this pass's negative result, because it says where to look next time.
+
+#### No new guard
+
+The numeric check is deliberately not kept. Searching 18.6 MB for a bare number passes almost
+anything — a fabricated figure that happens to appear in an unrelated context would sail
+through — so keeping it would mean a check that mostly passes and implies more than it can
+show. §3j.149 deleted a check for exactly that reason. The identifier half is already enforced,
+and it is the half with teeth.
