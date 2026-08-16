@@ -3031,7 +3031,7 @@
     "tier": "legendary",
     "dlc": "sots",
     "pickupText": "Your buffs grant an increase to ALL of your stats.",
-    "description": "Grants a 4% increase to ALL stats for each buff you have, up to a maximum of 4 (+4 per stack) buffs.",
+    "description": "Grants 4% increase to ALL stats for each buff, up to a maximum of 4 (+4 per stack).",
     "stacking": [
       {
         "stat": "Max buffs counted",
@@ -5405,7 +5405,7 @@
     "tier": "equipment",
     "dlc": "base",
     "pickupText": "Throw a fan of buzzing saws that come back to you.",
-    "description": "Throw three large saw blades that slice through enemies for 3x400% damage, plus 3x100% per second while bleeding. Can strike enemies again on the way back.",
+    "description": "Throw three large saw blades that slice through enemies for 3x400% damage. Also deals an additional 3x100% damage per second while bleeding enemies. Can strike enemies again on the way back.",
     "stacking": [
       {
         "stat": "Saws thrown",
@@ -5903,7 +5903,7 @@
     "tier": "lunar-equipment",
     "dlc": "base",
     "pickupText": "Ignite everything nearby... including you and allies.",
-    "description": "Ignite ALL characters within 15m for 12s, dealing 5% of your maximum health per second as burning damage. The burn is 0.5x on yourself, 0.25x on allies, and 24x on enemies.",
+    "description": "Ignite ALL characters within 15m. Deal 5% of your maximum health/second as burning to yourself. The burn is 0.5x stronger on allies, and 24x stronger on enemies.",
     "stacking": [],
     "tags": [
       "damage",
@@ -5919,7 +5919,8 @@
     "verified": true,
     "confidence": "code",
     "cooldown": 45,
-    "activated": true
+    "activated": true,
+    "descriptionNote": "An earlier revision of this page said the burn is \"0.25x on allies\". That is wrong: HelfireController sets allyDamageScalar = 0.5f and applies it to every target whose team matches the holder's — which includes you — so self and allies take the same 0.5x, and enemies take enemyDamageScalar = 24f. The 5%/second is healthFractionPerSecond = 0.05f. The radius also grows with stacks (baseRadius * (1 + (stack - 1) * 0.5)), which the text does not mention. The burn's DURATION is deliberately not stated here: dotDuration is a serialized field on the prefab, absent from our extraction, so no number for it is trustworthy yet."
   },
   {
     "id": "spinel-tonic",

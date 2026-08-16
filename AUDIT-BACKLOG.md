@@ -90,6 +90,7 @@ SweetSpot cliffs and the proc gap in already-"checked" data.
 | Mutation sweep: schema & stores | 8 mutations, 29 schema constraints | **schema had 0 negative tests**; §3j.146 defect unfixed in display | §3j.158 |
 | Verbatim descriptions, part paid | 61 sized: 29 pure / 29 numeric / 3 prose | **29 restored, 0 facts lost**; 32 remain | §3j.159 |
 | Verbatim descriptions, cont. | 32 sized: 30 cooldown / 7 "???" / 2 real | **a 33% effect the game does not have**; 61→13 | §3j.160 |
+| Verbatim descriptions, cont. 2 | 13 examined: 5 closely | **2nd fabricated number** (Helfire 0.25x); 61→10 | §3j.161 |
 | Extractor health | 1472 bundles, 224,435 MonoBehaviours | all swallow classes 0 | §3j.127 |
 
 ---
@@ -115,7 +116,7 @@ These are **scope changes, not corrections**. Nothing on the site is wrong becau
    dismissible per WCAG 1.4.13) **or** a new visible column in the proc table — both new UI
    surfaces, hence a decision rather than a correction. `aria-label` on the existing `<span>`s
    is not a shortcut: on `role=generic` it is widely ignored by real AT. §3j.152.
-4. **Restore the remaining 13 non-verbatim item descriptions.** §3j.159–160 took 61 → 13. The
+4. **Restore the remaining 10 non-verbatim item descriptions.** §3j.159–160 took 61 → 13. The
    bulk was never editorial: 30 were a `Cooldown: Ns.` sentence appended to satisfy a
    `data:audit` rule that predated the structured `cooldown` field, and 7 are elite aspects
    whose in-game description is literally `"???"` (nothing to quote). One was a real defect —

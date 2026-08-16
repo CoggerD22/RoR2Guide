@@ -8417,3 +8417,47 @@ comparing **numeric tokens** instead surfaces exactly 2 real orphans across 217 
 carrying notes.
 
 **verbatim 118 → 162. Undocumented divergences 61 → 13**, ratchet tightened at each step.
+
+---
+
+### §3j.161 — A second fabricated number, and one that could not be verified either way
+
+Continuing the 13. Three resolved; the finding is that the rate of real defects in this set is
+not low.
+
+#### Helfire Tincture contradicted the code it cited
+
+Its description read *"The burn is 0.5x on yourself, **0.25x on allies**, and 24x on enemies."*
+`HelfireController` says otherwise:
+
+```
+allyDamageScalar = 0.5f;   enemyDamageScalar = 24f;   healthFractionPerSecond = 0.05f;
+if (attachedBody.teamComponent.teamIndex == characterBody.teamComponent.teamIndex)
+    num4 *= allyDamageScalar;
+```
+
+The scalar is applied to every target whose team matches the holder's — **which includes the
+holder**. So self and allies take the same 0.5x. There is no 0.25 anywhere: searching the whole
+decompile for `0.25f` within 90 characters of any helfire, burn, ally or ignite token returns
+nothing. The game's own wording was right and ours "corrected" it into being wrong.
+
+That is the second fabricated figure in this set, after Lysate Cell's 33% (§3j.160), out of five
+items examined closely. **The prior that the remaining ones are fine is not supported by the
+evidence.**
+
+#### A number left out rather than guessed
+
+The same description claimed the burn lasts **12s**. `dotDuration` is declared in
+`HelfireController` with no initializer — a serialized field whose value lives on the prefab
+(§5.0.2) — and `component-fields.json` carries no Helfire entry, so nothing available can
+confirm it. It is not restated, and the note says why: rule #1's "prefer leaving a value out
+over shipping a plausible-sounding number" applies to our own prose exactly as it applies to the
+dataset.
+
+What the note does carry is only what the code shows: the 0.5x/24x scalars, the 5%/second, and
+that the radius grows with stacks (`baseRadius * (1 + (stack - 1) * 0.5)`) — which neither the
+game's text nor ours had ever mentioned.
+
+Growth Nectar and Sawmerang were pure grammar and restored without comment.
+
+**verbatim 118 → 165. Undocumented divergences 61 → 10.**

@@ -9,10 +9,10 @@
     "no-game-text": "quest/scrap items with no _DESC token, and the seven elite aspects whose _DESC is literally \"???\" — the game states nothing to quote (§3j.160)"
   },
   "counts": {
-    "verbatim": 162,
+    "verbatim": 165,
     "no-game-text": 19,
     "documented-divergence": 23,
-    "undocumented-divergence": 13
+    "undocumented-divergence": 10
   },
   "items": {
     "crowbar": {
@@ -546,8 +546,8 @@
       "dlc": "sots"
     },
     "growth-nectar": {
-      "descSha": "73c6d780f058f73a",
-      "descStatus": "undocumented-divergence",
+      "descSha": "ed4503f63a57041a",
+      "descStatus": "verbatim",
       "dlc": "sots"
     },
     "runic-lens": {
@@ -941,8 +941,8 @@
       "dlc": "base"
     },
     "sawmerang": {
-      "descSha": "4acf94ab7a287bc8",
-      "descStatus": "undocumented-divergence",
+      "descSha": "8b3fa9072b6d2a6c",
+      "descStatus": "verbatim",
       "dlc": "base"
     },
     "recycler": {
@@ -1016,8 +1016,8 @@
       "dlc": "base"
     },
     "helfire-tincture": {
-      "descSha": "9239af7034a3d1fd",
-      "descStatus": "undocumented-divergence",
+      "descSha": "2d538971c80a3bf7",
+      "descStatus": "verbatim",
       "dlc": "base"
     },
     "spinel-tonic": {
