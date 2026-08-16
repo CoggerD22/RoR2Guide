@@ -3,6 +3,7 @@ import { STAT_ITEMS } from "@/data/statItems";
 import {
   MILESTONES,
   hyperbolicChance,
+  hyperbolicExample,
   stacksToCritCap,
   linearAt,
   cooldownReduction,
@@ -226,8 +227,10 @@ coeff    = (base + timeRate x floor(minutes)) x 1.15^stagesCleared`}
         <p className="mb-3 max-w-2xl text-xs leading-relaxed text-muted-foreground">
           These stack <span className="text-foreground">hyperbolically</span> &mdash; each stack adds
           less than the last, approaching but never reaching 100%. The tooltip percentage is the
-          per-stack <em>input</em>, not the actual chance (Tougher Times shows 15% but blocks 13% at
-          one stack).
+          per-stack <em>input</em>, not the actual chance {(() => {
+                const ex = hyperbolicExample("tougher-times", (id) => itemById.get(id));
+                return ex ? <>(Tougher Times shows {ex.stated}% but blocks {ex.actual}% at one stack).</> : null;
+              })()}
         </p>
         {/*
           The two on-hit rows are proc-scaled and the table cannot show that, so it has to be

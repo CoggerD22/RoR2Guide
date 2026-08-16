@@ -93,6 +93,7 @@ SweetSpot cliffs and the proc gap in already-"checked" data.
 | Verbatim descriptions, cont. 2 | 13 examined: 5 closely | **2nd fabricated number** (Helfire 0.25x); 61→10 | §3j.161 |
 | Verbatim descriptions, cont. 3 | 4 more researched against the decompile | **2 game-text errors, 1 mislabel**; 61→6 | §3j.162 |
 | Verbatim descriptions — CLOSED | 217 items; 61 divergences resolved | **0 undocumented**; 2 fabricated numbers removed | §3j.159–163 |
+| Game numbers in component prose | 4 claims / 3 components | 3 derived, 1 pinned; **a guard was enforcing the duplication** | §3j.164 |
 | Extractor health | 1472 bundles, 224,435 MonoBehaviours | all swallow classes 0 | §3j.127 |
 
 ---

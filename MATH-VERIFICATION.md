@@ -8561,3 +8561,37 @@ floor with it.
 correctly caught by us and now properly documented** (Strides of Heresy, Effigy), **1 mislabelled
 unit** (Defiant Gouge's credits-as-percent), **2 values deliberately left unstated** because
 nothing available could verify them, and the rest verified omissions moved into notes.
+
+---
+
+### §3j.164 — A guard that pinned the duplication instead of removing it
+
+The four game numbers hardcoded in component prose, found during §3j.159's sizing and left
+unfixed at the time. All four were correct when checked; none was tied to the data by anything,
+so a balance patch would leave the page asserting the old figures. §3j.125 found and removed four
+duplications of exactly this kind — these survived that pass.
+
+Three are now computed:
+
+- **Transcendence's "150%, +25% per extra stack"** reads `itemById.get("transcendence")`'s
+  stacking row.
+- **Tougher Times' "15% but blocks 13%"**, which appears in **two** components, now calls a
+  shared `hyperbolicExample()` that takes the item's own hyperbolic row and runs it through the
+  same `hyperbolicChance` the breakpoint table uses. The sentence exists to warn the reader not
+  to trust a stated number; it should not itself carry one.
+
+The fourth, Artifact of Glass's `x5 damage, 10% HP`, is a short form of prose in `reference.ts`
+("Allies deal 500% damage, but have 10% health"). Deriving `x5` from `500%` would cost more
+clarity than it buys, so the label and the record are pinned to each other instead.
+
+#### The interesting part: an existing guard was enforcing the defect
+
+`ItemDetail's Tougher Times example matches the item's own curve` already existed, and asserted
+that the literal strings `15% per stack` and `blocks 13%` were **present** in the component. It
+did keep the prose in step with the data — but only by requiring the numbers to be hardcoded.
+Deriving them broke it.
+
+So the guard had quietly inverted: written to stop the prose drifting, it had become the reason
+the prose could not stop being a copy. Its replacement asserts the opposite — that the
+derivation is wired up, and that nobody has pasted the numbers back — and covers both components
+rather than one. Proven by re-hardcoding each: both fail.

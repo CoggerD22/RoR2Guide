@@ -4,6 +4,7 @@ import type { Item } from "@/data/schema";
 import { TIER_META, DLC_META, itemById } from "@/data/items";
 import { highlightNumbers } from "@/lib/highlight";
 import { sparklinePoints, perStackMeaning, hyperbolicCurve } from "@/lib/stacking";
+import { hyperbolicExample } from "@/lib/breakpoints";
 import { cn } from "@/lib/utils";
 import { asset } from "@/lib/asset";
 import { StackingBadge } from "./StackingBadge";
@@ -251,7 +252,17 @@ export function ItemDetail({ item, onClose, onSelectItem }: ItemDetailProps) {
                   <strong className="font-semibold">Numbers below are not yet code-verified.</strong>{" "}
                   They are transcribed exactly from the game&rsquo;s own description text, which is
                   reliable for wording but has repeatedly proven wrong about the actual curve —
-                  Tougher Times reads &ldquo;15% per stack&rdquo; but blocks 13% at one stack.
+                  {/* Computed from items.json, never typed (§3j.164): a sentence warning the
+                      reader not to trust a stated number must not carry a stale one. */}
+                  {(() => {
+                    const ex = hyperbolicExample("tougher-times", (id) => itemById.get(id));
+                    return ex ? (
+                      <>
+                        Tougher Times reads &ldquo;{ex.stated}% per stack&rdquo; but blocks{" "}
+                        {ex.actual}% at one stack.
+                      </>
+                    ) : null;
+                  })()}
                   Treat the stacking values as the game&rsquo;s claim, not as measured behaviour.
                 </p>
               )}

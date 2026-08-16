@@ -340,8 +340,14 @@ export function StatLabPage() {
               <strong className="text-foreground">Transcendence is a conversion, not a bonus.</strong>{" "}
               Max health becomes literally 1 and the whole pool moves into shield, which recharges
               on its own after a few seconds out of combat but cannot be healed &mdash; so health
-              regen, medkits and most healing do nothing for it. The multiplier (150%, +25% per
-              extra stack) applies to your finished health total, so it compounds with Pearl rather
+              regen, medkits and most healing do nothing for it. The multiplier{" "}
+              {(() => {
+                // Read from items.json (§3j.164). These were typed, so a balance change
+                // would leave the Stat Lab explaining the shield with the old numbers.
+                const row = itemById.get("transcendence")?.stacking[0];
+                return row ? `(${row.base}%, +${row.perStack}% per extra stack)` : "";
+              })()}{" "}
+              applies to your finished health total, so it compounds with Pearl rather
               than adding to it.
             </p>
           )}

@@ -52,6 +52,28 @@ export const COOLDOWN_ITEMS: CooldownItem[] = [
   { id: "gesture-of-the-drowned", stat: "Equipment cooldown", firstStackScale: 0.5, mult: 0.85, verified: "code" },
 ];
 
+/**
+ * §3j.164 — the worked example that two components use to explain hyperbolic stacking,
+ * computed rather than typed.
+ *
+ * `ItemDetail` and `Breakpoints` both illustrate the input-vs-outcome gap with the same item:
+ * "reads 15% per stack but blocks 13% at one stack". Both had those numbers written into the
+ * prose, tied to `items.json` by nothing — so a balance patch that changed the item would leave
+ * two components asserting the old figures, in the very sentence warning readers not to trust a
+ * stated number. §3j.125 found and removed four duplications of exactly this kind; these two
+ * survived that pass.
+ *
+ * Returns null rather than inventing an example if the item or its hyperbolic row is gone.
+ */
+export function hyperbolicExample(
+  id: string,
+  lookup: (id: string) => { stacking: Array<{ type: string; base: number }> } | undefined,
+): { stated: number; actual: number } | null {
+  const row = lookup(id)?.stacking.find((s) => s.type === "hyperbolic");
+  if (!row) return null;
+  return { stated: row.base, actual: Math.round(hyperbolicChance(row.base, 1)) };
+}
+
 /** Linear stat at n stacks: base + perStack·(n−1). */
 export function linearAt(base: number, perStack: number, stacks: number): number {
   return stacks <= 0 ? 0 : base + perStack * (stacks - 1);

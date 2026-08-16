@@ -3,6 +3,7 @@ import { describe, expect, it, test } from "vitest";
 // same typed data the app consumes.
 import { items, TIER_ORDER, TIER_META } from "./items";
 import { perStackMeaning, hyperbolicCurve } from "@/lib/stacking";
+import { hyperbolicChance } from "@/lib/breakpoints";
 import { ARTIFACTS, SHRINES } from "./reference";
 import { STAT_ITEMS } from "./statItems";
 import { readFileSync, readdirSync, existsSync } from "node:fs";
@@ -1852,17 +1853,31 @@ describe("component prose agrees with the data it describes", () => {
     }
   });
 
-  test("ItemDetail's Tougher Times example matches the item's own curve", () => {
-    const src = read("src/components/codex/ItemDetail.tsx");
+  test("ItemDetail's Tougher Times example is computed from the item, not typed", () => {
+    /*
+      §3j.164 — this used to assert the literal strings "15% per stack" and "blocks 13%" were
+      PRESENT in the component. That kept the two in step, but only by requiring the numbers to
+      be hardcoded: the guard was pinning the duplication rather than removing it, and a
+      balance change meant editing prose in two components and this test.
+
+      Both components now call `hyperbolicExample`, which reads the item's own hyperbolic row
+      and applies the same `hyperbolicChance` the breakpoint table uses. What has to be checked
+      is therefore the opposite: that the derivation is still wired up, and that nobody has
+      pasted the numbers back in.
+    */
     const tt = items.find((i) => i.id === "tougher-times")!;
     const row = tt.stacking.find((s) => s.type === "hyperbolic")!;
-    // The banner says: reads "15% per stack" but blocks 13% at one stack.
-    expect(src).toMatch(new RegExp(`${row.base}% per stack`));
-    const amp = row.base / 100;
-    const atOne = Math.round((amp / (amp + 1)) * 100);
-    expect(src, `banner should say ${atOne}% at one stack`).toMatch(
-      new RegExp(`blocks ${atOne}%`),
-    );
+    const atOne = Math.round(hyperbolicChance(row.base, 1));
+    expect(atOne, "the worked example's arithmetic changed").toBe(13);
+
+    for (const f of ["src/components/codex/ItemDetail.tsx", "src/components/reference/Breakpoints.tsx"]) {
+      const src = read(f);
+      expect(src, `${f} stopped deriving the example`).toContain("hyperbolicExample");
+      expect(
+        new RegExp(`${row.base}% per stack|blocks ${atOne}%`).test(src),
+        `${f} has hardcoded the figures again`,
+      ).toBe(false);
+    }
   });
 
   test("the crit paragraph's +10% matches STAT_ITEMS", () => {
@@ -2655,4 +2670,63 @@ test("the persisted store keys are not renamed by accident", async () => {
       `${file} has no \`merge\`, so its sanitiser only runs on a version mismatch — the §3j.146 defect`,
     ).toMatch(/merge:\s*\(/);
   }
+});
+
+
+/**
+ * §3j.164 — game numbers in component prose must come from the data.
+ *
+ * §3j.125 found four claims duplicated from `items.json` into .tsx and removed them. Four more
+ * survived that pass, unnoticed until a sweep for hardcoded numerals: Transcendence's
+ * "150%, +25% per extra stack", Tougher Times' "15% but blocks 13%" in TWO components, and
+ * Artifact of Glass's "x5 damage, 10% HP". All four were correct when checked — and tied to the
+ * data by nothing, so a balance patch would leave the page asserting the old figures.
+ *
+ * Three are now computed from `items.json`. Glass's label is a short form ("x5") of prose in
+ * `reference.ts` ("Allies deal 500% damage, but have 10% health"), where deriving would cost
+ * more clarity than it buys — so it is asserted here instead.
+ */
+test("game numbers in component prose are derived, not typed", async () => {
+  const { readFileSync } = await import("node:fs");
+  const items = JSON.parse(readFileSync("src/data/items.json", "utf8")) as Array<{
+    id: string;
+    stacking?: Array<{ type: string; base: number; perStack: number }>;
+  }>;
+
+  // The two components that explain hyperbolic stacking must COMPUTE the example.
+  for (const f of ["src/components/codex/ItemDetail.tsx", "src/components/reference/Breakpoints.tsx"]) {
+    const src = readFileSync(f, "utf8");
+    expect(src, `${f} no longer derives the Tougher Times example`).toContain("hyperbolicExample");
+    expect(
+      /Tougher Times (reads|shows) &ldquo;?\d/.test(src),
+      `${f} has re-hardcoded the Tougher Times figures`,
+    ).toBe(false);
+  }
+
+  // Transcendence's shield multiplier is read from the item, not typed into the Stat Lab.
+  const statLab = readFileSync("src/components/statlab/StatLabPage.tsx", "utf8");
+  expect(statLab, "the Stat Lab no longer reads Transcendence from items.json").toContain(
+    'itemById.get("transcendence")',
+  );
+  const trans = items.find((i) => i.id === "transcendence")?.stacking?.[0];
+  expect(trans, "transcendence has no stacking row to read").toBeTruthy();
+  expect(
+    statLab.includes(`(${trans!.base}%, +${trans!.perStack}%`),
+    "the Stat Lab hardcodes Transcendence's numbers again",
+  ).toBe(false);
+
+  /*
+    Artifact of Glass: the checkbox label is a short form of the artifact record. Deriving "x5"
+    from "500%" would be less readable than the label it produces, so the two are pinned to each
+    other here — if the record changes, this fails and the label has to change with it.
+  */
+  const reference = readFileSync("src/data/reference.ts", "utf8");
+  const glass = reference.match(/name: "Artifact of Glass"[^}]*?effect: "([^"]+)"/);
+  expect(glass, "the Artifact of Glass record moved").toBeTruthy();
+  expect(glass![1], "Glass's effect text changed — update the Stat Lab label to match").toBe(
+    "Allies deal 500% damage, but have 10% health.",
+  );
+  expect(statLab, "the Stat Lab's Glass label no longer matches the artifact record").toContain(
+    "Artifact of Glass (x5 damage, 10% HP)",
+  );
 });
