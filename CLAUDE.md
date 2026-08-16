@@ -147,7 +147,7 @@ left, bold white name, gray body with highlighted numeric values.
 - [x] Math verification pass (see `MATH-VERIFICATION.md` for the full log)
       - Stat engine rebuilt against the decompiled `CharacterBody.RecalculateStats()`;
         two real bugs fixed (item regen scales with level; Irradiant Pearl also grants crit).
-      - items.json 100% verified (0 `verified:false`), of which **208/217 are traced to
+      - items.json 100% verified (0 `verified:false`), of which **209/217 are traced to
         code or assets**; the remaining 9 are 4 quest items with no mechanic, 2 equipment
         fully described by `consumedOnUse`, and 3 open questions each carrying the exact
         arithmetic that would settle them. `coverage-floor.json` ratchets this and
@@ -205,6 +205,18 @@ left, bold white name, gray body with highlighted numeric values.
       actually **decoded**. And `stacking.ts` (86 lines) had **no test**, so shifting the
       sparkline curve by one stack and dropping badge de-duplication both shipped green; 13 new
       cases cover it. **39 mutations, 39 caught, local and CI** (§3j.157).
+- [x] **Every item description is now the game's words, or a documented divergence — 0 left.**
+      The verbatim rule went from 61 undocumented divergences to **zero**, and the guard is now
+      `=== 0` rather than a ratchet. Along the way it removed **two fabricated numbers** (Lysate
+      Cell's "33% Special cooldown", absent from all 143 assemblies; Helfire Tincture's "0.25x on
+      allies", where `allyDamageScalar = 0.5f` and applies to self too), documented **two places
+      where the GAME's text is wrong** (Strides of Heresy heals 19.5% over 15 ticks, not a lump
+      25%; Effigy of Grief's own text is missing its radius entirely), corrected **one mislabelled
+      unit** (Defiant Gouge's 40 is director credit, not a percent), and **left two values
+      unstated** because nothing available could verify them — Helfire's burn duration
+      (`dotDuration` is serialized and absent from our extraction) and the contents of A Moment,
+      Whole (the scene defs carry no monster list). Beads of Fealty rose `langfile` → `code`,
+      taking traced coverage to **209/217** (§3j.159–163).
 - [x] **A number the game does not contain, published as code-verified.** Continuing the
       description work: of the 32 remaining, **30 were a `Cooldown: Ns.` sentence** appended to
       satisfy a `data:audit` rule written before the cooldown became a structured field — it is

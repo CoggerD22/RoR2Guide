@@ -4184,7 +4184,7 @@
     "tier": "lunar",
     "dlc": "base",
     "pickupText": "Seems to do nothing... but...",
-    "description": "Has no direct effect. Obliterating yourself at the Obelisk in A Moment, Fractured instead transports you to A Moment, Whole — a hidden realm containing a Twisted Scavenger.",
+    "description": "Seems to do nothing... but...",
     "stacking": [],
     "tags": [
       "utility"
@@ -4192,11 +4192,12 @@
     "icon": "/icons/beads-of-fealty.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Beads_of_Fealty",
     "verified": true,
-    "confidence": "langfile",
+    "confidence": "code",
     "unlock": {
       "challenge": "True Respite",
       "requirement": "Obliterate yourself at the Obelisk.."
-    }
+    },
+    "descriptionNote": "\"Seems to do nothing\" is literal — it changes one branch at the end of a run. When the Obelisk's DoFinalAction fires, it scans every player's inventory for LunarTrinket; if any player holds one it calls `SetNextState(new TransitionToNextStage())` instead of `BeginGameOver(GameEndings.ObliterationEnding)`, so obliterating continues the run rather than ending it. The destination scene is `limbo`, whose title token reads \"Hidden Realm: A Moment, Whole\". What that realm CONTAINS is not asserted here: the scene definitions we extract carry only a name token and an order, no monster list."
   },
   {
     "id": "focused-convergence",
@@ -5489,7 +5490,7 @@
     "tier": "equipment",
     "dlc": "base",
     "pickupText": "Heal for a percentage of the damage you deal for 8 seconds.",
-    "description": "Gain Life Steal, healing for 20% of all direct damage dealt, for 8 seconds.",
+    "description": "Heal for 20% of the damage you deal. Lasts 8 seconds.",
     "stacking": [],
     "tags": [
       "healing",
@@ -5500,7 +5501,8 @@
     "verified": true,
     "confidence": "code",
     "cooldown": 60,
-    "activated": true
+    "activated": true,
+    "descriptionNote": "The heal runs on the ON-HIT path, not on damage generally: GlobalEventManager.ProcessHitEnemy checks `HasBuff(Buffs.LifeSteal)` and heals `damageInfo.damage * 0.2f` for each hit it processes. The 8 seconds is `AddTimedBuff(Buffs.LifeSteal, 8f)` on activation."
   },
   {
     "id": "gorags-opus",
@@ -5508,7 +5510,7 @@
     "tier": "equipment",
     "dlc": "base",
     "pickupText": "You and all your allies enter a frenzy.",
-    "description": "You and all your allies enter a frenzy for 7 seconds, gaining +50% movement speed and +100% attack speed.",
+    "description": "All allies enter a frenzy for 7 seconds. Increases movement speed by 50% and attack speed by 100%.",
     "stacking": [],
     "tags": [
       "damage",
@@ -5521,7 +5523,8 @@
     "verified": true,
     "confidence": "code",
     "cooldown": 45,
-    "activated": true
+    "activated": true,
+    "descriptionNote": "\"All allies\" includes YOU, which the wording leaves ambiguous: FireTeamWarCry calls `characterBody.AddTimedBuff(Buffs.TeamWarCry, 7f)` on the holder first, and only then loops every TeamComponent sharing your teamIndex and buffs those too."
   },
   {
     "id": "forgive-me-please",
@@ -5847,7 +5850,7 @@
     "tier": "lunar-equipment",
     "dlc": "base",
     "pickupText": "Drop a permanent effigy that cripples ALL characters inside. Can place up to 5.",
-    "description": "Drop a permanent effigy. ALL characters within 15m are slowed by 50% and have their armor reduced by 20. Can place up to 5.",
+    "description": "ALL characters within are slowed by 50% and have their armor reduced by 20. Can place up to 5.",
     "stacking": [],
     "tags": [
       "utility",
@@ -5859,7 +5862,8 @@
     "verified": true,
     "confidence": "code",
     "cooldown": 15,
-    "activated": true
+    "activated": true,
+    "descriptionNote": "The game's own text is missing the radius — it reads \"ALL characters within are slowed\", with nothing after \"within\". The value is on the ward prefab: CrippleWard carries radius = 15, so 15m. The same component has expires = 0, which is why the effigy is permanent, and invertTeamFilter = 1, which is why it hits allies and enemies alike. It reapplies its debuff every interval = 0.2s with buffDuration = 1.5s."
   },
   {
     "id": "glowing-meteorite",
@@ -5932,7 +5936,7 @@
     "tier": "lunar-equipment",
     "dlc": "base",
     "pickupText": "Gain a massive boost to ALL stats. Chance to gain an affliction that reduces ALL stats.",
-    "description": "Gain a 20-second buff: +100% damage, +70% attack speed, +20 armor, +50% max health, +50% max shield, +300% regen, +30% movement speed. On expiration, a 20% chance to gain a Tonic Affliction. Each Affliction stack multiplies attack speed, movement speed, damage, and regeneration by 0.95 — compounding, not -5% per stack — and adds a 10% curse, which lowers your maximum health. The Affliction is suspended entirely while a Tonic buff is active.",
+    "description": "Drink the Tonic, gaining a boost for 20 seconds. Increases damage by +100%. Increases attack speed by +70%. Increases armor by +20. Increases maximum health by +50%. Increases passive health regeneration by +300%. Increases movespeed by +30%. When the Tonic wears off, you have a 20% chance to gain a Tonic Affliction, reducing all of your stats by -5% (-5% per stack).",
     "stacking": [],
     "tags": [
       "utility",
@@ -5947,7 +5951,8 @@
     "verified": true,
     "confidence": "code",
     "cooldown": 60,
-    "activated": true
+    "activated": true,
+    "descriptionNote": "Everything about the downside is verified and none of it is in the game's text. On expiry, `FireTonic` rolls `Util.CheckRoll(80f)` and adds a Tonic Affliction when that roll FAILS — a 20% chance. Each Affliction stack then multiplies attack speed, movement speed, damage and regen by `Mathf.Pow(0.95f, n)`, which COMPOUNDS: two stacks are 0.9025x, not 0.90x. It also adds `cursePenalty += 0.1f * n`, lowering maximum health. All of it is skipped while the Tonic buff is active — the block is guarded by `if (n > 0 && !HasBuff(TonicBuff))` — so the penalty only bites between drinks."
   },
   {
     "id": "ifrits-distinction",
@@ -6285,7 +6290,7 @@
     "tier": "food",
     "dlc": "ac",
     "pickupText": "Increases health regeneration and converts it into damage at full health. A single sip leaves you feeling warm and fuzzy inside.",
-    "description": "Increases base health regeneration by +2.5 hp/s (+2.5 hp/s per stack). At full health, your ENTIRE health regeneration — from every source, not just this item — is added to your base damage.",
+    "description": "Increases base health regeneration by +2.5 hp/s (+2.5 hp/s per stack). At full health, your regeneration is added to your base damage.",
     "stacking": [
       {
         "stat": "Base health regen (hp/s)",
@@ -6302,7 +6307,8 @@
     "icon": "/icons/hearty-stew.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Hearty_Stew",
     "verified": true,
-    "confidence": "code"
+    "confidence": "code",
+    "descriptionNote": "\"Your regeneration\" means ALL of it, from every source — not just this item's contribution. RecalculateStats adds `Mathf.Max(regen, 0f)` to the damage accumulator, and `regen` at that point is the finished total after every other regen item and buff. The full-health condition is `healthComponent.health >= maxHealth / cursePenalty`, so a curse raises the bar rather than lowering it."
   },
   {
     "id": "quick-fix",

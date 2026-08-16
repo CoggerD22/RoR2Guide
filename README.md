@@ -13,7 +13,7 @@ See [`PLAN.md`](./PLAN.md) for the full scope, data schema, and milestones,
 
 ## What makes it different
 
-Every number is traced to the game itself, not to a wiki — **208 of 217 items** are
+Every number is traced to the game itself, not to a wiki — **209 of 217 items** are
 verified against decompiled C# or serialized Unity assets, and the rest say plainly what is
 still open. Where the game's own description is wrong, the site says so and shows the
 evidence: Bandolier's real chance is 20.4%, not the stated 18%; Stone Flux Pauldron slows
@@ -78,7 +78,7 @@ The build in `dist/` is fully static and host-agnostic.
 
 **All milestones landed** (M0 skeleton → M6 reference pages), followed by a verification
 programme that rebuilt the stat engine against the decompiled `RecalculateStats`, traced
-208 of 217 items to code or assets, and audited every rendered surface for claims a reader
+209 of 217 items to code or assets, and audited every rendered surface for claims a reader
 could misread. `MATH-VERIFICATION.md` is the full log.
 
 What is left needs something this pipeline cannot supply: **written guides need a human

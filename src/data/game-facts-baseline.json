@@ -9,10 +9,9 @@
     "no-game-text": "quest/scrap items with no _DESC token, and the seven elite aspects whose _DESC is literally \"???\" — the game states nothing to quote (§3j.160)"
   },
   "counts": {
-    "verbatim": 169,
+    "verbatim": 175,
     "no-game-text": 19,
-    "documented-divergence": 23,
-    "undocumented-divergence": 6
+    "documented-divergence": 23
   },
   "items": {
     "crowbar": {
@@ -746,8 +745,8 @@
       "dlc": "base"
     },
     "beads-of-fealty": {
-      "descSha": "b2344592a4a4d862",
-      "descStatus": "undocumented-divergence",
+      "descSha": "e3025439f436d6d4",
+      "descStatus": "verbatim",
       "dlc": "base"
     },
     "focused-convergence": {
@@ -951,13 +950,13 @@
       "dlc": "base"
     },
     "super-massive-leech": {
-      "descSha": "62060e51abd7f171",
-      "descStatus": "undocumented-divergence",
+      "descSha": "6f36672edb63e4b6",
+      "descStatus": "verbatim",
       "dlc": "base"
     },
     "gorags-opus": {
-      "descSha": "fcb78a3bc857fe6f",
-      "descStatus": "undocumented-divergence",
+      "descSha": "835d4324e59c0057",
+      "descStatus": "verbatim",
       "dlc": "base"
     },
     "forgive-me-please": {
@@ -1006,8 +1005,8 @@
       "dlc": "sotv"
     },
     "effigy-of-grief": {
-      "descSha": "514f8441dcd17684",
-      "descStatus": "undocumented-divergence",
+      "descSha": "ac08dd9bb28868d9",
+      "descStatus": "verbatim",
       "dlc": "base"
     },
     "glowing-meteorite": {
@@ -1021,8 +1020,8 @@
       "dlc": "base"
     },
     "spinel-tonic": {
-      "descSha": "1a8f5ea434519381",
-      "descStatus": "undocumented-divergence",
+      "descSha": "7729bf1001fbac09",
+      "descStatus": "verbatim",
       "dlc": "base"
     },
     "ifrits-distinction": {
@@ -1076,8 +1075,8 @@
       "dlc": "sots"
     },
     "hearty-stew": {
-      "descSha": "cc4e4916f9883de0",
-      "descStatus": "undocumented-divergence",
+      "descSha": "feead1a205832038",
+      "descStatus": "verbatim",
       "dlc": "ac"
     },
     "quick-fix": {

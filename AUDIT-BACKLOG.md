@@ -92,6 +92,7 @@ SweetSpot cliffs and the proc gap in already-"checked" data.
 | Verbatim descriptions, cont. | 32 sized: 30 cooldown / 7 "???" / 2 real | **a 33% effect the game does not have**; 61→13 | §3j.160 |
 | Verbatim descriptions, cont. 2 | 13 examined: 5 closely | **2nd fabricated number** (Helfire 0.25x); 61→10 | §3j.161 |
 | Verbatim descriptions, cont. 3 | 4 more researched against the decompile | **2 game-text errors, 1 mislabel**; 61→6 | §3j.162 |
+| Verbatim descriptions — CLOSED | 217 items; 61 divergences resolved | **0 undocumented**; 2 fabricated numbers removed | §3j.159–163 |
 | Extractor health | 1472 bundles, 224,435 MonoBehaviours | all swallow classes 0 | §3j.127 |
 
 ---
@@ -117,31 +118,7 @@ These are **scope changes, not corrections**. Nothing on the site is wrong becau
    dismissible per WCAG 1.4.13) **or** a new visible column in the proc table — both new UI
    surfaces, hence a decision rather than a correction. `aria-label` on the existing `<span>`s
    is not a shortcut: on `role=generic` it is widely ignored by real AT. §3j.152.
-4. **Restore the remaining 6 non-verbatim item descriptions.** §3j.159–160 took 61 → 13. The
-   bulk was never editorial: 30 were a `Cooldown: Ns.` sentence appended to satisfy a
-   `data:audit` rule that predated the structured `cooldown` field, and 7 are elite aspects
-   whose in-game description is literally `"???"` (nothing to quote). One was a real defect —
-   Lysate Cell claimed a 33% Special cooldown reduction that appears in no assembly. The **13
-   that remain** each state a number the game's text omits and need the decompile per item.
-   Ratchet pinned at 13. EARLIER FRAMING: §3j.159 paid the safe half:
-   29 were pure rewordings stating no number the game omits, restored verbatim with 0 facts
-   lost. The **29 that remain state a number the game's own text does not** (Predatory
-   Instincts 5, Unstable Transmitter 60, Strides of Heresy 0.2/1.3/19.5, The Back-up 100),
-   plus 3 with materially longer prose. Each is either a verified fact the game omits — fix is
-   to restore the quotation and move the fact into `descriptionNote` — or a number tracing to
-   nothing, which is a rule #1 violation. Deciding which needs the decompile, per item. Ratchet
-   pinned at 32. ORIGINAL FRAMING BELOW, kept because the reasoning that deferred all 61 was
-   only true of some of them:
-   `schema.ts` documents `description` as "the game's wording, kept verbatim", rule #1 says
-   quoted text is "reproduced verbatim, typos included", and `ItemDetail` tells the reader "The
-   game's text above is inaccurate" — a sentence that only means anything if the text above is
-   the game's. **61 of 217 differ with no `descriptionNote`** (3 punctuation-level, 58
-   substantive), verified by hand against the raw language tokens. A mass restore is NOT safe:
-   Predatory Instincts' 5% crit chance is in no stacking row, so replacing its description with
-   the game's would delete a verified fact from the page. Each needs a researched
-   `descriptionNote` against the decompile, which is per-item verification, not an edit. Pinned
-   at 61 by `game-facts-baseline.json` so it cannot grow. §3j.154.
-5. **In-game observation.** Behaviour under real play. Everything reachable by reading code and
+4. **In-game observation.** Behaviour under real play. Everything reachable by reading code and
    assets has been read; nothing here substitutes for holding the item and watching the number.
    §3j.98.
 

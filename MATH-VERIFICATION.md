@@ -8507,3 +8507,57 @@ Both restored to the quotation with the verified fact in the note.
 
 Six remain: Beads of Fealty, Super Massive Leech, Gorag's Opus, Effigy of Grief, Spinel Tonic,
 Hearty Stew.
+
+---
+
+### §3j.163 — Zero. Every description is now the game's words or a documented divergence
+
+The last six, researched the same way. **Undocumented divergences: 0.** The ratchet is no longer
+`<= n`; it is `=== 0`.
+
+| item | verdict |
+|---|---|
+| Spinel Tonic | ours right on **every** claim, all of it absent from the game's text |
+| Effigy of Grief | 15m and "permanent" both right; the game's own text is broken |
+| Gorag's Opus | "All allies" **includes you**, which the game's wording hides |
+| Hearty Stew | "your regeneration" really does mean all of it |
+| Super Massive Leech | right, but the mechanism is narrower than "damage you deal" |
+| Beads of Fealty | mechanic confirmed in code; upgraded `langfile` → `code` |
+
+**Spinel Tonic** was the most thoroughly buried: `FireTonic` adds an Affliction when
+`Util.CheckRoll(80f)` FAILS (the 20%), each stack multiplies attack speed, move speed, damage and
+regen by `Mathf.Pow(0.95f, n)` — compounding, so two stacks are 0.9025x rather than 0.90x — and
+adds `cursePenalty += 0.1f * n`. The whole block is guarded by `if (n > 0 && !HasBuff(TonicBuff))`,
+so the penalty is suspended between drinks. None of that is in the game's description.
+
+**Effigy of Grief's** game text is literally broken — "ALL characters within are slowed", with
+nothing after "within". The prefab supplies what the sentence is missing: `CrippleWard` carries
+`radius = 15`, `expires = 0` (hence permanent) and `invertTeamFilter = 1` (hence "ALL").
+
+**Gorag's Opus** buffs the holder explicitly at `AddTimedBuff(Buffs.TeamWarCry, 7f)` *before*
+looping the team, so "All allies" including yourself is right and the game's phrasing is what
+misleads.
+
+#### Two places where the honest answer was to say less
+
+**Super Massive Leech** was described as healing from "all direct damage". The heal lives in
+`GlobalEventManager.ProcessHitEnemy` — the ON-HIT path — and takes `damageInfo.damage * 0.2f` per
+processed hit. Whether damage-over-time reaches that path is a separate question this pass did
+not settle, so the note states the mechanism and does not claim the word "direct".
+
+**Beads of Fealty** is confirmed: `DoFinalAction` scans every player for `LunarTrinket` and calls
+`SetNextState(new TransitionToNextStage())` instead of
+`BeginGameOver(GameEndings.ObliterationEnding)`. The destination is scene `limbo`, whose title
+token reads "Hidden Realm: A Moment, Whole". Our text also said the realm contains a Twisted
+Scavenger — that name exists (`SCAVLUNAR_BODY_SUBTITLE`) but the extracted scene definitions
+carry only a name token and an order, **no monster list**, so the claim is not made. The
+confidence rose from `langfile` to `code`, which lifted traced coverage to **209/217** and the
+floor with it.
+
+#### Final tally for the whole description effort
+
+**verbatim 118 → 175. Undocumented divergences 61 → 0.** Across the items examined closely:
+**2 fabricated numbers removed** (Lysate Cell's 33%, Helfire's 0.25x), **2 game-text errors
+correctly caught by us and now properly documented** (Strides of Heresy, Effigy), **1 mislabelled
+unit** (Defiant Gouge's credits-as-percent), **2 values deliberately left unstated** because
+nothing available could verify them, and the rest verified omissions moved into notes.
