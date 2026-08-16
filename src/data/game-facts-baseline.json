@@ -9,10 +9,10 @@
     "no-game-text": "quest/scrap items with no _DESC token, and the seven elite aspects whose _DESC is literally \"???\" — the game states nothing to quote (§3j.160)"
   },
   "counts": {
-    "verbatim": 165,
+    "verbatim": 169,
     "no-game-text": 19,
     "documented-divergence": 23,
-    "undocumented-divergence": 10
+    "undocumented-divergence": 6
   },
   "items": {
     "crowbar": {
@@ -731,8 +731,8 @@
       "dlc": "base"
     },
     "strides-of-heresy": {
-      "descSha": "695fd875ac774deb",
-      "descStatus": "undocumented-divergence",
+      "descSha": "e50b2d82aa20b54f",
+      "descStatus": "verbatim",
       "dlc": "base"
     },
     "hooks-of-heresy": {
@@ -756,8 +756,8 @@
       "dlc": "base"
     },
     "defiant-gouge": {
-      "descSha": "b98792b9ed525217",
-      "descStatus": "undocumented-divergence",
+      "descSha": "9f65ab51f76d2ce4",
+      "descStatus": "verbatim",
       "dlc": "base"
     },
     "mercurial-rachis": {
@@ -981,8 +981,8 @@
       "dlc": "sotv"
     },
     "goobo-jr": {
-      "descSha": "b1892197777b8ce9",
-      "descStatus": "undocumented-divergence",
+      "descSha": "d2687d1fd9d4f9bd",
+      "descStatus": "verbatim",
       "dlc": "sotv"
     },
     "remote-caffeinator": {
@@ -996,8 +996,8 @@
       "dlc": "sots"
     },
     "deus-ex-machina": {
-      "descSha": "11aaee27ba868079",
-      "descStatus": "undocumented-divergence",
+      "descSha": "6ec1ed4b7a17efeb",
+      "descStatus": "verbatim",
       "dlc": "ac"
     },
     "trophy-hunters-tricorn": {

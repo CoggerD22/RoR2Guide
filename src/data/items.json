@@ -4073,7 +4073,7 @@
     "tier": "lunar",
     "dlc": "base",
     "pickupText": "Replace your Utility Skill with 'Shadowfade'.",
-    "description": "Fade away, becoming intangible and gaining +30% movement speed. Heals 1.3% of your maximum health every 0.2s while active — about 19.5% (+19.5% per stack) in total, not the 25% the in-game text claims. Lasts 3 (+3 per stack) seconds.",
+    "description": "Replace your Utility Skill with Shadowfade. Fade away, becoming intangible and gaining +30% movement speed. Heal for 25% (+25% per stack) of your maximum health. Lasts 3 (+3 per stack) seconds.",
     "stacking": [
       {
         "stat": "Heal (% of max health)",
@@ -4102,7 +4102,8 @@
     "icon": "/icons/strides-of-heresy.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Strides_of_Heresy",
     "verified": true,
-    "confidence": "code"
+    "confidence": "code",
+    "descriptionNote": "The heal is not a lump 25%. GhostUtilitySkillState heals `healFractionPerTick` once every `1 / healFrequency` seconds for as long as the state runs, and its serialized values are healFractionPerTick = 0.013, healFrequency = 5, baseDuration = 3 — so 1.3% of maximum health every 0.2s for 3 seconds, which is 15 ticks totalling 19.5%, not 25%. Both scale with stacks, because `duration *= GetItemCountEffective(LunarUtilityReplacement)`. Interrupting Shadowfade early therefore stops the healing early, which a lump sum would not. (+30% movement speed is right: moveSpeedCoefficient = 1.3.)"
   },
   {
     "id": "hooks-of-heresy",
@@ -4242,10 +4243,10 @@
     "tier": "lunar",
     "dlc": "base",
     "pickupText": "Using a Shrine summons enemies nearby.",
-    "description": "Using a Shrine summons enemies nearby, stronger per stack (+40% per stack). Scales over time.",
+    "description": "Using a Shrine summons enemies nearby. Scales over time.",
     "stacking": [
       {
-        "stat": "Summoned enemy strength (%)",
+        "stat": "Summoned enemy credit (director budget)",
         "base": 40,
         "perStack": 40,
         "type": "linear",
@@ -4258,7 +4259,8 @@
     "icon": "/icons/defiant-gouge.png",
     "wiki": "https://riskofrain2.wiki.gg/wiki/Defiant_Gouge",
     "verified": true,
-    "confidence": "code"
+    "confidence": "code",
+    "descriptionNote": "The strength of what it summons is a director CREDIT budget, not a percentage: GlobalEventManager computes `monsterCredit = 40f * Stage.instance.entryDifficultyCoefficient * GetItemCountEffective(MonstersOnShrineUse)` and hands it to SelectMonsterCardForCombatShrine. So it is 40 credits per stack, multiplied by the stage's entry difficulty — which is what the game's \"scales over time\" refers to. An earlier revision of this page stated it as \"+40% per stack\", which reads as a damage or health multiplier and is not what the number is."
   },
   {
     "id": "mercurial-rachis",
@@ -5703,7 +5705,7 @@
     "tier": "equipment",
     "dlc": "sotv",
     "pickupText": "Create a clone of you for 30 seconds.",
-    "description": "Spawn a gummy clone with 300% damage and 300% health, using your skill loadout. Expires in 30 seconds. Up to 3 clones can exist at once.",
+    "description": "Spawn a gummy clone that has 300% damage and 300% health. Expires in 30 seconds.",
     "stacking": [],
     "tags": [
       "damage",
@@ -5714,7 +5716,8 @@
     "verified": true,
     "confidence": "code",
     "cooldown": 100,
-    "activated": true
+    "activated": true,
+    "descriptionNote": "The description does not mention a limit, but there is one: gummy clones occupy a deployable slot, and CharacterMaster.GetDeployableSameSlotLimit returns 3 for DeployableSlot.GummyClone. Activating the equipment with three already alive does nothing — EquipmentSlot checks `IsDeployableLimited(DeployableSlot.GummyClone)` and refuses to fire. The limit is fixed; it does not rise with anything."
   },
   {
     "id": "remote-caffeinator",
@@ -5803,7 +5806,7 @@
     "tier": "equipment",
     "dlc": "ac",
     "pickupText": "Counter any damage. Successful counters bless your next attack, ensuring your on-hit effects ALWAYS activate.",
-    "description": "Enter a countering stance for 0.5s that parries any and all damage. A successful parry nullifies the damage, reduces the active equipment's cooldown by 75% of its full cooldown, and grants Blessing (the SureProc buff) — your next attack always activates its on-hit effects.",
+    "description": "Briefly enter a countering stance that lets you parry any and ALL damage. A successful parry nullifies incoming damage, reduces your equipment cooldown by 75%, and grants Blessing, causing your next attack to ALWAYS activate your on-hit effects.",
     "stacking": [],
     "tags": [
       "survivability",
@@ -5815,7 +5818,8 @@
     "verified": true,
     "confidence": "code",
     "cooldown": 60,
-    "activated": true
+    "activated": true,
+    "descriptionNote": "\"Briefly\" is 0.5 seconds: firing the equipment calls `AddTimedBuff(DLC3Content.Buffs.Parrying, 0.5f)`, and that buff's lifetime is the whole parry window. Everything the item does keys off being hit inside those 0.5s."
   },
   {
     "id": "trophy-hunters-tricorn",

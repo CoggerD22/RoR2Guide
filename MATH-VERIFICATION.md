@@ -8461,3 +8461,49 @@ game's text nor ours had ever mentioned.
 Growth Nectar and Sawmerang were pure grammar and restored without comment.
 
 **verbatim 118 → 165. Undocumented divergences 61 → 10.**
+
+---
+
+### §3j.162 — Four more, and the corrections now run in both directions
+
+Continuing the description work item by item. Four resolved; notably, two of them were cases
+where **our number was right and the game's text is wrong**, which is the opposite of the
+previous two findings. The rate of real defects in this set is not low in either direction.
+
+#### Strides of Heresy — the game's 25% is the wrong number
+
+The game says "Heal for 25% (+25% per stack) of your maximum health." The serialized state gives
+`EntityStates.GhostUtilitySkillState = { baseDuration: 3, healFractionPerTick: 0.013,
+healFrequency: 5, moveSpeedCoefficient: 1.3 }`, and the state heals `healFractionPerTick` once
+every `1 / healFrequency` seconds for as long as it runs: 1.3% every 0.2s for 3s is 15 ticks
+totalling **19.5%**.
+
+Ours was right. The quotation is restored and the correction moved into `descriptionNote`, where
+it also records something neither text mentions: because the heal ticks, interrupting Shadowfade
+early stops it early — which a lump sum would not.
+
+#### Defiant Gouge — right that it scales, wrong about what the number is
+
+`GlobalEventManager` computes
+`monsterCredit = 40f * Stage.instance.entryDifficultyCoefficient * GetItemCountEffective(MonstersOnShrineUse)`.
+Linear in stacks, as claimed. But **40 is a director credit budget, not a percentage**, and both
+the description and the stacking row's own label called it `%` — which reads as a damage or
+health multiplier. The label is corrected to "Summoned enemy credit (director budget)" and the
+mechanic stated properly in the note.
+
+#### Goobo Jr. and Deus Ex Machina — omissions, both verified
+
+`CharacterMaster.GetDeployableSameSlotLimit` returns **3** for `DeployableSlot.GummyClone`, and
+`EquipmentSlot` refuses to fire when `IsDeployableLimited(DeployableSlot.GummyClone)` — so the
+"up to 3" our text carried is real and the game's text omits it entirely.
+
+"Briefly" in Deus Ex Machina's description is **0.5 seconds**: firing it calls
+`AddTimedBuff(DLC3Content.Buffs.Parrying, 0.5f)`, and that buff's lifetime is the whole parry
+window.
+
+Both restored to the quotation with the verified fact in the note.
+
+**verbatim 118 → 169. Undocumented divergences 61 → 6.**
+
+Six remain: Beads of Fealty, Super Massive Leech, Gorag's Opus, Effigy of Grief, Spinel Tonic,
+Hearty Stew.
