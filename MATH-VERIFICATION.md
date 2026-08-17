@@ -8836,3 +8836,105 @@ about the *instrument*, and instruments here are configurable more often than th
 fundamental. **Before recording a limit, try widening the instrument** — §3j.148 found that a
 skipped check reads as a pass; this is its quieter cousin, where a skipped *input* reads as an
 absent fact.
+---
+
+### §3j.169 — The number next to the field name
+
+§3j.168 ended on a rule: before recording a limit, widen the instrument. This pass applies it.
+Our `descriptionNote`s cite the game's own behaviour classes by name — 64 of them — and the
+Helfire result came from dumping one such class in full. So: dump every class we cite, and ask
+what our records say about each.
+
+Selection had to be inverted to do it. `extract-component-fields.py` selects by FIELD name, so
+it can only find a component someone already guessed a field of. Selecting by OWNER instead
+needs no guess. 1472 bundles, 224,435 MonoBehaviours, **9 of the 64 cited classes resolve as a
+GameObject name** — the other 55 are C# type names that never appear as one, which is a limit of
+the instrument and not a result.
+
+#### One real defect, in the direction that matters
+
+Effigy of Grief's note cites five `CrippleWard` fields and all five confirm exactly. Of One
+Mind, His Reassurance, Milky Chrysalis and Helfire all confirm. **Interstellar Desk Plant does
+not.** Its note read:
+
+> It heals 5% every 0.5s (DeskplantWard: healFraction 0.05, interval 0.5)
+
+`interval = 0.5` is on that prefab. **`healFraction` on that prefab is 0.** The 0.05 is assigned
+in code when the plant blooms — `component.healFraction = 0.05f`, in `DeskPlantController.MainState.OnEnter`
+— overwriting the serialized default.
+
+The number was right. The citation pointed at an asset that contradicts it, so a reader
+following our own provenance to check the claim would find 0 and conclude we invented it. That
+is §3j.168 running backwards: there a real value looked unverifiable, here a verified value
+looks fabricated. Under rule #1 provenance IS the claim, so this is a defect even though no
+published figure changed. Fixed by saying which half comes from where, and why the asset alone
+would mislead.
+
+`healingRadius = 5` and `radiusIncreasePerStack = 5` both confirm, so the published 10m/+5m is
+right. Note also that `MushroomWard` and `MiniMushroomWard` carry `healFraction: 0` too — the
+code-overwrite pattern is not unique to this item, which is what makes it a class.
+
+#### The instrument was wrong four times first
+
+Each was reporting a confident, clean-looking result:
+
+1. **It printed only the first component per owner.** A GameObject carries several, so
+   `CrippleWard` appeared to hold nothing but `defaultTeam` — that was a `TeamFilter` sibling —
+   and the Effigy note's five cited fields all looked absent. Believing that would have "fixed"
+   five correct values (rule 4, narrowly avoided by rule 3).
+2. **`\b` was BACKSPACE again — the fifth time** (§3j.116, §3j.148, §3j.155, §3j.167). Both the
+   `node -e` and the heredoc path stripped a backslash level, so `\bhealFraction\b` became a
+   control character and `\d` became a literal `d`. Output: **"0 of 0"**, the exact shape rule 2
+   exists to catch. The fix is not better escaping, it is **not escaping**: tokenise the prose
+   and walk the tokens. `src/lib/fieldClaims.ts` does that and says why.
+3. **English words that are also field names.** `stack`, `damage` and `radius` are all real
+   Unity fields, so "20.4% per stack" read as a claim that `stack` equals 20.4. That produced
+   **14 flagged claims of which 13 were noise** — a block of defects from an instrument that had
+   not been checked (rule 3 again). camelCase is the discriminator that actually separates a
+   cited field from a word.
+4. **One haystack.** Strides of Heresy's values live in an `EntityStateConfiguration` and Defiant
+   Gouge's `monsterCredit` is a code literal; checking only serialized components and reporting
+   the misses as defects blamed the data for the instrument's blind spot.
+
+Only after all four was the reading believable: **18 field-value claims across 9 of 69 notes,
+17 correct and 1 misattributed.**
+
+#### The guard, and why it has two legs
+
+`data:audit` now cross-checks every `fieldName <number>` pair in our prose. The obvious version —
+"does the game hold this value for this field anywhere?" — is not enough: `baseRadius = 40` is a
+real serialized `baseRadius`, on `HoldoutZone`, so claiming it for Helfire passes. The second leg
+compares against the **specific component the note names** (7 of the 18 qualify), which is the
+only leg that catches the defect actually found.
+
+That leg needs an escape, because citing code for a field whose asset disagrees is the correct
+thing to do here — it is the fix. The escape is evidence: **to claim a value comes from code,
+quote the assignment**, and the note and the decompile must both contain it. Naming a component
+and asserting a number it does not hold, with no code shown, still fails.
+
+Two smaller traps inside the guard, both recurrences:
+- The escape first used an undelimited `"name = value"`, which matches `"dotDuration = 30f"` when
+  looking for `3` — §3j.160's substring bug in a new rule. It quietly exempted five claims.
+- The CI baseline first stubbed `ownerDeclares` as `() => true`, which attributed `healingRadius`
+  to `DeskplantWard` (it declares no such field) and disagreed with the local run. The test
+  caught its own shim.
+
+**Proven by breakage: 4 mutations, 4 caught**, including restoring the exact prose that shipped
+before this pass. Two are now permanent in `pnpm data:mutate`.
+
+#### And CI can see it, which took a baseline
+
+The check needs the git-ignored extractions, so both mutations initially **survived
+`data:mutate --ci`**. The 18 claims are now pinned in `game-facts-baseline.json` and re-derived
+in `test:unit` by the *same parser* — one implementation, because two that disagree is §3j.167.
+CI cannot check them against the game, but it can insist they have not changed, which is what
+stops a verified number being quietly reworded. Both mutations are now caught in both modes.
+
+#### A tooling bug found by being bitten by it
+
+`mutation-sweep.mjs --ci` renames `.gamedata/` and `.decompiled/` aside and restores them on
+exit. The restore **failed with EPERM** — a gate stage had just read 12 MB out of `.decompiled/`
+and Windows still held the handle — and the sweep exited leaving the extractions hidden. That is
+§3j.148 rebuilt by our own tooling: from that point every local cross-check reports SKIPPED and
+exits 0, and a skipped check reads as a pass. `unhide` now retries and, if it still cannot,
+fails loudly telling you not to trust a local run until you have renamed them back.

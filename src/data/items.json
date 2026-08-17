@@ -2900,7 +2900,7 @@
     "wiki": "https://riskofrain2.wiki.gg/wiki/Interstellar_Desk_Plant",
     "verified": true,
     "confidence": "code",
-    "descriptionNote": "The in-game text is wrong in three places, and the numbers above are the verified ones. It heals 5% every 0.5s (DeskplantWard: healFraction 0.05, interval 0.5), not 10% every second — the same rate, but it matters for a plant that only lives 10s. And the radius is 10m at one stack, not 5m: the controller computes healingRadius (5) + 5 x stacks, so the first stack already adds its 5m."
+    "descriptionNote": "The in-game text is wrong in three places, and the numbers above are the verified ones. It heals 5% every 0.5s, not 10% every second — the same rate, but it matters for a plant that only lives 10s. The two halves of that rate come from different places: interval = 0.5 is serialized on the DeskplantWard prefab, while healFraction is assigned in code when the plant blooms (`component.healFraction = 0.05f` in DeskPlantController.MainState.OnEnter). The prefab's own healFraction is 0, so reading the asset alone would say the plant heals nothing. And the radius is 10m at one stack, not 5m: the controller computes healingRadius (5) + 5 x stacks, so the first stack already adds its 5m."
   },
   {
     "id": "symbiotic-scorpion",

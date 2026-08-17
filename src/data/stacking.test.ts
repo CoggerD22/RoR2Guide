@@ -10,6 +10,7 @@ import { readFileSync, readdirSync, existsSync } from "node:fs";
 import { join } from "node:path";
 import skills from "./skills.json";
 import { procProvenance } from "./skills";
+import { extractFieldClaims } from "@/lib/fieldClaims";
 
 /**
  * Regression tests for stacking values that were WRONG when derived from the game's
@@ -2936,4 +2937,51 @@ test("the component extraction covers every field we depend on", async () => {
     `the extraction is missing fields the data depends on: ${missing.join(", ")}. ` +
       "Re-run scripts/extract-component-fields.py with every name in component-fields-wanted.json.",
   ).toEqual([]);
+});
+
+/**
+ * §3j.169 — the numbers our notes attribute to the game's own fields, pinned.
+ *
+ * `data:audit` checks each of these against the extracted components, the state configs and the
+ * decompiled C#, and — where a note names a component — against THAT component specifically.
+ * All of that needs the git-ignored extractions, so in CI it skips entirely. Two mutations
+ * proved that: a note claiming `maxTargets is 7` and one attributing another component's
+ * `baseRadius = 40` to HelfireController both survive `data:mutate --ci`.
+ *
+ * So the claims are pinned here and re-derived by the SAME parser the audit uses. CI cannot
+ * check them against the game, but it can insist they have not changed — which is what stops a
+ * verified number being quietly reworded into an unverified one.
+ */
+test("field-value claims in descriptionNotes match the pinned baseline", () => {
+  const baseline = JSON.parse(readFileSync("src/data/game-facts-baseline.json", "utf8")) as {
+    fieldClaims: {
+      vocabulary: { fields: string[]; owners: string[]; declares: Record<string, string[]> };
+      claims: { id: string; field: string; stated: number; owner: string | null }[];
+    };
+  };
+  const { vocabulary, claims: pinned } = baseline.fieldClaims;
+  expect(pinned.length, "the claim baseline is empty — it should hold every pinned claim").toBeGreaterThan(0);
+
+  const vocab = {
+    fields: new Set(vocabulary.fields),
+    owners: new Set(vocabulary.owners),
+    // Attribution depends on which fields an owner actually declares, and CI has no component
+    // data to answer that with. Pinning the relation is what makes CI reproduce the local
+    // answer from identical prose: DeskplantWard is named in the Desk Plant note but does not
+    // declare `healingRadius`, so that claim is unattributed in both. A blanket `() => true`
+    // here silently attributed it and the test caught itself.
+    ownerDeclares: (o: string, f: string) => (vocabulary.declares[o] ?? []).includes(f),
+  };
+
+  const found: { id: string; field: string; stated: number; owner: string | null }[] = [];
+  for (const it of items) {
+    if (!it.descriptionNote) continue;
+    for (const c of extractFieldClaims(it.descriptionNote, vocab)) {
+      found.push({ id: it.id, field: c.field, stated: c.stated, owner: c.owner });
+    }
+  }
+
+  const key = (c: { id: string; field: string; stated: number; owner: string | null }) =>
+    `${c.id} ${c.field}=${c.stated}${c.owner ? ` @${c.owner}` : ""}`;
+  expect(found.map(key).sort()).toEqual(pinned.map(key).sort());
 });

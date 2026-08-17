@@ -1,1448 +1,1614 @@
 {
-  "_why": "§3j.154 — the game facts CI cannot re-derive, pinned so a change to one is deliberate and reviewable. Found by scripts/mutation-sweep.mjs --ci, which corrupts a real artefact and reports what still ships green. Two facts survived the CI gate: a reworded item description, and a wrong `dlc`. Both are things the site asserts about the game.",
-  "_layers": "LOCAL proves these against the game itself (data:diff compares descriptions verbatim, data:verify checks dlc against ItemDef). CI has no game data — .decompiled/ and .gamedata/ are Gearbox's and never committed — so CI proves only that nothing changed since that proof. Neither layer alone is enough; together they are.",
-  "_notScopedHere": "tier is deliberately absent: a wrong tier already fails the browser suite in CI, and guarding what is covered is upkeep for no cover (audit rule 7).",
-  "_descStatus": {
-    "verbatim": "matches the game's own _DESC token, which is what schema.ts documents",
-    "documented-divergence": "differs deliberately, via descriptionNote + code/asset confidence",
-    "undocumented-divergence": "differs with NO stated reason — see AUDIT-BACKLOG DEFERRED",
-    "no-game-text": "quest/scrap items with no _DESC token, and the seven elite aspects whose _DESC is literally \"???\" — the game states nothing to quote (§3j.160)"
+ "_why": "§3j.154 — the game facts CI cannot re-derive, pinned so a change to one is deliberate and reviewable. Found by scripts/mutation-sweep.mjs --ci, which corrupts a real artefact and reports what still ships green. Two facts survived the CI gate: a reworded item description, and a wrong `dlc`. Both are things the site asserts about the game.",
+ "_layers": "LOCAL proves these against the game itself (data:diff compares descriptions verbatim, data:verify checks dlc against ItemDef). CI has no game data — .decompiled/ and .gamedata/ are Gearbox's and never committed — so CI proves only that nothing changed since that proof. Neither layer alone is enough; together they are.",
+ "_notScopedHere": "tier is deliberately absent: a wrong tier already fails the browser suite in CI, and guarding what is covered is upkeep for no cover (audit rule 7).",
+ "_descStatus": {
+  "verbatim": "matches the game's own _DESC token, which is what schema.ts documents",
+  "documented-divergence": "differs deliberately, via descriptionNote + code/asset confidence",
+  "undocumented-divergence": "differs with NO stated reason — see AUDIT-BACKLOG DEFERRED",
+  "no-game-text": "quest/scrap items with no _DESC token, and the seven elite aspects whose _DESC is literally \"???\" — the game states nothing to quote (§3j.160)"
+ },
+ "counts": {
+  "verbatim": 175,
+  "no-game-text": 19,
+  "documented-divergence": 23
+ },
+ "items": {
+  "crowbar": {
+   "descSha": "9674cd20a51768a9",
+   "descStatus": "verbatim",
+   "dlc": "base"
   },
-  "counts": {
-    "verbatim": 175,
-    "no-game-text": 19,
-    "documented-divergence": 23
+  "soldiers-syringe": {
+   "descSha": "2b19af2db9abc82c",
+   "descStatus": "verbatim",
+   "dlc": "base"
   },
-  "items": {
-    "crowbar": {
-      "descSha": "9674cd20a51768a9",
-      "descStatus": "verbatim",
-      "dlc": "base"
-    },
-    "soldiers-syringe": {
-      "descSha": "2b19af2db9abc82c",
-      "descStatus": "verbatim",
-      "dlc": "base"
-    },
-    "lens-makers-glasses": {
-      "descSha": "f5e64552a9ae7c7f",
-      "descStatus": "verbatim",
-      "dlc": "base"
-    },
-    "tougher-times": {
-      "descSha": "b964cd75025b349b",
-      "descStatus": "verbatim",
-      "dlc": "base",
-      "gameTags": [
-        "BrotherBlacklist"
-      ]
-    },
-    "tri-tip-dagger": {
-      "descSha": "f6140208c501ae3b",
-      "descStatus": "verbatim",
-      "dlc": "base"
-    },
-    "pauls-goat-hoof": {
-      "descSha": "187eee2f1b29520e",
-      "descStatus": "verbatim",
-      "dlc": "base"
-    },
-    "armor-piercing-rounds": {
-      "descSha": "379fa0245752902c",
-      "descStatus": "verbatim",
-      "dlc": "base",
-      "gameTags": [
-        "AIBlacklist"
-      ]
-    },
-    "backup-magazine": {
-      "descSha": "9b12b7990c0326ae",
-      "descStatus": "verbatim",
-      "dlc": "base"
-    },
-    "bison-steak": {
-      "descSha": "5367048dffeac7ca",
-      "descStatus": "verbatim",
-      "dlc": "base"
-    },
-    "bustling-fungus": {
-      "descSha": "76a3fd28d33cf68c",
-      "descStatus": "verbatim",
-      "dlc": "base",
-      "gameTags": [
-        "AIBlacklist"
-      ]
-    },
-    "cautious-slug": {
-      "descSha": "afde1458d733cab0",
-      "descStatus": "verbatim",
-      "dlc": "base"
-    },
-    "monster-tooth": {
-      "descSha": "d16874b9d3e21297",
-      "descStatus": "verbatim",
-      "dlc": "base"
-    },
-    "bundle-of-fireworks": {
-      "descSha": "922c76f8891be112",
-      "descStatus": "verbatim",
-      "dlc": "base",
-      "gameTags": [
-        "AIBlacklist"
-      ]
-    },
-    "delicate-watch": {
-      "descSha": "c598ee1fd0c8dea7",
-      "descStatus": "verbatim",
-      "dlc": "sotv",
-      "gameTags": [
-        "ExtractorUnitBlacklist"
-      ]
-    },
-    "energy-drink": {
-      "descSha": "8a23bce130c609fe",
-      "descStatus": "verbatim",
-      "dlc": "base"
-    },
-    "focus-crystal": {
-      "descSha": "d515ab8a25444881",
-      "descStatus": "verbatim",
-      "dlc": "base"
-    },
-    "gasoline": {
-      "descSha": "6ace143ca80f2a40",
-      "descStatus": "verbatim",
-      "dlc": "base"
-    },
-    "medkit": {
-      "descSha": "f675f20d29e2f70e",
-      "descStatus": "verbatim",
-      "dlc": "base"
-    },
-    "personal-shield-generator": {
-      "descSha": "272de703793e4b52",
-      "descStatus": "verbatim",
-      "dlc": "base"
-    },
-    "power-elixir": {
-      "descSha": "7cddcf403730a786",
-      "descStatus": "verbatim",
-      "dlc": "sotv",
-      "gameTags": [
-        "AIBlacklist",
-        "ExtractorUnitBlacklist"
-      ]
-    },
-    "repulsion-armor-plate": {
-      "descSha": "cdb41df32678dd06",
-      "descStatus": "verbatim",
-      "dlc": "base"
-    },
-    "roll-of-pennies": {
-      "descSha": "5986f2bc8245f5f5",
-      "descStatus": "verbatim",
-      "dlc": "sotv",
-      "gameTags": [
-        "AIBlacklist"
-      ]
-    },
-    "sticky-bomb": {
-      "descSha": "7d9e81d750fd780c",
-      "descStatus": "verbatim",
-      "dlc": "base"
-    },
-    "topaz-brooch": {
-      "descSha": "707ec09483b8f0a6",
-      "descStatus": "verbatim",
-      "dlc": "base"
-    },
-    "stun-grenade": {
-      "descSha": "8b0d1c9bde5a4cd4",
-      "descStatus": "verbatim",
-      "dlc": "base",
-      "gameTags": [
-        "AIBlacklist"
-      ]
-    },
-    "warbanner": {
-      "descSha": "e6501e45d066aafe",
-      "descStatus": "verbatim",
-      "dlc": "base",
-      "gameTags": [
-        "AIBlacklist",
-        "CannotCopy"
-      ]
-    },
-    "mocha": {
-      "descSha": "7a32fdca591cea32",
-      "descStatus": "verbatim",
-      "dlc": "sotv"
-    },
-    "oddly-shaped-opal": {
-      "descSha": "15142a9e5b18707c",
-      "descStatus": "verbatim",
-      "dlc": "sotv"
-    },
-    "elusive-antlers": {
-      "descSha": "6c008d8b8dbc6010",
-      "descStatus": "verbatim",
-      "dlc": "sots",
-      "gameTags": [
-        "AIBlacklist",
-        "HalcyoniteShrine"
-      ]
-    },
-    "chronic-expansion": {
-      "descSha": "1b0d48a7e1a16691",
-      "descStatus": "verbatim",
-      "dlc": "sots",
-      "gameTags": [
-        "HalcyoniteShrine"
-      ]
-    },
-    "warped-echo": {
-      "descSha": "61d5051d7ecd0ae3",
-      "descStatus": "verbatim",
-      "dlc": "sots",
-      "gameTags": [
-        "HalcyoniteShrine"
-      ]
-    },
-    "item-scrap-white": {
-      "descSha": "4358a369bce2ad46",
-      "descStatus": "no-game-text",
-      "dlc": "base",
-      "gameTags": [
-        "Scrap",
-        "WorldUnique"
-      ]
-    },
-    "rusted-key": {
-      "descSha": "1003e4ffc5a5e8ea",
-      "descStatus": "documented-divergence",
-      "dlc": "base",
-      "gameTags": [
-        "AIBlacklist"
-      ]
-    },
-    "hikers-boots": {
-      "descSha": "2d63ece151bff891",
-      "descStatus": "verbatim",
-      "dlc": "ac"
-    },
-    "bolstering-lantern": {
-      "descSha": "e32a57c19aeefbe9",
-      "descStatus": "verbatim",
-      "dlc": "sots",
-      "gameTags": [
-        "HalcyoniteShrine"
-      ]
-    },
-    "eclipse-lite": {
-      "descSha": "0f311eb1f9bcb0d1",
-      "descStatus": "verbatim",
-      "dlc": "ac"
-    },
-    "atg-missile-mk-1": {
-      "descSha": "2d482b273e2393e5",
-      "descStatus": "verbatim",
-      "dlc": "base"
-    },
-    "will-o-the-wisp": {
-      "descSha": "b0a7f424dd19d93c",
-      "descStatus": "verbatim",
-      "dlc": "base"
-    },
-    "hopoo-feather": {
-      "descSha": "4ca951aa09d822e5",
-      "descStatus": "verbatim",
-      "dlc": "base",
-      "gameTags": [
-        "AIBlacklist"
-      ]
-    },
-    "ukulele": {
-      "descSha": "566de77ef9d62fa9",
-      "descStatus": "verbatim",
-      "dlc": "base"
-    },
-    "leeching-seed": {
-      "descSha": "119d7370df1620c5",
-      "descStatus": "verbatim",
-      "dlc": "base"
-    },
-    "predatory-instincts": {
-      "descSha": "fa161e836420ad56",
-      "descStatus": "verbatim",
-      "dlc": "base"
-    },
-    "red-whip": {
-      "descSha": "cc9df7e08adaf492",
-      "descStatus": "verbatim",
-      "dlc": "base"
-    },
-    "old-war-stealthkit": {
-      "descSha": "c56321465775711d",
-      "descStatus": "verbatim",
-      "dlc": "base"
-    },
-    "harvesters-scythe": {
-      "descSha": "6c6e0addad90ec17",
-      "descStatus": "verbatim",
-      "dlc": "base"
-    },
-    "fuel-cell": {
-      "descSha": "1088e6cf682744d7",
-      "descStatus": "verbatim",
-      "dlc": "base",
-      "gameTags": [
-        "AIBlacklist"
-      ]
-    },
-    "infusion": {
-      "descSha": "9054f37a2a460d2d",
-      "descStatus": "verbatim",
-      "dlc": "base"
-    },
-    "bandolier": {
-      "descSha": "a81384cc0a9068e5",
-      "descStatus": "verbatim",
-      "dlc": "base"
-    },
-    "berzerkers-pauldron": {
-      "descSha": "8ba09996df796a02",
-      "descStatus": "verbatim",
-      "dlc": "base"
-    },
-    "rose-buckler": {
-      "descSha": "353bddaa6641647a",
-      "descStatus": "verbatim",
-      "dlc": "base"
-    },
-    "runalds-band": {
-      "descSha": "a9105dff1ba5abb9",
-      "descStatus": "verbatim",
-      "dlc": "base"
-    },
-    "kjaros-band": {
-      "descSha": "df1cf89d9c3232ed",
-      "descStatus": "verbatim",
-      "dlc": "base"
-    },
-    "chronobauble": {
-      "descSha": "49c5558cc6b33b72",
-      "descStatus": "verbatim",
-      "dlc": "base"
-    },
-    "wax-quail": {
-      "descSha": "30f047da4fb551e0",
-      "descStatus": "verbatim",
-      "dlc": "base"
-    },
-    "old-guillotine": {
-      "descSha": "13098659f97ed35f",
-      "descStatus": "verbatim",
-      "dlc": "base",
-      "gameTags": [
-        "AIBlacklist"
-      ]
-    },
-    "war-horn": {
-      "descSha": "8301e2bf7ab310a4",
-      "descStatus": "verbatim",
-      "dlc": "base",
-      "gameTags": [
-        "AIBlacklist"
-      ]
-    },
-    "lepton-daisy": {
-      "descSha": "583f1fbd57b245f1",
-      "descStatus": "verbatim",
-      "dlc": "base",
-      "gameTags": [
-        "AIBlacklist",
-        "CannotCopy"
-      ]
-    },
-    "razorwire": {
-      "descSha": "a8de06cd55cac8f4",
-      "descStatus": "verbatim",
-      "dlc": "base",
-      "gameTags": [
-        "AIBlacklist"
-      ]
-    },
-    "ghors-tome": {
-      "descSha": "13095425add55556",
-      "descStatus": "documented-divergence",
-      "dlc": "base"
-    },
-    "squid-polyp": {
-      "descSha": "c4f994cfb76facaf",
-      "descStatus": "verbatim",
-      "dlc": "base",
-      "gameTags": [
-        "AIBlacklist"
-      ]
-    },
-    "death-mark": {
-      "descSha": "6d080f645976daec",
-      "descStatus": "verbatim",
-      "dlc": "base"
-    },
-    "shuriken": {
-      "descSha": "5050dc386433c47d",
-      "descStatus": "verbatim",
-      "dlc": "sotv"
-    },
-    "shipping-request-form": {
-      "descSha": "3a174e3f1f23f8a4",
-      "descStatus": "verbatim",
-      "dlc": "sotv",
-      "gameTags": [
-        "AIBlacklist"
-      ]
-    },
-    "unstable-transmitter": {
-      "descSha": "9cf31af24bd24cee",
-      "descStatus": "verbatim",
-      "dlc": "sots",
-      "gameTags": [
-        "AIBlacklist",
-        "ExtractorUnitBlacklist",
-        "HalcyoniteShrine"
-      ]
-    },
-    "item-scrap-green": {
-      "descSha": "2b52e8003a23b842",
-      "descStatus": "no-game-text",
-      "dlc": "base",
-      "gameTags": [
-        "Scrap",
-        "WorldUnique"
-      ]
-    },
-    "sale-star": {
-      "descSha": "1de3e531949a0d5e",
-      "descStatus": "verbatim",
-      "dlc": "sots",
-      "gameTags": [
-        "AIBlacklist",
-        "CannotDuplicate",
-        "HalcyoniteShrine"
-      ]
-    },
-    "hunters-harpoon": {
-      "descSha": "af707966b1cd34be",
-      "descStatus": "verbatim",
-      "dlc": "sotv"
-    },
-    "ignition-tank": {
-      "descSha": "63aa312f9707eaf2",
-      "descStatus": "verbatim",
-      "dlc": "sotv"
-    },
-    "regenerating-scrap": {
-      "descSha": "d2bbedff529b4695",
-      "descStatus": "no-game-text",
-      "dlc": "sotv",
-      "gameTags": [
-        "AIBlacklist",
-        "CannotDuplicate",
-        "CommandArtifactBlacklist",
-        "PriorityScrap"
-      ]
-    },
-    "breaching-fin": {
-      "descSha": "845e0b4e463c8254",
-      "descStatus": "verbatim",
-      "dlc": "sots",
-      "gameTags": [
-        "AIBlacklist",
-        "DevotionBlacklist",
-        "HalcyoniteShrine"
-      ]
-    },
-    "chance-doll": {
-      "descSha": "742585777b2606f9",
-      "descStatus": "verbatim",
-      "dlc": "sots",
-      "gameTags": [
-        "AIBlacklist",
-        "CannotDuplicate",
-        "HalcyoniteShrine",
-        "SacrificeBlacklist"
-      ]
-    },
-    "luminous-shot": {
-      "descSha": "e2ceae33c8330fdd",
-      "descStatus": "verbatim",
-      "dlc": "sots",
-      "gameTags": [
-        "AIBlacklist",
-        "DevotionBlacklist",
-        "HalcyoniteShrine"
-      ]
-    },
-    "noxious-thorn": {
-      "descSha": "aaa862c52f637bd7",
-      "descStatus": "verbatim",
-      "dlc": "sots",
-      "gameTags": [
-        "HalcyoniteShrine"
-      ]
-    },
-    "prayer-beads": {
-      "descSha": "b251327b2289d1ed",
-      "descStatus": "verbatim",
-      "dlc": "sots",
-      "gameTags": [
-        "AIBlacklist",
-        "CannotDuplicate",
-        "HalcyoniteShrine"
-      ]
-    },
-    "box-of-dynamite": {
-      "descSha": "5c0b8d125bd7ab94",
-      "descStatus": "documented-divergence",
-      "dlc": "ac",
-      "gameTags": [
-        "AIBlacklist",
-        "BrotherBlacklist",
-        "CannotCopy",
-        "ExtractorUnitBlacklist"
-      ]
-    },
-    "collectors-compulsion": {
-      "descSha": "d17cd844f5de7e60",
-      "descStatus": "verbatim",
-      "dlc": "ac",
-      "gameTags": [
-        "AIBlacklist"
-      ]
-    },
-    "faraday-spur": {
-      "descSha": "f7d5ecca35b6dac5",
-      "descStatus": "verbatim",
-      "dlc": "ac",
-      "gameTags": [
-        "AIBlacklist",
-        "DevotionBlacklist"
-      ]
-    },
-    "kinetic-dampener": {
-      "descSha": "6ed1135e27ee8245",
-      "descStatus": "verbatim",
-      "dlc": "ac"
-    },
-    "brilliant-behemoth": {
-      "descSha": "9faa9d4ce2533515",
-      "descStatus": "verbatim",
-      "dlc": "base"
-    },
-    "ceremonial-dagger": {
-      "descSha": "bbe99f83003727d3",
-      "descStatus": "verbatim",
-      "dlc": "base",
-      "gameTags": [
-        "AIBlacklist"
-      ]
-    },
-    "alien-head": {
-      "descSha": "d4f8572ac7556b78",
-      "descStatus": "verbatim",
-      "dlc": "base"
-    },
-    "57-leaf-clover": {
-      "descSha": "6431a3ae34cfbac1",
-      "descStatus": "verbatim",
-      "dlc": "base"
-    },
-    "dios-best-friend": {
-      "descSha": "c1d571de4275823d",
-      "descStatus": "verbatim",
-      "dlc": "base",
-      "gameTags": [
-        "ExtractorUnitBlacklist"
-      ]
-    },
-    "sentient-meat-hook": {
-      "descSha": "dfde2dc508f0fb30",
-      "descStatus": "verbatim",
-      "dlc": "base"
-    },
-    "happiest-mask": {
-      "descSha": "617a2de80d12c586",
-      "descStatus": "verbatim",
-      "dlc": "base"
-    },
-    "frost-relic": {
-      "descSha": "412a7297efbb6f39",
-      "descStatus": "documented-divergence",
-      "dlc": "base"
-    },
-    "h3ad-5t-v2": {
-      "descSha": "993adee872794f4e",
-      "descStatus": "verbatim",
-      "dlc": "base",
-      "gameTags": [
-        "AIBlacklist"
-      ]
-    },
-    "nkuhanas-opinion": {
-      "descSha": "abdb81ef5770a402",
-      "descStatus": "verbatim",
-      "dlc": "base"
-    },
-    "unstable-tesla-coil": {
-      "descSha": "f517245b2bf2584b",
-      "descStatus": "verbatim",
-      "dlc": "base",
-      "gameTags": [
-        "AIBlacklist"
-      ]
-    },
-    "soulbound-catalyst": {
-      "descSha": "ff6675cc3aa93d70",
-      "descStatus": "verbatim",
-      "dlc": "base",
-      "gameTags": [
-        "AIBlacklist"
-      ]
-    },
-    "hardlight-afterburner": {
-      "descSha": "79e98085a71db057",
-      "descStatus": "verbatim",
-      "dlc": "base"
-    },
-    "wake-of-vultures": {
-      "descSha": "d560e09ebf2ed414",
-      "descStatus": "verbatim",
-      "dlc": "base",
-      "gameTags": [
-        "AIBlacklist"
-      ]
-    },
-    "brainstalks": {
-      "descSha": "61c43b4f61ab3a1d",
-      "descStatus": "verbatim",
-      "dlc": "base",
-      "gameTags": [
-        "AIBlacklist"
-      ]
-    },
-    "rejuvenation-rack": {
-      "descSha": "416c445e14b63cc9",
-      "descStatus": "verbatim",
-      "dlc": "base"
-    },
-    "aegis": {
-      "descSha": "47f81e245ad9986e",
-      "descStatus": "verbatim",
-      "dlc": "base"
-    },
-    "shattering-justice": {
-      "descSha": "7e9ba42c29ff9e71",
-      "descStatus": "verbatim",
-      "dlc": "base"
-    },
-    "resonance-disc": {
-      "descSha": "0f6f750ebbcba24c",
-      "descStatus": "documented-divergence",
-      "dlc": "base"
-    },
-    "defensive-microbots": {
-      "descSha": "e8d4d4e328455372",
-      "descStatus": "verbatim",
-      "dlc": "base",
-      "gameTags": [
-        "RebirthBlacklist",
-        "WorldUnique"
-      ]
-    },
-    "laser-scope": {
-      "descSha": "7a7786928f352a63",
-      "descStatus": "verbatim",
-      "dlc": "sotv"
-    },
-    "pocket-icbm": {
-      "descSha": "82f8b32a4ed4eac0",
-      "descStatus": "verbatim",
-      "dlc": "sotv"
-    },
-    "spare-drone-parts": {
-      "descSha": "7a1d1644cd2560bc",
-      "descStatus": "verbatim",
-      "dlc": "sotv",
-      "gameTags": [
-        "AIBlacklist",
-        "BrotherBlacklist",
-        "CannotCopy",
-        "ExtractorUnitBlacklist"
-      ]
-    },
-    "interstellar-desk-plant": {
-      "descSha": "ede91d4389bdd979",
-      "descStatus": "documented-divergence",
-      "dlc": "base"
-    },
-    "symbiotic-scorpion": {
-      "descSha": "fd7ba8a574763a57",
-      "descStatus": "verbatim",
-      "dlc": "sotv"
-    },
-    "bens-raincoat": {
-      "descSha": "d9faa0e3fb86640a",
-      "descStatus": "documented-divergence",
-      "dlc": "sotv"
-    },
-    "bottled-chaos": {
-      "descSha": "79dac6283aaeade8",
-      "descStatus": "verbatim",
-      "dlc": "sotv"
-    },
-    "electric-boomerang": {
-      "descSha": "8070b5d8ec943429",
-      "descStatus": "verbatim",
-      "dlc": "sots",
-      "gameTags": [
-        "HalcyoniteShrine"
-      ]
-    },
-    "growth-nectar": {
-      "descSha": "ed4503f63a57041a",
-      "descStatus": "verbatim",
-      "dlc": "sots",
-      "gameTags": [
-        "HalcyoniteShrine"
-      ]
-    },
-    "runic-lens": {
-      "descSha": "3900da57e8a13cca",
-      "descStatus": "verbatim",
-      "dlc": "sots",
-      "gameTags": [
-        "HalcyoniteShrine"
-      ]
-    },
-    "sonorous-whispers": {
-      "descSha": "63a6cca125836e7d",
-      "descStatus": "documented-divergence",
-      "dlc": "sots",
-      "gameTags": [
-        "AIBlacklist",
-        "CannotDuplicate",
-        "HalcyoniteShrine"
-      ]
-    },
-    "war-bonds": {
-      "descSha": "8a535afb01f3c839",
-      "descStatus": "documented-divergence",
-      "dlc": "sots",
-      "gameTags": [
-        "AIBlacklist",
-        "HalcyoniteShrine"
-      ]
-    },
-    "networked-suffering": {
-      "descSha": "8c27c7285b0e72da",
-      "descStatus": "verbatim",
-      "dlc": "ac"
-    },
-    "orphaned-core": {
-      "descSha": "ae85143243b71f34",
-      "descStatus": "documented-divergence",
-      "dlc": "ac",
-      "gameTags": [
-        "AIBlacklist",
-        "BrotherBlacklist",
-        "CannotCopy",
-        "CannotSteal",
-        "ExtractorUnitBlacklist"
-      ]
-    },
-    "substandard-duplicator": {
-      "descSha": "15f94beb541e9ce5",
-      "descStatus": "verbatim",
-      "dlc": "ac",
-      "gameTags": [
-        "AIBlacklist",
-        "DevotionBlacklist"
-      ]
-    },
-    "item-scrap-red": {
-      "descSha": "eaff0295a5e427f1",
-      "descStatus": "no-game-text",
-      "dlc": "base",
-      "gameTags": [
-        "Scrap",
-        "WorldUnique"
-      ]
-    },
-    "titanic-knurl": {
-      "descSha": "8eca900ce302cbb9",
-      "descStatus": "verbatim",
-      "dlc": "base"
-    },
-    "queens-gland": {
-      "descSha": "544f3bfa5b01a94d",
-      "descStatus": "verbatim",
-      "dlc": "base",
-      "gameTags": [
-        "CannotCopy",
-        "ExtractorUnitBlacklist"
-      ]
-    },
-    "shatterspleen": {
-      "descSha": "75f7896eb821a8d5",
-      "descStatus": "documented-divergence",
-      "dlc": "base"
-    },
-    "halcyon-seed": {
-      "descSha": "8cd9a611395153ee",
-      "descStatus": "verbatim",
-      "dlc": "base",
-      "gameTags": [
-        "CannotCopy",
-        "CannotSteal",
-        "ExtractorUnitBlacklist",
-        "WorldUnique"
-      ]
-    },
-    "little-disciple": {
-      "descSha": "879b8351e015740f",
-      "descStatus": "verbatim",
-      "dlc": "base"
-    },
-    "genesis-loop": {
-      "descSha": "12a1fd1f5299cceb",
-      "descStatus": "documented-divergence",
-      "dlc": "base"
-    },
-    "pearl": {
-      "descSha": "0f28cd52556902f4",
-      "descStatus": "verbatim",
-      "dlc": "base",
-      "gameTags": [
-        "WorldUnique"
-      ]
-    },
-    "irradiant-pearl": {
-      "descSha": "89ae1fd8150f3b72",
-      "descStatus": "verbatim",
-      "dlc": "base",
-      "gameTags": [
-        "WorldUnique"
-      ]
-    },
-    "artifact-key": {
-      "descSha": "8a825a43f0e2298e",
-      "descStatus": "no-game-text",
-      "dlc": "base",
-      "gameTags": [
-        "ObjectiveRelated",
-        "WorldUnique"
-      ]
-    },
-    "molten-perforator": {
-      "descSha": "04ccf1670e127cde",
-      "descStatus": "verbatim",
-      "dlc": "base"
-    },
-    "charged-perforator": {
-      "descSha": "eba6ee89d085bdab",
-      "descStatus": "verbatim",
-      "dlc": "base"
-    },
-    "mired-urn": {
-      "descSha": "f75328f363de5aee",
-      "descStatus": "documented-divergence",
-      "dlc": "base",
-      "gameTags": [
-        "BrotherBlacklist"
-      ]
-    },
-    "empathy-cores": {
-      "descSha": "b631ccbb2e7526d0",
-      "descStatus": "verbatim",
-      "dlc": "base",
-      "gameTags": [
-        "CannotCopy",
-        "ExtractorUnitBlacklist"
-      ]
-    },
-    "planula": {
-      "descSha": "5c2ae4131dd9c463",
-      "descStatus": "verbatim",
-      "dlc": "base"
-    },
-    "defense-nucleus": {
-      "descSha": "d1e89b71aa36a455",
-      "descStatus": "verbatim",
-      "dlc": "sotv"
-    },
-    "functional-coupler": {
-      "descSha": "1eb1c14f597038ee",
-      "descStatus": "verbatim",
-      "dlc": "ac",
-      "gameTags": [
-        "AIBlacklist"
-      ]
-    },
-    "faulty-conductor": {
-      "descSha": "dd83613c4c0abe8b",
-      "descStatus": "verbatim",
-      "dlc": "ac"
-    },
-    "sentry-key": {
-      "descSha": "3903ce46af85536d",
-      "descStatus": "verbatim",
-      "dlc": "ac",
-      "gameTags": [
-        "CannotCopy",
-        "ExtractorUnitBlacklist",
-        "IgnoreForDropList",
-        "ObjectiveRelated",
-        "WorldUnique"
-      ]
-    },
-    "prison-matrix": {
-      "descSha": "ab07b8f482e671ea",
-      "descStatus": "verbatim",
-      "dlc": "ac",
-      "gameTags": [
-        "AIBlacklist",
-        "CannotCopy",
-        "CommandArtifactBlacklist",
-        "ExtractorUnitBlacklist",
-        "IgnoreForDropList",
-        "ObjectiveRelated",
-        "WorldUnique"
-      ]
-    },
-    "encrypted-cerebellum": {
-      "descSha": "438038550f235f9c",
-      "descStatus": "no-game-text",
-      "dlc": "ac",
-      "gameTags": [
-        "AIBlacklist",
-        "BrotherBlacklist",
-        "CannotCopy",
-        "CannotDuplicate",
-        "CannotSteal",
-        "ExtractorUnitBlacklist",
-        "ObjectiveRelated",
-        "WorldUnique"
-      ]
-    },
-    "exposed-cerebellum": {
-      "descSha": "2b9b90923aecf234",
-      "descStatus": "no-game-text",
-      "dlc": "ac",
-      "gameTags": [
-        "AIBlacklist",
-        "BrotherBlacklist",
-        "CannotCopy",
-        "CannotDuplicate",
-        "CannotSteal",
-        "ExtractorUnitBlacklist",
-        "ObjectiveRelated",
-        "RebirthBlacklist",
-        "WorldUnique"
-      ]
-    },
-    "item-scrap-yellow": {
-      "descSha": "7280f7f97332ed90",
-      "descStatus": "no-game-text",
-      "dlc": "base",
-      "gameTags": [
-        "Scrap",
-        "WorldUnique"
-      ]
-    },
-    "shaped-glass": {
-      "descSha": "3d2ca3356995c9e8",
-      "descStatus": "verbatim",
-      "dlc": "base"
-    },
-    "brittle-crown": {
-      "descSha": "fe4a069767092803",
-      "descStatus": "verbatim",
-      "dlc": "base"
-    },
-    "transcendence": {
-      "descSha": "3db80a7dac947246",
-      "descStatus": "verbatim",
-      "dlc": "base"
-    },
-    "corpsebloom": {
-      "descSha": "e40f6c51efcbcdec",
-      "descStatus": "verbatim",
-      "dlc": "base"
-    },
-    "gesture-of-the-drowned": {
-      "descSha": "e58a11c58aedbe90",
-      "descStatus": "verbatim",
-      "dlc": "base"
-    },
-    "purity": {
-      "descSha": "062070fb4f8c02f7",
-      "descStatus": "verbatim",
-      "dlc": "base"
-    },
-    "visions-of-heresy": {
-      "descSha": "b392bfdb324745d5",
-      "descStatus": "verbatim",
-      "dlc": "base",
-      "gameTags": [
-        "AIBlacklist",
-        "CannotSteal",
-        "ExtractorUnitBlacklist"
-      ]
-    },
-    "strides-of-heresy": {
-      "descSha": "e50b2d82aa20b54f",
-      "descStatus": "verbatim",
-      "dlc": "base",
-      "gameTags": [
-        "AIBlacklist",
-        "CannotSteal",
-        "ExtractorUnitBlacklist"
-      ]
-    },
-    "hooks-of-heresy": {
-      "descSha": "c72310915f12bce4",
-      "descStatus": "verbatim",
-      "dlc": "base",
-      "gameTags": [
-        "AIBlacklist",
-        "CannotSteal",
-        "ExtractorUnitBlacklist"
-      ]
-    },
-    "essence-of-heresy": {
-      "descSha": "7e9f8f57cb9d1b50",
-      "descStatus": "verbatim",
-      "dlc": "base",
-      "gameTags": [
-        "AIBlacklist",
-        "CannotSteal",
-        "ExtractorUnitBlacklist"
-      ]
-    },
-    "beads-of-fealty": {
-      "descSha": "e3025439f436d6d4",
-      "descStatus": "verbatim",
-      "dlc": "base"
-    },
-    "focused-convergence": {
-      "descSha": "d722cd214786a59b",
-      "descStatus": "verbatim",
-      "dlc": "base",
-      "gameTags": [
-        "AIBlacklist",
-        "CannotCopy"
-      ]
-    },
-    "defiant-gouge": {
-      "descSha": "9f65ab51f76d2ce4",
-      "descStatus": "verbatim",
-      "dlc": "base",
-      "gameTags": [
-        "AIBlacklist"
-      ]
-    },
-    "mercurial-rachis": {
-      "descSha": "92b7c699965a5c78",
-      "descStatus": "verbatim",
-      "dlc": "base"
-    },
-    "stone-flux-pauldron": {
-      "descSha": "dd5a126871361d9e",
-      "descStatus": "verbatim",
-      "dlc": "sotv"
-    },
-    "light-flux-pauldron": {
-      "descSha": "9316609a4341e664",
-      "descStatus": "verbatim",
-      "dlc": "sotv"
-    },
-    "longstanding-solitude": {
-      "descSha": "521a5063758df39b",
-      "descStatus": "verbatim",
-      "dlc": "sots",
-      "gameTags": [
-        "HalcyoniteShrine"
-      ]
-    },
-    "egocentrism": {
-      "descSha": "c9dc2677c8814f37",
-      "descStatus": "verbatim",
-      "dlc": "sotv"
-    },
-    "neutronium-weight": {
-      "descSha": "c8dc2d64a9ccb077",
-      "descStatus": "verbatim",
-      "dlc": "ac",
-      "gameTags": [
-        "AIBlacklist",
-        "BrotherBlacklist",
-        "CannotCopy",
-        "CannotSteal",
-        "Cleansable",
-        "ExtractorUnitBlacklist",
-        "RebirthBlacklist"
-      ]
-    },
-    "eulogy-zero": {
-      "descSha": "6c7ad5931ecfb460",
-      "descStatus": "verbatim",
-      "dlc": "sotv",
-      "gameTags": [
-        "BrotherBlacklist",
-        "RebirthBlacklist"
-      ]
-    },
-    "needletick": {
-      "descSha": "dfbd629825e08640",
-      "descStatus": "verbatim",
-      "dlc": "sotv"
-    },
-    "lost-seers-lenses": {
-      "descSha": "fcf2ef74c179e7d3",
-      "descStatus": "verbatim",
-      "dlc": "sotv"
-    },
-    "safer-spaces": {
-      "descSha": "2076b0ef8b339568",
-      "descStatus": "verbatim",
-      "dlc": "sotv",
-      "gameTags": [
-        "BrotherBlacklist",
-        "RebirthBlacklist"
-      ]
-    },
-    "weeping-fungus": {
-      "descSha": "9c8dee7d236a69cd",
-      "descStatus": "verbatim",
-      "dlc": "sotv"
-    },
-    "encrusted-key": {
-      "descSha": "f5bd640ec9ddc1b9",
-      "descStatus": "verbatim",
-      "dlc": "sotv",
-      "gameTags": [
-        "AIBlacklist"
-      ]
-    },
-    "plasma-shrimp": {
-      "descSha": "122297e15ca9dc80",
-      "descStatus": "verbatim",
-      "dlc": "sotv"
-    },
-    "lysate-cell": {
-      "descSha": "6826d16f9e7784eb",
-      "descStatus": "verbatim",
-      "dlc": "sotv"
-    },
-    "polylute": {
-      "descSha": "a98605654801f930",
-      "descStatus": "verbatim",
-      "dlc": "sotv"
-    },
-    "tentabauble": {
-      "descSha": "90de79928bf7e2e9",
-      "descStatus": "verbatim",
-      "dlc": "sotv"
-    },
-    "singularity-band": {
-      "descSha": "0400c2a6a2870c5e",
-      "descStatus": "verbatim",
-      "dlc": "sotv"
-    },
-    "voidsent-flame": {
-      "descSha": "89f7d2dc351e5002",
-      "descStatus": "verbatim",
-      "dlc": "sotv"
-    },
-    "benthic-bloom": {
-      "descSha": "339d7b5ab8aadd5b",
-      "descStatus": "verbatim",
-      "dlc": "sotv"
-    },
-    "pluripotent-larva": {
-      "descSha": "7933a5202d93495a",
-      "descStatus": "documented-divergence",
-      "dlc": "sotv",
-      "gameTags": [
-        "ExtractorUnitBlacklist"
-      ]
-    },
-    "newly-hatched-zoea": {
-      "descSha": "2fe1c30d462cabf2",
-      "descStatus": "verbatim",
-      "dlc": "sotv",
-      "gameTags": [
-        "CannotCopy",
-        "ExtractorUnitBlacklist"
-      ]
-    },
-    "disposable-missile-launcher": {
-      "descSha": "a323afe27514f107",
-      "descStatus": "verbatim",
-      "dlc": "base"
-    },
-    "foreign-fruit": {
-      "descSha": "b7b5babb95ea6ebd",
-      "descStatus": "verbatim",
-      "dlc": "base"
-    },
-    "preon-accumulator": {
-      "descSha": "0fd5a2ef6c4bfce5",
-      "descStatus": "verbatim",
-      "dlc": "base"
-    },
-    "the-back-up": {
-      "descSha": "c591fdcc665f084d",
-      "descStatus": "verbatim",
-      "dlc": "base"
-    },
-    "ocular-hud": {
-      "descSha": "4c9eefa6defc4cee",
-      "descStatus": "verbatim",
-      "dlc": "base"
-    },
-    "royal-capacitor": {
-      "descSha": "4136346fd74393b7",
-      "descStatus": "verbatim",
-      "dlc": "base"
-    },
-    "the-crowdfunder": {
-      "descSha": "4b065e7484a7b2d7",
-      "descStatus": "documented-divergence",
-      "dlc": "base"
-    },
-    "milky-chrysalis": {
-      "descSha": "842d12fed4a19c33",
-      "descStatus": "verbatim",
-      "dlc": "base"
-    },
-    "gnarled-woodsprite": {
-      "descSha": "0c99bc8b157d09ad",
-      "descStatus": "documented-divergence",
-      "dlc": "base"
-    },
-    "primordial-cube": {
-      "descSha": "d0b8596b0cf21dcd",
-      "descStatus": "verbatim",
-      "dlc": "base"
-    },
-    "radar-scanner": {
-      "descSha": "866bd732405d10e3",
-      "descStatus": "verbatim",
-      "dlc": "base"
-    },
-    "eccentric-vase": {
-      "descSha": "18e1b684e8e462d9",
-      "descStatus": "verbatim",
-      "dlc": "base"
-    },
-    "blast-shower": {
-      "descSha": "521ac83eb86b8691",
-      "descStatus": "documented-divergence",
-      "dlc": "base"
-    },
-    "volcanic-egg": {
-      "descSha": "316e2c0ba7fb7bf7",
-      "descStatus": "documented-divergence",
-      "dlc": "base"
-    },
-    "jade-elephant": {
-      "descSha": "55724eeb08e90562",
-      "descStatus": "verbatim",
-      "dlc": "base"
-    },
-    "sawmerang": {
-      "descSha": "8b3fa9072b6d2a6c",
-      "descStatus": "verbatim",
-      "dlc": "base"
-    },
-    "recycler": {
-      "descSha": "3c6d279d9439032e",
-      "descStatus": "documented-divergence",
-      "dlc": "base"
-    },
-    "super-massive-leech": {
-      "descSha": "6f36672edb63e4b6",
-      "descStatus": "verbatim",
-      "dlc": "base"
-    },
-    "gorags-opus": {
-      "descSha": "835d4324e59c0057",
-      "descStatus": "verbatim",
-      "dlc": "base"
-    },
-    "forgive-me-please": {
-      "descSha": "8a28d58a058cbc03",
-      "descStatus": "documented-divergence",
-      "dlc": "base"
-    },
-    "fuel-array": {
-      "descSha": "d937b762e0ce4d79",
-      "descStatus": "no-game-text",
-      "dlc": "base"
-    },
-    "molotov-6-pack": {
-      "descSha": "ee8626ca24530ae9",
-      "descStatus": "documented-divergence",
-      "dlc": "sotv"
-    },
-    "executive-card": {
-      "descSha": "f2f924e7c1ab9f3f",
-      "descStatus": "documented-divergence",
-      "dlc": "sotv"
-    },
-    "goobo-jr": {
-      "descSha": "d2687d1fd9d4f9bd",
-      "descStatus": "verbatim",
-      "dlc": "sotv"
-    },
-    "remote-caffeinator": {
-      "descSha": "d57e869defaa5ebb",
-      "descStatus": "documented-divergence",
-      "dlc": "sotv"
-    },
-    "seed-of-life": {
-      "descSha": "0635853c3fafa72c",
-      "descStatus": "verbatim",
-      "dlc": "sots"
-    },
-    "deus-ex-machina": {
-      "descSha": "6ec1ed4b7a17efeb",
-      "descStatus": "verbatim",
-      "dlc": "ac"
-    },
-    "trophy-hunters-tricorn": {
-      "descSha": "1c29409ca2bbe655",
-      "descStatus": "verbatim",
-      "dlc": "sotv"
-    },
-    "effigy-of-grief": {
-      "descSha": "ac08dd9bb28868d9",
-      "descStatus": "verbatim",
-      "dlc": "base"
-    },
-    "glowing-meteorite": {
-      "descSha": "224340ef90471584",
-      "descStatus": "verbatim",
-      "dlc": "base"
-    },
-    "helfire-tincture": {
-      "descSha": "2d538971c80a3bf7",
-      "descStatus": "verbatim",
-      "dlc": "base"
-    },
-    "spinel-tonic": {
-      "descSha": "7729bf1001fbac09",
-      "descStatus": "verbatim",
-      "dlc": "base"
-    },
-    "ifrits-distinction": {
-      "descSha": "a34245200212d913",
-      "descStatus": "no-game-text",
-      "dlc": "base"
-    },
-    "silence-between-two-strikes": {
-      "descSha": "74e13f56e6603ec0",
-      "descStatus": "no-game-text",
-      "dlc": "base"
-    },
-    "her-biting-embrace": {
-      "descSha": "77b0ad87ed51c778",
-      "descStatus": "no-game-text",
-      "dlc": "base"
-    },
-    "spectral-circlet": {
-      "descSha": "27f87b9a2160e116",
-      "descStatus": "no-game-text",
-      "dlc": "base"
-    },
-    "his-spiteful-boon": {
-      "descSha": "35cc3e6e4c86e2cb",
-      "descStatus": "no-game-text",
-      "dlc": "sots"
-    },
-    "nkuhanas-retort": {
-      "descSha": "c4ef9fabbfdb16cb",
-      "descStatus": "no-game-text",
-      "dlc": "base"
-    },
-    "his-reassurance": {
-      "descSha": "6d11c1ae69774ee8",
-      "descStatus": "no-game-text",
-      "dlc": "sotv"
-    },
-    "shared-design": {
-      "descSha": "6e6fdca587e53684",
-      "descStatus": "no-game-text",
-      "dlc": "base"
-    },
-    "of-one-mind": {
-      "descSha": "2030b219bcb8414e",
-      "descStatus": "no-game-text",
-      "dlc": "ac"
-    },
-    "aurelionites-blessing": {
-      "descSha": "52d61a822e9c2444",
-      "descStatus": "no-game-text",
-      "dlc": "sots"
-    },
-    "hearty-stew": {
-      "descSha": "feead1a205832038",
-      "descStatus": "verbatim",
-      "dlc": "ac",
-      "gameTags": [
-        "ExtractorUnitBlacklist",
-        "WorldUnique"
-      ]
-    },
-    "quick-fix": {
-      "descSha": "c36f877a3bb50993",
-      "descStatus": "verbatim",
-      "dlc": "ac",
-      "gameTags": [
-        "ExtractorUnitBlacklist",
-        "WorldUnique"
-      ]
-    },
-    "sauteed-worms": {
-      "descSha": "a08f94278dd649d7",
-      "descStatus": "verbatim",
-      "dlc": "ac",
-      "gameTags": [
-        "AIBlacklist",
-        "CannotDuplicate",
-        "WorldUnique"
-      ]
-    },
-    "seared-steak": {
-      "descSha": "fdf0a805de24c298",
-      "descStatus": "verbatim",
-      "dlc": "ac",
-      "gameTags": [
-        "ExtractorUnitBlacklist",
-        "WorldUnique"
-      ]
-    },
-    "ultimate-meal": {
-      "descSha": "1518e962cb8bde6d",
-      "descStatus": "verbatim",
-      "dlc": "ac",
-      "gameTags": [
-        "ExtractorUnitBlacklist",
-        "WorldUnique"
-      ]
-    }
+  "lens-makers-glasses": {
+   "descSha": "f5e64552a9ae7c7f",
+   "descStatus": "verbatim",
+   "dlc": "base"
   },
-  "_gameTags": "§3j.166 — mechanical ItemDef tags, pinned from the game's own defs so a patch that changes an item's obtainability or immunity surfaces instead of passing silently. NOT published on the site yet: doing that needs a schema field and a UI surface, which is a DEFERRED decision. Display tags (Damage, Utility, Healing…) are excluded — they are the game's search vocabulary and assert nothing."
+  "tougher-times": {
+   "descSha": "b964cd75025b349b",
+   "descStatus": "verbatim",
+   "dlc": "base",
+   "gameTags": [
+    "BrotherBlacklist"
+   ]
+  },
+  "tri-tip-dagger": {
+   "descSha": "f6140208c501ae3b",
+   "descStatus": "verbatim",
+   "dlc": "base"
+  },
+  "pauls-goat-hoof": {
+   "descSha": "187eee2f1b29520e",
+   "descStatus": "verbatim",
+   "dlc": "base"
+  },
+  "armor-piercing-rounds": {
+   "descSha": "379fa0245752902c",
+   "descStatus": "verbatim",
+   "dlc": "base",
+   "gameTags": [
+    "AIBlacklist"
+   ]
+  },
+  "backup-magazine": {
+   "descSha": "9b12b7990c0326ae",
+   "descStatus": "verbatim",
+   "dlc": "base"
+  },
+  "bison-steak": {
+   "descSha": "5367048dffeac7ca",
+   "descStatus": "verbatim",
+   "dlc": "base"
+  },
+  "bustling-fungus": {
+   "descSha": "76a3fd28d33cf68c",
+   "descStatus": "verbatim",
+   "dlc": "base",
+   "gameTags": [
+    "AIBlacklist"
+   ]
+  },
+  "cautious-slug": {
+   "descSha": "afde1458d733cab0",
+   "descStatus": "verbatim",
+   "dlc": "base"
+  },
+  "monster-tooth": {
+   "descSha": "d16874b9d3e21297",
+   "descStatus": "verbatim",
+   "dlc": "base"
+  },
+  "bundle-of-fireworks": {
+   "descSha": "922c76f8891be112",
+   "descStatus": "verbatim",
+   "dlc": "base",
+   "gameTags": [
+    "AIBlacklist"
+   ]
+  },
+  "delicate-watch": {
+   "descSha": "c598ee1fd0c8dea7",
+   "descStatus": "verbatim",
+   "dlc": "sotv",
+   "gameTags": [
+    "ExtractorUnitBlacklist"
+   ]
+  },
+  "energy-drink": {
+   "descSha": "8a23bce130c609fe",
+   "descStatus": "verbatim",
+   "dlc": "base"
+  },
+  "focus-crystal": {
+   "descSha": "d515ab8a25444881",
+   "descStatus": "verbatim",
+   "dlc": "base"
+  },
+  "gasoline": {
+   "descSha": "6ace143ca80f2a40",
+   "descStatus": "verbatim",
+   "dlc": "base"
+  },
+  "medkit": {
+   "descSha": "f675f20d29e2f70e",
+   "descStatus": "verbatim",
+   "dlc": "base"
+  },
+  "personal-shield-generator": {
+   "descSha": "272de703793e4b52",
+   "descStatus": "verbatim",
+   "dlc": "base"
+  },
+  "power-elixir": {
+   "descSha": "7cddcf403730a786",
+   "descStatus": "verbatim",
+   "dlc": "sotv",
+   "gameTags": [
+    "AIBlacklist",
+    "ExtractorUnitBlacklist"
+   ]
+  },
+  "repulsion-armor-plate": {
+   "descSha": "cdb41df32678dd06",
+   "descStatus": "verbatim",
+   "dlc": "base"
+  },
+  "roll-of-pennies": {
+   "descSha": "5986f2bc8245f5f5",
+   "descStatus": "verbatim",
+   "dlc": "sotv",
+   "gameTags": [
+    "AIBlacklist"
+   ]
+  },
+  "sticky-bomb": {
+   "descSha": "7d9e81d750fd780c",
+   "descStatus": "verbatim",
+   "dlc": "base"
+  },
+  "topaz-brooch": {
+   "descSha": "707ec09483b8f0a6",
+   "descStatus": "verbatim",
+   "dlc": "base"
+  },
+  "stun-grenade": {
+   "descSha": "8b0d1c9bde5a4cd4",
+   "descStatus": "verbatim",
+   "dlc": "base",
+   "gameTags": [
+    "AIBlacklist"
+   ]
+  },
+  "warbanner": {
+   "descSha": "e6501e45d066aafe",
+   "descStatus": "verbatim",
+   "dlc": "base",
+   "gameTags": [
+    "AIBlacklist",
+    "CannotCopy"
+   ]
+  },
+  "mocha": {
+   "descSha": "7a32fdca591cea32",
+   "descStatus": "verbatim",
+   "dlc": "sotv"
+  },
+  "oddly-shaped-opal": {
+   "descSha": "15142a9e5b18707c",
+   "descStatus": "verbatim",
+   "dlc": "sotv"
+  },
+  "elusive-antlers": {
+   "descSha": "6c008d8b8dbc6010",
+   "descStatus": "verbatim",
+   "dlc": "sots",
+   "gameTags": [
+    "AIBlacklist",
+    "HalcyoniteShrine"
+   ]
+  },
+  "chronic-expansion": {
+   "descSha": "1b0d48a7e1a16691",
+   "descStatus": "verbatim",
+   "dlc": "sots",
+   "gameTags": [
+    "HalcyoniteShrine"
+   ]
+  },
+  "warped-echo": {
+   "descSha": "61d5051d7ecd0ae3",
+   "descStatus": "verbatim",
+   "dlc": "sots",
+   "gameTags": [
+    "HalcyoniteShrine"
+   ]
+  },
+  "item-scrap-white": {
+   "descSha": "4358a369bce2ad46",
+   "descStatus": "no-game-text",
+   "dlc": "base",
+   "gameTags": [
+    "Scrap",
+    "WorldUnique"
+   ]
+  },
+  "rusted-key": {
+   "descSha": "1003e4ffc5a5e8ea",
+   "descStatus": "documented-divergence",
+   "dlc": "base",
+   "gameTags": [
+    "AIBlacklist"
+   ]
+  },
+  "hikers-boots": {
+   "descSha": "2d63ece151bff891",
+   "descStatus": "verbatim",
+   "dlc": "ac"
+  },
+  "bolstering-lantern": {
+   "descSha": "e32a57c19aeefbe9",
+   "descStatus": "verbatim",
+   "dlc": "sots",
+   "gameTags": [
+    "HalcyoniteShrine"
+   ]
+  },
+  "eclipse-lite": {
+   "descSha": "0f311eb1f9bcb0d1",
+   "descStatus": "verbatim",
+   "dlc": "ac"
+  },
+  "atg-missile-mk-1": {
+   "descSha": "2d482b273e2393e5",
+   "descStatus": "verbatim",
+   "dlc": "base"
+  },
+  "will-o-the-wisp": {
+   "descSha": "b0a7f424dd19d93c",
+   "descStatus": "verbatim",
+   "dlc": "base"
+  },
+  "hopoo-feather": {
+   "descSha": "4ca951aa09d822e5",
+   "descStatus": "verbatim",
+   "dlc": "base",
+   "gameTags": [
+    "AIBlacklist"
+   ]
+  },
+  "ukulele": {
+   "descSha": "566de77ef9d62fa9",
+   "descStatus": "verbatim",
+   "dlc": "base"
+  },
+  "leeching-seed": {
+   "descSha": "119d7370df1620c5",
+   "descStatus": "verbatim",
+   "dlc": "base"
+  },
+  "predatory-instincts": {
+   "descSha": "fa161e836420ad56",
+   "descStatus": "verbatim",
+   "dlc": "base"
+  },
+  "red-whip": {
+   "descSha": "cc9df7e08adaf492",
+   "descStatus": "verbatim",
+   "dlc": "base"
+  },
+  "old-war-stealthkit": {
+   "descSha": "c56321465775711d",
+   "descStatus": "verbatim",
+   "dlc": "base"
+  },
+  "harvesters-scythe": {
+   "descSha": "6c6e0addad90ec17",
+   "descStatus": "verbatim",
+   "dlc": "base"
+  },
+  "fuel-cell": {
+   "descSha": "1088e6cf682744d7",
+   "descStatus": "verbatim",
+   "dlc": "base",
+   "gameTags": [
+    "AIBlacklist"
+   ]
+  },
+  "infusion": {
+   "descSha": "9054f37a2a460d2d",
+   "descStatus": "verbatim",
+   "dlc": "base"
+  },
+  "bandolier": {
+   "descSha": "a81384cc0a9068e5",
+   "descStatus": "verbatim",
+   "dlc": "base"
+  },
+  "berzerkers-pauldron": {
+   "descSha": "8ba09996df796a02",
+   "descStatus": "verbatim",
+   "dlc": "base"
+  },
+  "rose-buckler": {
+   "descSha": "353bddaa6641647a",
+   "descStatus": "verbatim",
+   "dlc": "base"
+  },
+  "runalds-band": {
+   "descSha": "a9105dff1ba5abb9",
+   "descStatus": "verbatim",
+   "dlc": "base"
+  },
+  "kjaros-band": {
+   "descSha": "df1cf89d9c3232ed",
+   "descStatus": "verbatim",
+   "dlc": "base"
+  },
+  "chronobauble": {
+   "descSha": "49c5558cc6b33b72",
+   "descStatus": "verbatim",
+   "dlc": "base"
+  },
+  "wax-quail": {
+   "descSha": "30f047da4fb551e0",
+   "descStatus": "verbatim",
+   "dlc": "base"
+  },
+  "old-guillotine": {
+   "descSha": "13098659f97ed35f",
+   "descStatus": "verbatim",
+   "dlc": "base",
+   "gameTags": [
+    "AIBlacklist"
+   ]
+  },
+  "war-horn": {
+   "descSha": "8301e2bf7ab310a4",
+   "descStatus": "verbatim",
+   "dlc": "base",
+   "gameTags": [
+    "AIBlacklist"
+   ]
+  },
+  "lepton-daisy": {
+   "descSha": "583f1fbd57b245f1",
+   "descStatus": "verbatim",
+   "dlc": "base",
+   "gameTags": [
+    "AIBlacklist",
+    "CannotCopy"
+   ]
+  },
+  "razorwire": {
+   "descSha": "a8de06cd55cac8f4",
+   "descStatus": "verbatim",
+   "dlc": "base",
+   "gameTags": [
+    "AIBlacklist"
+   ]
+  },
+  "ghors-tome": {
+   "descSha": "13095425add55556",
+   "descStatus": "documented-divergence",
+   "dlc": "base"
+  },
+  "squid-polyp": {
+   "descSha": "c4f994cfb76facaf",
+   "descStatus": "verbatim",
+   "dlc": "base",
+   "gameTags": [
+    "AIBlacklist"
+   ]
+  },
+  "death-mark": {
+   "descSha": "6d080f645976daec",
+   "descStatus": "verbatim",
+   "dlc": "base"
+  },
+  "shuriken": {
+   "descSha": "5050dc386433c47d",
+   "descStatus": "verbatim",
+   "dlc": "sotv"
+  },
+  "shipping-request-form": {
+   "descSha": "3a174e3f1f23f8a4",
+   "descStatus": "verbatim",
+   "dlc": "sotv",
+   "gameTags": [
+    "AIBlacklist"
+   ]
+  },
+  "unstable-transmitter": {
+   "descSha": "9cf31af24bd24cee",
+   "descStatus": "verbatim",
+   "dlc": "sots",
+   "gameTags": [
+    "AIBlacklist",
+    "ExtractorUnitBlacklist",
+    "HalcyoniteShrine"
+   ]
+  },
+  "item-scrap-green": {
+   "descSha": "2b52e8003a23b842",
+   "descStatus": "no-game-text",
+   "dlc": "base",
+   "gameTags": [
+    "Scrap",
+    "WorldUnique"
+   ]
+  },
+  "sale-star": {
+   "descSha": "1de3e531949a0d5e",
+   "descStatus": "verbatim",
+   "dlc": "sots",
+   "gameTags": [
+    "AIBlacklist",
+    "CannotDuplicate",
+    "HalcyoniteShrine"
+   ]
+  },
+  "hunters-harpoon": {
+   "descSha": "af707966b1cd34be",
+   "descStatus": "verbatim",
+   "dlc": "sotv"
+  },
+  "ignition-tank": {
+   "descSha": "63aa312f9707eaf2",
+   "descStatus": "verbatim",
+   "dlc": "sotv"
+  },
+  "regenerating-scrap": {
+   "descSha": "d2bbedff529b4695",
+   "descStatus": "no-game-text",
+   "dlc": "sotv",
+   "gameTags": [
+    "AIBlacklist",
+    "CannotDuplicate",
+    "CommandArtifactBlacklist",
+    "PriorityScrap"
+   ]
+  },
+  "breaching-fin": {
+   "descSha": "845e0b4e463c8254",
+   "descStatus": "verbatim",
+   "dlc": "sots",
+   "gameTags": [
+    "AIBlacklist",
+    "DevotionBlacklist",
+    "HalcyoniteShrine"
+   ]
+  },
+  "chance-doll": {
+   "descSha": "742585777b2606f9",
+   "descStatus": "verbatim",
+   "dlc": "sots",
+   "gameTags": [
+    "AIBlacklist",
+    "CannotDuplicate",
+    "HalcyoniteShrine",
+    "SacrificeBlacklist"
+   ]
+  },
+  "luminous-shot": {
+   "descSha": "e2ceae33c8330fdd",
+   "descStatus": "verbatim",
+   "dlc": "sots",
+   "gameTags": [
+    "AIBlacklist",
+    "DevotionBlacklist",
+    "HalcyoniteShrine"
+   ]
+  },
+  "noxious-thorn": {
+   "descSha": "aaa862c52f637bd7",
+   "descStatus": "verbatim",
+   "dlc": "sots",
+   "gameTags": [
+    "HalcyoniteShrine"
+   ]
+  },
+  "prayer-beads": {
+   "descSha": "b251327b2289d1ed",
+   "descStatus": "verbatim",
+   "dlc": "sots",
+   "gameTags": [
+    "AIBlacklist",
+    "CannotDuplicate",
+    "HalcyoniteShrine"
+   ]
+  },
+  "box-of-dynamite": {
+   "descSha": "5c0b8d125bd7ab94",
+   "descStatus": "documented-divergence",
+   "dlc": "ac",
+   "gameTags": [
+    "AIBlacklist",
+    "BrotherBlacklist",
+    "CannotCopy",
+    "ExtractorUnitBlacklist"
+   ]
+  },
+  "collectors-compulsion": {
+   "descSha": "d17cd844f5de7e60",
+   "descStatus": "verbatim",
+   "dlc": "ac",
+   "gameTags": [
+    "AIBlacklist"
+   ]
+  },
+  "faraday-spur": {
+   "descSha": "f7d5ecca35b6dac5",
+   "descStatus": "verbatim",
+   "dlc": "ac",
+   "gameTags": [
+    "AIBlacklist",
+    "DevotionBlacklist"
+   ]
+  },
+  "kinetic-dampener": {
+   "descSha": "6ed1135e27ee8245",
+   "descStatus": "verbatim",
+   "dlc": "ac"
+  },
+  "brilliant-behemoth": {
+   "descSha": "9faa9d4ce2533515",
+   "descStatus": "verbatim",
+   "dlc": "base"
+  },
+  "ceremonial-dagger": {
+   "descSha": "bbe99f83003727d3",
+   "descStatus": "verbatim",
+   "dlc": "base",
+   "gameTags": [
+    "AIBlacklist"
+   ]
+  },
+  "alien-head": {
+   "descSha": "d4f8572ac7556b78",
+   "descStatus": "verbatim",
+   "dlc": "base"
+  },
+  "57-leaf-clover": {
+   "descSha": "6431a3ae34cfbac1",
+   "descStatus": "verbatim",
+   "dlc": "base"
+  },
+  "dios-best-friend": {
+   "descSha": "c1d571de4275823d",
+   "descStatus": "verbatim",
+   "dlc": "base",
+   "gameTags": [
+    "ExtractorUnitBlacklist"
+   ]
+  },
+  "sentient-meat-hook": {
+   "descSha": "dfde2dc508f0fb30",
+   "descStatus": "verbatim",
+   "dlc": "base"
+  },
+  "happiest-mask": {
+   "descSha": "617a2de80d12c586",
+   "descStatus": "verbatim",
+   "dlc": "base"
+  },
+  "frost-relic": {
+   "descSha": "412a7297efbb6f39",
+   "descStatus": "documented-divergence",
+   "dlc": "base"
+  },
+  "h3ad-5t-v2": {
+   "descSha": "993adee872794f4e",
+   "descStatus": "verbatim",
+   "dlc": "base",
+   "gameTags": [
+    "AIBlacklist"
+   ]
+  },
+  "nkuhanas-opinion": {
+   "descSha": "abdb81ef5770a402",
+   "descStatus": "verbatim",
+   "dlc": "base"
+  },
+  "unstable-tesla-coil": {
+   "descSha": "f517245b2bf2584b",
+   "descStatus": "verbatim",
+   "dlc": "base",
+   "gameTags": [
+    "AIBlacklist"
+   ]
+  },
+  "soulbound-catalyst": {
+   "descSha": "ff6675cc3aa93d70",
+   "descStatus": "verbatim",
+   "dlc": "base",
+   "gameTags": [
+    "AIBlacklist"
+   ]
+  },
+  "hardlight-afterburner": {
+   "descSha": "79e98085a71db057",
+   "descStatus": "verbatim",
+   "dlc": "base"
+  },
+  "wake-of-vultures": {
+   "descSha": "d560e09ebf2ed414",
+   "descStatus": "verbatim",
+   "dlc": "base",
+   "gameTags": [
+    "AIBlacklist"
+   ]
+  },
+  "brainstalks": {
+   "descSha": "61c43b4f61ab3a1d",
+   "descStatus": "verbatim",
+   "dlc": "base",
+   "gameTags": [
+    "AIBlacklist"
+   ]
+  },
+  "rejuvenation-rack": {
+   "descSha": "416c445e14b63cc9",
+   "descStatus": "verbatim",
+   "dlc": "base"
+  },
+  "aegis": {
+   "descSha": "47f81e245ad9986e",
+   "descStatus": "verbatim",
+   "dlc": "base"
+  },
+  "shattering-justice": {
+   "descSha": "7e9ba42c29ff9e71",
+   "descStatus": "verbatim",
+   "dlc": "base"
+  },
+  "resonance-disc": {
+   "descSha": "0f6f750ebbcba24c",
+   "descStatus": "documented-divergence",
+   "dlc": "base"
+  },
+  "defensive-microbots": {
+   "descSha": "e8d4d4e328455372",
+   "descStatus": "verbatim",
+   "dlc": "base",
+   "gameTags": [
+    "RebirthBlacklist",
+    "WorldUnique"
+   ]
+  },
+  "laser-scope": {
+   "descSha": "7a7786928f352a63",
+   "descStatus": "verbatim",
+   "dlc": "sotv"
+  },
+  "pocket-icbm": {
+   "descSha": "82f8b32a4ed4eac0",
+   "descStatus": "verbatim",
+   "dlc": "sotv"
+  },
+  "spare-drone-parts": {
+   "descSha": "7a1d1644cd2560bc",
+   "descStatus": "verbatim",
+   "dlc": "sotv",
+   "gameTags": [
+    "AIBlacklist",
+    "BrotherBlacklist",
+    "CannotCopy",
+    "ExtractorUnitBlacklist"
+   ]
+  },
+  "interstellar-desk-plant": {
+   "descSha": "ede91d4389bdd979",
+   "descStatus": "documented-divergence",
+   "dlc": "base"
+  },
+  "symbiotic-scorpion": {
+   "descSha": "fd7ba8a574763a57",
+   "descStatus": "verbatim",
+   "dlc": "sotv"
+  },
+  "bens-raincoat": {
+   "descSha": "d9faa0e3fb86640a",
+   "descStatus": "documented-divergence",
+   "dlc": "sotv"
+  },
+  "bottled-chaos": {
+   "descSha": "79dac6283aaeade8",
+   "descStatus": "verbatim",
+   "dlc": "sotv"
+  },
+  "electric-boomerang": {
+   "descSha": "8070b5d8ec943429",
+   "descStatus": "verbatim",
+   "dlc": "sots",
+   "gameTags": [
+    "HalcyoniteShrine"
+   ]
+  },
+  "growth-nectar": {
+   "descSha": "ed4503f63a57041a",
+   "descStatus": "verbatim",
+   "dlc": "sots",
+   "gameTags": [
+    "HalcyoniteShrine"
+   ]
+  },
+  "runic-lens": {
+   "descSha": "3900da57e8a13cca",
+   "descStatus": "verbatim",
+   "dlc": "sots",
+   "gameTags": [
+    "HalcyoniteShrine"
+   ]
+  },
+  "sonorous-whispers": {
+   "descSha": "63a6cca125836e7d",
+   "descStatus": "documented-divergence",
+   "dlc": "sots",
+   "gameTags": [
+    "AIBlacklist",
+    "CannotDuplicate",
+    "HalcyoniteShrine"
+   ]
+  },
+  "war-bonds": {
+   "descSha": "8a535afb01f3c839",
+   "descStatus": "documented-divergence",
+   "dlc": "sots",
+   "gameTags": [
+    "AIBlacklist",
+    "HalcyoniteShrine"
+   ]
+  },
+  "networked-suffering": {
+   "descSha": "8c27c7285b0e72da",
+   "descStatus": "verbatim",
+   "dlc": "ac"
+  },
+  "orphaned-core": {
+   "descSha": "ae85143243b71f34",
+   "descStatus": "documented-divergence",
+   "dlc": "ac",
+   "gameTags": [
+    "AIBlacklist",
+    "BrotherBlacklist",
+    "CannotCopy",
+    "CannotSteal",
+    "ExtractorUnitBlacklist"
+   ]
+  },
+  "substandard-duplicator": {
+   "descSha": "15f94beb541e9ce5",
+   "descStatus": "verbatim",
+   "dlc": "ac",
+   "gameTags": [
+    "AIBlacklist",
+    "DevotionBlacklist"
+   ]
+  },
+  "item-scrap-red": {
+   "descSha": "eaff0295a5e427f1",
+   "descStatus": "no-game-text",
+   "dlc": "base",
+   "gameTags": [
+    "Scrap",
+    "WorldUnique"
+   ]
+  },
+  "titanic-knurl": {
+   "descSha": "8eca900ce302cbb9",
+   "descStatus": "verbatim",
+   "dlc": "base"
+  },
+  "queens-gland": {
+   "descSha": "544f3bfa5b01a94d",
+   "descStatus": "verbatim",
+   "dlc": "base",
+   "gameTags": [
+    "CannotCopy",
+    "ExtractorUnitBlacklist"
+   ]
+  },
+  "shatterspleen": {
+   "descSha": "75f7896eb821a8d5",
+   "descStatus": "documented-divergence",
+   "dlc": "base"
+  },
+  "halcyon-seed": {
+   "descSha": "8cd9a611395153ee",
+   "descStatus": "verbatim",
+   "dlc": "base",
+   "gameTags": [
+    "CannotCopy",
+    "CannotSteal",
+    "ExtractorUnitBlacklist",
+    "WorldUnique"
+   ]
+  },
+  "little-disciple": {
+   "descSha": "879b8351e015740f",
+   "descStatus": "verbatim",
+   "dlc": "base"
+  },
+  "genesis-loop": {
+   "descSha": "12a1fd1f5299cceb",
+   "descStatus": "documented-divergence",
+   "dlc": "base"
+  },
+  "pearl": {
+   "descSha": "0f28cd52556902f4",
+   "descStatus": "verbatim",
+   "dlc": "base",
+   "gameTags": [
+    "WorldUnique"
+   ]
+  },
+  "irradiant-pearl": {
+   "descSha": "89ae1fd8150f3b72",
+   "descStatus": "verbatim",
+   "dlc": "base",
+   "gameTags": [
+    "WorldUnique"
+   ]
+  },
+  "artifact-key": {
+   "descSha": "8a825a43f0e2298e",
+   "descStatus": "no-game-text",
+   "dlc": "base",
+   "gameTags": [
+    "ObjectiveRelated",
+    "WorldUnique"
+   ]
+  },
+  "molten-perforator": {
+   "descSha": "04ccf1670e127cde",
+   "descStatus": "verbatim",
+   "dlc": "base"
+  },
+  "charged-perforator": {
+   "descSha": "eba6ee89d085bdab",
+   "descStatus": "verbatim",
+   "dlc": "base"
+  },
+  "mired-urn": {
+   "descSha": "f75328f363de5aee",
+   "descStatus": "documented-divergence",
+   "dlc": "base",
+   "gameTags": [
+    "BrotherBlacklist"
+   ]
+  },
+  "empathy-cores": {
+   "descSha": "b631ccbb2e7526d0",
+   "descStatus": "verbatim",
+   "dlc": "base",
+   "gameTags": [
+    "CannotCopy",
+    "ExtractorUnitBlacklist"
+   ]
+  },
+  "planula": {
+   "descSha": "5c2ae4131dd9c463",
+   "descStatus": "verbatim",
+   "dlc": "base"
+  },
+  "defense-nucleus": {
+   "descSha": "d1e89b71aa36a455",
+   "descStatus": "verbatim",
+   "dlc": "sotv"
+  },
+  "functional-coupler": {
+   "descSha": "1eb1c14f597038ee",
+   "descStatus": "verbatim",
+   "dlc": "ac",
+   "gameTags": [
+    "AIBlacklist"
+   ]
+  },
+  "faulty-conductor": {
+   "descSha": "dd83613c4c0abe8b",
+   "descStatus": "verbatim",
+   "dlc": "ac"
+  },
+  "sentry-key": {
+   "descSha": "3903ce46af85536d",
+   "descStatus": "verbatim",
+   "dlc": "ac",
+   "gameTags": [
+    "CannotCopy",
+    "ExtractorUnitBlacklist",
+    "IgnoreForDropList",
+    "ObjectiveRelated",
+    "WorldUnique"
+   ]
+  },
+  "prison-matrix": {
+   "descSha": "ab07b8f482e671ea",
+   "descStatus": "verbatim",
+   "dlc": "ac",
+   "gameTags": [
+    "AIBlacklist",
+    "CannotCopy",
+    "CommandArtifactBlacklist",
+    "ExtractorUnitBlacklist",
+    "IgnoreForDropList",
+    "ObjectiveRelated",
+    "WorldUnique"
+   ]
+  },
+  "encrypted-cerebellum": {
+   "descSha": "438038550f235f9c",
+   "descStatus": "no-game-text",
+   "dlc": "ac",
+   "gameTags": [
+    "AIBlacklist",
+    "BrotherBlacklist",
+    "CannotCopy",
+    "CannotDuplicate",
+    "CannotSteal",
+    "ExtractorUnitBlacklist",
+    "ObjectiveRelated",
+    "WorldUnique"
+   ]
+  },
+  "exposed-cerebellum": {
+   "descSha": "2b9b90923aecf234",
+   "descStatus": "no-game-text",
+   "dlc": "ac",
+   "gameTags": [
+    "AIBlacklist",
+    "BrotherBlacklist",
+    "CannotCopy",
+    "CannotDuplicate",
+    "CannotSteal",
+    "ExtractorUnitBlacklist",
+    "ObjectiveRelated",
+    "RebirthBlacklist",
+    "WorldUnique"
+   ]
+  },
+  "item-scrap-yellow": {
+   "descSha": "7280f7f97332ed90",
+   "descStatus": "no-game-text",
+   "dlc": "base",
+   "gameTags": [
+    "Scrap",
+    "WorldUnique"
+   ]
+  },
+  "shaped-glass": {
+   "descSha": "3d2ca3356995c9e8",
+   "descStatus": "verbatim",
+   "dlc": "base"
+  },
+  "brittle-crown": {
+   "descSha": "fe4a069767092803",
+   "descStatus": "verbatim",
+   "dlc": "base"
+  },
+  "transcendence": {
+   "descSha": "3db80a7dac947246",
+   "descStatus": "verbatim",
+   "dlc": "base"
+  },
+  "corpsebloom": {
+   "descSha": "e40f6c51efcbcdec",
+   "descStatus": "verbatim",
+   "dlc": "base"
+  },
+  "gesture-of-the-drowned": {
+   "descSha": "e58a11c58aedbe90",
+   "descStatus": "verbatim",
+   "dlc": "base"
+  },
+  "purity": {
+   "descSha": "062070fb4f8c02f7",
+   "descStatus": "verbatim",
+   "dlc": "base"
+  },
+  "visions-of-heresy": {
+   "descSha": "b392bfdb324745d5",
+   "descStatus": "verbatim",
+   "dlc": "base",
+   "gameTags": [
+    "AIBlacklist",
+    "CannotSteal",
+    "ExtractorUnitBlacklist"
+   ]
+  },
+  "strides-of-heresy": {
+   "descSha": "e50b2d82aa20b54f",
+   "descStatus": "verbatim",
+   "dlc": "base",
+   "gameTags": [
+    "AIBlacklist",
+    "CannotSteal",
+    "ExtractorUnitBlacklist"
+   ]
+  },
+  "hooks-of-heresy": {
+   "descSha": "c72310915f12bce4",
+   "descStatus": "verbatim",
+   "dlc": "base",
+   "gameTags": [
+    "AIBlacklist",
+    "CannotSteal",
+    "ExtractorUnitBlacklist"
+   ]
+  },
+  "essence-of-heresy": {
+   "descSha": "7e9f8f57cb9d1b50",
+   "descStatus": "verbatim",
+   "dlc": "base",
+   "gameTags": [
+    "AIBlacklist",
+    "CannotSteal",
+    "ExtractorUnitBlacklist"
+   ]
+  },
+  "beads-of-fealty": {
+   "descSha": "e3025439f436d6d4",
+   "descStatus": "verbatim",
+   "dlc": "base"
+  },
+  "focused-convergence": {
+   "descSha": "d722cd214786a59b",
+   "descStatus": "verbatim",
+   "dlc": "base",
+   "gameTags": [
+    "AIBlacklist",
+    "CannotCopy"
+   ]
+  },
+  "defiant-gouge": {
+   "descSha": "9f65ab51f76d2ce4",
+   "descStatus": "verbatim",
+   "dlc": "base",
+   "gameTags": [
+    "AIBlacklist"
+   ]
+  },
+  "mercurial-rachis": {
+   "descSha": "92b7c699965a5c78",
+   "descStatus": "verbatim",
+   "dlc": "base"
+  },
+  "stone-flux-pauldron": {
+   "descSha": "dd5a126871361d9e",
+   "descStatus": "verbatim",
+   "dlc": "sotv"
+  },
+  "light-flux-pauldron": {
+   "descSha": "9316609a4341e664",
+   "descStatus": "verbatim",
+   "dlc": "sotv"
+  },
+  "longstanding-solitude": {
+   "descSha": "521a5063758df39b",
+   "descStatus": "verbatim",
+   "dlc": "sots",
+   "gameTags": [
+    "HalcyoniteShrine"
+   ]
+  },
+  "egocentrism": {
+   "descSha": "c9dc2677c8814f37",
+   "descStatus": "verbatim",
+   "dlc": "sotv"
+  },
+  "neutronium-weight": {
+   "descSha": "c8dc2d64a9ccb077",
+   "descStatus": "verbatim",
+   "dlc": "ac",
+   "gameTags": [
+    "AIBlacklist",
+    "BrotherBlacklist",
+    "CannotCopy",
+    "CannotSteal",
+    "Cleansable",
+    "ExtractorUnitBlacklist",
+    "RebirthBlacklist"
+   ]
+  },
+  "eulogy-zero": {
+   "descSha": "6c7ad5931ecfb460",
+   "descStatus": "verbatim",
+   "dlc": "sotv",
+   "gameTags": [
+    "BrotherBlacklist",
+    "RebirthBlacklist"
+   ]
+  },
+  "needletick": {
+   "descSha": "dfbd629825e08640",
+   "descStatus": "verbatim",
+   "dlc": "sotv"
+  },
+  "lost-seers-lenses": {
+   "descSha": "fcf2ef74c179e7d3",
+   "descStatus": "verbatim",
+   "dlc": "sotv"
+  },
+  "safer-spaces": {
+   "descSha": "2076b0ef8b339568",
+   "descStatus": "verbatim",
+   "dlc": "sotv",
+   "gameTags": [
+    "BrotherBlacklist",
+    "RebirthBlacklist"
+   ]
+  },
+  "weeping-fungus": {
+   "descSha": "9c8dee7d236a69cd",
+   "descStatus": "verbatim",
+   "dlc": "sotv"
+  },
+  "encrusted-key": {
+   "descSha": "f5bd640ec9ddc1b9",
+   "descStatus": "verbatim",
+   "dlc": "sotv",
+   "gameTags": [
+    "AIBlacklist"
+   ]
+  },
+  "plasma-shrimp": {
+   "descSha": "122297e15ca9dc80",
+   "descStatus": "verbatim",
+   "dlc": "sotv"
+  },
+  "lysate-cell": {
+   "descSha": "6826d16f9e7784eb",
+   "descStatus": "verbatim",
+   "dlc": "sotv"
+  },
+  "polylute": {
+   "descSha": "a98605654801f930",
+   "descStatus": "verbatim",
+   "dlc": "sotv"
+  },
+  "tentabauble": {
+   "descSha": "90de79928bf7e2e9",
+   "descStatus": "verbatim",
+   "dlc": "sotv"
+  },
+  "singularity-band": {
+   "descSha": "0400c2a6a2870c5e",
+   "descStatus": "verbatim",
+   "dlc": "sotv"
+  },
+  "voidsent-flame": {
+   "descSha": "89f7d2dc351e5002",
+   "descStatus": "verbatim",
+   "dlc": "sotv"
+  },
+  "benthic-bloom": {
+   "descSha": "339d7b5ab8aadd5b",
+   "descStatus": "verbatim",
+   "dlc": "sotv"
+  },
+  "pluripotent-larva": {
+   "descSha": "7933a5202d93495a",
+   "descStatus": "documented-divergence",
+   "dlc": "sotv",
+   "gameTags": [
+    "ExtractorUnitBlacklist"
+   ]
+  },
+  "newly-hatched-zoea": {
+   "descSha": "2fe1c30d462cabf2",
+   "descStatus": "verbatim",
+   "dlc": "sotv",
+   "gameTags": [
+    "CannotCopy",
+    "ExtractorUnitBlacklist"
+   ]
+  },
+  "disposable-missile-launcher": {
+   "descSha": "a323afe27514f107",
+   "descStatus": "verbatim",
+   "dlc": "base"
+  },
+  "foreign-fruit": {
+   "descSha": "b7b5babb95ea6ebd",
+   "descStatus": "verbatim",
+   "dlc": "base"
+  },
+  "preon-accumulator": {
+   "descSha": "0fd5a2ef6c4bfce5",
+   "descStatus": "verbatim",
+   "dlc": "base"
+  },
+  "the-back-up": {
+   "descSha": "c591fdcc665f084d",
+   "descStatus": "verbatim",
+   "dlc": "base"
+  },
+  "ocular-hud": {
+   "descSha": "4c9eefa6defc4cee",
+   "descStatus": "verbatim",
+   "dlc": "base"
+  },
+  "royal-capacitor": {
+   "descSha": "4136346fd74393b7",
+   "descStatus": "verbatim",
+   "dlc": "base"
+  },
+  "the-crowdfunder": {
+   "descSha": "4b065e7484a7b2d7",
+   "descStatus": "documented-divergence",
+   "dlc": "base"
+  },
+  "milky-chrysalis": {
+   "descSha": "842d12fed4a19c33",
+   "descStatus": "verbatim",
+   "dlc": "base"
+  },
+  "gnarled-woodsprite": {
+   "descSha": "0c99bc8b157d09ad",
+   "descStatus": "documented-divergence",
+   "dlc": "base"
+  },
+  "primordial-cube": {
+   "descSha": "d0b8596b0cf21dcd",
+   "descStatus": "verbatim",
+   "dlc": "base"
+  },
+  "radar-scanner": {
+   "descSha": "866bd732405d10e3",
+   "descStatus": "verbatim",
+   "dlc": "base"
+  },
+  "eccentric-vase": {
+   "descSha": "18e1b684e8e462d9",
+   "descStatus": "verbatim",
+   "dlc": "base"
+  },
+  "blast-shower": {
+   "descSha": "521ac83eb86b8691",
+   "descStatus": "documented-divergence",
+   "dlc": "base"
+  },
+  "volcanic-egg": {
+   "descSha": "316e2c0ba7fb7bf7",
+   "descStatus": "documented-divergence",
+   "dlc": "base"
+  },
+  "jade-elephant": {
+   "descSha": "55724eeb08e90562",
+   "descStatus": "verbatim",
+   "dlc": "base"
+  },
+  "sawmerang": {
+   "descSha": "8b3fa9072b6d2a6c",
+   "descStatus": "verbatim",
+   "dlc": "base"
+  },
+  "recycler": {
+   "descSha": "3c6d279d9439032e",
+   "descStatus": "documented-divergence",
+   "dlc": "base"
+  },
+  "super-massive-leech": {
+   "descSha": "6f36672edb63e4b6",
+   "descStatus": "verbatim",
+   "dlc": "base"
+  },
+  "gorags-opus": {
+   "descSha": "835d4324e59c0057",
+   "descStatus": "verbatim",
+   "dlc": "base"
+  },
+  "forgive-me-please": {
+   "descSha": "8a28d58a058cbc03",
+   "descStatus": "documented-divergence",
+   "dlc": "base"
+  },
+  "fuel-array": {
+   "descSha": "d937b762e0ce4d79",
+   "descStatus": "no-game-text",
+   "dlc": "base"
+  },
+  "molotov-6-pack": {
+   "descSha": "ee8626ca24530ae9",
+   "descStatus": "documented-divergence",
+   "dlc": "sotv"
+  },
+  "executive-card": {
+   "descSha": "f2f924e7c1ab9f3f",
+   "descStatus": "documented-divergence",
+   "dlc": "sotv"
+  },
+  "goobo-jr": {
+   "descSha": "d2687d1fd9d4f9bd",
+   "descStatus": "verbatim",
+   "dlc": "sotv"
+  },
+  "remote-caffeinator": {
+   "descSha": "d57e869defaa5ebb",
+   "descStatus": "documented-divergence",
+   "dlc": "sotv"
+  },
+  "seed-of-life": {
+   "descSha": "0635853c3fafa72c",
+   "descStatus": "verbatim",
+   "dlc": "sots"
+  },
+  "deus-ex-machina": {
+   "descSha": "6ec1ed4b7a17efeb",
+   "descStatus": "verbatim",
+   "dlc": "ac"
+  },
+  "trophy-hunters-tricorn": {
+   "descSha": "1c29409ca2bbe655",
+   "descStatus": "verbatim",
+   "dlc": "sotv"
+  },
+  "effigy-of-grief": {
+   "descSha": "ac08dd9bb28868d9",
+   "descStatus": "verbatim",
+   "dlc": "base"
+  },
+  "glowing-meteorite": {
+   "descSha": "224340ef90471584",
+   "descStatus": "verbatim",
+   "dlc": "base"
+  },
+  "helfire-tincture": {
+   "descSha": "2d538971c80a3bf7",
+   "descStatus": "verbatim",
+   "dlc": "base"
+  },
+  "spinel-tonic": {
+   "descSha": "7729bf1001fbac09",
+   "descStatus": "verbatim",
+   "dlc": "base"
+  },
+  "ifrits-distinction": {
+   "descSha": "a34245200212d913",
+   "descStatus": "no-game-text",
+   "dlc": "base"
+  },
+  "silence-between-two-strikes": {
+   "descSha": "74e13f56e6603ec0",
+   "descStatus": "no-game-text",
+   "dlc": "base"
+  },
+  "her-biting-embrace": {
+   "descSha": "77b0ad87ed51c778",
+   "descStatus": "no-game-text",
+   "dlc": "base"
+  },
+  "spectral-circlet": {
+   "descSha": "27f87b9a2160e116",
+   "descStatus": "no-game-text",
+   "dlc": "base"
+  },
+  "his-spiteful-boon": {
+   "descSha": "35cc3e6e4c86e2cb",
+   "descStatus": "no-game-text",
+   "dlc": "sots"
+  },
+  "nkuhanas-retort": {
+   "descSha": "c4ef9fabbfdb16cb",
+   "descStatus": "no-game-text",
+   "dlc": "base"
+  },
+  "his-reassurance": {
+   "descSha": "6d11c1ae69774ee8",
+   "descStatus": "no-game-text",
+   "dlc": "sotv"
+  },
+  "shared-design": {
+   "descSha": "6e6fdca587e53684",
+   "descStatus": "no-game-text",
+   "dlc": "base"
+  },
+  "of-one-mind": {
+   "descSha": "2030b219bcb8414e",
+   "descStatus": "no-game-text",
+   "dlc": "ac"
+  },
+  "aurelionites-blessing": {
+   "descSha": "52d61a822e9c2444",
+   "descStatus": "no-game-text",
+   "dlc": "sots"
+  },
+  "hearty-stew": {
+   "descSha": "feead1a205832038",
+   "descStatus": "verbatim",
+   "dlc": "ac",
+   "gameTags": [
+    "ExtractorUnitBlacklist",
+    "WorldUnique"
+   ]
+  },
+  "quick-fix": {
+   "descSha": "c36f877a3bb50993",
+   "descStatus": "verbatim",
+   "dlc": "ac",
+   "gameTags": [
+    "ExtractorUnitBlacklist",
+    "WorldUnique"
+   ]
+  },
+  "sauteed-worms": {
+   "descSha": "a08f94278dd649d7",
+   "descStatus": "verbatim",
+   "dlc": "ac",
+   "gameTags": [
+    "AIBlacklist",
+    "CannotDuplicate",
+    "WorldUnique"
+   ]
+  },
+  "seared-steak": {
+   "descSha": "fdf0a805de24c298",
+   "descStatus": "verbatim",
+   "dlc": "ac",
+   "gameTags": [
+    "ExtractorUnitBlacklist",
+    "WorldUnique"
+   ]
+  },
+  "ultimate-meal": {
+   "descSha": "1518e962cb8bde6d",
+   "descStatus": "verbatim",
+   "dlc": "ac",
+   "gameTags": [
+    "ExtractorUnitBlacklist",
+    "WorldUnique"
+   ]
+  }
+ },
+ "_gameTags": "§3j.166 — mechanical ItemDef tags, pinned from the game's own defs so a patch that changes an item's obtainability or immunity surfaces instead of passing silently. NOT published on the site yet: doing that needs a schema field and a UI surface, which is a DEFERRED decision. Display tags (Damage, Utility, Healing…) are excluded — they are the game's search vocabulary and assert nothing.",
+ "_fieldClaims": "§3j.169 — every `fieldName <number>` pair our descriptionNotes attach to one of the game's own serialized fields. LOCALLY, data:audit checks each against the extracted component/state data and the decompiled C#, and against the SPECIFIC component a note names — which is how Interstellar Desk Plant was caught citing DeskplantWard for a healFraction the prefab sets to 0. CI has none of those extractions, so this pins the claims instead: the same parser (src/lib/fieldClaims.ts) re-derives them from items.json and they must match exactly, which catches a reworded or retyped number without the game. `vocabulary` is what the parser needs to reproduce local attribution from prose alone. LIMIT, stated rather than hidden: a claim on a field name absent from `vocabulary` is invisible to CI and caught only locally, because CI cannot know the name is a game field at all.",
+ "fieldClaims": {
+  "vocabulary": {
+   "fields": [
+    "allyDamageScalar",
+    "baseDuration",
+    "baseRadius",
+    "buffDuration",
+    "dotDuration",
+    "enemyDamageScalar",
+    "healFraction",
+    "healFractionPerTick",
+    "healFrequency",
+    "healingRadius",
+    "healthFractionPerSecond",
+    "invertTeamFilter",
+    "maxTargets",
+    "monsterCredit",
+    "moveSpeedCoefficient",
+    "numBonusOrbs",
+    "resetInterval",
+    "tickRate"
+   ],
+   "owners": [
+    "CrippleWard",
+    "DeskplantWard",
+    "GummyClone",
+    "HelfireController",
+    "MonstersOnShrineUse",
+    "Sawmerang",
+    "TeamWarCry",
+    "Tonic",
+    "base",
+    "dtVoidLockbox"
+   ],
+   "declares": {
+    "CrippleWard": [
+     "buffDuration",
+     "invertTeamFilter"
+    ],
+    "DeskplantWard": [
+     "healFraction"
+    ],
+    "HelfireController": [
+     "allyDamageScalar",
+     "baseRadius",
+     "dotDuration",
+     "enemyDamageScalar",
+     "healthFractionPerSecond"
+    ],
+    "Sawmerang": [
+     "resetInterval"
+    ]
+   }
+  },
+  "claims": [
+   {
+    "id": "interstellar-desk-plant",
+    "field": "healFraction",
+    "stated": 0.05,
+    "owner": "DeskplantWard"
+   },
+   {
+    "id": "interstellar-desk-plant",
+    "field": "healingRadius",
+    "stated": 5,
+    "owner": null
+   },
+   {
+    "id": "strides-of-heresy",
+    "field": "healFractionPerTick",
+    "stated": 0.013,
+    "owner": null
+   },
+   {
+    "id": "strides-of-heresy",
+    "field": "healFrequency",
+    "stated": 5,
+    "owner": null
+   },
+   {
+    "id": "strides-of-heresy",
+    "field": "baseDuration",
+    "stated": 3,
+    "owner": null
+   },
+   {
+    "id": "strides-of-heresy",
+    "field": "moveSpeedCoefficient",
+    "stated": 1.3,
+    "owner": null
+   },
+   {
+    "id": "defiant-gouge",
+    "field": "monsterCredit",
+    "stated": 40,
+    "owner": null
+   },
+   {
+    "id": "sawmerang",
+    "field": "resetInterval",
+    "stated": -1,
+    "owner": null
+   },
+   {
+    "id": "remote-caffeinator",
+    "field": "numBonusOrbs",
+    "stated": 2,
+    "owner": null
+   },
+   {
+    "id": "effigy-of-grief",
+    "field": "invertTeamFilter",
+    "stated": 1,
+    "owner": "CrippleWard"
+   },
+   {
+    "id": "effigy-of-grief",
+    "field": "buffDuration",
+    "stated": 1.5,
+    "owner": "CrippleWard"
+   },
+   {
+    "id": "helfire-tincture",
+    "field": "healthFractionPerSecond",
+    "stated": 0.05,
+    "owner": "HelfireController"
+   },
+   {
+    "id": "helfire-tincture",
+    "field": "dotDuration",
+    "stated": 3,
+    "owner": "HelfireController"
+   },
+   {
+    "id": "helfire-tincture",
+    "field": "baseRadius",
+    "stated": 15,
+    "owner": "HelfireController"
+   },
+   {
+    "id": "helfire-tincture",
+    "field": "allyDamageScalar",
+    "stated": 0.5,
+    "owner": "HelfireController"
+   },
+   {
+    "id": "helfire-tincture",
+    "field": "enemyDamageScalar",
+    "stated": 24,
+    "owner": "HelfireController"
+   },
+   {
+    "id": "his-reassurance",
+    "field": "maxTargets",
+    "stated": 1,
+    "owner": null
+   },
+   {
+    "id": "of-one-mind",
+    "field": "tickRate",
+    "stated": 0.5,
+    "owner": null
+   }
+  ]
+ }
 }

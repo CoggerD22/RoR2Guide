@@ -24,6 +24,7 @@ import {
   type Item,
 } from "../src/data/schema.ts";
 import { LOADOUT_UNLOCKS, ARTIFACTS } from "../src/data/reference.ts";
+import { extractFieldClaims } from "../src/lib/fieldClaims.ts";
 
 const here = dirname(fileURLToPath(import.meta.url));
 const root = resolve(here, "..");
@@ -260,8 +261,8 @@ function main(): number {
     "bdBugWings",
   ]);
   const decompiledDir = resolve(root, ".decompiled");
+  let haystack = "";
   if (existsSync(decompiledDir)) {
-    let haystack = "";
     const collect = (dir: string) => {
       for (const e of readdirSync(dir, { withFileTypes: true })) {
         const p = resolve(dir, e.name);
@@ -288,6 +289,142 @@ function main(): number {
     }
   } else {
     warnings.push("coined terms not checked (.decompiled absent — run scripts/decompile.sh)");
+  }
+
+  // --- Values attributed to a named game field (MATH-VERIFICATION §3j.169) -------------
+  // The check above proves a cited identifier EXISTS. It says nothing about the number next
+  // to it, and 9 notes attach one — "healFraction 0.05", "dotDuration = 3", "tickRate 0.5".
+  //
+  // Interstellar Desk Plant is why that gap matters. Its note read "(DeskplantWard:
+  // healFraction 0.05, interval 0.5)", and the DeskplantWard prefab's healFraction is 0 —
+  // the 0.05 is assigned in code when the plant blooms. The number was right and the
+  // citation sent a reader somewhere that contradicts it, which under rule #1 is the whole
+  // ballgame: provenance is the claim. It is §3j.168 inverted — there a real value looked
+  // unverifiable, here a verified value looked fabricated.
+  //
+  // So: a `fieldName <number>` pair in our prose must match what the game holds for that
+  // field, in a serialized component, a state config, or as a literal in the C#. Only the
+  // FIRST mention of a field per note is a claim about its value; later ones are usually the
+  // field appearing inside a derived formula ("healthFractionPerSecond x dotDuration = 15%"),
+  // which asserts nothing about `dotDuration` and must not be read as if it did.
+  //
+  // Local-only: the extractions are git-ignored, so CI reports this SKIPPED, not passed.
+  const compPath = resolve(root, ".gamedata/component-fields.json");
+  const statePath = resolve(root, ".gamedata/state-fields.json");
+  if (haystack && existsSync(compPath) && existsSync(statePath)) {
+    const known = new Map<string, Set<number>>();
+    const add = (k: string, v: unknown) => {
+      if (typeof v !== "number" || !Number.isFinite(v)) return;
+      if (!known.has(k)) known.set(k, new Set());
+      known.get(k)!.add(v);
+    };
+    const walk = (node: unknown) => {
+      if (Array.isArray(node)) return node.forEach(walk);
+      if (!node || typeof node !== "object") return;
+      for (const [k, v] of Object.entries(node as Record<string, unknown>)) {
+        if (typeof v === "number") add(k, v);
+        else if (typeof v === "string" && v !== "" && Number.isFinite(Number(v))) add(k, Number(v));
+        else walk(v);
+      }
+    };
+    walk(JSON.parse(readFileSync(compPath, "utf8")));
+    walk(JSON.parse(readFileSync(statePath, "utf8")));
+
+    // Owner-scoped values, so "DeskplantWard: healFraction 0.05" can be checked against
+    // DeskplantWard rather than against every component in the game that has a healFraction.
+    // Without this the global check passes it — 0.05 is a real healFraction somewhere, and is
+    // a real code literal — which is precisely how the misattribution survived.
+    const byOwner = new Map<string, Map<string, Set<number>>>();
+    const compRaw = JSON.parse(readFileSync(compPath, "utf8")) as Record<
+      string,
+      { owner?: string; fields?: Record<string, unknown> }[]
+    >;
+    for (const recs of Object.values(compRaw)) {
+      for (const r of recs) {
+        if (!r.owner || !r.fields) continue;
+        if (!byOwner.has(r.owner)) byOwner.set(r.owner, new Map());
+        const m = byOwner.get(r.owner)!;
+        for (const [k, v] of Object.entries(r.fields)) {
+          if (typeof v !== "number" || !Number.isFinite(v)) continue;
+          if (!m.has(k)) m.set(k, new Set());
+          m.get(k)!.add(v);
+        }
+      }
+    }
+
+    // Tokenised, not escaped: the `\b`-is-BACKSPACE trap has now cost five separate passes
+    // (§3j.116, §3j.148, §3j.155, §3j.167) and hit this very check while it was being written,
+    // where it reported "0 of 0" (§3j.169). There is nothing to escape here.
+    const near = (a: number, b: number) => Math.abs(a - b) < Math.max(1e-4, Math.abs(b) * 1e-5);
+    // Delimited forms only. `"dotDuration = 3"` is a substring of `"dotDuration = 30f"`, which
+    // is §3j.160's bug (a 2s telegraph "found" inside `Cooldown: 25s`) in a new rule — the
+    // undelimited version let five claims out of the owner-scoped check by accident.
+    const codeForms = (name: string, v: number) => [
+      `${name} = ${v}f`,
+      `${name} = ${v};`,
+      `${name} = ${v} `,
+    ];
+    const inCode = (name: string, v: number) => codeForms(name, v).some((f) => haystack.includes(f));
+
+    const vocab = {
+      fields: new Set(known.keys()),
+      owners: new Set(byOwner.keys()),
+      ownerDeclares: (o: string, f: string) => byOwner.get(o)?.has(f) ?? false,
+    };
+
+    let checked = 0;
+    let scopedChecked = 0;
+    for (const it of items) {
+      if (!it.descriptionNote) continue;
+      const note = it.descriptionNote;
+      for (const claim of extractFieldClaims(note, vocab)) {
+        const { field: name, stated } = claim;
+        checked++;
+
+        // A note may legitimately cite CODE for a field whose asset says something else — that
+        // is the Desk Plant case, and explaining it is the fix, not a violation. The
+        // discriminator is evidence: to claim a value comes from code, quote the assignment.
+        // If the note contains the literal AND the decompile contains it too, the note is
+        // citing code and the owner-scoped rule does not apply. Naming a component and
+        // asserting a number it does not hold, with no code shown, still fails.
+        const quotesCode = codeForms(name, stated).some(
+          (f) => note.includes(f) && haystack.includes(f),
+        );
+        const scoped = claim.owner && !quotesCode ? byOwner.get(claim.owner)?.get(name) : undefined;
+        if (scoped) {
+          scopedChecked++;
+          if (![...scoped].some((v) => near(stated, v))) {
+            errors.push(
+              `${it.id}: descriptionNote attributes "${name} ${stated}" to ${claim.owner}, but ` +
+                `${claim.owner} serializes ${name} = [${[...scoped].join(", ")}]. If the value is ` +
+                `set in code rather than on the asset, say so — citing the asset for a code ` +
+                `constant sends a reader somewhere that contradicts us (§3j.169)`,
+            );
+          }
+          continue;
+        }
+
+        const vals = known.get(name)!;
+        const ok =
+          [...vals].some((v) => near(stated, v) || near(stated / 100, v) || near(stated * 100, v)) ||
+          inCode(name, stated);
+        if (!ok) {
+          errors.push(
+            `${it.id}: descriptionNote states "${name} ${stated}", but the game holds no such ` +
+              `value for that field — serialized values are [${[...vals].slice(0, 6).join(", ")}] ` +
+              `and no literal assignment matches in the decompiled source`,
+          );
+        }
+      }
+    }
+    console.log(
+      `  field-value claims in descriptionNotes cross-checked: ${checked} ` +
+        `(${scopedChecked} against the specific component the note names)`,
+    );
+  } else {
+    warnings.push(
+      "field-value claims not checked (.decompiled / .gamedata component+state extractions absent)",
+    );
   }
 
   // --- Name collisions in our own prose (MATH-VERIFICATION §3j.77) ---------

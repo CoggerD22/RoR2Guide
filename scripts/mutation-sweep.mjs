@@ -41,10 +41,39 @@ const hide = () => {
     if (fs.existsSync(from)) fs.renameSync(from, path.join(root, `${d}.hidden-by-sweep`));
   }
 };
+/**
+ * Restoring is the dangerous half, and it failed for real (§3j.169): a gate stage had just
+ * read 12 MB out of `.decompiled/`, Windows still held the handle, and the rename came back
+ * EPERM. The sweep then exited leaving the extractions hidden — which is the §3j.148 failure
+ * rebuilt by our own tooling, because every local cross-check would report SKIPPED from then
+ * on and a skipped check reads as a pass. A silent `renameSync` is not good enough here.
+ */
 const unhide = () => {
+  const stuck = [];
   for (const d of HIDDEN) {
     const from = path.join(root, `${d}.hidden-by-sweep`);
-    if (fs.existsSync(from)) fs.renameSync(from, path.join(root, d));
+    if (!fs.existsSync(from)) continue;
+    let ok = false;
+    for (let attempt = 0; attempt < 20 && !ok; attempt++) {
+      try {
+        fs.renameSync(from, path.join(root, d));
+        ok = true;
+      } catch {
+        // Busy-wait rather than sleep: this runs from process-exit handlers, where async
+        // work is not guaranteed to be flushed.
+        const until = Date.now() + 100;
+        while (Date.now() < until) {/* spin */}
+      }
+    }
+    if (!ok) stuck.push(d);
+  }
+  if (stuck.length) {
+    console.error(
+      `\n!! COULD NOT RESTORE ${stuck.join(", ")} — they are still at "<name>.hidden-by-sweep".\n` +
+        `!! Rename them back BEFORE trusting any local check: while they are missing,\n` +
+        `!! data:audit and data:verify skip every game cross-check and still exit 0.\n`,
+    );
+    process.exitCode = 1;
   }
 };
 
@@ -102,6 +131,18 @@ const MUTATIONS = [
     apply: editItem("lens-makers-glasses", (i) => { delete i.corruptedBy; }) },
   { file: "src/data/items.json", name: "an icon path points at a missing file", cls: "data/asset",
     apply: editItem("crowbar", (i) => { i.icon = "/icons/not-a-real-icon.png"; }) },
+  // §3j.169. A note citing a game field must agree with what the game holds for it. The
+  // second of these is the one worth keeping: 40 IS a real serialized `baseRadius` — on
+  // HoldoutZone — so a check that only asks "does this value exist anywhere?" passes it.
+  // Only comparing against the component the note actually names catches it.
+  { file: "src/data/items.json", name: "a note states a field value the game does not have", cls: "data/provenance",
+    apply: editItem("his-reassurance", (i) => {
+      i.descriptionNote = i.descriptionNote.replace("maxTargets is 1", "maxTargets is 7");
+    }) },
+  { file: "src/data/items.json", name: "a note attributes another component's value to the one it names", cls: "data/provenance",
+    apply: editItem("helfire-tincture", (i) => {
+      i.descriptionNote = i.descriptionNote.replace("baseRadius = 15", "baseRadius = 40");
+    }) },
   { file: "src/data/items.json", name: "an item name is misspelled", cls: "data/text",
     apply: editItem("crowbar", (i) => { i.name = "Crowbaar"; }) },
   { file: "src/data/items.json", name: "an item is deleted outright", cls: "data/completeness",
