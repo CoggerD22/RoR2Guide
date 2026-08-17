@@ -8711,3 +8711,73 @@ What shipped is the half that is verification: all 17 mechanical tag classes are
 compares 217 records to `itemdefs.json`; in CI it degrades to the pin, like every other game
 cross-check. Proven both ways — making Pearl obtainable in the defs fails it, and quietly
 dropping Pearl from the pin fails it.
+
+---
+
+### §3j.167 — The Stat Lab under-reported crit, and the guard was shaped around the gap
+
+Pass 2 of the plan: **cross-source agreement**. A single fact often lives in more than one place,
+written independently. `statItems.ts` is what the Stat Lab COMPUTES with; `items.json` is what the
+reader is SHOWN. `data:verify` has always checked the first against CODE_TRUTH. Nothing checked
+the two against each other.
+
+#### The finding
+
+`RecalculateStats` contains **five** `num111 += 5f` blocks — five items granting a flat +5%
+critical chance:
+
+| guard | item | in codex | modelled |
+|---|---|---|---|
+| `num12` | `AttackSpeedOnCrit` — Predatory Instincts | yes | yes |
+| `num14` | `HealOnCrit` — Harvester's Scythe | yes | yes |
+| `num35` | `BleedOnHitAndExplode` — **Shatterspleen** | **yes** | **no** |
+| `num13` | `CooldownOnCrit` — Wicked Ring | no (JunkContent) | n/a |
+| `num19` | `CritHeal` | no | n/a |
+
+**Shatterspleen's +5% crit was modelled by nothing**, so the Stat Lab under-reported crit chance
+for anyone holding it. The mechanic is identical to the two that were modelled and entirely
+unconditional, so the Stat Lab's own "conditional effects aren't modelled" caveat never covered
+it. The game's own description for the item opens *"Gain 5% critical chance"* — this was never
+hidden, merely unlooked-for.
+
+It survived because **CODE_TRUTH omitted it too**. `data:verify` checks `statItems.ts` against
+that table, so the model and the truth table agreed with each other while both differed from the
+game. That is the one shape a cross-source check cannot catch on its own, and it is why Pass 1's
+`game → data` direction had to come first.
+
+#### The guard was shaped around the population it was skipping
+
+`statItems.test.ts` already compared the two sources. It could not have found this:
+
+```js
+if (!entry) {
+  // Crit from Predatory Instincts / Harvester's Scythe is a flat rider stated in
+  // the description rather than a stacking row; nothing to compare against.
+  continue;
+}
+```
+
+A `continue` that turns an unverifiable case into a silent pass (§3j.148's shape) — and the
+comment **enumerates the two items it was written around**. A third item with the same mechanic
+could never register, because the exemption was fitted to the known list rather than to the rule.
+This is the second guard in two passes found working against its own purpose, after §3j.164's
+test that required prose to stay hardcoded.
+
+#### What shipped
+
+Shatterspleen is now modelled, offered in the Stat Lab picker, and present in CODE_TRUTH (14
+coefficients across 12 items, from 13 across 11). The new guard asserts the invariant the old one
+skipped, in both directions: **every modelled coefficient must reach the reader** — via a stacking
+row *or* stated in prose, since a flat rider legitimately has no curve — and **every item whose
+text advertises a flat crit bonus must be modelled**.
+
+Deliberately not added: a decompile scan counting `num111 += 5f` blocks. It would be the strongest
+form of the check and the most fragile — `num111` is a name the decompiler invents, and CODE_TRUTH
+already warns that these shift between versions. A guard that breaks on every re-decompile trains
+people to ignore it.
+
+A fourth appearance of one old trap, too: the first cut of the visibility check built its pattern
+in a template literal, where `` is BACKSPACE rather than a word boundary, so it matched nothing
+and flagged all three crit items. §3j.116 wrote a literal backspace into a guard, §3j.148 lost a
+pattern to CRLF, §3j.155 lost one through a heredoc. The rule that keeps holding: when a pattern
+must survive being written *through* another layer, tokenise instead of escaping.

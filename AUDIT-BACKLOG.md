@@ -96,6 +96,7 @@ SweetSpot cliffs and the proc gap in already-"checked" data.
 | Game numbers in component prose | 4 claims / 3 components | 3 derived, 1 pinned; **a guard was enforcing the duplication** | §3j.164 |
 | `descriptionNote` prose | 69 notes, 229 claims, 72 identifiers | **sound**; identifier half already guarded | §3j.165 |
 | Reverse verification (game → data) | 297 defs, 35 tags, 83 tagged items | **18 items cannot drop; planner implies they can** | §3j.166 |
+| Cross-source agreement | STAT_ITEMS vs items.json, 14 coefficients | **Stat Lab under-reported crit**; guard skipped the gap | §3j.167 |
 | Extractor health | 1472 bundles, 224,435 MonoBehaviours | all swallow classes 0 | §3j.127 |
 
 ---

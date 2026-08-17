@@ -2809,3 +2809,88 @@ const MECHANICAL = new Set([
   "CommandArtifactBlacklist", "SacrificeBlacklist", "Cleansable", "HalcyoniteShrine",
   "IgnoreForDropList", "PriorityScrap", "Scrap", "ObjectiveRelated",
 ]);
+
+
+/**
+ * §3j.167 — the Stat Lab computes with numbers the codex must also show.
+ *
+ * The same coefficient lives in two independently-written places: `statItems.ts` (what the Stat
+ * Lab computes with) and `items.json` (what a reader is shown). `data:verify` has always checked
+ * the first against CODE_TRUTH. Nothing had ever checked the two against EACH OTHER, so a value
+ * could be modelled and never displayed, or displayed and never modelled, and every gate passed.
+ *
+ * Comparing them found Shatterspleen: RecalculateStats has five `num111 += 5f` blocks, three of
+ * which belong to codex items, and only two were modelled — even though the game's own
+ * description for the third opens "Gain 5% critical chance" and the mechanic is identical and
+ * unconditional. It survived because CODE_TRUTH omitted it too: **the truth table and the model
+ * agreed with each other while both differed from the game**, which is the one shape a
+ * cross-source check cannot catch on its own.
+ *
+ * The invariant is not "every coefficient has a stacking row" — a flat +5% is legitimately
+ * carried by prose rather than a curve. It is that the number must reach the reader SOMEHOW.
+ */
+test("every modelled coefficient is visible to the reader", async () => {
+  const { readFileSync } = await import("node:fs");
+  const items = JSON.parse(readFileSync("src/data/items.json", "utf8")) as Array<{
+    id: string;
+    description: string;
+    descriptionNote?: string;
+    stacking?: Array<{ base: number; perStack: number }>;
+  }>;
+  const byId = new Map(items.map((i) => [i.id, i]));
+
+  let compared = 0;
+  const invisible: string[] = [];
+  const missing: string[] = [];
+  for (const [id, effects] of Object.entries(STAT_ITEMS)) {
+    const it = byId.get(id);
+    if (!it) {
+      missing.push(id);
+      continue;
+    }
+    for (const e of effects) {
+      compared++;
+      const rows = it.stacking ?? [];
+      const inRow = rows.some(
+        (r) => Math.abs(r.base - e.base) < 1e-9 && Math.abs(r.perStack - e.perStack) < 1e-9,
+      );
+      // Or stated in prose — the flat +5% crits are described, not tabulated.
+      const text = `${it.description} ${it.descriptionNote ?? ""}`;
+      /*
+        Numeric TOKENS, not a regex (§3j.167). The first cut built the pattern in a template
+        literal, where `\b` is the BACKSPACE character rather than a word boundary — so it
+        matched nothing and flagged all three items as invisible. That is the fourth appearance
+        of this exact trap (§3j.116 wrote a literal backspace into a guard, §3j.148 lost a
+        pattern to CRLF, §3j.155 lost one through a heredoc). Tokenising has no escape to lose.
+      */
+      const tokens = new Set(text.match(/\d+(?:\.\d+)?/g) ?? []);
+      const inProse = tokens.has(String(e.base));
+      if (!inRow && !inProse) invisible.push(`${id}.${e.target} = ${e.base}/${e.perStack}`);
+    }
+  }
+
+  expect(missing, `STAT_ITEMS models items absent from items.json: ${missing.join(", ")}`).toEqual([]);
+  expect(compared, "no coefficients compared — STAT_ITEMS stopped being readable").toBeGreaterThanOrEqual(13);
+  expect(
+    invisible,
+    `the Stat Lab computes with values the codex never shows: ${invisible.join(", ")}. ` +
+      "Either give the item a stacking row or state the number in its description/note.",
+  ).toEqual([]);
+
+  /*
+    And the reverse: every item whose text advertises a flat 5% critical chance must be modelled.
+    This is the direction that found Shatterspleen. Three items say it; all three must be in the
+    Stat Lab, or it under-reports crit for whichever is missing.
+  */
+  const claimsFlatCrit = items.filter((i) =>
+    /\b5%\s*(?:critical|crit)/i.test(`${i.description} ${i.descriptionNote ?? ""}`),
+  );
+  expect(claimsFlatCrit.length, "no items advertise a flat 5% crit — has the wording changed?").toBe(3);
+  const unmodelled = claimsFlatCrit
+    .filter((i) => !(STAT_ITEMS[i.id] ?? []).some((e) => e.target === "critChance"))
+    .map((i) => i.id);
+  expect(
+    unmodelled,
+    `items granting a flat crit bonus that the Stat Lab does not model: ${unmodelled.join(", ")}`,
+  ).toEqual([]);
+});

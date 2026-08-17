@@ -36,6 +36,22 @@ export const STAT_ITEMS: Record<string, ItemStatEffect[]> = {
   "lens-makers-glasses": [{ target: "critChance", base: 10, perStack: 10 }],
   "predatory-instincts": [{ target: "critChance", base: 5, perStack: 0 }],
   "harvesters-scythe": [{ target: "critChance", base: 5, perStack: 0 }],
+  /*
+    §3j.167 — Shatterspleen grants the same flat +5% crit, and was modelled by nothing.
+
+    RecalculateStats has FIVE `num111 += 5f` blocks. Three belong to items in our codex —
+    AttackSpeedOnCrit (Predatory Instincts), HealOnCrit (Harvester's Scythe) and
+    BleedOnHitAndExplode (Shatterspleen) — and the other two are JunkContent/unused.
+    Two of the three were modelled here. The third was not, although the game's own
+    description for it opens with "Gain 5% critical chance" and the mechanic is identical
+    and unconditional, so the Stat Lab's own "conditional effects aren't modelled" caveat
+    never applied to it.
+
+    It went unseen because CODE_TRUTH in data-verify.ts omitted it too: the truth table
+    and the model AGREED WITH EACH OTHER and both differed from the game, which is the one
+    shape a cross-source check cannot catch.
+  */
+  shatterspleen: [{ target: "critChance", base: 5, perStack: 0 }],
   "laser-scope": [{ target: "critDamagePct", base: 100, perStack: 100 }],
   "bison-steak": [{ target: "healthFlat", base: 25, perStack: 25 }],
   "titanic-knurl": [
@@ -83,6 +99,7 @@ export const STAT_ITEM_IDS: string[] = [
   "lens-makers-glasses",
   "predatory-instincts",
   "harvesters-scythe",
+  "shatterspleen",
   "laser-scope",
   "pauls-goat-hoof",
   "mocha",

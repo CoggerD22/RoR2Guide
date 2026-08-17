@@ -65,6 +65,11 @@ const CODE_TRUTH: Truth[] = [
     source: "if (num12 > 0) num111 += 5f" },
   { item: "harvesters-scythe", target: "critChance", base: 5, perStack: 0,
     source: "if (num14 > 0) num111 += 5f" },
+  // §3j.167 — the third of RecalculateStats' five `num111 += 5f` blocks that belongs to a
+  // codex item. Omitting it here is why statItems.ts could omit it too and still pass:
+  // the table and the model agreed with each other while both differed from the game.
+  { item: "shatterspleen", target: "critChance", base: 5, perStack: 0,
+    source: "if (num35 > 0) num111 += 5f  [num35 = GetItemCountEffective(BleedOnHitAndExplode)]" },
   { item: "laser-scope", target: "critDamagePct", base: 100, perStack: 100,
     source: "critMultiplier = 2f + 1f * num44", code: "2f + 1f * (float)num44" },
   { item: "bison-steak", target: "healthFlat", base: 25, perStack: 25,
