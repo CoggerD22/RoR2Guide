@@ -8642,3 +8642,72 @@ anything — a fabricated figure that happens to appear in an unrelated context 
 through — so keeping it would mean a check that mostly passes and implies more than it can
 show. §3j.149 deleted a check for exactly that reason. The identifier half is already enforced,
 and it is the half with teeth.
+
+---
+
+### §3j.166 — Verification run backwards, and what it found on the first try
+
+**A new plan, from the structure of the defect log rather than from a hunch.**
+
+Reading all 43 closed fronts, one thing is true of every single one: they verify in the direction
+`data → game`. *"Is what we say true?"* Nothing has ever systematically asked the inverse —
+`game → data`, *"does everything the game does appear in what we say?"* — which is precisely
+where rule #1's second clause lives: **never let a gap look like a fact.**
+
+Three pieces of evidence that this was the right axis rather than a guess:
+
+- **Lysate Cell (§3j.160).** Forward verification caught its fabricated 33%. Its *omission* — the
+  Engineer turret limit — was found only incidentally. Our record covered **1 of its 2 code
+  sites**.
+- **§3j.113** ran this axis once by hand and found **3 of 13** artifact records incomplete. It was
+  never systematised.
+- The DEFERRED blacklist item is this axis, already known to yield.
+
+#### The instrument was wrong first, as usual — and the failure pointed somewhere better
+
+The first cut enumerated every `Items.X` reference and asked whether our prose named the
+enclosing class or method. It flagged **179 of 210 items**, which is not a finding but a broken
+heuristic: our prose describes mechanics in English, not by method name. It also reported **zero**
+blacklist memberships, contradicting a fact already in the backlog.
+
+That second failure was the useful one. Blacklists are not code references at all — they are
+**tags on the ItemDef**, and we already extract them. The game ships **35 distinct tags**, and
+**83 of our items carry at least one mechanical tag**: `AIBlacklist` 51, `ExtractorUnitBlacklist`
+25, `WorldUnique` 18, `CannotCopy` 15, `BrotherBlacklist` 10, `CannotSteal` 9, `CannotDuplicate`
+8. All verified, all extracted, **none published**.
+
+#### The finding: 18 items cannot appear at a printer, and the planner does not say so
+
+`Run.BuildDropTable()` (L207943) builds every `available*DropList` — the run's whole pool of what
+can drop, per tier — and line 208006 excludes any def tagged `WorldUnique`:
+
+```
+if (list != null && itemDef.DoesNotContainTag(ItemTag.WorldUnique))
+    list.Add(PickupCatalog.FindPickupIndex(itemIndex));
+```
+
+**18 items in our codex carry that tag**: both Pearls, Halcyon Seed, the four Item Scraps, five
+boss keys/cerebellums, Defensive Microbots, and all five food items. **13 of the 18 say nothing
+about how they are obtained.**
+
+The Run Planner's own copy reads *"mark what you want to target or avoid at printers and
+scrappers this run."* For those 13, targeting is not a strategy — it is impossible. This is not a
+wrong number; it is a missing fact that undermines the site's central feature, and no
+forward-verification pass could have found it, because every claim we make about those items is
+true.
+
+A hypothesis was tested and rejected on the way: that `WorldUnique` prevents *stacking*. Nine
+such items publish per-stack values, which looked damning until the tag's actual uses were read —
+it governs drop pools, not stacks. Checked before acting, per rule 3.
+
+#### What shipped, and what did not
+
+Publishing obtainability needs a schema field and a UI surface, so it is a **decision**, not a
+correction (rule 9) — raised in DEFERRED with this evidence attached, replacing the vaguer
+blacklist entry.
+
+What shipped is the half that is verification: all 17 mechanical tag classes are now **pinned in
+`game-facts-baseline.json` and cross-checked against the game's own defs**. Locally the check
+compares 217 records to `itemdefs.json`; in CI it degrades to the pin, like every other game
+cross-check. Proven both ways — making Pearl obtainable in the defs fails it, and quietly
+dropping Pearl from the pin fails it.

@@ -95,6 +95,7 @@ SweetSpot cliffs and the proc gap in already-"checked" data.
 | Verbatim descriptions — CLOSED | 217 items; 61 divergences resolved | **0 undocumented**; 2 fabricated numbers removed | §3j.159–163 |
 | Game numbers in component prose | 4 claims / 3 components | 3 derived, 1 pinned; **a guard was enforcing the duplication** | §3j.164 |
 | `descriptionNote` prose | 69 notes, 229 claims, 72 identifiers | **sound**; identifier half already guarded | §3j.165 |
+| Reverse verification (game → data) | 297 defs, 35 tags, 83 tagged items | **18 items cannot drop; planner implies they can** | §3j.166 |
 | Extractor health | 1472 bundles, 224,435 MonoBehaviours | all swallow classes 0 | §3j.127 |
 
 ---
@@ -103,12 +104,22 @@ SweetSpot cliffs and the proc gap in already-"checked" data.
 
 These are **scope changes, not corrections**. Nothing on the site is wrong because of them.
 
-1. **Publish steal-immunity and the other blacklist mechanics.** `ItemStealController` gates on
-   `AIBlacklist`/`BrotherBlacklist`: **55 of our items cannot be taken by Mithrix**. Same
-   family: `RebirthBlacklist` (7), `CannotSteal` (12), `CannotDuplicate` (9),
-   `CommandArtifactBlacklist` (2), `DevotionBlacklist` (4), `SacrificeBlacklist` (1),
-   `Cleansable` (2). Publishing means a schema field, 217 records, a UI surface, a `PLAN.md`
-   entry and a guard. §3j.131.
+1. **Publish what the game's ItemDef tags assert — starting with obtainability.** §3j.166 ran
+   verification backwards and found a class of fact the site omits entirely. The sharpest case:
+   `Run.BuildDropTable()` excludes every def tagged `WorldUnique` from all `available*DropList`
+   pools, so **18 items can never appear in a chest, printer or scrapper** — both Pearls, Halcyon
+   Seed, the four Scraps, five boss items, Defensive Microbots and all five food items. **13 of
+   them say nothing about how they are obtained**, while the Run Planner invites the reader to
+   "mark what you want to target or avoid at printers and scrappers". Targeting them is not a
+   strategy; it is impossible.
+   The same shape covers 16 other mechanical tags, now pinned and cross-checked but unpublished:
+   `AIBlacklist` (51), `ExtractorUnitBlacklist` (25), `CannotCopy` (15), `BrotherBlacklist` (10 —
+   Mithrix cannot take these), `CannotSteal` (9), `CannotDuplicate` (8), `RebirthBlacklist` (5),
+   `DevotionBlacklist` (4), `HalcyoniteShrine` (17), `Cleansable`, `SacrificeBlacklist`,
+   `CommandArtifactBlacklist`.
+   **The decision**: a schema field plus a UI surface, and — separately — whether the planner
+   should still offer un-droppable items as printer targets at all. The data is already extracted
+   and verified; only publishing it is a choice.
 2. **Opinion layer.** Built and parked (`src/components/guides/`, `src/content/guides.ts`,
    `content/guides/_template.md`; `src/router.tsx` documents re-enabling). The missing piece is
    written guides, and rule #7 means a human writes them.

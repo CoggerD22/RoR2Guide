@@ -2730,3 +2730,82 @@ test("game numbers in component prose are derived, not typed", async () => {
     "Artifact of Glass (x5 damage, 10% HP)",
   );
 });
+
+
+/**
+ * §3j.166 — the game's mechanical ItemDef tags, pinned.
+ *
+ * Found by running verification BACKWARDS for the first time: every front until now asked "is
+ * what we say true?" (data -> game). This asked "does everything the game does appear in what we
+ * say?" (game -> data) — and the answer, for a whole class of fact, is no.
+ *
+ * `Run.BuildDropTable()` builds every `available*DropList` — the run's entire pool of what can
+ * drop — and excludes any ItemDef tagged `WorldUnique`. **18 items in our codex carry it**, so
+ * they cannot appear in a chest, a printer or a scrapper. 13 of those 18 say nothing about how
+ * they are obtained. The Run Planner's own copy invites the reader to "mark what you want to
+ * target or avoid at printers and scrappers this run".
+ *
+ * Publishing that needs a schema field and a UI surface, so it is a DEFERRED decision rather
+ * than a correction. What is NOT a decision is keeping the extracted facts current: these tags
+ * come from the game's defs, and a balance patch that makes an item obtainable — or newly
+ * immune to Mithrix — must not pass silently while the site says nothing either way.
+ */
+test("mechanical ItemDef tags match the pinned baseline", async () => {
+  const { readFileSync, existsSync } = await import("node:fs");
+  const baseline = JSON.parse(readFileSync("src/data/game-facts-baseline.json", "utf8")) as {
+    items: Record<string, { gameTags?: string[] }>;
+  };
+
+  const tagged = Object.entries(baseline.items).filter(([, v]) => v.gameTags?.length);
+  expect(tagged.length, "no mechanical tags pinned — the baseline lost them").toBeGreaterThanOrEqual(80);
+
+  // The class that motivated this: obtainability. If it changes, someone must notice.
+  const worldUnique = tagged.filter(([, v]) => v.gameTags!.includes("WorldUnique"));
+  expect(
+    worldUnique.length,
+    "the WorldUnique set changed — these items are excluded from every drop list " +
+      "Run.BuildDropTable() builds, so a change here alters what can be found in a run",
+  ).toBe(18);
+
+  const itemIds = new Set(
+    (JSON.parse(readFileSync("src/data/items.json", "utf8")) as Array<{ id: string }>).map((i) => i.id),
+  );
+  const orphans = tagged.map(([id]) => id).filter((id) => !itemIds.has(id));
+  expect(orphans, `tags pinned for items that no longer exist: ${orphans.join(", ")}`).toEqual([]);
+
+  /*
+    Locally, compare against the game itself rather than only against this file — otherwise the
+    pin proves the pin. In CI `.gamedata/` is absent (Gearbox's data is never committed) and
+    this half skips, exactly as the other game cross-checks do.
+  */
+  if (!existsSync(".gamedata/itemdefs.json")) return;
+  const defs = JSON.parse(readFileSync(".gamedata/itemdefs.json", "utf8")) as {
+    items: Array<{ name: string; tags?: string[] }>;
+    equipment: Array<{ name: string; tags?: string[] }>;
+  };
+  const items = JSON.parse(readFileSync("src/data/items.json", "utf8")) as Array<{ id: string; name: string }>;
+  const byName = new Map([...defs.items, ...defs.equipment].map((d) => [d.name.toLowerCase(), d]));
+
+  const drift: string[] = [];
+  let compared = 0;
+  for (const it of items) {
+    const d = byName.get(it.name.toLowerCase());
+    if (!d) continue;
+    const pinned = baseline.items[it.id]?.gameTags ?? [];
+    const live = (d.tags ?? []).filter((t) => pinned.includes(t) || MECHANICAL.has(t)).sort();
+    compared++;
+    if (JSON.stringify(pinned) !== JSON.stringify(live)) {
+      drift.push(`${it.id}: pinned [${pinned}] vs game [${live}]`);
+    }
+  }
+  expect(compared, "no items compared against the game's defs").toBeGreaterThan(150);
+  expect(drift, `ItemDef tags drifted from the game:\n${drift.join("\n")}`).toEqual([]);
+});
+
+/** Kept beside the test so the pin and the check agree on what "mechanical" means. */
+const MECHANICAL = new Set([
+  "WorldUnique", "AIBlacklist", "BrotherBlacklist", "CannotSteal", "CannotDuplicate",
+  "CannotCopy", "RebirthBlacklist", "DevotionBlacklist", "ExtractorUnitBlacklist",
+  "CommandArtifactBlacklist", "SacrificeBlacklist", "Cleansable", "HalcyoniteShrine",
+  "IgnoreForDropList", "PriorityScrap", "Scrap", "ObjectiveRelated",
+]);
