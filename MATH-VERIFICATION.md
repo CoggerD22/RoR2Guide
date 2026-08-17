@@ -8781,3 +8781,58 @@ in a template literal, where `` is BACKSPACE rather than a word boundary, so it
 and flagged all three crit items. §3j.116 wrote a literal backspace into a guard, §3j.148 lost a
 pattern to CRLF, §3j.155 lost one through a heredoc. The rule that keeps holding: when a pattern
 must survive being written *through* another layer, tokenise instead of escaping.
+
+---
+
+### §3j.168 — "Unverifiable" was a configuration, not a fact
+
+Pass 3 of the plan was to turn the honest boundary — what cannot be verified from code and assets
+— into data rather than prose, so the site could say "we do not know this" precisely.
+
+Measuring the boundary dissolved it.
+
+`extract-component-fields.py` selects serialized fields **by name**, from `argv`. 53 names had
+ever been asked for, across 2028 component owners. So the boundary was never
+"the game does not expose this" — it was "nobody has typed this field name yet", and the
+extractor **recorded no list**, so `.gamedata/component-fields.json` was whatever someone last
+ran.
+
+#### Helfire Tincture, third time
+
+§3j.161 removed the claim that Helfire's burn lasts 12s, on the grounds that `dotDuration` is
+serialized and absent from our extraction, so nothing available could confirm it — and rule #1
+prefers an omission to a plausible number. That reasoning was right and its premise was wrong.
+
+Adding two names to the extractor's argument list produced the whole component:
+
+```
+HelfireController { healthFractionPerSecond: 0.05, dotDuration: 3, interval: 0.25,
+                    baseRadius: 15, allyDamageScalar: 0.5, enemyDamageScalar: 24 }
+```
+
+**The burn lasts 3 seconds.** Not the 12 that was published, and not the unknown it was replaced
+with. Total burn is `healthFractionPerSecond * dotDuration` = 15% of maximum health before
+scaling — which the code showed all along as `num = healthFractionPerSecond * dotDuration *
+fullCombinedHealth`, with both factors serialized and therefore invisible.
+
+And `interval: 0.25` is where the **fabricated "0.25x on allies" came from**: 0.25 is the tick
+interval, not a damage scalar. §3j.161 searched the whole decompile for `0.25f` near any helfire
+token and found nothing, correctly — the number was never in the code. It was on the prefab, one
+field name away, being misread as something else entirely.
+
+Three published states for one value: 12s (wrong), unknown (honest but unnecessary), 3s
+(verified). The middle one is the interesting failure — **an honest "we cannot know" that was
+really "we did not ask".**
+
+#### What shipped
+
+`src/data/component-fields-wanted.json` records all 55 field names the extraction is depended on
+for, and a guard holds the extraction to it, so a regeneration cannot come back narrower than the
+published data requires. Proven by deleting `dotDuration` from the extraction: it fails naming
+the field and the command to fix it.
+
+The lesson generalises past this file. When a check reports "not verifiable", that is a claim
+about the *instrument*, and instruments here are configurable more often than they are
+fundamental. **Before recording a limit, try widening the instrument** — §3j.148 found that a
+skipped check reads as a pass; this is its quieter cousin, where a skipped *input* reads as an
+absent fact.

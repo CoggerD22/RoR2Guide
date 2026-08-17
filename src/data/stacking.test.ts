@@ -2894,3 +2894,46 @@ test("every modelled coefficient is visible to the reader", async () => {
     `items granting a flat crit bonus that the Stat Lab does not model: ${unmodelled.join(", ")}`,
   ).toEqual([]);
 });
+
+
+/**
+ * §3j.168 — the component extraction must cover every field it is depended on for.
+ *
+ * `extract-component-fields.py` selects serialized fields BY NAME from `argv`, and recorded the
+ * request nowhere. `.gamedata/component-fields.json` was therefore whatever someone last typed,
+ * and a value missing from it was indistinguishable from a value the game does not have.
+ *
+ * That distinction was not academic. Helfire Tincture's burn duration lives in `dotDuration` on
+ * the HelfireController prefab. It was published as 12s, then removed as "not verifiable from
+ * anything available" (§3j.161) — and neither was right: adding the field name to the extractor
+ * produced `dotDuration = 3`. The value was never unverifiable, only unextracted.
+ *
+ * `component-fields-wanted.json` now records the list, and this asserts the extraction still
+ * satisfies it, so a regeneration cannot silently come back narrower than the data depends on.
+ */
+test("the component extraction covers every field we depend on", async () => {
+  const { readFileSync, existsSync } = await import("node:fs");
+  const wanted = JSON.parse(readFileSync("src/data/component-fields-wanted.json", "utf8")) as {
+    fields: string[];
+  };
+  expect(wanted.fields.length, "the wanted-field list is empty or malformed").toBeGreaterThanOrEqual(50);
+  expect(new Set(wanted.fields).size, "the wanted-field list has duplicates").toBe(wanted.fields.length);
+
+  // The fields this project actually reasons about; losing any of these breaks a published claim.
+  for (const f of ["cooldown", "dotDuration", "baseRadius", "radius", "maxPurchaseCount"]) {
+    expect(wanted.fields, `${f} dropped out of the wanted list`).toContain(f);
+  }
+
+  /*
+    Locally, hold the extraction to the list. In CI `.gamedata/` is absent — Gearbox's data is
+    never committed — so this half skips like every other game cross-check.
+  */
+  if (!existsSync(".gamedata/component-fields.json")) return;
+  const have = JSON.parse(readFileSync(".gamedata/component-fields.json", "utf8")) as Record<string, unknown>;
+  const missing = wanted.fields.filter((f) => !(f in have));
+  expect(
+    missing,
+    `the extraction is missing fields the data depends on: ${missing.join(", ")}. ` +
+      "Re-run scripts/extract-component-fields.py with every name in component-fields-wanted.json.",
+  ).toEqual([]);
+});

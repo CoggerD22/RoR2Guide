@@ -5928,7 +5928,7 @@
     "confidence": "code",
     "cooldown": 45,
     "activated": true,
-    "descriptionNote": "An earlier revision of this page said the burn is \"0.25x on allies\". That is wrong: HelfireController sets allyDamageScalar = 0.5f and applies it to every target whose team matches the holder's — which includes you — so self and allies take the same 0.5x, and enemies take enemyDamageScalar = 24f. The 5%/second is healthFractionPerSecond = 0.05f. The radius also grows with stacks (baseRadius * (1 + (stack - 1) * 0.5)), which the text does not mention. The burn's DURATION is deliberately not stated here: dotDuration is a serialized field on the prefab, absent from our extraction, so no number for it is trustworthy yet."
+    "descriptionNote": "Every number here is now read from the prefab. HelfireController carries healthFractionPerSecond = 0.05, dotDuration = 3, interval = 0.25, baseRadius = 15, allyDamageScalar = 0.5 and enemyDamageScalar = 24. So the burn lasts 3 SECONDS, ticking every 0.25s, and its total is healthFractionPerSecond x dotDuration = 15% of your maximum health before scaling. The ally scalar applies to every target on the holder's team, which includes the holder — self and allies both take 0.5x, and only enemies take 24x. Two earlier revisions of this page were wrong about exactly these: one said the burn is \"0.25x on allies\" (0.25 is the tick INTERVAL, not a damage scalar) and one said it lasts 12s (it is 3). The radius also grows with stacks: baseRadius * (1 + (stack - 1) * 0.5)."
   },
   {
     "id": "spinel-tonic",
