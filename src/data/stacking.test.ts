@@ -2645,7 +2645,18 @@ test("the deploy workflow builds before testing and does not overwrite the build
     for (const stage of ["pnpm typecheck", "pnpm data:audit", "pnpm data:verify", "pnpm test:unit", "pnpm build"]) {
       expect(wf, `${name} no longer runs \`${stage}\``).toContain(stage);
     }
-    expect(wf, `${name} no longer runs the browser suite`).toMatch(/run: pnpm test\s*$/m);
+    /*
+      `pnpm test` invoked as a command, whether the step is a one-liner or a shell block.
+      This was pinned as `run: pnpm test$`, which is a claim about FORMATTING, not about the
+      suite running — so wrapping the step to capture failure output tripped it (§3j.173).
+      What must stay true is that the command is invoked and that its failure still fails the
+      job, so both are asserted rather than the layout of the YAML.
+    */
+    expect(wf, `${name} no longer invokes the browser suite`).toMatch(/(^|\s)pnpm test(\s|$)/m);
+    expect(
+      wf.includes("pnpm test 2>&1") ? /exit 1/.test(wf) : true,
+      `${name} pipes the browser suite through a shell block but never re-raises the failure`,
+    ).toBe(true);
     // A step that cannot fail is not a gate (§3j.148).
     expect(wf, `${name} has a step marked continue-on-error, which cannot gate anything`).not.toContain(
       "continue-on-error",

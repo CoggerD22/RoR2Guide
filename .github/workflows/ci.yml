@@ -39,5 +39,33 @@ jobs:
       - name: Install Playwright browser
         run: pnpm exec playwright install --with-deps chromium
 
+      # The browser suite has failed on ubuntu since the commit that ADDED the 360px sweep, while
+      # passing on Windows every time — 25 red runs. Diagnosing it took a detour because the raw
+      # job log needs repo-admin auth to read (403), so "Process completed with exit code 1" was
+      # all the API would give. Workflow-command annotations, by contrast, ARE readable
+      # unauthenticated. Emitting the failing test names as annotations makes the next red run
+      # self-describing instead of opaque.
       - name: Smoke test
-        run: pnpm test
+        run: |
+          set -o pipefail
+          if pnpm test 2>&1 | tee playwright-output.log; then exit 0; fi
+          echo "::group::Playwright failure detail"
+          tail -120 playwright-output.log
+          echo "::endgroup::"
+          grep -E '^\s+[0-9]+\) ' playwright-output.log | head -20 | while IFS= read -r line; do
+            echo "::error::FAILED${line}"
+          done
+          grep -E 'Error:|expect\(|Received|Expected' playwright-output.log | head -12 | while IFS= read -r line; do
+            echo "::error::DETAIL ${line}"
+          done
+          exit 1
+
+      - name: Upload Playwright output
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-output
+          path: |
+            playwright-output.log
+            test-results/
+          retention-days: 7
