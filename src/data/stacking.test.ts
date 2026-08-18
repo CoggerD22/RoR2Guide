@@ -1293,9 +1293,16 @@ test("the deploy workflow still gates publication on every runnable check", asyn
   // Playwright running in ci.yml alone — while deploy.yml triggers on push to main
   // independently, so a red CI run could not stop a publish (§3j.139).
   expect(ci, "Playwright must run in CI").toContain("pnpm test");
-  expect(wf, "Playwright must ALSO gate the deploy, not just CI").toMatch(
-    /run:\s*pnpm test\s*$/m,
-  );
+  /*
+    `pnpm test` as an INVOCATION, not as a whole YAML line (§3j.173). Both workflows now pipe
+    the suite through a shell block to turn failures into readable annotations, and a pattern
+    anchored to end-of-line read that as "the browser suite was removed".
+
+    The negative lookahead is load-bearing: `pnpm test:unit` contains `pnpm test`, so a bare
+    match would let the UNIT tests satisfy a check about the BROWSER suite — §3j.160's substring
+    bug, which has now cost five separate passes.
+  */
+  expect(wf, "Playwright must ALSO gate the deploy, not just CI").toMatch(/pnpm test(?![:\w])/);
   expect(wf, "deploy needs the browser installed to run them").toContain("playwright install");
   expect(ci, "unit tests must run in ci.yml too").toContain("pnpm test:unit");
   // And they must precede the build, or a failing check would still publish.
@@ -2620,7 +2627,8 @@ test("the deploy workflow builds before testing and does not overwrite the build
   };
 
   const build = stepIndex(/run: pnpm build\s*$/m);
-  const browser = stepIndex(/run: pnpm test\s*$/m);
+  // See §3j.173 above: invocation, not layout, and `(?![:\w])` keeps `pnpm test:unit` out.
+  const browser = stepIndex(/pnpm test(?![:\w])/);
   expect(build, "deploy.yml no longer builds").toBeLessThan(Infinity);
   expect(browser, "deploy.yml no longer runs the browser suite").toBeLessThan(Infinity);
   expect(
