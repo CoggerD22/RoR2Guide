@@ -1028,3 +1028,68 @@ test("closing the drawer returns focus to the card that opened it", async ({ pag
   const onBody = await page.evaluate(() => document.activeElement === document.body);
   expect(onBody, "focus fell to <body> after closing").toBe(false);
 });
+
+/**
+ * §3j.172 — the planner must not offer a target the game cannot produce.
+ *
+ * `Run.BuildDropTable()` never adds a `WorldUnique` item (or an equipment with
+ * `canDrop = false`) to any pool, so no chest, printer or scrapper can yield one — while this
+ * page's own instruction is to mark what to "target or avoid at printers and scrappers".
+ * 29 of 217 records were being offered as targets for a plan that cannot happen.
+ *
+ * The population is read from `items.json` rather than hardcoded, so the test cannot rot into
+ * checking an item that stopped being excluded (the §3j.151 lesson about hand-written lists).
+ */
+test("planner refuses to target an item that is in no drop pool", async ({ page }) => {
+  const items = itemsJson as { id: string; name: string; dropExclusion?: { cause: string[] } }[];
+  const excluded = new Set(items.filter((i) => i.dropExclusion).map((i) => i.name));
+  expect(excluded.size, "no excluded items in the data — this test would assert nothing").toBeGreaterThan(0);
+
+  await page.goto("/planner");
+  await expect(page.getByRole("heading", { name: "Run Planner" })).toBeVisible();
+
+  // Assert the INVARIANT over every card the grid actually renders, rather than picking one
+  // item by hand. The first attempt hardcoded excluded[0] and failed because the planner does
+  // not render Item Scrap at all — a hand-picked victim tests the picker, not the rule (§3j.151).
+  const cards = await page
+    .locator("button[aria-label]")
+    .evaluateAll((els) =>
+      els
+        .map((e) => ({
+          label: e.getAttribute("aria-label") ?? "",
+          disabled: e.getAttribute("aria-disabled") === "true",
+        }))
+        .filter((c) => /: (cannot be targeted|neutral|targeted|avoided)/.test(c.label)),
+    );
+  expect(cards.length, "no planner cards found at all").toBeGreaterThan(50);
+
+  const wrong: string[] = [];
+  let checked = 0;
+  for (const c of cards) {
+    const name = c.label.slice(0, c.label.indexOf(":"));
+    if (!excluded.has(name)) {
+      if (c.disabled) wrong.push(`${name} is droppable but was disabled`);
+      continue;
+    }
+    checked++;
+    if (!c.disabled) wrong.push(`${name} is in no drop pool but is still targetable`);
+  }
+  expect(checked, "no excluded item is rendered in the planner — nothing was verified").toBeGreaterThan(0);
+  expect(wrong, `${checked} excluded cards checked of ${cards.length} rendered`).toEqual([]);
+
+  // Focusable, not `disabled`: a keyboard user must still reach the explanation (§3j.145).
+  const one = page.getByRole("button", { name: /: cannot be targeted/ }).first();
+  await one.focus();
+  await expect(one).toBeFocused();
+  // `force` is required and is itself the evidence: Playwright's actionability check reads
+  // aria-disabled and refuses an ordinary click with "element is not enabled". Forcing it proves
+  // the handler is gone rather than merely that the pointer was blocked.
+  await one.click({ force: true });
+  await expect(one).not.toHaveAttribute("aria-pressed", /.*/);
+  const clickedName = (await one.getAttribute("aria-label"))!.split(":")[0];
+  await expect(page.getByRole("complementary").getByText(clickedName, { exact: true })).toHaveCount(0);
+
+  // A droppable item still works, so the guard did not disable the whole grid.
+  await page.getByRole("button", { name: /^Crowbar: neutral/ }).click();
+  await expect(page.getByRole("complementary").getByText("Crowbar")).toBeVisible();
+});

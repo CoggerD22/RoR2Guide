@@ -525,9 +525,80 @@ function main(): number {
   const defsPath = resolve(root, ".gamedata/itemdefs.json");
   if (existsSync(defsPath)) {
     const defs = JSON.parse(readFileSync(defsPath, "utf8")) as {
-      items: Array<{ name: string; cachedName: string }>;
-      equipment: Array<{ name: string; cachedName: string }>;
+      items: Array<{ name: string; cachedName: string; tags?: string[] }>;
+      equipment: Array<{ name: string; cachedName: string; tags?: string[] }>;
     };
+
+    /*
+      DROP-POOL EXCLUSION, BOTH DIRECTIONS (§3j.172).
+
+      `Run.BuildDropTable()` adds an item to its tier's `available*DropList` only when it lacks
+      `WorldUnique`, and skips `IgnoreForDropList` outright. An item excluded there is in no pool,
+      so no chest, printer or scrapper can produce it.
+
+      `dropExclusion` is optional, which means its ABSENCE is a claim — "this drops normally" —
+      and an absent field is exactly what nobody notices. So the two sets must match exactly:
+      every tagged item carries the field with the right tags, and no untagged item carries it.
+      A patch that made an item droppable, or made a new one undroppable, fails here rather than
+      leaving the codex quietly wrong and the planner offering an impossible target.
+    */
+    const EXCLUSION_TAGS = ["WorldUnique", "IgnoreForDropList"];
+    const tagsByName = new Map(defs.items.map((d) => [d.name, d.tags ?? []]));
+    const canDropByName = new Map(
+      (defs.equipment as Array<{ name: string; canDrop?: boolean }>).map((d) => [d.name, d.canDrop]),
+    );
+
+    /*
+      Which catalog a record belongs to is decided by TIER, not by name. 45 names exist in both
+      ItemCatalog and EquipmentCatalog, and one of them is real: "Faulty Conductor" is a Boss item
+      (`ShockDamageAura`) AND an equipment (`DroneShockDamage`, canDrop = false). Matching by name
+      alone would have marked our boss item — which drops perfectly normally — as impossible to
+      find. That is §3j.77's internal-name-collision class, and it very nearly landed a false
+      claim on a page.
+    */
+    const isEquipment = (t: string) => t === "equipment" || t === "lunar-equipment";
+
+    let excludedChecked = 0;
+    for (const it of items) {
+      let expectedCause: string[];
+      if (isEquipment(it.tier)) {
+        const canDrop = canDropByName.get(it.name);
+        if (canDrop === undefined) continue;
+        expectedCause = canDrop === false ? ["EquipmentDef.canDrop = false"] : [];
+      } else {
+        const gameTags = tagsByName.get(it.name);
+        if (!gameTags) continue;
+        expectedCause = EXCLUSION_TAGS.filter((t) => gameTags.includes(t)).map((t) => `ItemTag.${t}`);
+      }
+      excludedChecked++;
+      const expected = expectedCause;
+      const declared = it.dropExclusion?.cause ?? [];
+      const same =
+        expected.length === declared.length && expected.every((t) => declared.includes(t));
+      if (same) continue;
+      if (expected.length && !declared.length) {
+        errors.push(
+          `"${it.id}" is excluded from the game's drop tables by ${expected.join("+")}, so ` +
+            `BuildDropTable never adds it to a pool and no chest, printer or scrapper can ` +
+            `produce it — but the record declares no dropExclusion, which reads as "drops normally"`,
+        );
+      } else if (!expected.length && declared.length) {
+        errors.push(
+          `"${it.id}" declares dropExclusion [${declared.join(", ")}] but the game excludes it ` +
+            `from nothing — this CAN drop, and saying otherwise is a false claim on the page`,
+        );
+      } else {
+        errors.push(
+          `"${it.id}" declares dropExclusion [${declared.join(", ")}] but the game says ` +
+            `[${expected.join(", ")}]`,
+        );
+      }
+    }
+    console.log(
+      `  drop-pool exclusion: ${excludedChecked} record(s) cross-checked against the game ` +
+        `(ItemTag for items, EquipmentDef.canDrop for equipment); ` +
+        `${items.filter((i) => i.dropExclusion).length} excluded from every pool`,
+    );
     const ours = new Set(items.map((i) => i.name));
     const byCachedName = new Map<string, string>();
     for (const d of [...defs.items, ...defs.equipment]) {

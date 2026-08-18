@@ -234,6 +234,40 @@ export const itemSchema = z
       })
       .strict()
       .optional(),
+    /**
+     * Present ONLY when the game's drop tables can never produce this item
+     * (MATH-VERIFICATION §3j.166, §3j.172).
+     *
+     * `Run.BuildDropTable()` builds both pools in one method, and excludes by two DIFFERENT
+     * mechanisms:
+     *   - items: added to their tier's `available*DropList` only
+     *     `if (list != null && itemDef.DoesNotContainTag(ItemTag.WorldUnique))`, and anything
+     *     tagged `IgnoreForDropList` is skipped before that. The printer
+     *     (`PickupTransmutationManager`) and scrapper paths exclude the same tag independently.
+     *   - equipment: added only `if (equipmentDef.canDrop)` — a serialized boolean, not a tag.
+     *     No EquipmentDef carries ItemTags at all, so a tag-shaped field would have described
+     *     175 records and silently skipped 42.
+     *
+     * This says only that the DROP POOLS cannot produce it. Several of these are obtainable
+     * another way — elite aspects drop from the elite that carries them — so `cause` is the
+     * verified fact and `source` is left unset unless that route has been verified too.
+     *
+     * OMISSION IS NOT A DEFAULT. `data:audit` requires the set of records carrying this field to
+     * equal the set the game excludes, exactly, in both directions — so a missing entry fails
+     * rather than quietly reading as "this drops normally".
+     */
+    dropExclusion: z
+      .object({
+        /**
+         * The game-side cause(s), named as the game names them —
+         * `ItemTag.WorldUnique`, `EquipmentDef.canDrop = false`.
+         */
+        cause: z.array(z.string().min(1)).nonempty(),
+        /** How it IS obtained, when that has been verified. Never guessed. */
+        source: z.string().min(1).optional(),
+      })
+      .strict()
+      .optional(),
     /** Icon path, e.g. "/icons/crowbar.png". */
     icon: z.string().regex(/^\/icons\/[a-z0-9-]+\.png$/, "icon must be /icons/<slug>.png"),
     /** Canonical wiki.gg URL. */

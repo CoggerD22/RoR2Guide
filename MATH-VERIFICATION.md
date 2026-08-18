@@ -9105,3 +9105,94 @@ would have read as a finding.
 
 Two consecutive passes on this area (§3j.170's sweep and this one) have now turned up one defect
 between them, and it is fixed. The area is exhausted.
+---
+
+### §3j.172 — The site supported a plan the game cannot honour
+
+The first DEFERRED decision, taken. §3j.166 found the fact by running verification backwards and
+parked it because publishing needed a schema field and a UI surface — a scope change, which rule 9
+says a human decides. Decided; built.
+
+#### The fact
+
+`Run.BuildDropTable()` fills every pool in one method and excludes by **two different
+mechanisms**:
+
+```csharp
+if (!itemDef.tags.Contains(ItemTag.IgnoreForDropList)) { …
+    if (list != null && itemDef.DoesNotContainTag(ItemTag.WorldUnique)) list.Add(…); }
+…
+if (equipmentDef.canDrop) { … }          // a serialized bool, not a tag
+```
+
+**29 of 217 records are in no pool at all** — 18 items by tag, 11 equipment by `canDrop`. No
+chest, printer or scrapper can produce them; the printer (`PickupTransmutationManager`) and
+scrapper paths exclude the same tag independently, so it is four code sites agreeing.
+
+And the Run Planner's own instruction is *"mark what you want to target or avoid at printers and
+scrappers"*. It was offering 29 targets the game cannot deliver, 21 of them rendered on the page.
+The codex, meanwhile, described them exactly like anything else — **the absence was the
+misleading part**, which is why this needed a field rather than a note.
+
+#### Two things that nearly shipped as false claims
+
+**A tag-shaped field would have been silently half-right.** The first version stored
+`dropExclusion.tags` and cross-checked 175 records — because no `EquipmentDef` carries ItemTags at
+all, the other 42 were skipped without comment. Equipment is excluded by a serialized boolean
+instead, so the field became `cause: string[]` naming the mechanism as the game names it
+(`ItemTag.WorldUnique`, `EquipmentDef.canDrop = false`) and the denominator went 175 → **217**.
+
+**"Faulty Conductor" is both an item and an equipment.** `ShockDamageAura` (Boss tier) and
+`DroneShockDamage` (`canDrop = false`) share a display name — 45 names collide across the two
+catalogs, and this is the one that is real. Matching by name would have stamped "cannot be found
+in a chest" on a boss item that drops perfectly normally. The guard now resolves the catalog by
+**tier**, not by name, which is §3j.77's collision class caught one step before it reached a page.
+
+#### The guard, and why omission had to fail
+
+`dropExclusion` is optional, so its ABSENCE is itself a claim — "this drops normally" — and an
+absent field is exactly what nobody notices. `data:audit` therefore compares the two sets in
+**both directions**: every excluded record carries the field with the right cause, and no
+droppable record carries it. **4 mutations, 4 caught**, including the collision trap.
+
+#### What the guards caught in me
+
+Three separate guards fired on this change, each one built after this project was bitten:
+
+- `text-muted-foreground/80` on the new drawer line — **§3j.144's exact defect**, a muted token
+  dimmed by an opacity modifier, at 4.36:1 against a 4.5 floor. Caught statically *and* by the
+  rendered sweep.
+- a new `ItemDetail` branch not declared in the state list (§3j.151), which would have left it
+  unrendered by every visual sweep.
+- a `title` on the new planner badge, over the pinned count (§3j.152). Removed rather than
+  re-pinned: the badge is `pointer-events-none`, so its tooltip could never be hovered even on a
+  desktop, and hover-only text does not exist on touch. The button's `aria-label` carries the
+  reason, the dashed border carries it visually, the drawer states it in full.
+
+The planner control uses `aria-disabled`, not `disabled`, per §3j.145 — a `disabled` button leaves
+the tab order, so a keyboard user could never reach the explanation for why it is inert. Playwright
+then refuses an ordinary click with *"element is not enabled"*, which is itself the confirmation;
+the test forces the click to prove the handler is gone rather than merely blocked.
+
+#### A guard that had been blind since §3j.124
+
+The new field was documented in `PLAN.md` — and the test that enforces that **passed before it
+was**. Its parse required `z.` on the same line, so a multi-line builder was invisible:
+
+```ts
+dropExclusion: z
+  .object({ … })
+```
+
+That is 2 of 37 fields — `unlock`, documented by luck, and `dropExclusion`, which was not.
+§3j.124 inverted this test to *fail closed* precisely so a new field could not slip past; failing
+closed only works if the parse sees the field.
+
+Worse, the check was `plan.includes(f)`, so renaming the entry to `dropExclusionXX` left it
+**green** — the field's own name still matched as a substring. §3j.160's substring bug, fourth
+instance. Both fixed, both mutation-proven; the rename survived before and fails now.
+
+`source` — how these items ARE obtained — is deliberately unset on all 29. Several are reachable
+(elite aspects drop from the elite that carries them), but no route has been verified, and rule #1
+prefers the gap to a guess. The branch is declared `unreachableOk` so it is honestly listed rather
+than looking covered.

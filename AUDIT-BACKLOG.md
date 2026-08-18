@@ -101,6 +101,7 @@ SweetSpot cliffs and the proc gap in already-"checked" data.
 | Values cited from named game fields | 18 claims / 9 notes; 64 classes, 9 resolvable | **1 misattributed** (Desk Plant cites a prefab that says 0); instrument wrong 4 ways | §3j.169 |
 | C# initialisers vs prefab overrides | 224 claims / 360 fragments; 54 classes, 16 matched | **Frost Relic wrong 3 ways**, accusing correct game text; 291 formulas never scanned | §3j.170 |
 | A second Frost Relic? | 79 record/prefab pairs, 197 overriding fields | **none found**; 3 of 4 instruments unusable, stated as a limit | §3j.171 |
+| Drop-pool obtainability (DEFERRED #1) | 217 records cross-checked; 29 excluded | **planner offered 29 impossible targets**; 3 guards caught the fix, 1 was blind since §3j.124 | §3j.172 |
 | Extractor health | 1472 bundles, 224,435 MonoBehaviours | all swallow classes 0 | §3j.127 |
 
 ---
@@ -109,22 +110,16 @@ SweetSpot cliffs and the proc gap in already-"checked" data.
 
 These are **scope changes, not corrections**. Nothing on the site is wrong because of them.
 
-1. **Publish what the game's ItemDef tags assert — starting with obtainability.** §3j.166 ran
-   verification backwards and found a class of fact the site omits entirely. The sharpest case:
-   `Run.BuildDropTable()` excludes every def tagged `WorldUnique` from all `available*DropList`
-   pools, so **18 items can never appear in a chest, printer or scrapper** — both Pearls, Halcyon
-   Seed, the four Scraps, five boss items, Defensive Microbots and all five food items. **13 of
-   them say nothing about how they are obtained**, while the Run Planner invites the reader to
-   "mark what you want to target or avoid at printers and scrappers". Targeting them is not a
-   strategy; it is impossible.
-   The same shape covers 16 other mechanical tags, now pinned and cross-checked but unpublished:
-   `AIBlacklist` (51), `ExtractorUnitBlacklist` (25), `CannotCopy` (15), `BrotherBlacklist` (10 —
-   Mithrix cannot take these), `CannotSteal` (9), `CannotDuplicate` (8), `RebirthBlacklist` (5),
-   `DevotionBlacklist` (4), `HalcyoniteShrine` (17), `Cleansable`, `SacrificeBlacklist`,
-   `CommandArtifactBlacklist`.
-   **The decision**: a schema field plus a UI surface, and — separately — whether the planner
-   should still offer un-droppable items as printer targets at all. The data is already extracted
-   and verified; only publishing it is a choice.
+1. **Publish the REST of the ItemDef tag facts.** §3j.172 took the sharpest case — drop-pool
+   exclusion — and shipped it as `dropExclusion`, cross-checked 217/217. The other mechanical tags
+   remain pinned in `game-facts-baseline.json` and unpublished: `AIBlacklist` (51),
+   `ExtractorUnitBlacklist` (25), `CannotCopy` (15), `BrotherBlacklist` (10 — Mithrix cannot take
+   these), `CannotSteal` (9), `CannotDuplicate` (8), `RebirthBlacklist` (5), `DevotionBlacklist` (4),
+   `HalcyoniteShrine` (17), `Cleansable`, `SacrificeBlacklist`, `CommandArtifactBlacklist`. Each
+   needs its own decision about whether a reader can act on it; obtainability was the one that
+   made the site actively misleading, and it is done.
+   Also still open: **how** the 29 excluded records ARE obtained. `dropExclusion.source` exists and
+   is unset on all 29, because no route has been verified and rule #1 forbids guessing.
 2. **Opinion layer.** Built and parked (`src/components/guides/`, `src/content/guides.ts`,
    `content/guides/_template.md`; `src/router.tsx` documents re-enabling). The missing piece is
    written guides, and rule #7 means a human writes them.

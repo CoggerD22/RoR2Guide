@@ -1224,10 +1224,25 @@ test("every item/skill schema field is documented in PLAN.md", async () => {
   const plan = readFileSync("PLAN.md", "utf8");
   const schema = readFileSync("src/data/schema.ts", "utf8");
 
+  /*
+    `z\b`, not `z\.` (§3j.172). Requiring the dot on the SAME line silently skipped every field
+    written as a multi-line builder —
+
+        dropExclusion: z
+          .object({ … })
+
+    — which was 2 of 37: `unlock`, documented in PLAN.md by luck, and `dropExclusion`, which was
+    not. §3j.124 inverted this test to fail closed precisely so a new field could not slip
+    through; failing closed only works if the parse SEES the field, and this one did not.
+  */
   const declared = [
-    ...new Set([...schema.matchAll(/^ {4}([a-zA-Z][A-Za-z0-9]*)\s*:\s*z\./gm)].map((m) => m[1])),
+    ...new Set([...schema.matchAll(/^ {4}([a-zA-Z][A-Za-z0-9]*)\s*:\s*z\b/gm)].map((m) => m[1])),
   ];
   expect(declared.length).toBeGreaterThan(20); // fail loudly if the parse ever breaks
+  // Both multi-line builders must be seen, or the parse has regressed to the §3j.172 hole.
+  expect(declared, "the multi-line-builder parse hole is back").toEqual(
+    expect.arrayContaining(["unlock", "dropExclusion"]),
+  );
 
   // INVERTED (§3j.124). This used to be an allowlist of nine field names to check, so a
   // field added later was documented only if someone remembered to extend the list —
@@ -1239,7 +1254,15 @@ test("every item/skill schema field is documented in PLAN.md", async () => {
   // about `moveSpeed` that the name does not already say; that is not true of `capStacks`,
   // `procSource` or `acceleration`, all of which mean something narrower than they look.
   const SELF_DESCRIBING = new Set(["moveSpeed", "jumpCount", "baseAttackSpeed"]);
-  const undocumented = declared.filter((f) => !SELF_DESCRIBING.has(f) && !plan.includes(f));
+  /*
+    Token membership, not `plan.includes(f)` (§3j.172). Substring matching meant a field counted
+    as documented if its name merely appeared INSIDE a longer word — renaming the entry to
+    `dropExclusionXX` left the test green, so a rename in PLAN.md could silently orphan a field.
+    That is §3j.160's substring bug for the fourth time in this codebase, so it is worth the
+    two lines: split PLAN.md into identifiers and require an exact one.
+  */
+  const planTokens = new Set(plan.match(/[A-Za-z][A-Za-z0-9]*/g) ?? []);
+  const undocumented = declared.filter((f) => !SELF_DESCRIBING.has(f) && !planTokens.has(f));
   expect(
     undocumented,
     `schema fields absent from PLAN.md: ${undocumented.join(", ")}`,

@@ -1,5 +1,5 @@
 import { type CSSProperties } from "react";
-import { Check, Info, Lock, X } from "lucide-react";
+import { Ban, Check, Info, Lock, X } from "lucide-react";
 import type { Item } from "@/data/schema";
 import { TIER_META } from "@/data/items";
 import { cn } from "@/lib/utils";
@@ -24,14 +24,32 @@ export function PlannerCard({ item, state, onCycle, onInfo }: PlannerCardProps) 
   const tier = TIER_META[item.tier];
   const isTargeted = state === "targeted";
   const isAvoided = state === "avoided";
+  /*
+    §3j.172. `Run.BuildDropTable()` never adds these to a pool, so no chest, printer or scrapper
+    can produce them — and this page's own instruction is to mark what to "target or avoid at
+    printers and scrappers". Offering them was inviting a plan the game cannot honour.
+
+    `aria-disabled`, not `disabled`: §3j.145 found that disabling a FOCUSED element ejects focus
+    to <body>, and a plain `disabled` button is skipped by the tab order too, so a keyboard user
+    could never reach the explanation for why it is inert. It stays focusable and says why.
+
+    Cards already in a saved plan keep their stored state and stay removable from the rail.
+    Silently rewriting someone's saved plan would be worse than the problem being fixed.
+  */
+  const undroppable = !!item.dropExclusion;
 
   return (
     <div className="group relative">
       <button
         type="button"
-        onClick={onCycle}
-        aria-pressed={!!state}
-        aria-label={`${item.name}: ${state ?? "neutral"}. Click to cycle target/avoid.`}
+        onClick={undroppable ? undefined : onCycle}
+        aria-disabled={undroppable || undefined}
+        aria-pressed={undroppable ? undefined : !!state}
+        aria-label={
+          undroppable
+            ? `${item.name}: cannot be targeted — the game's drop tables never include it, so no printer or scrapper can produce it.`
+            : `${item.name}: ${state ?? "neutral"}. Click to cycle target/avoid.`
+        }
         className={cn(
           // `relative` is load-bearing: absolutely-positioned children must anchor to
           // the CARD, not to the grid cell. The cell stretches to the tallest card in
@@ -44,7 +62,10 @@ export function PlannerCard({ item, state, onCycle, onInfo }: PlannerCardProps) 
           density === "dense" && "gap-1 p-1.5",
           isTargeted && "border-emerald-400 shadow-[0_0_18px_rgba(52,211,153,0.35)]",
           isAvoided && "border-red-500/50 opacity-40 grayscale",
-          !state && "border-border hover:border-primary/50",
+          !state && !undroppable && "border-border hover:border-primary/50",
+          // Muted but NOT hidden, and not hover-dependent: the reason has to be readable on a
+          // phone, where `hover` never fires at all (§3j.155).
+          undroppable && "cursor-not-allowed border-dashed border-border/70",
         )}
         style={!state ? ({ "--tier": tier.color } as CSSProperties) : undefined}
       >
@@ -80,7 +101,19 @@ export function PlannerCard({ item, state, onCycle, onInfo }: PlannerCardProps) 
           point: a marker that moves between pages has to be relearned. The ⓘ button
           moves to bottom-right to make room; it's hover-only, so that costs nothing.
         */}
-        {item.unlock && (
+        {/*
+          Deliberately NO `title`. §3j.152 pinned which components may use one and how many,
+          because a hover-only explanation does not exist on touch or for a keyboard — and this
+          badge is `pointer-events-none`, so it could never be hovered even on a desktop. The
+          button's aria-label carries the reason, the dashed border carries it visually, and the
+          drawer states it in full. A title here would have grown the exact surface that pin caps.
+        */}
+        {undroppable && (
+          <span className="pointer-events-none absolute left-1 top-1 flex size-5 items-center justify-center rounded-full bg-slate-600 text-white shadow-sm ring-1 ring-black/30">
+            <Ban className="size-3" strokeWidth={2.5} aria-hidden />
+          </span>
+        )}
+        {item.unlock && !undroppable && (
           <span
             className="pointer-events-none absolute left-1 top-1 flex size-5 items-center justify-center rounded-full bg-amber-400 text-black shadow-sm ring-1 ring-black/30"
             title={`Unlocked by ${item.unlock.challenge}${item.unlock.requirement ? ` — ${item.unlock.requirement}` : ""}`}

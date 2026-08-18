@@ -1,5 +1,5 @@
 import { useEffect, useRef, type CSSProperties } from "react";
-import { Biohazard, ExternalLink, Lock, X } from "lucide-react";
+import { Ban, Biohazard, ExternalLink, Lock, X } from "lucide-react";
 import type { Item } from "@/data/schema";
 import { TIER_META, DLC_META, itemById } from "@/data/items";
 import { highlightNumbers } from "@/lib/highlight";
@@ -360,6 +360,42 @@ export function ItemDetail({ item, onClose, onSelectItem }: ItemDetailProps) {
                     })()
                   : null}
               </div>
+            </section>
+          )}
+
+          {/*
+            §3j.172. Stated because its ABSENCE was the misleading part: the codex described
+            these items exactly like any other, and the planner invited the reader to target
+            them at printers. `Run.BuildDropTable()` never puts them in a pool at all.
+
+            The wording is deliberately narrow. Several of these ARE obtainable — elite aspects
+            drop from the elite carrying them — so this says what is verified (no pool contains
+            it) and does not imply the item is unreachable.
+          */}
+          {item.dropExclusion && (
+            <section>
+              <h3 className="mb-1 flex items-center gap-1.5 text-xs font-semibold uppercase tracking-widest text-muted-foreground">
+                <Ban className="size-3" aria-hidden />
+                Not in any drop pool
+              </h3>
+              <p className="text-sm text-muted-foreground">
+                The game's drop tables never include this{" "}
+                {item.tier === "equipment" || item.tier === "lunar-equipment"
+                  ? "equipment"
+                  : "item"}
+                , so it cannot come from a chest, a printer or a scrapper.{" "}
+                {item.dropExclusion.source ? (
+                  <span className="text-foreground/90">{item.dropExclusion.source}</span>
+                ) : (
+                  <span>It is obtained some other way.</span>
+                )}
+              </p>
+              {/* No opacity modifier on a muted token: that is the §3j.144 defect exactly, and
+                  both the static guard and the rendered contrast sweep caught it at 4.36:1. */}
+              <p className="mt-1 text-xs text-muted-foreground">
+                <code className="font-mono">{item.dropExclusion.cause.join(", ")}</code> &mdash;{" "}
+                <code className="font-mono">Run.BuildDropTable()</code>
+              </p>
             </section>
           )}
 

@@ -64,6 +64,16 @@ export const BRANCHES: Branch[] = [
   { name: "unlock challenge shown", match: (i) => !!i.unlock },
   { name: "no unlock challenge", match: (i) => !i.unlock },
   { name: "DLC badge", match: (i) => !!i.dlc && i.dlc !== "base" },
+  // §3j.172. 29 of 217 (18 items by ItemTag, 11 equipment by EquipmentDef.canDrop).
+  { name: "not in any drop pool", match: (i) => !!(i as { dropExclusion?: unknown }).dropExclusion },
+  // The `source` half is a guard for data that does not exist yet: how these items ARE obtained
+  // has not been verified for any of the 29, and rule #1 forbids guessing at it, so every record
+  // carries `cause` alone. The branch renders the fallback sentence until one is researched.
+  {
+    name: "drop exclusion with a verified source",
+    match: (i) => !!(i as { dropExclusion?: { source?: string } }).dropExclusion?.source,
+    unreachableOk: true,
+  },
 
   /*
     Branches no item can reach today. They are listed rather than omitted: an unreachable

@@ -951,7 +951,7 @@ interface Item {
 ```
 
 **Fields added after the original draft.** The block above is the Phase-1 schema; verification
-work since has added six, and `src/data/schema.ts` is the authority. Each exists because a
+work since has added eight, and `src/data/schema.ts` is the authority. Each exists because a
 record could not be stated honestly without it — the reason matters more than the field:
 
 | Field | On | Why it had to exist |
@@ -963,6 +963,7 @@ record could not be stated honestly without it — the reason matters more than 
 | `gameName` | Survivor | The exact in-game string when `name` has been normalised for readability. Void Fiend is `「V??oid Fiend』` and Chef is `CHEF` in every token; normalising is still altering game data, so the original is recorded rather than discarded (rule #1 has no cosmetic exemption). |
 | `procSource` | Skill | WHERE the proc coefficient came from — `code:explicit`, `code:default`, `esc`, `projectile`, `curated-link`, or `code:no-damage-path`. The last is a verified ABSENCE, not an unknown, and must never render as "unverified" (§3j.115). |
 | `grantedBy` | Skill | The unlock challenge for a loadout variant, when the skill is not available from the start. |
+| `dropExclusion` | Item | `{ cause[], source? }` — present ONLY when the game's drop tables can never produce the record. `Run.BuildDropTable()` adds an item to its tier's pool only if it lacks `ItemTag.WorldUnique`, and adds equipment only if `EquipmentDef.canDrop`; 29 of 217 fail one of those, so no chest, printer or scrapper can yield them. The field exists because its ABSENCE was the misleading part — the codex described them like anything else and the Run Planner invited the reader to target them at printers. `source` stays unset until a route is verified: several ARE obtainable (elite aspects drop from the elite), and rule #1 forbids guessing which (§3j.172). |
 | `cooldown` / `activated` | Item (equipment) | Asset cooldown, and whether pressing the key does anything. `activated: false` means no `EquipmentSlot` handler — the nine elite Aspects — where stating the asset cooldown would imply an operative number (§3j.65). |
 | `consumedOnUse` | Item (equipment) | A cooldown of `0` reads as "reusable instantly" when it means "there is nothing to recharge". Seed of Life and Trophy Hunter's Tricorn (§3j.65). |
 | `triggered` | Item (equipment) | The third activation state: no handler, but the cooldown IS spent — by an in-world event rather than the key. Executive Card only (§3j.76). |
