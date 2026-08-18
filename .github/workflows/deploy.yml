@@ -77,8 +77,34 @@ jobs:
       - name: Install Playwright browser
         run: pnpm exec playwright install --with-deps chromium
 
+      # Same instrumentation as ci.yml, and for the same reason (§3j.173): the raw job log needs
+      # repo-admin auth to read, so an uninstrumented failure reports only "exit code 1", while
+      # ::error:: annotations are readable unauthenticated. Both workflows run this suite, so
+      # both must be able to say what broke — otherwise whichever one finishes first is mute.
       - name: Browser tests
-        run: pnpm test
+        run: |
+          set -o pipefail
+          if pnpm test 2>&1 | tee playwright-output.log; then exit 0; fi
+          echo "::group::Playwright failure detail"
+          tail -120 playwright-output.log
+          echo "::endgroup::"
+          grep -E '^\s+[0-9]+\) ' playwright-output.log | head -20 | while IFS= read -r line; do
+            echo "::error::FAILED${line}"
+          done
+          grep -E 'Error:|expect\(|Received|Expected' playwright-output.log | head -12 | while IFS= read -r line; do
+            echo "::error::DETAIL ${line}"
+          done
+          exit 1
+
+      - name: Upload Playwright output
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-output-deploy
+          path: |
+            playwright-output.log
+            test-results/
+          retention-days: 7
 
       - uses: actions/upload-pages-artifact@v3
         with:
