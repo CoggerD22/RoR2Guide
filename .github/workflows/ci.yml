@@ -55,7 +55,7 @@ jobs:
           grep -E '^\s+[0-9]+\) ' playwright-output.log | head -20 | while IFS= read -r line; do
             echo "::error::FAILED${line}"
           done
-          grep -E 'Error:|expect\(|Received|Expected' playwright-output.log | head -12 | while IFS= read -r line; do
+          grep -E 'Error:|expect\(|Received|Expected|document is [0-9]+px|escaping' playwright-output.log | head -20 | while IFS= read -r line; do
             echo "::error::DETAIL ${line}"
           done
           exit 1
