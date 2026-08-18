@@ -20,18 +20,17 @@ export function TopNav() {
         {/* Scrolls horizontally on narrow screens; the mask fades the cut-off edge so a
             clipped link reads as "more to scroll" rather than broken text.
 
-            `min-w-0` is load-bearing and its absence was a real bug (§3j.173). This <nav> is a
-            flex ITEM, and a flex item defaults to `min-width: auto` — it refuses to shrink below
-            its content, so `overflow-x-auto` never engaged and the nav pushed the header past the
-            viewport instead of scrolling inside it. The whole document then scrolled sideways.
-
-            It survived §3j.149's 360px sweep because that sweep ran on Windows, where the labels
-            happen to fit; the same page scrolled sideways on the CI runner's fonts, and on a
-            phone. This is the exact `min-width: auto` trap §3j.149 documented, in a place it did
-            not look. With `min-w-0` the nav scrolls internally at any font width. */}
+            NO `min-w-0` here, deliberately, and measured rather than reasoned (§3j.173). This is
+            a flex item, so the §3j.149 `min-width: auto` trap looks like it should apply — I
+            added `min-w-0` on exactly that reasoning and it changed nothing: with and without it
+            the nav reports the same clientWidth at every viewport from 360px down to 200px, and
+            `scrollWidth > clientWidth` either way. `min-width: auto` only applies while overflow
+            is VISIBLE; `overflow-x: auto` already sets the automatic minimum size to zero, so the
+            scroller was engaging all along. Left as it was — adding a no-op with a confident
+            comment is how a false explanation gets inherited. */}
         <nav
           aria-label="Primary"
-          className="nav-scroll ml-auto flex min-w-0 items-center gap-1 overflow-x-auto"
+          className="nav-scroll ml-auto flex items-center gap-1 overflow-x-auto"
         >
           {NAV_SECTIONS.map((section) => (
             <Link

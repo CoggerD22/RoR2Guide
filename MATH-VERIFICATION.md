@@ -9196,3 +9196,87 @@ instance. Both fixed, both mutation-proven; the rename survived before and fails
 (elite aspects drop from the elite that carries them), but no route has been verified, and rule #1
 prefers the gap to a guess. The branch is declared `unreachableOk` so it is honestly listed rather
 than looking covered.
+---
+
+### §3j.173 — Green here is not green there
+
+Reported from outside the audit queue: "I keep getting Run failed on github." **CI had failed on
+every push since 2026-08-13 — 26 consecutive red runs**, while the full gate passed locally every
+time, including under `CI=true` and with the game data hidden.
+
+#### Finding the commit without being able to read the log
+
+The API gives run and step status without auth, and that was enough to bisect: the last green run
+was `c7ee328` (§3j.148) and the first red one was **`cfd32e9` — the commit that ADDED
+`tests/responsive.spec.ts`**. Both workflows failed at the same step, the browser suite.
+
+Reading *why* was the problem. `GET /actions/jobs/{id}/logs` returns **403 "Must have admin
+rights"**, so the only machine-readable detail was `Process completed with exit code 1`. There is
+no Docker and no WSL on this machine, so the runner could not be reproduced either.
+
+One hypothesis died on evidence rather than argument. A per-test timeout would be the obvious
+guess — the sweeps are slow — but the failing runs complete the whole suite in **86–99s against
+80s for the last green run**, and a 30s timeout plus its retry would add 60s that does not appear.
+That left an assertion failing on the runner.
+
+**So instrument instead of guessing.** Workflow-command annotations *are* readable
+unauthenticated, unlike the log they are emitted from. Both workflows now tee the suite's output
+and re-emit failing test names and `expect`/`Received` lines as `::error::` annotations. The next
+red run said it outright:
+
+```
+FAILED  1) [chromium] › tests/responsive.spec.ts:53 › nothing overflows a 360px viewport
+DETAIL  Error: pages that scroll sideways at 360px:
+DETAIL  + Received  + 3
+```
+
+#### The defect
+
+`SourceNote` prints provenance refs, which are game identifiers — `PurchaseInteraction`,
+`costMultiplierPerPurchase`. A long unbroken token sets the **min-content** width of its panel, so
+`/reference [Shrines]` widened the document. `[overflow-wrap:anywhere]` fixes it, and **not**
+`break-words`: that permits a break to avoid visible overflow while leaving min-content unchanged,
+which is precisely what §3j.149 recorded after trying it first. Measured: that panel used to
+scroll sideways below **328px** and now holds to **264px**.
+
+This is §3j.149's own defect, in a component that pass never visited.
+
+#### The lesson, and the guard
+
+The sweep asserted *"fits at 360px"*, which is a claim about **this machine's fonts**. Layout is
+measured against text; the runner has different metrics; `/reference [Shrines]` had about 9% of
+slack, which passes on Segoe UI and fails on DejaVu. **It would also have failed on a real Android
+phone — the device §3j.149 wrote the sweep for.**
+
+Fitting exactly at one width on one font is not the property worth having. The sweep now runs at
+**360px and 330px**, ~8% of headroom, which is the order of the difference between those font
+stacks. Proven by reverting the fix: it passes at 360 and fails at 330 with
+`/reference [Shrines]: document is 332px in a 330px viewport` — the CI-only failure, now visible
+locally.
+
+#### A no-op I nearly shipped with a confident explanation
+
+I also added `min-w-0` to `TopNav`'s `<nav>`, reasoning that a flex item defaults to
+`min-width: auto` and would refuse to shrink — the §3j.149 trap, apparently one component over.
+Then I measured it: **with and without, the nav reports the same `clientWidth` at every viewport
+from 360px to 200px**, and `scrollWidth > clientWidth` either way. `min-width: auto` applies only
+while overflow is VISIBLE, and `overflow-x: auto` already sets the automatic minimum size to zero,
+so the scroller was engaging all along.
+
+The change was inert and the comment I attached to it was false. Reverted, with the measurement
+recorded in its place — a plausible mechanism that the code does not actually exhibit is worse
+than no comment, because the next reader inherits it as fact. The commit message for `0198f94`
+claims that fix was real; it was not, and this entry is the correction.
+
+#### Three guards pinned formatting rather than behaviour
+
+Wrapping a `run: pnpm test` step in a shell block tripped **three** assertions that matched
+`/run: pnpm test\s*$/` — the CI gate, the deploy gate, and the build-before-tests ordering check.
+None of them was checking that the suite runs; they were checking how the YAML was laid out. All
+three now match the invocation, with a negative lookahead so that `pnpm test:unit` cannot satisfy
+a check about the browser suite — §3j.160's substring bug, fifth instance.
+
+**And one commit went out on a red gate.** `pnpm test:unit | tail -4 && git commit …` — a pipeline
+exits with the status of its *last* element, so `tail` returning 0 hid the failure. The rule is a
+full gate per commit; the shell made a red run look green. Every gate in this pass was afterwards
+checked by exit code, not through a pipe.

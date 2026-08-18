@@ -102,6 +102,7 @@ SweetSpot cliffs and the proc gap in already-"checked" data.
 | C# initialisers vs prefab overrides | 224 claims / 360 fragments; 54 classes, 16 matched | **Frost Relic wrong 3 ways**, accusing correct game text; 291 formulas never scanned | §3j.170 |
 | A second Frost Relic? | 79 record/prefab pairs, 197 overriding fields | **none found**; 3 of 4 instruments unusable, stated as a limit | §3j.171 |
 | Drop-pool obtainability (DEFERRED #1) | 217 records cross-checked; 29 excluded | **planner offered 29 impossible targets**; 3 guards caught the fix, 1 was blind since §3j.124 | §3j.172 |
+| CI red for 26 runs (reported) | 2 workflows, 220 runs bisected | **layout overflowed on the runner's fonts**; sweep now needs margin, not equality | §3j.173 |
 | Extractor health | 1472 bundles, 224,435 MonoBehaviours | all swallow classes 0 | §3j.127 |
 
 ---

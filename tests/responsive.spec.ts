@@ -50,12 +50,29 @@ const PANELS: Panel[] = [
 
 test.use({ viewport: { width: 360, height: 780 } });
 
-test("nothing overflows a 360px viewport", async ({ page }) => {
+/*
+  330 as well as 360 (§3j.173), and the second width is the whole point.
+
+  This sweep asserts "fits at 360px", which is a claim about THIS machine's fonts. It passed on
+  Windows on every run and failed on the ubuntu runner for 26 consecutive builds, because the
+  layout is measured against text and the runner has different metrics. `/reference [Shrines]`
+  had roughly 9% of slack: comfortably passing here, overflowing there — and overflowing on a
+  real Android phone too, which is the device this sweep was written for.
+
+  Fitting exactly at one width on one font is not the property worth having. Fitting with margin
+  is. 330px is ~8% of headroom against 360, which is the order of the difference between Segoe UI
+  and the DejaVu/Liberation metrics a Linux runner uses, so a layout that clears it travels.
+*/
+const WIDTHS = [360, 330] as const;
+
+test("nothing overflows a 360px viewport, with margin for other fonts", async ({ page }) => {
   const overflow: string[] = [];
   const escaping: string[] = [];
   let panels = 0;
   let nodes = 0;
 
+  for (const width of WIDTHS) {
+  await page.setViewportSize({ width, height: 780 });
   for (const { path, tabs = [], state, setup } of PANELS) {
     await page.goto(path);
     await page.waitForLoadState("networkidle");
@@ -105,9 +122,13 @@ test("nothing overflows a 360px viewport", async ({ page }) => {
     }
   }
 
+  }
+
   // Denominators asserted, not just printed: a routing or selector change could reduce this
   // sweep to nothing, and "0 overflow over 0 nodes" is the output this method forbids.
-  expect(panels, "panel count changed — a route or tab label moved").toBe(13 + representativeItems().length);
+  expect(panels, "panel count changed — a route or tab label moved").toBe(
+    (13 + representativeItems().length) * WIDTHS.length,
+  );
   expect(nodes, `only ${nodes} nodes walked; the sweep stopped seeing the page`).toBeGreaterThan(8000);
 
   expect(overflow, `pages that scroll sideways at 360px:\n${overflow.join("\n")}`).toEqual([]);
