@@ -9047,3 +9047,61 @@ taking it from notes alone left the formulas' owners out, so CI saw no owner whe
 `extractFieldClaims` **skips any field name the vocabulary does not contain**. A narrower
 re-extraction would not fail the guard, it would quietly retire it — a check that stops checking
 looks exactly like a check that passes (§3j.148, third instance).
+---
+
+### §3j.171 — Looking for a second Frost Relic, and not finding one
+
+§3j.170's guard fires when our prose NAMES a field. Frost Relic named `icicleBaseRadius`, so it
+would be caught today. A record that quietly used a C# default without naming the field would
+not be. This pass asked whether such a record exists.
+
+**It found none, and three of its four instruments were unusable — which is most of what is worth
+recording here.**
+
+#### The instruments, and why three of them were thrown away
+
+1. **Match components to classes by field signature.** Resolved 2 of 54 cited classes and left 13
+   ambiguous, because near-identical classes share a field set (`HealNearbyController` and
+   `SiphonNearbyController` declare the same seven fields). The crude first version took the best
+   overlap and matched `HealthComponent` to `AltarSkeletonBody`, then invited me to read twenty
+   item records against a random skeleton's health. A 2-of-54 denominator is not an answer.
+2. **Follow `Prefabs/` load paths out of each class body.** Reported **0 overrides**, which was
+   meaningless: Frost Relic's load lives in the ITEM's behaviour class, not in
+   `IcicleAuraController`, so the search looked in the wrong place. This is the "0 of 0" shape
+   again (§3j.169), and it was caught by rule 3 rather than believed.
+3. **Ask whether the record publishes the initialiser value.** 74 hits, all noise: the test asked
+   whether the record "contains 1", and every record contains a 1.
+
+Only the diff logic itself survived, and only because it was **verified against the known case
+first**: pointed at `IcicleAura`, it reported all five of Frost Relic's overrides. That is what
+made the later zeros readable as evidence rather than as silence.
+
+#### What was actually measured
+
+193 records with prose, **79 (record, cited prefab) pairs**, and **197 fields on those prefabs
+that override a C# initialiser** — so the hazard is common, not rare. Of those, the ones where the
+prefab value is a publishable quantity were read by hand:
+
+| record | field | prefab | our record |
+|---|---|---|---|
+| resonance-disc | blastRadius | 14 | publishes 14 ✓ |
+| box-of-dynamite | blastRadius | 7 | publishes 7 ✓ |
+| molten-perforator | blastRadius | 7 | publishes 7 ✓ |
+| preon-accumulator | attackRange | 35 | publishes 35 ✓ |
+| mired-urn | maxTargets | 1 | publishes 1 ✓ |
+| ceremonial-dagger | duration | 13 | **no claim at all** |
+
+The last is not a defect. `duration = 13` sits on a separate timer component of `DaggerProjectile`
+(alongside a steering component's `lifetime = 30`), and our record states neither — rule #1
+prefers the omission to a number we have not tied to a mechanic.
+
+#### The honest conclusion
+
+Frost Relic remains the only known instance, it is fixed, and §3j.170's guard covers the class for
+every record that names the field. For a record that publishes a default WITHOUT naming the field,
+there is no reliable signal in the available data — that is a stated limit, not a clean bill of
+health. Recording it that way is the point: the alternative was a table of 74 "suspects" that
+would have read as a finding.
+
+Two consecutive passes on this area (§3j.170's sweep and this one) have now turned up one defect
+between them, and it is fixed. The area is exhausted.
