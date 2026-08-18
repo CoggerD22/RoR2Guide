@@ -2952,11 +2952,11 @@ test("the component extraction covers every field we depend on", async () => {
  * check them against the game, but it can insist they have not changed — which is what stops a
  * verified number being quietly reworded into an unverified one.
  */
-test("field-value claims in descriptionNotes match the pinned baseline", () => {
+test("field-value claims in notes and formulas match the pinned baseline", () => {
   const baseline = JSON.parse(readFileSync("src/data/game-facts-baseline.json", "utf8")) as {
     fieldClaims: {
       vocabulary: { fields: string[]; owners: string[]; declares: Record<string, string[]> };
-      claims: { id: string; field: string; stated: number; owner: string | null }[];
+      claims: { id: string; where: string; field: string; stated: number; owner: string | null }[];
     };
   };
   const { vocabulary, claims: pinned } = baseline.fieldClaims;
@@ -2973,15 +2973,23 @@ test("field-value claims in descriptionNotes match the pinned baseline", () => {
     ownerDeclares: (o: string, f: string) => (vocabulary.declares[o] ?? []).includes(f),
   };
 
-  const found: { id: string; field: string; stated: number; owner: string | null }[] = [];
+  // Notes AND formulas. §3j.169 pinned only notes; Frost Relic's three wrong numbers lived in
+  // `stacking[].formula`, so both mutations against them survived `data:mutate --ci` until this
+  // covered them. For a non-linear row the formula is the only thing the UI renders, which makes
+  // it data rather than documentation.
+  const found: { id: string; where: string; field: string; stated: number; owner: string | null }[] = [];
   for (const it of items) {
-    if (!it.descriptionNote) continue;
-    for (const c of extractFieldClaims(it.descriptionNote, vocab)) {
-      found.push({ id: it.id, field: c.field, stated: c.stated, owner: c.owner });
+    const frags: [string, string][] = [];
+    if (it.descriptionNote) frags.push(["descriptionNote", it.descriptionNote]);
+    for (const s of it.stacking) if (s.formula) frags.push([`formula[${s.stat}]`, s.formula]);
+    for (const [where, text] of frags) {
+      for (const c of extractFieldClaims(text, vocab)) {
+        found.push({ id: it.id, where, field: c.field, stated: c.stated, owner: c.owner });
+      }
     }
   }
 
-  const key = (c: { id: string; field: string; stated: number; owner: string | null }) =>
-    `${c.id} ${c.field}=${c.stated}${c.owner ? ` @${c.owner}` : ""}`;
+  const key = (c: { id: string; where: string; field: string; stated: number; owner: string | null }) =>
+    `${c.id} ${c.where} ${c.field}=${c.stated}${c.owner ? ` @${c.owner}` : ""}`;
   expect(found.map(key).sort()).toEqual(pinned.map(key).sort());
 });

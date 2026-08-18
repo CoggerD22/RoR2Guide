@@ -2420,16 +2420,16 @@
       {
         "stat": "Max icicles",
         "base": 6,
-        "perStack": 3,
+        "perStack": 6,
         "type": "linear",
-        "formula": "maxIcicleCount = baseIcicleMax + (n - 1) * icicleMaxPerStack = 6 + 3(n-1) (IcicleAuraController). The live count is min(2 + kills, maxIcicleCount), so 2 icicles appear on the first kill."
+        "formula": "maxIcicleCount = baseIcicleMax + (n - 1) * icicleMaxPerStack = 6 + 6(n-1). The C# initialisers are 6 and 3, but Frost Relic loads Prefabs/NetworkedObjects/IcicleAura, whose IcicleAuraController serializes baseIcicleMax = 6 and icicleMaxPerStack = 6 — the serialized value is the one that runs. The live count is min(icicleCountOnFirstKill + kills, maxIcicleCount), and that prefab serializes icicleCountOnFirstKill = 0 (the initialiser is 2), so the first kill raises one icicle."
       },
       {
         "stat": "Max storm radius (m)",
-        "base": 22,
-        "perStack": 6,
+        "base": 18,
+        "perStack": 12,
         "type": "linear",
-        "formula": "radius = characterBody.radius + icicleBaseRadius (10f) + icicleRadiusPerIcicle (2f) x icicles (IcicleAuraController.UpdateRadius). At the 6-icicle cap that is 22m PLUS the survivor's own collider radius, and +6m per stack (3 more icicles x 2m). The listed number excludes the collider term because it is read from each body's CapsuleCollider and so differs per survivor."
+        "formula": "radius = characterBody.radius + icicleBaseRadius + icicleRadiusPerIcicle x icicles (IcicleAuraController). The IcicleAura prefab serializes icicleBaseRadius = 6 — the C# initialiser is 10 — and icicleRadiusPerIcicle = 2, so at the 6-icicle cap that is 18m PLUS the survivor's own collider radius, growing 12m per stack (6 more icicles x 2m). The listed number excludes the collider term because it is read from each body's CapsuleCollider and so differs per survivor."
       }
     ],
     "tags": [
@@ -2442,7 +2442,7 @@
     "wiki": "https://riskofrain2.wiki.gg/wiki/Frost_Relic",
     "verified": true,
     "confidence": "code",
-    "descriptionNote": "The storm caps at 22m plus your own collider radius and grows 6m per stack, not 18m and 12m. The 2m-per-kill growth is right; the cap is six icicles (+3 per stack) at 2m each on top of a 10m base."
+    "descriptionNote": "The game's own text is right here, and an earlier revision of this page wrongly \"corrected\" it to 22m and +6m per stack. Those came from the C# field initialisers (icicleBaseRadius = 10f, icicleMaxPerStack = 3), which Frost Relic's own prefab overrides: Prefabs/NetworkedObjects/IcicleAura serializes 6 and 6, giving 6 + 2 x 6 = 18m at one stack and +12m per stack, exactly as described. The 2m-per-kill growth is right. Two things the text does not say: the radius also adds your own collider radius, so it is 18m plus a per-survivor term; and the storm's 1200%/s is four ticks a second of icicleDamageCoefficientPerTick = 3 (300% each), which is the same prefab overriding the initialiser of 2 — the code alone would predict 800%/s and a figure that grows with icicle count."
   },
   {
     "id": "h3ad-5t-v2",
@@ -3004,7 +3004,7 @@
         "base": 120,
         "perStack": 120,
         "type": "linear",
-        "formula": "The lingering damage is a ProjectileDotZone at damageCoefficient = 1, fireFrequency = 30, resetFrequency = 10, lifetime = -1, overlapProcCoefficient = 0.2. The projectile is fired with `characterBody.damage * 0.4f * n`, so one enemy inside it takes 10 x 0.4n = 400% per stack per second. The model behind that figure is now read rather than inferred: OverlapAttack.Fire() skips anything in its ignore list, every hit adds to that list, and ProjectileDotZone.ResetOverlap builds a fresh OverlapAttack — so one target is hit at min(fireFrequency, resetFrequency) per second, unconditionally. What that does NOT settle is the comparison: this is an instantaneous rate WHILE THE TARGET IS INSIDE THE HITBOX, and a projectile in flight overlaps an enemy for a fraction of a second. The description's 'per second' may be measuring a pass rather than a second of contact, so the two figures are not comparable without a contact duration we do not have. The item's own impact figure is the tell: 3.1 x 0.4n = 124% lands within 3% of the stated 120%, while this one is over three times its stated figure. Two numbers from the same fired damage cannot both be right against the same description unless they are measuring different things, so the numbers stay as the game states them. Hitbox localScale (1.0, 0.20, 1.0). CONTACT DURATION, now measured rather than assumed: the HitBoxGroup \"Buzzsaw\" is a single box, and the projectile travels at travelSpeed 60. A straight pass therefore overlaps a target for roughly (box depth + target depth) / 60 — on the order of 0.03-0.05s, which is SHORTER THAN ONE 0.1s reset window. So a fly-through lands at most one lingering tick, and the per-second figure above is an instantaneous rate that a normal pass never sustains. Still NOT established: what the description's \"per second\" clause is measuring. The one place sustained contact is plausible is the turnaround, where transitionDuration = 1 holds the projectile near-stationary — but that is an inference from the constant, not something we have traced, and it is not written into the numbers."
+        "formula": "The lingering damage is a ProjectileDotZone at damageCoefficient = 1, fireFrequency = 30, resetFrequency = 10, lifetime = -1, overlapProcCoefficient = 0.2. The projectile is fired with `characterBody.damage * 0.4f * n`, so one enemy inside it takes 10 x 0.4n = 400% per stack per second. The model behind that figure is now read rather than inferred: OverlapAttack.Fire() skips anything in its ignore list, every hit adds to that list, and ProjectileDotZone.ResetOverlap builds a fresh OverlapAttack — so one target is hit at min(fireFrequency, resetFrequency) per second, unconditionally. What that does NOT settle is the comparison: this is an instantaneous rate WHILE THE TARGET IS INSIDE THE HITBOX, and a projectile in flight overlaps an enemy for a fraction of a second. The description's 'per second' may be measuring a pass rather than a second of contact, so the two figures are not comparable without a contact duration we do not have. The item's own impact figure is the tell: 3.1 x 0.4n = 124% lands within 3% of the stated 120%, while this one is over three times its stated figure. Two numbers from the same fired damage cannot both be right against the same description unless they are measuring different things, so the numbers stay as the game states them. Hitbox localScale (1.0, 0.20, 1.0). CONTACT DURATION, now measured rather than assumed: the HitBoxGroup \"Buzzsaw\" is a single box, and the projectile travels at travelSpeed 60 (on the StunAndPierceBoomerang prefab; the C# initialiser is also 60, but Chef s prefabs carry 50 and 100, so the value has to be read off this one). A straight pass therefore overlaps a target for roughly (box depth + target depth) / 60 — on the order of 0.03-0.05s, which is SHORTER THAN ONE 0.1s reset window. So a fly-through lands at most one lingering tick, and the per-second figure above is an instantaneous rate that a normal pass never sustains. Still NOT established: what the description's \"per second\" clause is measuring. The one place sustained contact is plausible is the turnaround, where transitionDuration = 1 holds the projectile near-stationary — but that is an inference from the constant, not something we have traced, and it is not written into the numbers."
       },
       {
         "stat": "Times one enemy can be sliced per throw",

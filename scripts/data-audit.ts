@@ -364,7 +364,30 @@ function main(): number {
       `${name} = ${v};`,
       `${name} = ${v} `,
     ];
-    const inCode = (name: string, v: number) => codeForms(name, v).some((f) => haystack.includes(f));
+    /*
+      A field is "verified from code" when the decompile assigns it and the stated number appears
+      in that assignment — not only when the assignment is a bare literal.
+
+      The bare-literal version reported two defects that were not defects. Bustling Fungus has
+      `mushroomHealingWard.healFraction = (0.045f + 0.0225f * (num - 1)) * interval`, and Growth
+      Nectar has `maxGrowthNectarBuffCount = num67 * 4`. Both numbers are right there in the
+      source; both were called absent because they sit inside an expression. Read the statement,
+      not the pattern.
+    */
+    const inCode = (name: string, v: number) => {
+      if (codeForms(name, v).some((f) => haystack.includes(f))) return true;
+      const needle = `${name} = `;
+      const lit = String(v);
+      for (let i = haystack.indexOf(needle); i >= 0; i = haystack.indexOf(needle, i + 1)) {
+        const end = haystack.indexOf(";", i);
+        if (end < 0 || end - i > 300) continue;
+        const stmt = haystack.slice(i + needle.length, end);
+        // Token-compare so `4` does not match inside `48` — the §3j.160 substring bug again.
+        if ((stmt.match(/-?[0-9]+(?:\.[0-9]+)?/g) ?? []).some((t) => near(Number(t), v) && t === lit))
+          return true;
+      }
+      return false;
+    };
 
     const vocab = {
       fields: new Set(known.keys()),
@@ -372,11 +395,37 @@ function main(): number {
       ownerDeclares: (o: string, f: string) => byOwner.get(o)?.has(f) ?? false,
     };
 
+    // C# field initialisers, for the §3j.170 leg below.
+    const initialiser = new Map<string, number>();
+    for (const m of haystack.matchAll(
+      /\b(?:public|protected|internal)\s+(?:readonly\s+)?(?:float|int|uint|double)\s+([A-Za-z_]\w*)\s*=\s*(-?[0-9]+(?:\.[0-9]+)?)f?\s*;/g,
+    )) {
+      if (!initialiser.has(m[1])) initialiser.set(m[1], Number(m[2]));
+    }
+
+    /*
+      OUR PROSE IS NOT JUST THE NOTE (§3j.170). §3j.169 scanned `descriptionNote` and stopped
+      there, which missed 291 `stacking[].formula` strings — and the formulas are where Frost
+      Relic's wrong numbers lived. For a non-linear row the formula is the only thing the UI
+      shows, so it is data, not documentation (see the ONE_STACK rule above, which learned the
+      same lesson).
+    */
+    const fragments: { id: string; where: string; text: string }[] = [];
+    for (const it of items) {
+      if (it.descriptionNote) fragments.push({ id: it.id, where: "descriptionNote", text: it.descriptionNote });
+      for (const s of it.stacking) {
+        if (s.formula) fragments.push({ id: it.id, where: `formula[${s.stat}]`, text: s.formula });
+      }
+    }
+
     let checked = 0;
     let scopedChecked = 0;
-    for (const it of items) {
-      if (!it.descriptionNote) continue;
-      const note = it.descriptionNote;
+    let defaultChecked = 0;
+    for (const frag of fragments) {
+      const it = { id: frag.id, descriptionNote: frag.text };
+      const note = frag.text;
+      // Owners named anywhere in this fragment, for the initialiser leg.
+      const namedOwners = (note.match(/[A-Za-z][A-Za-z0-9]*/g) ?? []).filter((t) => byOwner.has(t));
       for (const claim of extractFieldClaims(note, vocab)) {
         const { field: name, stated } = claim;
         checked++;
@@ -410,16 +459,51 @@ function main(): number {
           inCode(name, stated);
         if (!ok) {
           errors.push(
-            `${it.id}: descriptionNote states "${name} ${stated}", but the game holds no such ` +
+            `${it.id} (${frag.where}) states "${name} ${stated}", but the game holds no such ` +
               `value for that field — serialized values are [${[...vals].slice(0, 6).join(", ")}] ` +
               `and no literal assignment matches in the decompiled source`,
           );
+          continue;
         }
+
+        /*
+          THE INITIALISER LEG (§3j.170). `public float icicleBaseRadius = 10f;` reads like the
+          value and is only the default. Frost Relic's own prefab serializes 6, and the record
+          published 22m/+6m "correcting" a game description of 18m/+12m that was right — three
+          numbers wrong, all traced to reading initialisers and never opening the prefab.
+
+          Signal: the stated value IS the initialiser, and some prefab serializes something else.
+          Then the prose must name a component that declares the field, so the claim is pinned to
+          a prefab rather than to a default that may not be in play.
+
+          Restricted to fields carried by at most 5 distinct owners. `procCoefficient` and
+          `damageCoefficient` sit on hundreds of prefabs with every value under the sun; "proc
+          coefficient 1" for one attack is not a claim about a default, and without this bound
+          the leg produced 13 false positives and 1 true one.
+        */
+        const def = initialiser.get(name);
+        if (def === undefined || !near(stated, def)) continue;
+        const owners = [...byOwner.entries()].filter(([, m]) => m.has(name));
+        if (owners.length === 0 || owners.length > 5) continue;
+        if (!owners.some(([, m]) => [...m.get(name)!].some((v) => !near(v, def)))) continue;
+        defaultChecked++;
+        // Named anywhere in the fragment, not necessarily before the number: prose explaining
+        // "the initialiser is X, the prefab overrides it with Y" must state X first, and a
+        // guard that forbade that would be dictating the sentence rather than the fact.
+        if (namedOwners.some((o) => byOwner.get(o)!.has(name))) continue;
+        errors.push(
+          `${it.id} (${frag.where}) states "${name} ${stated}", which is the C# field ` +
+            `INITIALISER — and ${owners.map(([o]) => o).join(", ")} serialize ` +
+            `[${owners.map(([o, m]) => `${o}=${[...m.get(name)!].join("/")}`).join(", ")}]. ` +
+            `A serialized value overrides the initialiser, so name the prefab this figure is ` +
+            `read from (§3j.170)`,
+        );
       }
     }
     console.log(
-      `  field-value claims in descriptionNotes cross-checked: ${checked} ` +
-        `(${scopedChecked} against the specific component the note names)`,
+      `  field-value claims cross-checked: ${checked} across ${fragments.length} prose ` +
+        `fragments (${scopedChecked} against the component named; ${defaultChecked} tested ` +
+        `for a prefab-overridden C# initialiser)`,
     );
   } else {
     warnings.push(

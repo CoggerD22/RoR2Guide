@@ -99,6 +99,7 @@ SweetSpot cliffs and the proc gap in already-"checked" data.
 | Cross-source agreement | STAT_ITEMS vs items.json, 14 coefficients | **Stat Lab under-reported crit**; guard skipped the gap | §3j.167 |
 | The "unverifiable" boundary | 55 field names / 2028 owners | **it was unextracted, not unverifiable**; Helfire = 3s | §3j.168 |
 | Values cited from named game fields | 18 claims / 9 notes; 64 classes, 9 resolvable | **1 misattributed** (Desk Plant cites a prefab that says 0); instrument wrong 4 ways | §3j.169 |
+| C# initialisers vs prefab overrides | 224 claims / 360 fragments; 54 classes, 16 matched | **Frost Relic wrong 3 ways**, accusing correct game text; 291 formulas never scanned | §3j.170 |
 | Extractor health | 1472 bundles, 224,435 MonoBehaviours | all swallow classes 0 | §3j.127 |
 
 ---

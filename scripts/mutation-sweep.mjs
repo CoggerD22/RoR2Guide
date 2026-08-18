@@ -143,6 +143,23 @@ const MUTATIONS = [
     apply: editItem("helfire-tincture", (i) => {
       i.descriptionNote = i.descriptionNote.replace("baseRadius = 15", "baseRadius = 40");
     }) },
+  // §3j.170. Frost Relic's actual pre-fix state: three numbers read off C# field initialisers
+  // that its own prefab overrides, published as a "correction" to a game description that was
+  // right. `stacking[].formula` was unscanned until this pass, which is where they lived.
+  { file: "src/data/items.json", name: "a formula publishes a C# initialiser the prefab overrides", cls: "data/provenance",
+    apply: editItem("frost-relic", (i) => {
+      const s = i.stacking.find((x) => x.stat === "Max storm radius (m)");
+      s.base = 22;
+      s.perStack = 6;
+      s.formula =
+        "radius = characterBody.radius + icicleBaseRadius (10f) + icicleRadiusPerIcicle (2f) x " +
+        "icicles (IcicleAuraController.UpdateRadius). At the 6-icicle cap that is 22m.";
+    }) },
+  { file: "src/data/items.json", name: "a formula states a field value the game never holds", cls: "data/provenance",
+    apply: editItem("frost-relic", (i) => {
+      const s = i.stacking.find((x) => x.stat === "Max icicles");
+      s.formula = s.formula.replace("icicleMaxPerStack = 6", "icicleMaxPerStack = 9");
+    }) },
   { file: "src/data/items.json", name: "an item name is misspelled", cls: "data/text",
     apply: editItem("crowbar", (i) => { i.name = "Crowbaar"; }) },
   { file: "src/data/items.json", name: "an item is deleted outright", cls: "data/completeness",

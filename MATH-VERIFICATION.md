@@ -8938,3 +8938,112 @@ and Windows still held the handle — and the sweep exited leaving the extractio
 §3j.148 rebuilt by our own tooling: from that point every local cross-check reports SKIPPED and
 exits 0, and a skipped check reads as a pass. `unhide` now retries and, if it still cannot,
 fails loudly telling you not to trust a local run until you have renamed them back.
+---
+
+### §3j.170 — A default is not a value
+
+§3j.169 closed with a sentence that was really a to-do: 9 of the 64 behaviour classes our notes
+cite resolved as owners, "the other 55 are C# type names that never appear as one, which is a
+limit of the instrument and not a result". §3j.168's rule says that is exactly when to widen the
+instrument. So this pass went back for the 55.
+
+The way in was in `extract-component-fields.py`'s own docstring: `m_Script` never resolves, but
+**field names survive in the typetree**, and a class's set of declared fields identifies it. Read
+each cited class's fields out of the decompiled C#, ask the extractor for them, and match
+components by signature.
+
+**395 of those field names had never once been asked for.** 165 new ones resolved, and 16 of the
+54 classes were identified by signature.
+
+#### Frost Relic: three numbers, all wrong, all from initialisers
+
+The record published:
+
+- Max icicles **6 (+3 per stack)**
+- Max storm radius **22m (+6m per stack)**
+- and a note asserting *"The storm caps at 22m … and grows 6m per stack, **not 18m and 12m**"* —
+  that is, telling the reader the game's own description is wrong.
+
+The game's description is right. Every one of our numbers came from the C# **field
+initialisers**:
+
+```csharp
+public float icicleBaseRadius = 10f;
+public int   icicleMaxPerStack = 3;
+public int   icicleCountOnFirstKill = 2;
+```
+
+Frost Relic loads `Prefabs/NetworkedObjects/IcicleAura`, and that prefab serializes
+`icicleBaseRadius = 6`, `icicleMaxPerStack = 6`, `icicleCountOnFirstKill = 0`. A serialized value
+overrides the initialiser, so the real figures are `6 + 2×6 = 18m` and `+12m` per stack — exactly
+what the description says.
+
+The identification is not by name alone, which would be weak. Two components carry these fields:
+`IcicleAura` (in `ror2-base-icicle`) and `PoisonAura` (in `ror2-junk-misc`, holding the code
+defaults). Three things settle which is Frost Relic's: the item's own `Init()` loads the prefab by
+that path; and `IcicleAura` serializes `icicleDamageCoefficientPerTick = 3` where the initialiser
+is 2 — 4 ticks a second × 300% is the **1200%/s that both we and the game publish**, while the
+initialiser would give 800% and a figure that grows with icicle count. The damage number we had
+right all along only reconciles with the prefab.
+
+So this is `§3j.169` with the consequence reversed. There, a correct value carried a citation
+that contradicted it. Here, the same confusion between code and asset produced **three wrong
+published numbers and a false accusation against the game's own text** — the worst outcome
+available under rule #1, since a reader is told the game is lying to them.
+
+#### Why nothing caught it: our prose is not just the note
+
+§3j.169's check scanned `descriptionNote` and nothing else. Frost Relic's wrong numbers lived in
+`stacking[].formula` — **291 formulas, never scanned**. That is the same lesson the `ONE_STACK`
+rule learned years earlier and recorded in this file: for a non-linear row the formula string is
+the only thing the UI renders, so it is *data, not documentation*. Extending the check took the
+denominator from **18 claims to 224**.
+
+#### The guard
+
+`data:audit` now runs three legs over all 360 fragments:
+
+1. the value exists for that field somewhere in the game (§3j.169);
+2. if the prose names a component that declares the field, it must match **that** component
+   (§3j.169) — with an evidence escape for code-assigned values;
+3. **new**: if the stated value *is* the C# initialiser and some prefab serializes something
+   else, the prose must name the prefab it is read from.
+
+Leg 3 is bounded to fields carried by at most 5 owners. Without that bound it produced **13 false
+positives and 1 true one** — `procCoefficient` and `damageCoefficient` sit on hundreds of prefabs,
+and "proc coefficient 1" for one attack is not a claim about a default. It also exempts a fragment
+that names the owner *anywhere*, not before the number, because prose explaining "the initialiser
+is X, the prefab overrides it with Y" must state X first; a guard forbidding that would be
+dictating the sentence rather than the fact.
+
+**Proven by breakage: 3 mutations, 3 caught**, the first being Frost Relic's exact pre-fix state.
+Five mutations now stand permanently, caught **local and CI**.
+
+#### The instrument, again, and two defects that were not
+
+The first display printed only the first component per owner, so `CrippleWard` appeared to hold
+nothing and Effigy of Grief's five correctly-cited fields all looked absent — believing it would
+have "fixed" five correct values.
+
+Then extending to formulas reported two more defects, and **neither was one**. Bustling Fungus's
+`healFraction` and Growth Nectar's `maxGrowthNectarBuffCount` are both assigned in code *inside an
+expression* — `(0.045f + 0.0225f * (num - 1)) * interval` and `num67 * 4` — and the check only
+recognised bare `field = literal;` assignments. Read the statement, not the pattern. Rule 3 paid
+for itself twice in one pass.
+
+One real, small correction came out of it: Electric Boomerang cited `travelSpeed 60` without
+naming a prefab, and Chef's projectiles carry 50 and 100. The value was right; the citation could
+not be checked. Naming `StunAndPierceBoomerang` fixes that, and is the same shape as the Desk
+Plant fix.
+
+#### The pin, and what it must not silently stop covering
+
+Both formula mutations initially survived `--ci`, because §3j.169 pinned only notes. The baseline
+now carries all **224 claims**, and the owner vocabulary is harvested from **every** fragment —
+taking it from notes alone left the formulas' owners out, so CI saw no owner where local did and
+40 claims disagreed on attribution.
+
+`component-fields-wanted.json` grew 55 → 72 for the same reason, and it is the sharper point:
+`extractFieldClaims` **skips any field name the vocabulary does not contain**. A narrower
+re-extraction would not fail the guard, it would quietly retire it — a check that stops checking
+looks exactly like a check that passes (§3j.148, third instance).

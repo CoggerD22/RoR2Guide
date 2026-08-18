@@ -1445,48 +1445,327 @@
   }
  },
  "_gameTags": "§3j.166 — mechanical ItemDef tags, pinned from the game's own defs so a patch that changes an item's obtainability or immunity surfaces instead of passing silently. NOT published on the site yet: doing that needs a schema field and a UI surface, which is a DEFERRED decision. Display tags (Damage, Utility, Healing…) are excluded — they are the game's search vocabulary and assert nothing.",
- "_fieldClaims": "§3j.169 — every `fieldName <number>` pair our descriptionNotes attach to one of the game's own serialized fields. LOCALLY, data:audit checks each against the extracted component/state data and the decompiled C#, and against the SPECIFIC component a note names — which is how Interstellar Desk Plant was caught citing DeskplantWard for a healFraction the prefab sets to 0. CI has none of those extractions, so this pins the claims instead: the same parser (src/lib/fieldClaims.ts) re-derives them from items.json and they must match exactly, which catches a reworded or retyped number without the game. `vocabulary` is what the parser needs to reproduce local attribution from prose alone. LIMIT, stated rather than hidden: a claim on a field name absent from `vocabulary` is invisible to CI and caught only locally, because CI cannot know the name is a game field at all.",
+ "_fieldClaims": "§3j.169/§3j.170 — every `fieldName <number>` pair our prose attaches to one of the game's own serialized fields, across descriptionNotes AND stacking formulas. LOCALLY, data:audit checks each against the extracted component/state data and the decompiled C#, against the SPECIFIC component a note names, and against the C# field INITIALISER — the last of which is how Frost Relic was caught publishing 22m/+6m from `icicleBaseRadius = 10f` when its own prefab serializes 6, \"correcting\" a game description that was right. CI has none of those extractions, so this pins the claims instead: the same parser (src/lib/fieldClaims.ts) re-derives them and they must match exactly. §3j.169 pinned only notes, and both formula mutations then survived --ci; formulas are included now. LIMIT, stated rather than hidden: a claim on a field name absent from `vocabulary` is invisible to CI and caught only locally, because CI cannot know the name is a game field at all.",
  "fieldClaims": {
   "vocabulary": {
    "fields": [
+    "airControl",
     "allyDamageScalar",
+    "attackFireCount",
+    "attackInterval",
+    "attackRange",
     "baseDuration",
+    "baseGoldReward",
+    "baseIcicleMax",
+    "baseMoneyCostPerBullet",
     "baseRadius",
+    "baseRechargeFrequency",
+    "blastDamageCoefficient",
+    "blastForce",
+    "blastProcCoefficient",
+    "blastRadius",
+    "boostCooldown",
+    "boostSpeedMultiplier",
     "buffDuration",
+    "calculateTotalDamage",
+    "chargeBeforeLaunch",
+    "chargeDamageCoefficient",
+    "childrenCount",
+    "childrenDamageCoefficient",
+    "cleanseRadius",
+    "curseStacksToRemove",
+    "damageCoefficient",
+    "damagePerSecondCoefficient",
+    "defenseMatrixToGrantMechanicalAllies",
+    "defenseMatrixToGrantPlayer",
+    "distanceMultiplier",
     "dotDuration",
+    "dotIndex",
+    "dropCount",
     "enemyDamageScalar",
+    "explosionRadius",
+    "falloffModel",
+    "fireFrequency",
+    "fractionHealthBurst",
+    "fractionHealthHealing",
+    "fractionalHealing",
+    "goldReward",
+    "healCoefficient",
     "healFraction",
     "healFractionPerTick",
     "healFrequency",
+    "healingInterval",
     "healingRadius",
     "healthFractionPerSecond",
+    "icicleBaseRadius",
+    "icicleCountOnFirstKill",
+    "icicleDamageCoefficientPerTick",
+    "icicleMaxPerStack",
+    "icicleRadiusPerIcicle",
+    "impactDelay",
     "invertTeamFilter",
+    "killChargeDuration",
+    "killChargesRequired",
+    "knockbackDamageCoefficient",
+    "knockbackForce",
+    "listClearInterval",
+    "lockonAngle",
+    "lockonDistance",
+    "mainBeamDamageCoefficient",
+    "massThresholdForKnockback",
+    "maxGrowthNectarBuffCount",
+    "maxPurchases",
+    "maxSpread",
     "maxTargets",
+    "maxTimer",
+    "minSpread",
+    "minimumFireFrequency",
     "monsterCredit",
     "moveSpeedCoefficient",
     "numBonusOrbs",
+    "overlapDamageCoefficient",
+    "overlapFireFrequency",
+    "overlapProcCoefficient",
+    "overlapResetFrequency",
+    "procCoefficient",
+    "projectileEraserRadius",
+    "pulseInterval",
+    "pulseTravelSpeed",
+    "rangePitchDegrees",
+    "rangeRollDegrees",
+    "refreshTime",
+    "resetFrequency",
     "resetInterval",
-    "tickRate"
+    "revealDuration",
+    "searchDistance",
+    "searchRadius",
+    "tickRate",
+    "tier1Weight",
+    "tier2Weight",
+    "tier3Weight",
+    "totalDamageMultiplier",
+    "transitionDuration",
+    "travelSpeed",
+    "vendingRadius",
+    "voidTier1Weight",
+    "voidTier2Weight",
+    "voidTier3Weight",
+    "waveCount",
+    "waveMaxInterval",
+    "waveMinInterval"
    ],
    "owners": [
+    "AffixAurelioniteCenterProjectile",
+    "AffixAurelionitePreStrikeProjectile",
+    "AffixCollectiveBodyAttachment",
+    "AffixEarthBodyAttachment",
+    "BeamSphere",
+    "CaptainBody",
+    "ChestScanner",
+    "CollectiveDeathProjectile",
     "CrippleWard",
+    "DaggerProjectile",
+    "DeathProjectile",
     "DeskplantWard",
+    "DynamiteProjectile",
+    "ElusiveAntlersPickup",
+    "FireMeatBall",
+    "FireMeatBallPool",
+    "FireTornado",
+    "FireballVehicle",
+    "GoldGat",
     "GummyClone",
+    "HealingFollower",
     "HelfireController",
+    "IceRingExplosion",
+    "IcicleAura",
+    "InterstellarDeskPlant",
+    "JetpackController",
+    "LaserTurbineBomb",
+    "Lockbox",
+    "LockboxVoid",
+    "MeteorStorm",
+    "MissileProjectile",
+    "MolotovClusterProjectile",
+    "MolotovProjectileDotZone",
+    "MolotovSingleProjectile",
     "MonstersOnShrineUse",
+    "MultiShopCard",
+    "PoisonOrbProjectile",
+    "QuestVolatileBattery",
     "Sawmerang",
+    "ShurikenProjectile",
+    "SiphonNearbyBodyAttachment",
+    "StunAndPierceBoomerang",
     "TeamWarCry",
     "Tonic",
+    "VendingMachine",
+    "VendingMachineProjectile",
+    "VoidCoinBarrel",
     "base",
+    "cscMinorConstructOnKill",
+    "dtLockbox",
+    "dtVoidChest",
     "dtVoidLockbox"
    ],
    "declares": {
+    "AffixAurelioniteCenterProjectile": [
+     "blastDamageCoefficient",
+     "blastProcCoefficient",
+     "blastRadius",
+     "calculateTotalDamage",
+     "childrenCount",
+     "childrenDamageCoefficient",
+     "dotDuration",
+     "dotIndex",
+     "falloffModel",
+     "procCoefficient",
+     "rangePitchDegrees",
+     "rangeRollDegrees",
+     "totalDamageMultiplier"
+    ],
+    "AffixAurelionitePreStrikeProjectile": [
+     "blastDamageCoefficient",
+     "blastProcCoefficient",
+     "blastRadius",
+     "calculateTotalDamage",
+     "childrenCount",
+     "childrenDamageCoefficient",
+     "dotDuration",
+     "dotIndex",
+     "falloffModel",
+     "procCoefficient",
+     "rangePitchDegrees",
+     "rangeRollDegrees",
+     "totalDamageMultiplier"
+    ],
+    "AffixCollectiveBodyAttachment": [
+     "maxTargets",
+     "tickRate"
+    ],
+    "AffixEarthBodyAttachment": [
+     "damagePerSecondCoefficient",
+     "maxTargets",
+     "tickRate"
+    ],
+    "BeamSphere": [
+     "attackFireCount",
+     "attackInterval",
+     "attackRange",
+     "blastDamageCoefficient",
+     "blastProcCoefficient",
+     "blastRadius",
+     "calculateTotalDamage",
+     "childrenCount",
+     "childrenDamageCoefficient",
+     "damageCoefficient",
+     "dotDuration",
+     "dotIndex",
+     "falloffModel",
+     "listClearInterval",
+     "procCoefficient",
+     "rangePitchDegrees",
+     "rangeRollDegrees",
+     "totalDamageMultiplier"
+    ],
+    "CaptainBody": [
+     "defenseMatrixToGrantMechanicalAllies",
+     "defenseMatrixToGrantPlayer",
+     "maxGrowthNectarBuffCount"
+    ],
+    "ChestScanner": [
+     "pulseInterval",
+     "pulseTravelSpeed",
+     "revealDuration"
+    ],
+    "CollectiveDeathProjectile": [
+     "blastDamageCoefficient",
+     "blastProcCoefficient",
+     "blastRadius",
+     "calculateTotalDamage",
+     "childrenCount",
+     "childrenDamageCoefficient",
+     "dotDuration",
+     "dotIndex",
+     "falloffModel",
+     "procCoefficient",
+     "rangePitchDegrees",
+     "rangeRollDegrees",
+     "totalDamageMultiplier"
+    ],
     "CrippleWard": [
      "buffDuration",
      "invertTeamFilter"
     ],
+    "DaggerProjectile": [
+     "procCoefficient"
+    ],
+    "DeathProjectile": [
+     "baseDuration",
+     "maxGrowthNectarBuffCount",
+     "procCoefficient"
+    ],
     "DeskplantWard": [
      "healFraction"
+    ],
+    "DynamiteProjectile": [
+     "blastDamageCoefficient",
+     "blastProcCoefficient",
+     "blastRadius",
+     "calculateTotalDamage",
+     "childrenCount",
+     "childrenDamageCoefficient",
+     "dotDuration",
+     "dotIndex",
+     "falloffModel",
+     "procCoefficient",
+     "rangePitchDegrees",
+     "rangeRollDegrees",
+     "totalDamageMultiplier"
+    ],
+    "FireMeatBall": [
+     "blastDamageCoefficient",
+     "blastProcCoefficient",
+     "blastRadius",
+     "calculateTotalDamage",
+     "childrenCount",
+     "childrenDamageCoefficient",
+     "dotDuration",
+     "dotIndex",
+     "falloffModel",
+     "procCoefficient",
+     "rangePitchDegrees",
+     "rangeRollDegrees",
+     "totalDamageMultiplier"
+    ],
+    "FireMeatBallPool": [
+     "damageCoefficient",
+     "fireFrequency",
+     "overlapProcCoefficient",
+     "procCoefficient",
+     "resetFrequency"
+    ],
+    "FireTornado": [
+     "damageCoefficient",
+     "fireFrequency",
+     "overlapProcCoefficient",
+     "procCoefficient",
+     "resetInterval"
+    ],
+    "FireballVehicle": [
+     "blastDamageCoefficient",
+     "blastForce",
+     "blastProcCoefficient",
+     "blastRadius",
+     "overlapDamageCoefficient",
+     "overlapFireFrequency",
+     "overlapProcCoefficient",
+     "overlapResetFrequency"
+    ],
+    "HealingFollower": [
+     "fractionHealthBurst",
+     "fractionHealthHealing",
+     "healingInterval"
     ],
     "HelfireController": [
      "allyDamageScalar",
@@ -1495,118 +1774,1752 @@
      "enemyDamageScalar",
      "healthFractionPerSecond"
     ],
+    "IcicleAura": [
+     "baseIcicleMax",
+     "buffDuration",
+     "icicleBaseRadius",
+     "icicleCountOnFirstKill",
+     "icicleDamageCoefficientPerTick",
+     "icicleMaxPerStack",
+     "icicleRadiusPerIcicle",
+     "invertTeamFilter"
+    ],
+    "InterstellarDeskPlant": [
+     "healingRadius"
+    ],
+    "JetpackController": [
+     "boostCooldown",
+     "boostSpeedMultiplier"
+    ],
+    "LaserTurbineBomb": [
+     "blastDamageCoefficient",
+     "blastProcCoefficient",
+     "blastRadius",
+     "calculateTotalDamage",
+     "childrenCount",
+     "childrenDamageCoefficient",
+     "dotDuration",
+     "dotIndex",
+     "falloffModel",
+     "procCoefficient",
+     "rangePitchDegrees",
+     "rangeRollDegrees",
+     "totalDamageMultiplier"
+    ],
+    "Lockbox": [
+     "dropCount"
+    ],
+    "MeteorStorm": [
+     "blastDamageCoefficient",
+     "blastForce",
+     "blastRadius",
+     "impactDelay",
+     "waveCount",
+     "waveMaxInterval",
+     "waveMinInterval"
+    ],
+    "MissileProjectile": [
+     "procCoefficient"
+    ],
+    "MolotovClusterProjectile": [
+     "blastDamageCoefficient",
+     "blastProcCoefficient",
+     "blastRadius",
+     "calculateTotalDamage",
+     "childrenCount",
+     "childrenDamageCoefficient",
+     "dotDuration",
+     "dotIndex",
+     "falloffModel",
+     "procCoefficient",
+     "rangePitchDegrees",
+     "rangeRollDegrees",
+     "totalDamageMultiplier"
+    ],
+    "MolotovProjectileDotZone": [
+     "damageCoefficient",
+     "fireFrequency",
+     "overlapProcCoefficient",
+     "procCoefficient",
+     "resetFrequency"
+    ],
+    "MolotovSingleProjectile": [
+     "blastDamageCoefficient",
+     "blastProcCoefficient",
+     "blastRadius",
+     "calculateTotalDamage",
+     "childrenCount",
+     "childrenDamageCoefficient",
+     "dotDuration",
+     "dotIndex",
+     "falloffModel",
+     "procCoefficient",
+     "rangePitchDegrees",
+     "rangeRollDegrees",
+     "totalDamageMultiplier"
+    ],
+    "PoisonOrbProjectile": [
+     "blastDamageCoefficient",
+     "blastProcCoefficient",
+     "blastRadius",
+     "calculateTotalDamage",
+     "childrenCount",
+     "childrenDamageCoefficient",
+     "dotDuration",
+     "dotIndex",
+     "falloffModel",
+     "procCoefficient",
+     "rangePitchDegrees",
+     "rangeRollDegrees",
+     "totalDamageMultiplier"
+    ],
     "Sawmerang": [
-     "resetInterval"
+     "damageCoefficient",
+     "distanceMultiplier",
+     "fireFrequency",
+     "overlapProcCoefficient",
+     "procCoefficient",
+     "resetFrequency",
+     "resetInterval",
+     "transitionDuration",
+     "travelSpeed"
+    ],
+    "ShurikenProjectile": [
+     "procCoefficient"
+    ],
+    "SiphonNearbyBodyAttachment": [
+     "damagePerSecondCoefficient",
+     "maxTargets",
+     "tickRate"
+    ],
+    "StunAndPierceBoomerang": [
+     "damageCoefficient",
+     "distanceMultiplier",
+     "fireFrequency",
+     "overlapProcCoefficient",
+     "procCoefficient",
+     "resetFrequency",
+     "resetInterval",
+     "transitionDuration",
+     "travelSpeed"
+    ],
+    "VendingMachine": [
+     "healFraction",
+     "maxPurchases",
+     "numBonusOrbs",
+     "vendingRadius"
+    ],
+    "VendingMachineProjectile": [
+     "blastDamageCoefficient",
+     "blastProcCoefficient",
+     "blastRadius",
+     "calculateTotalDamage",
+     "childrenCount",
+     "childrenDamageCoefficient",
+     "dotDuration",
+     "dotIndex",
+     "falloffModel",
+     "procCoefficient",
+     "rangePitchDegrees",
+     "rangeRollDegrees",
+     "totalDamageMultiplier"
+    ],
+    "VoidCoinBarrel": [
+     "goldReward"
+    ],
+    "dtLockbox": [
+     "tier1Weight",
+     "tier2Weight",
+     "tier3Weight",
+     "voidTier1Weight",
+     "voidTier2Weight",
+     "voidTier3Weight"
+    ],
+    "dtVoidChest": [
+     "tier1Weight",
+     "tier2Weight",
+     "tier3Weight",
+     "voidTier1Weight",
+     "voidTier2Weight",
+     "voidTier3Weight"
+    ],
+    "dtVoidLockbox": [
+     "tier1Weight",
+     "tier2Weight",
+     "tier3Weight",
+     "voidTier1Weight",
+     "voidTier2Weight",
+     "voidTier3Weight"
     ]
    }
   },
   "claims": [
    {
+    "id": "bustling-fungus",
+    "where": "formula[Heal per second (% of health)]",
+    "field": "healFraction",
+    "stated": 0.045,
+    "owner": null
+   },
+   {
+    "id": "monster-tooth",
+    "where": "formula[Heal per orb (% of max health)]",
+    "field": "fractionalHealing",
+    "stated": 0.02,
+    "owner": null
+   },
+   {
+    "id": "gasoline",
+    "where": "formula[Ignite radius (m)]",
+    "field": "procCoefficient",
+    "stated": 0,
+    "owner": null
+   },
+   {
+    "id": "rusted-key",
+    "where": "formula[Uncommon chance (%)]",
+    "field": "tier2Weight",
+    "stated": 4,
+    "owner": null
+   },
+   {
+    "id": "rusted-key",
+    "where": "formula[Uncommon chance (%)]",
+    "field": "tier3Weight",
+    "stated": 1,
+    "owner": null
+   },
+   {
+    "id": "rusted-key",
+    "where": "formula[Uncommon chance (%)]",
+    "field": "tier1Weight",
+    "stated": 0,
+    "owner": null
+   },
+   {
+    "id": "atg-missile-mk-1",
+    "where": "formula[Missile damage (% TOTAL)]",
+    "field": "damageCoefficient",
+    "stated": 3,
+    "owner": null
+   },
+   {
+    "id": "atg-missile-mk-1",
+    "where": "formula[Missile damage (% TOTAL)]",
+    "field": "procCoefficient",
+    "stated": 1,
+    "owner": "MissileProjectile"
+   },
+   {
+    "id": "will-o-the-wisp",
+    "where": "formula[Explosion radius (m)]",
+    "field": "procCoefficient",
+    "stated": 1,
+    "owner": null
+   },
+   {
+    "id": "will-o-the-wisp",
+    "where": "formula[Explosion damage (% base)]",
+    "field": "damageCoefficient",
+    "stated": 3.5,
+    "owner": null
+   },
+   {
+    "id": "will-o-the-wisp",
+    "where": "formula[Explosion damage (% base)]",
+    "field": "procCoefficient",
+    "stated": 1,
+    "owner": null
+   },
+   {
+    "id": "ukulele",
+    "where": "formula[Chain range (m)]",
+    "field": "procCoefficient",
+    "stated": 0.2,
+    "owner": null
+   },
+   {
+    "id": "runalds-band",
+    "where": "formula[Ice blast damage (% TOTAL)]",
+    "field": "damageCoefficient",
+    "stated": 2.5,
+    "owner": null
+   },
+   {
+    "id": "runalds-band",
+    "where": "formula[Ice blast damage (% TOTAL)]",
+    "field": "procCoefficient",
+    "stated": 1,
+    "owner": null
+   },
+   {
+    "id": "kjaros-band",
+    "where": "formula[Flame tornado damage (% TOTAL)]",
+    "field": "damageCoefficient",
+    "stated": 3,
+    "owner": null
+   },
+   {
+    "id": "kjaros-band",
+    "where": "formula[Flame tornado damage (% TOTAL)]",
+    "field": "procCoefficient",
+    "stated": 1,
+    "owner": "FireTornado"
+   },
+   {
+    "id": "kjaros-band",
+    "where": "formula[Flame tornado damage (% TOTAL)]",
+    "field": "overlapProcCoefficient",
+    "stated": 0,
+    "owner": "FireTornado"
+   },
+   {
+    "id": "wax-quail",
+    "where": "formula[Forward boost (m)]",
+    "field": "airControl",
+    "stated": 0.25,
+    "owner": null
+   },
+   {
+    "id": "razorwire",
+    "where": "formula[Targets hit]",
+    "field": "procCoefficient",
+    "stated": 0.5,
+    "owner": null
+   },
+   {
+    "id": "razorwire",
+    "where": "formula[Burst radius (m)]",
+    "field": "procCoefficient",
+    "stated": 0.5,
+    "owner": null
+   },
+   {
+    "id": "ghors-tome",
+    "where": "formula[Treasure value (gold, before difficulty scaling)]",
+    "field": "baseGoldReward",
+    "stated": 25,
+    "owner": null
+   },
+   {
+    "id": "ghors-tome",
+    "where": "formula[Treasure value (gold, before difficulty scaling)]",
+    "field": "goldReward",
+    "stated": 25,
+    "owner": "VoidCoinBarrel"
+   },
+   {
+    "id": "sale-star",
+    "where": "formula[Items from the first compatible purchase]",
+    "field": "dropCount",
+    "stated": 2,
+    "owner": null
+   },
+   {
+    "id": "box-of-dynamite",
+    "where": "formula[Enemy search distance (m)]",
+    "field": "searchDistance",
+    "stated": 30,
+    "owner": null
+   },
+   {
+    "id": "box-of-dynamite",
+    "where": "formula[Enemy search distance (m)]",
+    "field": "searchRadius",
+    "stated": 2.5,
+    "owner": null
+   },
+   {
+    "id": "box-of-dynamite",
+    "where": "formula[Blast radius (m)]",
+    "field": "blastRadius",
+    "stated": 7,
+    "owner": null
+   },
+   {
+    "id": "kinetic-dampener",
+    "where": "formula[Pulse damage from max shield (%)]",
+    "field": "procCoefficient",
+    "stated": 1,
+    "owner": null
+   },
+   {
+    "id": "brilliant-behemoth",
+    "where": "formula[Explosion radius (m)]",
+    "field": "procCoefficient",
+    "stated": 0,
+    "owner": null
+   },
+   {
+    "id": "ceremonial-dagger",
+    "where": "formula[Dagger damage (% base)]",
+    "field": "damageCoefficient",
+    "stated": 1.5,
+    "owner": null
+   },
+   {
+    "id": "ceremonial-dagger",
+    "where": "formula[Dagger damage (% base)]",
+    "field": "procCoefficient",
+    "stated": 1,
+    "owner": "DaggerProjectile"
+   },
+   {
+    "id": "sentient-meat-hook",
+    "where": "formula[Enemies hooked]",
+    "field": "maxTargets",
+    "stated": 5,
+    "owner": null
+   },
+   {
+    "id": "frost-relic",
+    "where": "descriptionNote",
+    "field": "icicleBaseRadius",
+    "stated": 10,
+    "owner": null
+   },
+   {
+    "id": "frost-relic",
+    "where": "descriptionNote",
+    "field": "icicleMaxPerStack",
+    "stated": 3,
+    "owner": null
+   },
+   {
+    "id": "frost-relic",
+    "where": "descriptionNote",
+    "field": "icicleDamageCoefficientPerTick",
+    "stated": 3,
+    "owner": "IcicleAura"
+   },
+   {
+    "id": "frost-relic",
+    "where": "formula[Max icicles]",
+    "field": "icicleMaxPerStack",
+    "stated": 6,
+    "owner": null
+   },
+   {
+    "id": "frost-relic",
+    "where": "formula[Max icicles]",
+    "field": "baseIcicleMax",
+    "stated": 6,
+    "owner": "IcicleAura"
+   },
+   {
+    "id": "frost-relic",
+    "where": "formula[Max icicles]",
+    "field": "icicleCountOnFirstKill",
+    "stated": 0,
+    "owner": "IcicleAura"
+   },
+   {
+    "id": "frost-relic",
+    "where": "formula[Max storm radius (m)]",
+    "field": "icicleBaseRadius",
+    "stated": 6,
+    "owner": "IcicleAura"
+   },
+   {
+    "id": "frost-relic",
+    "where": "formula[Max storm radius (m)]",
+    "field": "icicleRadiusPerIcicle",
+    "stated": 2,
+    "owner": "IcicleAura"
+   },
+   {
+    "id": "h3ad-5t-v2",
+    "where": "formula[Recharge time (s)]",
+    "field": "baseDuration",
+    "stated": 10,
+    "owner": null
+   },
+   {
+    "id": "resonance-disc",
+    "where": "formula[Explosion damage (% base)]",
+    "field": "blastDamageCoefficient",
+    "stated": 4,
+    "owner": "LaserTurbineBomb"
+   },
+   {
+    "id": "resonance-disc",
+    "where": "formula[Explosion damage (% base)]",
+    "field": "calculateTotalDamage",
+    "stated": 0,
+    "owner": "LaserTurbineBomb"
+   },
+   {
+    "id": "resonance-disc",
+    "where": "formula[Explosion damage (% base)]",
+    "field": "falloffModel",
+    "stated": 2,
+    "owner": null
+   },
+   {
+    "id": "resonance-disc",
+    "where": "formula[Explosion damage (% base)]",
+    "field": "blastProcCoefficient",
+    "stated": 1,
+    "owner": null
+   },
+   {
+    "id": "resonance-disc",
+    "where": "formula[Pierce & return damage (% base)]",
+    "field": "mainBeamDamageCoefficient",
+    "stated": 3,
+    "owner": null
+   },
+   {
+    "id": "resonance-disc",
+    "where": "formula[Pierce & return damage (% base)]",
+    "field": "killChargesRequired",
+    "stated": 4,
+    "owner": null
+   },
+   {
+    "id": "resonance-disc",
+    "where": "formula[Pierce & return damage (% base)]",
+    "field": "killChargeDuration",
+    "stated": 7,
+    "owner": null
+   },
+   {
+    "id": "defensive-microbots",
+    "where": "formula[Interception radius (m)]",
+    "field": "projectileEraserRadius",
+    "stated": 20,
+    "owner": null
+   },
+   {
+    "id": "defensive-microbots",
+    "where": "formula[Volleys per second at 1.0 attack speed]",
+    "field": "baseRechargeFrequency",
+    "stated": 2,
+    "owner": null
+   },
+   {
+    "id": "defensive-microbots",
+    "where": "formula[Volleys per second at 1.0 attack speed]",
+    "field": "minimumFireFrequency",
+    "stated": 10,
+    "owner": null
+   },
+   {
+    "id": "defensive-microbots",
+    "where": "formula[Granted free to Captain and his drones]",
+    "field": "defenseMatrixToGrantPlayer",
+    "stated": 1,
+    "owner": "CaptainBody"
+   },
+   {
+    "id": "defensive-microbots",
+    "where": "formula[Granted free to Captain and his drones]",
+    "field": "defenseMatrixToGrantMechanicalAllies",
+    "stated": 1,
+    "owner": "CaptainBody"
+   },
+   {
     "id": "interstellar-desk-plant",
+    "where": "descriptionNote",
     "field": "healFraction",
     "stated": 0.05,
     "owner": "DeskplantWard"
    },
    {
     "id": "interstellar-desk-plant",
+    "where": "descriptionNote",
     "field": "healingRadius",
     "stated": 5,
     "owner": null
    },
    {
+    "id": "electric-boomerang",
+    "where": "formula[Impact damage (%)]",
+    "field": "damageCoefficient",
+    "stated": 3.1,
+    "owner": null
+   },
+   {
+    "id": "electric-boomerang",
+    "where": "formula[Impact damage (%)]",
+    "field": "resetInterval",
+    "stated": -1,
+    "owner": "StunAndPierceBoomerang"
+   },
+   {
+    "id": "electric-boomerang",
+    "where": "formula[Impact damage (%)]",
+    "field": "overlapProcCoefficient",
+    "stated": 1,
+    "owner": "StunAndPierceBoomerang"
+   },
+   {
+    "id": "electric-boomerang",
+    "where": "formula[Damage over time (%/s)]",
+    "field": "damageCoefficient",
+    "stated": 1,
+    "owner": null
+   },
+   {
+    "id": "electric-boomerang",
+    "where": "formula[Damage over time (%/s)]",
+    "field": "fireFrequency",
+    "stated": 30,
+    "owner": null
+   },
+   {
+    "id": "electric-boomerang",
+    "where": "formula[Damage over time (%/s)]",
+    "field": "resetFrequency",
+    "stated": 10,
+    "owner": null
+   },
+   {
+    "id": "electric-boomerang",
+    "where": "formula[Damage over time (%/s)]",
+    "field": "overlapProcCoefficient",
+    "stated": 0.2,
+    "owner": null
+   },
+   {
+    "id": "electric-boomerang",
+    "where": "formula[Damage over time (%/s)]",
+    "field": "travelSpeed",
+    "stated": 60,
+    "owner": null
+   },
+   {
+    "id": "electric-boomerang",
+    "where": "formula[Damage over time (%/s)]",
+    "field": "transitionDuration",
+    "stated": 1,
+    "owner": "StunAndPierceBoomerang"
+   },
+   {
+    "id": "electric-boomerang",
+    "where": "formula[Times one enemy can be sliced per throw]",
+    "field": "resetInterval",
+    "stated": -1,
+    "owner": null
+   },
+   {
+    "id": "electric-boomerang",
+    "where": "formula[Times one enemy can be sliced per throw]",
+    "field": "travelSpeed",
+    "stated": 60,
+    "owner": "Sawmerang"
+   },
+   {
+    "id": "electric-boomerang",
+    "where": "formula[Times one enemy can be sliced per throw]",
+    "field": "distanceMultiplier",
+    "stated": 0.6,
+    "owner": "Sawmerang"
+   },
+   {
+    "id": "electric-boomerang",
+    "where": "formula[Times one enemy can be sliced per throw]",
+    "field": "overlapProcCoefficient",
+    "stated": 1,
+    "owner": "Sawmerang"
+   },
+   {
+    "id": "electric-boomerang",
+    "where": "formula[Times one enemy can be sliced per throw]",
+    "field": "procCoefficient",
+    "stated": 1,
+    "owner": "Sawmerang"
+   },
+   {
+    "id": "growth-nectar",
+    "where": "formula[Max buffs counted]",
+    "field": "maxGrowthNectarBuffCount",
+    "stated": 4,
+    "owner": null
+   },
+   {
+    "id": "runic-lens",
+    "where": "formula[Bonus damage per 100% damage (%)]",
+    "field": "procCoefficient",
+    "stated": 0.5,
+    "owner": null
+   },
+   {
+    "id": "networked-suffering",
+    "where": "formula[Max infected enemies]",
+    "field": "maxTargets",
+    "stated": 4,
+    "owner": null
+   },
+   {
+    "id": "orphaned-core",
+    "where": "formula[Launch damage (%)]",
+    "field": "chargeDamageCoefficient",
+    "stated": 4,
+    "owner": null
+   },
+   {
+    "id": "orphaned-core",
+    "where": "formula[Launch damage (%)]",
+    "field": "procCoefficient",
+    "stated": 1,
+    "owner": null
+   },
+   {
+    "id": "orphaned-core",
+    "where": "formula[Lock-on range (m)]",
+    "field": "lockonDistance",
+    "stated": 30,
+    "owner": null
+   },
+   {
+    "id": "orphaned-core",
+    "where": "formula[Lock-on range (m)]",
+    "field": "lockonAngle",
+    "stated": 180,
+    "owner": null
+   },
+   {
+    "id": "orphaned-core",
+    "where": "formula[Lock-on range (m)]",
+    "field": "chargeBeforeLaunch",
+    "stated": 0.5,
+    "owner": null
+   },
+   {
+    "id": "orphaned-core",
+    "where": "formula[Lock-on range (m)]",
+    "field": "refreshTime",
+    "stated": 1.5,
+    "owner": null
+   },
+   {
+    "id": "orphaned-core",
+    "where": "formula[Knockback damage on heavy targets (%)]",
+    "field": "knockbackDamageCoefficient",
+    "stated": 10,
+    "owner": null
+   },
+   {
+    "id": "orphaned-core",
+    "where": "formula[Knockback damage on heavy targets (%)]",
+    "field": "knockbackForce",
+    "stated": 8000,
+    "owner": null
+   },
+   {
+    "id": "orphaned-core",
+    "where": "formula[Knockback damage on heavy targets (%)]",
+    "field": "massThresholdForKnockback",
+    "stated": 250,
+    "owner": null
+   },
+   {
+    "id": "orphaned-core",
+    "where": "formula[Knockback damage on heavy targets (%)]",
+    "field": "procCoefficient",
+    "stated": 1,
+    "owner": null
+   },
+   {
+    "id": "orphaned-core",
+    "where": "formula[Curse stacks cleansed when pet]",
+    "field": "curseStacksToRemove",
+    "stated": 5,
+    "owner": null
+   },
+   {
+    "id": "orphaned-core",
+    "where": "formula[Curse stacks cleansed when pet]",
+    "field": "cleanseRadius",
+    "stated": 15,
+    "owner": null
+   },
+   {
+    "id": "orphaned-core",
+    "where": "formula[Curse stacks cleansed when pet]",
+    "field": "baseDuration",
+    "stated": 5,
+    "owner": null
+   },
+   {
+    "id": "orphaned-core",
+    "where": "formula[Seconds before the same enemy can be launched into again]",
+    "field": "refreshTime",
+    "stated": 1.5,
+    "owner": null
+   },
+   {
+    "id": "orphaned-core",
+    "where": "formula[Seconds before the same enemy can be launched into again]",
+    "field": "procCoefficient",
+    "stated": 1,
+    "owner": null
+   },
+   {
+    "id": "shatterspleen",
+    "where": "formula[Explosion damage (% base)]",
+    "field": "damageCoefficient",
+    "stated": 4,
+    "owner": null
+   },
+   {
+    "id": "shatterspleen",
+    "where": "formula[Explosion damage (% base)]",
+    "field": "maxTimer",
+    "stated": 0,
+    "owner": null
+   },
+   {
+    "id": "shatterspleen",
+    "where": "formula[Explosion damage (% base)]",
+    "field": "procCoefficient",
+    "stated": 1,
+    "owner": null
+   },
+   {
+    "id": "shatterspleen",
+    "where": "formula[Explosion bonus (% of enemy max HP)]",
+    "field": "procCoefficient",
+    "stated": 1,
+    "owner": null
+   },
+   {
+    "id": "little-disciple",
+    "where": "formula[Wisp damage (%)]",
+    "field": "damageCoefficient",
+    "stated": 3,
+    "owner": null
+   },
+   {
+    "id": "little-disciple",
+    "where": "formula[Wisp damage (%)]",
+    "field": "procCoefficient",
+    "stated": 1,
+    "owner": null
+   },
+   {
+    "id": "molten-perforator",
+    "where": "formula[Magma ball damage (%)]",
+    "field": "damageCoefficient",
+    "stated": 3,
+    "owner": null
+   },
+   {
+    "id": "molten-perforator",
+    "where": "formula[Magma ball damage (%)]",
+    "field": "blastProcCoefficient",
+    "stated": 0.7,
+    "owner": "FireMeatBall"
+   },
+   {
+    "id": "molten-perforator",
+    "where": "formula[Magma ball damage (%)]",
+    "field": "procCoefficient",
+    "stated": 1,
+    "owner": "FireMeatBall"
+   },
+   {
+    "id": "molten-perforator",
+    "where": "formula[Magma ball damage (%)]",
+    "field": "falloffModel",
+    "stated": 0,
+    "owner": "FireMeatBall"
+   },
+   {
+    "id": "molten-perforator",
+    "where": "formula[Magma ball damage (%)]",
+    "field": "overlapProcCoefficient",
+    "stated": 0.1,
+    "owner": "FireMeatBallPool"
+   },
+   {
+    "id": "charged-perforator",
+    "where": "formula[Lightning strike damage (%)]",
+    "field": "damageCoefficient",
+    "stated": 5,
+    "owner": null
+   },
+   {
+    "id": "charged-perforator",
+    "where": "formula[Lightning strike damage (%)]",
+    "field": "procCoefficient",
+    "stated": 1,
+    "owner": null
+   },
+   {
+    "id": "mired-urn",
+    "where": "formula[Max tethered enemies]",
+    "field": "damagePerSecondCoefficient",
+    "stated": 1,
+    "owner": "SiphonNearbyBodyAttachment"
+   },
+   {
+    "id": "mired-urn",
+    "where": "formula[Max tethered enemies]",
+    "field": "tickRate",
+    "stated": 4,
+    "owner": "SiphonNearbyBodyAttachment"
+   },
+   {
     "id": "strides-of-heresy",
+    "where": "descriptionNote",
     "field": "healFractionPerTick",
     "stated": 0.013,
     "owner": null
    },
    {
     "id": "strides-of-heresy",
+    "where": "descriptionNote",
     "field": "healFrequency",
     "stated": 5,
     "owner": null
    },
    {
     "id": "strides-of-heresy",
+    "where": "descriptionNote",
     "field": "baseDuration",
     "stated": 3,
     "owner": null
    },
    {
     "id": "strides-of-heresy",
+    "where": "descriptionNote",
     "field": "moveSpeedCoefficient",
     "stated": 1.3,
     "owner": null
    },
    {
+    "id": "strides-of-heresy",
+    "where": "formula[Duration (s)]",
+    "field": "baseDuration",
+    "stated": 3,
+    "owner": null
+   },
+   {
+    "id": "essence-of-heresy",
+    "where": "formula[Ruin duration (s)]",
+    "field": "procCoefficient",
+    "stated": 100,
+    "owner": null
+   },
+   {
     "id": "defiant-gouge",
+    "where": "descriptionNote",
     "field": "monsterCredit",
     "stated": 40,
     "owner": null
    },
    {
+    "id": "defiant-gouge",
+    "where": "formula[Summoned enemy credit (director budget)]",
+    "field": "monsterCredit",
+    "stated": 40,
+    "owner": null
+   },
+   {
+    "id": "encrusted-key",
+    "where": "formula[Void cache drop split (% common / uncommon / legendary)]",
+    "field": "voidTier1Weight",
+    "stated": 5,
+    "owner": "dtVoidLockbox"
+   },
+   {
+    "id": "encrusted-key",
+    "where": "formula[Void cache drop split (% common / uncommon / legendary)]",
+    "field": "voidTier2Weight",
+    "stated": 5,
+    "owner": "dtVoidLockbox"
+   },
+   {
+    "id": "encrusted-key",
+    "where": "formula[Void cache drop split (% common / uncommon / legendary)]",
+    "field": "voidTier3Weight",
+    "stated": 2,
+    "owner": "dtVoidLockbox"
+   },
+   {
+    "id": "plasma-shrimp",
+    "where": "formula[Missile damage (% TOTAL)]",
+    "field": "damageCoefficient",
+    "stated": 0.4,
+    "owner": null
+   },
+   {
+    "id": "plasma-shrimp",
+    "where": "formula[Missile damage (% TOTAL)]",
+    "field": "procCoefficient",
+    "stated": 0.2,
+    "owner": null
+   },
+   {
+    "id": "polylute",
+    "where": "formula[Lightning hits]",
+    "field": "procCoefficient",
+    "stated": 0.2,
+    "owner": null
+   },
+   {
+    "id": "singularity-band",
+    "where": "formula[Black hole damage (% TOTAL)]",
+    "field": "damageCoefficient",
+    "stated": 1,
+    "owner": null
+   },
+   {
+    "id": "voidsent-flame",
+    "where": "formula[Explosion damage (% base)]",
+    "field": "damageCoefficient",
+    "stated": 2.6,
+    "owner": null
+   },
+   {
+    "id": "voidsent-flame",
+    "where": "formula[Explosion damage (% base)]",
+    "field": "maxTimer",
+    "stated": 0.2,
+    "owner": null
+   },
+   {
+    "id": "voidsent-flame",
+    "where": "formula[Explosion damage (% base)]",
+    "field": "procCoefficient",
+    "stated": 1,
+    "owner": null
+   },
+   {
+    "id": "preon-accumulator",
+    "where": "formula[Detonation damage (%)]",
+    "field": "blastDamageCoefficient",
+    "stated": 40,
+    "owner": "BeamSphere"
+   },
+   {
+    "id": "preon-accumulator",
+    "where": "formula[Detonation damage (%)]",
+    "field": "calculateTotalDamage",
+    "stated": 0,
+    "owner": "BeamSphere"
+   },
+   {
+    "id": "preon-accumulator",
+    "where": "formula[Detonation damage (%)]",
+    "field": "falloffModel",
+    "stated": 2,
+    "owner": null
+   },
+   {
+    "id": "preon-accumulator",
+    "where": "formula[Detonation damage (%)]",
+    "field": "blastProcCoefficient",
+    "stated": 1,
+    "owner": null
+   },
+   {
+    "id": "preon-accumulator",
+    "where": "formula[Detonation damage (%)]",
+    "field": "procCoefficient",
+    "stated": 1,
+    "owner": null
+   },
+   {
+    "id": "preon-accumulator",
+    "where": "formula[Tendril zap damage (%)]",
+    "field": "damageCoefficient",
+    "stated": 2,
+    "owner": "BeamSphere"
+   },
+   {
+    "id": "preon-accumulator",
+    "where": "formula[Tendril zap damage (%)]",
+    "field": "attackInterval",
+    "stated": 0.05,
+    "owner": "BeamSphere"
+   },
+   {
+    "id": "preon-accumulator",
+    "where": "formula[Tendril zap damage (%)]",
+    "field": "attackFireCount",
+    "stated": 1,
+    "owner": "BeamSphere"
+   },
+   {
+    "id": "preon-accumulator",
+    "where": "formula[Tendril zap damage (%)]",
+    "field": "listClearInterval",
+    "stated": 0.33,
+    "owner": "BeamSphere"
+   },
+   {
+    "id": "preon-accumulator",
+    "where": "formula[Tendril zap damage (%)]",
+    "field": "attackRange",
+    "stated": 35,
+    "owner": "BeamSphere"
+   },
+   {
+    "id": "preon-accumulator",
+    "where": "formula[Tendril zap damage (%)]",
+    "field": "procCoefficient",
+    "stated": 0.1,
+    "owner": "BeamSphere"
+   },
+   {
+    "id": "the-crowdfunder",
+    "where": "formula[Damage per bullet (%)]",
+    "field": "damageCoefficient",
+    "stated": 1,
+    "owner": null
+   },
+   {
+    "id": "the-crowdfunder",
+    "where": "formula[Damage per bullet (%)]",
+    "field": "procCoefficient",
+    "stated": 1,
+    "owner": null
+   },
+   {
+    "id": "the-crowdfunder",
+    "where": "formula[Damage per bullet (%)]",
+    "field": "minSpread",
+    "stated": 0,
+    "owner": null
+   },
+   {
+    "id": "the-crowdfunder",
+    "where": "formula[Damage per bullet (%)]",
+    "field": "maxSpread",
+    "stated": 3,
+    "owner": null
+   },
+   {
+    "id": "the-crowdfunder",
+    "where": "formula[Gold per bullet at team level 1]",
+    "field": "baseMoneyCostPerBullet",
+    "stated": 1,
+    "owner": null
+   },
+   {
+    "id": "milky-chrysalis",
+    "where": "formula[Jump-boost speed multiplier]",
+    "field": "boostSpeedMultiplier",
+    "stated": 3,
+    "owner": null
+   },
+   {
+    "id": "milky-chrysalis",
+    "where": "formula[Jump-boost speed multiplier]",
+    "field": "boostCooldown",
+    "stated": 0.5,
+    "owner": null
+   },
+   {
+    "id": "gnarled-woodsprite",
+    "where": "formula[Passive healing (% of max health per second)]",
+    "field": "fractionHealthHealing",
+    "stated": 0.015,
+    "owner": "HealingFollower"
+   },
+   {
+    "id": "gnarled-woodsprite",
+    "where": "formula[Passive healing (% of max health per second)]",
+    "field": "healingInterval",
+    "stated": 1,
+    "owner": "HealingFollower"
+   },
+   {
+    "id": "gnarled-woodsprite",
+    "where": "formula[Send-to-ally burst (% of their max health)]",
+    "field": "fractionHealthBurst",
+    "stated": 0.1,
+    "owner": null
+   },
+   {
+    "id": "radar-scanner",
+    "where": "formula[Reveal radius (m)]",
+    "field": "revealDuration",
+    "stated": 10,
+    "owner": "ChestScanner"
+   },
+   {
+    "id": "radar-scanner",
+    "where": "formula[Reveal radius (m)]",
+    "field": "pulseInterval",
+    "stated": 10,
+    "owner": "ChestScanner"
+   },
+   {
+    "id": "radar-scanner",
+    "where": "formula[Reveal radius (m)]",
+    "field": "pulseTravelSpeed",
+    "stated": 125,
+    "owner": "ChestScanner"
+   },
+   {
+    "id": "radar-scanner",
+    "where": "formula[Pulses per use]",
+    "field": "pulseInterval",
+    "stated": 10,
+    "owner": null
+   },
+   {
+    "id": "volcanic-egg",
+    "where": "formula[Ram damage, once per enemy (%)]",
+    "field": "overlapDamageCoefficient",
+    "stated": 5,
+    "owner": "FireballVehicle"
+   },
+   {
+    "id": "volcanic-egg",
+    "where": "formula[Ram damage, once per enemy (%)]",
+    "field": "overlapFireFrequency",
+    "stated": 15,
+    "owner": "FireballVehicle"
+   },
+   {
+    "id": "volcanic-egg",
+    "where": "formula[Ram damage, once per enemy (%)]",
+    "field": "overlapResetFrequency",
+    "stated": 1e-05,
+    "owner": "FireballVehicle"
+   },
+   {
+    "id": "volcanic-egg",
+    "where": "formula[Ram damage, once per enemy (%)]",
+    "field": "overlapProcCoefficient",
+    "stated": 1,
+    "owner": "FireballVehicle"
+   },
+   {
+    "id": "volcanic-egg",
+    "where": "formula[Detonation damage (%)]",
+    "field": "blastDamageCoefficient",
+    "stated": 8,
+    "owner": null
+   },
+   {
+    "id": "volcanic-egg",
+    "where": "formula[Detonation damage (%)]",
+    "field": "blastRadius",
+    "stated": 8,
+    "owner": null
+   },
+   {
+    "id": "volcanic-egg",
+    "where": "formula[Detonation damage (%)]",
+    "field": "blastForce",
+    "stated": 3000,
+    "owner": null
+   },
+   {
+    "id": "volcanic-egg",
+    "where": "formula[Detonation damage (%)]",
+    "field": "blastProcCoefficient",
+    "stated": 1,
+    "owner": null
+   },
+   {
+    "id": "volcanic-egg",
+    "where": "formula[Detonation damage (%)]",
+    "field": "procCoefficient",
+    "stated": 1,
+    "owner": null
+   },
+   {
     "id": "sawmerang",
+    "where": "descriptionNote",
     "field": "resetInterval",
     "stated": -1,
     "owner": null
    },
    {
+    "id": "sawmerang",
+    "where": "formula[Damage per saw, once per enemy (%)]",
+    "field": "damageCoefficient",
+    "stated": 4,
+    "owner": "Sawmerang"
+   },
+   {
+    "id": "sawmerang",
+    "where": "formula[Damage per saw, once per enemy (%)]",
+    "field": "resetInterval",
+    "stated": -1,
+    "owner": "Sawmerang"
+   },
+   {
+    "id": "sawmerang",
+    "where": "formula[Damage per saw, once per enemy (%)]",
+    "field": "overlapProcCoefficient",
+    "stated": 1,
+    "owner": "Sawmerang"
+   },
+   {
+    "id": "sawmerang",
+    "where": "formula[Blade contact damage (%/s, up to)]",
+    "field": "damageCoefficient",
+    "stated": 0.2,
+    "owner": "Sawmerang"
+   },
+   {
+    "id": "sawmerang",
+    "where": "formula[Blade contact damage (%/s, up to)]",
+    "field": "fireFrequency",
+    "stated": 30,
+    "owner": "Sawmerang"
+   },
+   {
+    "id": "sawmerang",
+    "where": "formula[Blade contact damage (%/s, up to)]",
+    "field": "resetFrequency",
+    "stated": 10,
+    "owner": "Sawmerang"
+   },
+   {
+    "id": "sawmerang",
+    "where": "formula[Blade contact damage (%/s, up to)]",
+    "field": "overlapProcCoefficient",
+    "stated": 0.2,
+    "owner": "Sawmerang"
+   },
+   {
+    "id": "sawmerang",
+    "where": "formula[Blade contact damage (%/s, up to)]",
+    "field": "travelSpeed",
+    "stated": 60,
+    "owner": "Sawmerang"
+   },
+   {
+    "id": "sawmerang",
+    "where": "formula[Blade contact damage (%/s, up to)]",
+    "field": "transitionDuration",
+    "stated": 1,
+    "owner": "Sawmerang"
+   },
+   {
+    "id": "forgive-me-please",
+    "where": "formula[On-kill triggers per throw]",
+    "field": "baseDuration",
+    "stated": 8,
+    "owner": "DeathProjectile"
+   },
+   {
+    "id": "fuel-array",
+    "where": "formula[Blast radius (m)]",
+    "field": "explosionRadius",
+    "stated": 30,
+    "owner": null
+   },
+   {
+    "id": "fuel-array",
+    "where": "formula[Blast radius (m)]",
+    "field": "procCoefficient",
+    "stated": 0,
+    "owner": null
+   },
+   {
+    "id": "molotov-6-pack",
+    "where": "formula[Bomblets]",
+    "field": "childrenCount",
+    "stated": 6,
+    "owner": "MolotovClusterProjectile"
+   },
+   {
+    "id": "molotov-6-pack",
+    "where": "formula[Bomblets]",
+    "field": "rangePitchDegrees",
+    "stated": 80,
+    "owner": "MolotovClusterProjectile"
+   },
+   {
+    "id": "molotov-6-pack",
+    "where": "formula[Bomblets]",
+    "field": "rangeRollDegrees",
+    "stated": 360,
+    "owner": "MolotovClusterProjectile"
+   },
+   {
+    "id": "molotov-6-pack",
+    "where": "formula[Bomblets]",
+    "field": "childrenDamageCoefficient",
+    "stated": 1,
+    "owner": "MolotovSingleProjectile"
+   },
+   {
+    "id": "molotov-6-pack",
+    "where": "formula[Bomblets]",
+    "field": "blastProcCoefficient",
+    "stated": 1,
+    "owner": "MolotovClusterProjectile"
+   },
+   {
+    "id": "molotov-6-pack",
+    "where": "formula[Bomblets]",
+    "field": "blastDamageCoefficient",
+    "stated": 2.5,
+    "owner": "MolotovClusterProjectile"
+   },
+   {
+    "id": "molotov-6-pack",
+    "where": "formula[Bomblets]",
+    "field": "falloffModel",
+    "stated": 0,
+    "owner": "MolotovClusterProjectile"
+   },
+   {
+    "id": "molotov-6-pack",
+    "where": "formula[Impact damage per bomblet (%)]",
+    "field": "blastDamageCoefficient",
+    "stated": 2.5,
+    "owner": null
+   },
+   {
+    "id": "molotov-6-pack",
+    "where": "formula[Impact damage per bomblet (%)]",
+    "field": "blastRadius",
+    "stated": 7,
+    "owner": null
+   },
+   {
+    "id": "molotov-6-pack",
+    "where": "formula[Impact damage per bomblet (%)]",
+    "field": "blastProcCoefficient",
+    "stated": 1,
+    "owner": "MolotovSingleProjectile"
+   },
+   {
+    "id": "molotov-6-pack",
+    "where": "formula[Impact damage per bomblet (%)]",
+    "field": "procCoefficient",
+    "stated": 1,
+    "owner": "MolotovSingleProjectile"
+   },
+   {
+    "id": "molotov-6-pack",
+    "where": "formula[Burn total per bomblet (%)]",
+    "field": "dotIndex",
+    "stated": 1,
+    "owner": null
+   },
+   {
+    "id": "molotov-6-pack",
+    "where": "formula[Burn total per bomblet (%)]",
+    "field": "totalDamageMultiplier",
+    "stated": 2.5,
+    "owner": null
+   },
+   {
+    "id": "molotov-6-pack",
+    "where": "formula[Fire puddle damage (% per second, for 7s)]",
+    "field": "damageCoefficient",
+    "stated": 1,
+    "owner": "MolotovProjectileDotZone"
+   },
+   {
+    "id": "molotov-6-pack",
+    "where": "formula[Fire puddle damage (% per second, for 7s)]",
+    "field": "fireFrequency",
+    "stated": 1,
+    "owner": "MolotovProjectileDotZone"
+   },
+   {
+    "id": "molotov-6-pack",
+    "where": "formula[Fire puddle damage (% per second, for 7s)]",
+    "field": "overlapProcCoefficient",
+    "stated": 0.5,
+    "owner": "MolotovProjectileDotZone"
+   },
+   {
+    "id": "molotov-6-pack",
+    "where": "formula[Fire puddle damage (% per second, for 7s)]",
+    "field": "resetFrequency",
+    "stated": 3,
+    "owner": "MolotovProjectileDotZone"
+   },
+   {
+    "id": "molotov-6-pack",
+    "where": "formula[Fire puddle damage (% per second, for 7s)]",
+    "field": "childrenDamageCoefficient",
+    "stated": 1,
+    "owner": null
+   },
+   {
     "id": "remote-caffeinator",
+    "where": "descriptionNote",
     "field": "numBonusOrbs",
     "stated": 2,
     "owner": null
    },
    {
+    "id": "remote-caffeinator",
+    "where": "formula[Impact damage (%)]",
+    "field": "blastDamageCoefficient",
+    "stated": 20,
+    "owner": "VendingMachineProjectile"
+   },
+   {
+    "id": "remote-caffeinator",
+    "where": "formula[Impact damage (%)]",
+    "field": "blastRadius",
+    "stated": 16,
+    "owner": "VendingMachineProjectile"
+   },
+   {
+    "id": "remote-caffeinator",
+    "where": "formula[Impact damage (%)]",
+    "field": "blastProcCoefficient",
+    "stated": 1,
+    "owner": "VendingMachineProjectile"
+   },
+   {
+    "id": "remote-caffeinator",
+    "where": "formula[Healing per target (% of their max health)]",
+    "field": "healFraction",
+    "stated": 0.25,
+    "owner": "VendingMachine"
+   },
+   {
+    "id": "remote-caffeinator",
+    "where": "formula[Healing per target (% of their max health)]",
+    "field": "numBonusOrbs",
+    "stated": 2,
+    "owner": "VendingMachine"
+   },
+   {
+    "id": "remote-caffeinator",
+    "where": "formula[Vending radius (m)]",
+    "field": "vendingRadius",
+    "stated": 50,
+    "owner": null
+   },
+   {
+    "id": "remote-caffeinator",
+    "where": "formula[Vending radius (m)]",
+    "field": "maxPurchases",
+    "stated": 12,
+    "owner": null
+   },
+   {
     "id": "effigy-of-grief",
+    "where": "descriptionNote",
     "field": "invertTeamFilter",
     "stated": 1,
     "owner": "CrippleWard"
    },
    {
     "id": "effigy-of-grief",
+    "where": "descriptionNote",
     "field": "buffDuration",
     "stated": 1.5,
     "owner": "CrippleWard"
    },
    {
+    "id": "glowing-meteorite",
+    "where": "formula[Damage per blast (%)]",
+    "field": "blastDamageCoefficient",
+    "stated": 6,
+    "owner": "MeteorStorm"
+   },
+   {
+    "id": "glowing-meteorite",
+    "where": "formula[Damage per blast (%)]",
+    "field": "blastRadius",
+    "stated": 8,
+    "owner": "MeteorStorm"
+   },
+   {
+    "id": "glowing-meteorite",
+    "where": "formula[Damage per blast (%)]",
+    "field": "blastForce",
+    "stated": 4000,
+    "owner": "MeteorStorm"
+   },
+   {
+    "id": "glowing-meteorite",
+    "where": "formula[Damage per blast (%)]",
+    "field": "impactDelay",
+    "stated": 2,
+    "owner": "MeteorStorm"
+   },
+   {
+    "id": "glowing-meteorite",
+    "where": "formula[Damage per blast (%)]",
+    "field": "procCoefficient",
+    "stated": 1,
+    "owner": null
+   },
+   {
+    "id": "glowing-meteorite",
+    "where": "formula[Waves]",
+    "field": "waveCount",
+    "stated": 20,
+    "owner": null
+   },
+   {
+    "id": "glowing-meteorite",
+    "where": "formula[Waves]",
+    "field": "waveMinInterval",
+    "stated": 0.5,
+    "owner": null
+   },
+   {
+    "id": "glowing-meteorite",
+    "where": "formula[Waves]",
+    "field": "waveMaxInterval",
+    "stated": 1.5,
+    "owner": null
+   },
+   {
     "id": "helfire-tincture",
+    "where": "descriptionNote",
     "field": "healthFractionPerSecond",
     "stated": 0.05,
     "owner": "HelfireController"
    },
    {
     "id": "helfire-tincture",
+    "where": "descriptionNote",
     "field": "dotDuration",
     "stated": 3,
     "owner": "HelfireController"
    },
    {
     "id": "helfire-tincture",
+    "where": "descriptionNote",
     "field": "baseRadius",
     "stated": 15,
     "owner": "HelfireController"
    },
    {
     "id": "helfire-tincture",
+    "where": "descriptionNote",
     "field": "allyDamageScalar",
     "stated": 0.5,
     "owner": "HelfireController"
    },
    {
     "id": "helfire-tincture",
+    "where": "descriptionNote",
     "field": "enemyDamageScalar",
     "stated": 24,
     "owner": "HelfireController"
    },
    {
     "id": "his-reassurance",
+    "where": "descriptionNote",
     "field": "maxTargets",
     "stated": 1,
     "owner": null
    },
    {
+    "id": "his-reassurance",
+    "where": "formula[Allies healed per tick]",
+    "field": "maxTargets",
+    "stated": 1,
+    "owner": "AffixEarthBodyAttachment"
+   },
+   {
+    "id": "his-reassurance",
+    "where": "formula[Healing (% of your damage per second)]",
+    "field": "damagePerSecondCoefficient",
+    "stated": 1.2,
+    "owner": null
+   },
+   {
+    "id": "his-reassurance",
+    "where": "formula[Healing (% of your damage per second)]",
+    "field": "tickRate",
+    "stated": 3,
+    "owner": null
+   },
+   {
+    "id": "his-reassurance",
+    "where": "formula[Death core heal (% of damage)]",
+    "field": "healCoefficient",
+    "stated": 4,
+    "owner": null
+   },
+   {
     "id": "of-one-mind",
+    "where": "descriptionNote",
     "field": "tickRate",
     "stated": 0.5,
+    "owner": null
+   },
+   {
+    "id": "of-one-mind",
+    "where": "formula[Dome radius (m)]",
+    "field": "maxTargets",
+    "stated": 50,
+    "owner": "AffixCollectiveBodyAttachment"
+   },
+   {
+    "id": "of-one-mind",
+    "where": "formula[Dome radius (m)]",
+    "field": "tickRate",
+    "stated": 0.5,
+    "owner": "AffixCollectiveBodyAttachment"
+   },
+   {
+    "id": "of-one-mind",
+    "where": "formula[Death explosion damage (%)]",
+    "field": "blastDamageCoefficient",
+    "stated": 1,
+    "owner": "CollectiveDeathProjectile"
+   },
+   {
+    "id": "of-one-mind",
+    "where": "formula[Death explosion damage (%)]",
+    "field": "blastRadius",
+    "stated": 11,
+    "owner": "CollectiveDeathProjectile"
+   },
+   {
+    "id": "of-one-mind",
+    "where": "formula[Death explosion damage (%)]",
+    "field": "blastProcCoefficient",
+    "stated": 1,
+    "owner": "CollectiveDeathProjectile"
+   },
+   {
+    "id": "of-one-mind",
+    "where": "formula[Death explosion damage (%)]",
+    "field": "procCoefficient",
+    "stated": 1,
+    "owner": "CollectiveDeathProjectile"
+   },
+   {
+    "id": "of-one-mind",
+    "where": "formula[Death explosion damage (%)]",
+    "field": "falloffModel",
+    "stated": 0,
+    "owner": "CollectiveDeathProjectile"
+   },
+   {
+    "id": "aurelionites-blessing",
+    "where": "formula[Spike damage, inner / outer (%)]",
+    "field": "blastProcCoefficient",
+    "stated": 1,
+    "owner": "AffixAurelioniteCenterProjectile"
+   },
+   {
+    "id": "aurelionites-blessing",
+    "where": "formula[Spike damage, inner / outer (%)]",
+    "field": "falloffModel",
+    "stated": 0,
+    "owner": "AffixAurelioniteCenterProjectile"
+   },
+   {
+    "id": "aurelionites-blessing",
+    "where": "formula[Spike damage, inner / outer (%)]",
+    "field": "blastDamageCoefficient",
+    "stated": 0.1,
+    "owner": "AffixAurelionitePreStrikeProjectile"
+   },
+   {
+    "id": "aurelionites-blessing",
+    "where": "formula[Strike radius (m)]",
+    "field": "blastRadius",
+    "stated": 3,
     "owner": null
    }
   ]
