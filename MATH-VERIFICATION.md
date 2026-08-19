@@ -9312,3 +9312,48 @@ contradiction is what made it obviously the instrument rather than the page.
 **Not made permanent, deliberately.** A production smoke test would put a network dependency and
 an external host inside the gate, which trades a real class of flake for a check that only matters
 just after a deploy. It belongs in DEFERRED as a decision, not in `pnpm test`.
+---
+
+### §3j.175 — How much slack do the other threshold checks have?
+
+§3j.173's lesson was that **a threshold check which barely passes is a claim about one machine**.
+The 360px sweep cleared its threshold by ~9% locally and failed on the runner for 26 builds. It
+now demands margin. The obvious follow-up: the sibling threshold sweeps — tap targets against
+WCAG 2.5.8's 24×24, text contrast against AA — had never been measured for slack either.
+
+**Nothing needed fixing, and the reason is worth recording as much as the result.**
+
+#### Contrast has real margin
+
+`contrast.spec.ts` already tracks the narrowest *passing* margin per panel; the question was
+answered by a report it had been printing all along. The tightest pair on the whole site is
+**131% of required** — about 5.9:1 against a 4.5 floor — and the next seven sit at 134%. Nothing
+is scraping past. Colour is also deterministic across platforms in a way text metrics are not, so
+this was the least likely of the three to be environment-sensitive in the first place.
+
+#### The rest is settled empirically, not by argument
+
+The sharper answer is that **CI is now green on Ubuntu**. Every sweep — tap targets, touch
+affordances, contrast, headings, responsive — runs there each push. The cross-platform question
+for all of them is therefore answered continuously by observation, not by reasoning about font
+metrics. Only the responsive sweep ever actually disagreed between the two platforms, and it is
+the one now carrying explicit margin.
+
+#### The instrument, for the second time in three passes
+
+The first attempt reimplemented both checks in a standalone diagnostic to ask them a new
+question. It reported **4 tap targets under 24px and 72 text nodes below AA** — while the real
+suites reported zero of each on the same commit.
+
+Both blocks were mine. The `input ""` controls at 14px are checkboxes hit by their `<label>`,
+which §3j.153 established as an exemption and the reimplementation did not carry. The 1.23:1
+contrast readings were a naïve `bgOf` walk that mis-resolved alpha compositing — §3j.144 needed
+two corrected instruments before its first believable number, and the rewrite reproduced neither.
+
+So: **do not reimplement a battle-tested check to ask a new question of it — extend it.** The
+exemptions ARE the check. A fresh implementation gets the arithmetic right and the exemptions
+wrong, which is exactly the shape that makes a block of false findings look convincing
+(§3j.129's 40 icon "mismatches", all correct).
+
+The diagnostic was deleted rather than committed; the trustworthy answer came from running the
+existing suite and reading output it already produced.

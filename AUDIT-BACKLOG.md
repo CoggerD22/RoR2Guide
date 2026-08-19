@@ -104,6 +104,7 @@ SweetSpot cliffs and the proc gap in already-"checked" data.
 | Drop-pool obtainability (DEFERRED #1) | 217 records cross-checked; 29 excluded | **planner offered 29 impossible targets**; 3 guards caught the fix, 1 was blind since §3j.124 | §3j.172 |
 | CI red for 26 runs (reported) | 2 workflows, 220 runs bisected | **layout overflowed on the runner's fonts**; sweep now needs margin, not equality | §3j.173 |
 | The live site, as Pages serves it | 10 routes + 4 data claims | **correct and current**; first end-to-end check of production | §3j.174 |
+| Threshold slack in the other sweeps | contrast: tightest 131% of required | **no fragility**; reimplemented instrument gave 76 false findings | §3j.175 |
 | Extractor health | 1472 bundles, 224,435 MonoBehaviours | all swallow classes 0 | §3j.127 |
 
 ---
