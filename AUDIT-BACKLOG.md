@@ -103,6 +103,7 @@ SweetSpot cliffs and the proc gap in already-"checked" data.
 | A second Frost Relic? | 79 record/prefab pairs, 197 overriding fields | **none found**; 3 of 4 instruments unusable, stated as a limit | §3j.171 |
 | Drop-pool obtainability (DEFERRED #1) | 217 records cross-checked; 29 excluded | **planner offered 29 impossible targets**; 3 guards caught the fix, 1 was blind since §3j.124 | §3j.172 |
 | CI red for 26 runs (reported) | 2 workflows, 220 runs bisected | **layout overflowed on the runner's fonts**; sweep now needs margin, not equality | §3j.173 |
+| The live site, as Pages serves it | 10 routes + 4 data claims | **correct and current**; first end-to-end check of production | §3j.174 |
 | Extractor health | 1472 bundles, 224,435 MonoBehaviours | all swallow classes 0 | §3j.127 |
 
 ---
@@ -132,7 +133,11 @@ These are **scope changes, not corrections**. Nothing on the site is wrong becau
    dismissible per WCAG 1.4.13) **or** a new visible column in the proc table — both new UI
    surfaces, hence a decision rather than a correction. `aria-label` on the existing `<span>`s
    is not a shortcut: on `role=generic` it is widely ignored by real AT. §3j.152.
-4. **In-game observation.** Behaviour under real play. Everything reachable by reading code and
+4. **A permanent production smoke check.** §3j.174 verified the live site by hand and did not
+   automate it: putting an external host inside `pnpm test` trades a real class of flake for a
+   check that only matters in the minutes after a deploy. If it is wanted, the right shape is a
+   separate post-deploy job, not a gate.
+5. **In-game observation.** Behaviour under real play. Everything reachable by reading code and
    assets has been read; nothing here substitutes for holding the item and watching the number.
    §3j.98.
 

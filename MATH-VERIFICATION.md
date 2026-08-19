@@ -9280,3 +9280,35 @@ a check about the browser suite — §3j.160's substring bug, fifth instance.
 exits with the status of its *last* element, so `tail` returning 0 hid the failure. The rule is a
 full gate per commit; the shell made a red run look green. Every gate in this pass was afterwards
 checked by exit code, not through a pipe.
+
+---
+
+### §3j.174 — The first look at the site as the public sees it
+
+§3j.173 left an obvious question unasked: the deploy had been red for 26 runs, so **nothing was
+published between 2026-08-13 and today**. Everything this project verifies runs against a local
+build — §3j.150 was careful to test `dist/` rather than the dev server, and that is still not the
+live URL. Nothing had ever fetched what Pages actually serves.
+
+Checked, now that both workflows are green:
+
+- **10 routes**, including the five that 404'd in production in §3j.147: all 200, and
+  `/items/nope-does-not-exist` correctly returns **404** rather than silently rendering the codex.
+- **Frost Relic reads `18 base, +12 per stack`** — §3j.170's correction is live, not merely
+  committed.
+- **Helfire Tincture states `dotDuration = 3`** (§3j.168).
+- **The drop-exclusion block renders** on Halcyon Seed with its `ItemTag.WorldUnique` cause
+  (§3j.172), and the planner marks **21** cards un-targetable.
+- **Zero runtime page errors.**
+
+Nothing was wrong. The pass is recorded because "the deploy job is green" and "the site is
+correct" are different claims, and only the first had ever been checked.
+
+One instrument note worth keeping: `innerText` applies `text-transform`, so a case-sensitive match
+for a heading styled `uppercase` returns false while the section is plainly there. The first run
+reported the exclusion block missing and its own cause line present in the same breath — a
+contradiction is what made it obviously the instrument rather than the page.
+
+**Not made permanent, deliberately.** A production smoke test would put a network dependency and
+an external host inside the gate, which trades a real class of flake for a check that only matters
+just after a deploy. It belongs in DEFERRED as a decision, not in `pnpm test`.
