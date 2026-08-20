@@ -9357,3 +9357,57 @@ wrong, which is exactly the shape that makes a block of false findings look conv
 
 The diagnostic was deleted rather than committed; the trustworthy answer came from running the
 existing suite and reading output it already produced.
+
+---
+
+### §3j.176 — The tag name was not the mechanic
+
+DEFERRED #1 lists the ItemDef tags still unpublished, and described one of them from its name:
+*"`BrotherBlacklist` (10 — Mithrix cannot take these)"*. Before publishing anything that says so,
+the mechanic had to be read. It does not say that.
+
+`ItemStealController` carries **two** filters and Mithrix's spell state sets only one of them:
+
+```csharp
+itemStealController.itemLendFilter = ItemStealController.BrotherItemFilter;   // SpellBaseState
+public Func<ItemIndex, bool> itemStealFilter = DefaultItemFilter;             // left at default
+```
+
+and they gate different things:
+
+```csharp
+private int StealItem(ItemIndex i, ...) { if (!owner.itemStealFilter(i)) return 0;  … }
+private void GiveItemToLendee(ItemIndex i, int stack) {
+    lentItemStacks[(int)i] += stack;                       // the steal is recorded regardless
+    if (allowLending && lendeeInventory && owner.itemLendFilter(i))
+        lendeeInventory.GiveItemPermanent(i, stack);       // … he only RECEIVES it if this passes
+}
+```
+
+So `CannotSteal` decides what he **cannot take**, and `AIBlacklist`/`BrotherBlacklist` decide only
+what he **gains nothing from** — the item still leaves your inventory. The backlog had the tag on
+the wrong side of that line, and had it doing the one thing it does not do.
+
+#### The numbers, once `canRemove` existed
+
+Both filters are `itemDef.canRemove && DoesNotContainTag(…)`, and **`canRemove` had never been
+extracted** — so a tag list alone could only ever answer part of the question. That is §3j.168's
+rule again: unextracted, not unverifiable. `extract-itemdefs.py` now carries it. Re-extraction
+changed **0** tiers and **0** tag lists, so nothing else moved.
+
+- **10 items Mithrix cannot take at all**: the 9 `CannotSteal` plus **Longstanding Solitude**,
+  which no tag covers — it is `canRemove = false`. Of 40 defs with `canRemove = false`, it is the
+  only real tiered item; the other 39 are NoTier internals (`(Consumed)` variants, Junk, tokens).
+- **47 he takes but gains nothing from.** `BrotherBlacklist` contributes only **4** of those beyond
+  `AIBlacklist` — Tougher Times, Mired Urn, Eulogy Zero, Safer Spaces — so quoting it as a
+  standalone population of 10 overstated its role twice over.
+
+Four tags — `CannotDuplicate`, `HalcyoniteShrine`, `SacrificeBlacklist`, `CommandArtifactBlacklist`
+— have **zero** uses in `RoR2.decompiled.cs`. Per CLAUDE.md that is not yet an absence claim: it
+needs a scan of all 143 `Managed/*.dll`, because a cross-assembly reference stores the member name
+in the referencing assembly. Not done here, so nothing is asserted about them.
+
+Nothing was published. The point of the pass is that the entry a future decision would have been
+made from was wrong, and the fix is a correction rather than a scope change (rule 9). The
+publishable fact, if it is ever taken up, is the second bullet: **you lose 47 items to a boss who
+gets no use out of them**, which is both actionable and stated nowhere.

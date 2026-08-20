@@ -144,6 +144,12 @@ def extract():
                     # Without these the mechanism is verifiable but its application to a
                     # specific item is not.
                     "tags": [tag_name(x) for x in (t.get("tags") or [])],
+                    # `canRemove` is half of every steal/lend/scrap filter and was never
+                    # extracted (MATH-VERIFICATION §3j.176). ItemStealController's filters read
+                    # `itemDef.canRemove && DoesNotContainTag(...)`, so a tag list alone can
+                    # only ever answer part of "can Mithrix take this". §3j.168's rule applies:
+                    # a value absent from the extraction is unextracted, not unverifiable.
+                    "canRemove": bool(t.get("canRemove", True)),
                     "dlc": dlc,
                 })
 

@@ -105,6 +105,7 @@ SweetSpot cliffs and the proc gap in already-"checked" data.
 | CI red for 26 runs (reported) | 2 workflows, 220 runs bisected | **layout overflowed on the runner's fonts**; sweep now needs margin, not equality | §3j.173 |
 | The live site, as Pages serves it | 10 routes + 4 data claims | **correct and current**; first end-to-end check of production | §3j.174 |
 | Threshold slack in the other sweeps | contrast: tightest 131% of required | **no fragility**; reimplemented instrument gave 76 false findings | §3j.175 |
+| Mithrix steal/lend tags | 175 items; 2 filters, 3 tags, +`canRemove` | **backlog described the wrong filter**; 10 immune, 47 wasted | §3j.176 |
 | Extractor health | 1472 bundles, 224,435 MonoBehaviours | all swallow classes 0 | §3j.127 |
 
 ---
@@ -116,9 +117,17 @@ These are **scope changes, not corrections**. Nothing on the site is wrong becau
 1. **Publish the REST of the ItemDef tag facts.** §3j.172 took the sharpest case — drop-pool
    exclusion — and shipped it as `dropExclusion`, cross-checked 217/217. The other mechanical tags
    remain pinned in `game-facts-baseline.json` and unpublished: `AIBlacklist` (51),
-   `ExtractorUnitBlacklist` (25), `CannotCopy` (15), `BrotherBlacklist` (10 — Mithrix cannot take
-   these), `CannotSteal` (9), `CannotDuplicate` (8), `RebirthBlacklist` (5), `DevotionBlacklist` (4),
-   `HalcyoniteShrine` (17), `Cleansable`, `SacrificeBlacklist`, `CommandArtifactBlacklist`. Each
+   `ExtractorUnitBlacklist` (25), `CannotCopy` (15), `CannotDuplicate` (8), `RebirthBlacklist` (5),
+   `DevotionBlacklist` (4), `HalcyoniteShrine` (17), `Cleansable`, `SacrificeBlacklist`,
+   `CommandArtifactBlacklist`.
+   **The Mithrix pair is now verified and this entry used to describe it wrongly (§3j.176).**
+   `BrotherBlacklist` is not "Mithrix cannot take these": it is wired to `itemLendFilter`, not
+   `itemStealFilter`. `StealItem` returns 0 when the STEAL filter rejects an item, so it is never
+   taken; `GiveItemToLendee` still records the steal and merely withholds the item from him when
+   the LEND filter rejects it. Verified sets, with `canRemove` (newly extracted) included:
+   **10 items he cannot take at all** (9 `CannotSteal` + Longstanding Solitude, `canRemove=false`),
+   and **47 he takes but gains nothing from** — you still lose those for the phase, which is the
+   more useful half and the half no page states. Each
    needs its own decision about whether a reader can act on it; obtainability was the one that
    made the site actively misleading, and it is done.
    Also still open: **how** the 29 excluded records ARE obtained. `dropExclusion.source` exists and
